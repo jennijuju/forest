@@ -21,7 +21,7 @@ var sourcesIndex = JSON.parse('{\
 "forest_libp2p":["",[["chain_exchange",[],["behaviour.rs","message.rs","mod.rs","provider.rs"]],["hello",[],["behaviour.rs","codec.rs","message.rs","mod.rs"]],["rpc",[],["decoder.rs","mod.rs"]]],["behaviour.rs","config.rs","discovery.rs","gossip_params.rs","lib.rs","metrics.rs","peer_manager.rs","service.rs"]],\
 "forest_libp2p_bitswap":["",[["internals",[],["codec.rs","event_handlers.rs","mod.rs","prefix.rs","protocol.rs","utils.rs"]]],["behaviour.rs","lib.rs","message.rs","metrics.rs","request_manager.rs","store.rs"]],\
 "forest_message":["",[],["chain_message.rs","lib.rs","message.rs","signed_message.rs"]],\
-"forest_message_pool":["",[["msgpool",[],["mod.rs","msg_pool.rs","provider.rs","selection.rs","test_provider.rs","utils.rs"]]],["block_prob.rs","config.rs","errors.rs","lib.rs","msg_chain.rs"]],\
+"forest_message_pool":["",[["msgpool",[],["metrics.rs","mod.rs","msg_pool.rs","provider.rs","selection.rs","test_provider.rs","utils.rs"]]],["block_prob.rs","config.rs","errors.rs","lib.rs","msg_chain.rs"]],\
 "forest_metrics":["",[],["db.rs","lib.rs","metrics.rs"]],\
 "forest_networks":["",[["calibnet",[],["mod.rs"]],["mainnet",[],["mod.rs"]]],["drand.rs","lib.rs"]],\
 "forest_paramfetch":["",[],["lib.rs"]],\
