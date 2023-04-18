@@ -200,7 +200,6 @@
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -223,7 +222,10 @@
 <span class="kw">use </span>url::Url;
 
 <span class="kw">use </span><span class="kw">super</span>::https_client;
-<span class="kw">use </span><span class="kw">crate</span>::io::ProgressBar;
+<span class="kw">use crate</span>::{io::ProgressBar, miscs::Either};
+
+<span class="comment">// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#zstandard-frames
+</span><span class="kw">const </span>ZSTD_MAGIC_HEADER: [u8; <span class="number">4</span>] = [<span class="number">0x28</span>, <span class="number">0xb5</span>, <span class="number">0x2f</span>, <span class="number">0xfd</span>];
 
 <span class="attr">#[derive(Debug, Error)]
 </span><span class="kw">enum </span>DownloadError {
@@ -257,50 +259,22 @@
 <span class="kw">type </span>DownloadStream = IntoAsyncRead&lt;MapErr&lt;hyper::Body, <span class="kw">fn</span>(hyper::Error) -&gt; futures::io::Error&gt;&gt;;
 
 <span class="kw">impl </span>FetchProgress&lt;DownloadStream&gt; {
-    <span class="kw">pub async fn </span>fetch_from_url(url: Url) -&gt; anyhow::Result&lt;FetchProgress&lt;DownloadStream&gt;&gt; {
-        <span class="kw">let </span>client = https_client();
-
-        <span class="kw">let </span>url = {
-            <span class="kw">let </span>head_response = client
-                .request(hyper::Request::head(url.as_str()).body(<span class="string">&quot;&quot;</span>.into())<span class="question-mark">?</span>)
-                .<span class="kw">await</span><span class="question-mark">?</span>;
-
-            <span class="comment">// Use the redirect if available.
-            </span><span class="kw">match </span>head_response.headers().get(<span class="string">&quot;location&quot;</span>) {
-                <span class="prelude-val">Some</span>(url) =&gt; url.to_str()<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>,
-                <span class="prelude-val">None </span>=&gt; url,
-            }
-        };
-
-        <span class="kw">let </span>total_size = {
-            <span class="kw">let </span>resp = client
-                .request(hyper::Request::head(url.as_str()).body(<span class="string">&quot;&quot;</span>.into())<span class="question-mark">?</span>)
-                .<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="kw">if </span>resp.status().is_success() {
-                resp.headers()
-                    .get(<span class="string">&quot;content-length&quot;</span>)
-                    .and_then(|ct_len| ct_len.to_str().ok())
-                    .and_then(|ct_len| ct_len.parse().ok())
-                    .unwrap_or(<span class="number">0</span>)
-            } <span class="kw">else </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(DownloadError::HeaderError));
-            }
-        };
-
-        <span class="kw">let </span>response = client.get(url.as_str().try_into()<span class="question-mark">?</span>).<span class="kw">await</span><span class="question-mark">?</span>;
-
-        <span class="kw">let </span>pb = ProgressBar::new(total_size);
-        pb.message(<span class="string">&quot;Downloading/Importing&quot;</span>);
-        pb.set_units(<span class="kw">crate</span>::io::progress_bar::Units::Bytes);
-        pb.set_max_refresh_rate(<span class="prelude-val">Some</span>(Duration::from_millis(<span class="number">500</span>)));
-
-        <span class="kw">let </span>map_err: <span class="kw">fn</span>(hyper::Error) -&gt; futures::io::Error =
-            |e| futures::io::Error::new(futures::io::ErrorKind::Other, e);
-        <span class="kw">let </span>stream = response.into_body().map_err(map_err).into_async_read();
-
+    <span class="kw">pub async fn </span>fetch_from_url(url: <span class="kw-2">&amp;</span>Url) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>(inner, progress_bar) = fetch_stream_from_url(url).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(FetchProgress {
-            progress_bar: pb,
-            inner: stream,
+            inner,
+            progress_bar,
+        })
+    }
+}
+
+<span class="kw">impl </span>FetchProgress&lt;ZstdDecoder&lt;DownloadStream&gt;&gt; {
+    <span class="kw">pub async fn </span>fetch_zstd_compressed_from_url(url: <span class="kw-2">&amp;</span>Url) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>(inner, progress_bar) = fetch_stream_from_url(url).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>inner = ZstdDecoder::new(inner);
+        <span class="prelude-val">Ok</span>(FetchProgress {
+            inner,
+            progress_bar,
         })
     }
 }
@@ -349,11 +323,10 @@
 &gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>file = async_fs::File::open(file_path.as_ref()).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>is_zstd_compressed = {
-        <span class="kw">let </span><span class="kw-2">mut </span>header = [<span class="number">0</span>; <span class="number">4</span>];
+        <span class="kw">let </span><span class="kw-2">mut </span>header = [<span class="number">0</span>; ZSTD_MAGIC_HEADER.len()];
         file.read_exact(<span class="kw-2">&amp;mut </span>header).<span class="kw">await</span><span class="question-mark">?</span>;
         file.seek(SeekFrom::Start(<span class="number">0</span>)).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="comment">// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#zstandard-frames
-        </span>header == [<span class="number">0x28</span>, <span class="number">0xb5</span>, <span class="number">0x2f</span>, <span class="number">0xfd</span>]
+        header == ZSTD_MAGIC_HEADER
     };
     <span class="macro">log::info!</span>(
         <span class="string">&quot;Loading {}, is_zstd_compressed: {is_zstd_compressed}&quot;</span>,
@@ -368,41 +341,66 @@
     }
 }
 
-<span class="kw">pub enum </span>Either&lt;L, R&gt; {
-    Left(L),
-    Right(R),
+<span class="kw">pub async fn </span>get_fetch_progress_from_url(
+    url: <span class="kw-2">&amp;</span>Url,
+) -&gt; anyhow::Result&lt;Either&lt;FetchProgress&lt;DownloadStream&gt;, FetchProgress&lt;ZstdDecoder&lt;DownloadStream&gt;&gt;&gt;&gt;
+{
+    <span class="kw">let </span>(<span class="kw-2">mut </span>stream, <span class="kw">_</span>) = fetch_stream_from_url(url).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>is_zstd_compressed = {
+        <span class="kw">let </span><span class="kw-2">mut </span>header = [<span class="number">0</span>; ZSTD_MAGIC_HEADER.len()];
+        stream.read_exact(<span class="kw-2">&amp;mut </span>header).<span class="kw">await</span><span class="question-mark">?</span>;
+        header == ZSTD_MAGIC_HEADER
+    };
+    <span class="macro">log::info!</span>(<span class="string">&quot;Loading {url}, is_zstd_compressed: {is_zstd_compressed}&quot;</span>);
+    <span class="kw">if </span>is_zstd_compressed {
+        <span class="prelude-val">Ok</span>(Either::Right(
+            FetchProgress::fetch_zstd_compressed_from_url(url).<span class="kw">await</span><span class="question-mark">?</span>,
+        ))
+    } <span class="kw">else </span>{
+        <span class="prelude-val">Ok</span>(Either::Left(FetchProgress::fetch_from_url(url).<span class="kw">await</span><span class="question-mark">?</span>))
+    }
 }
 
-<span class="kw">impl</span>&lt;L, R&gt; Either&lt;L, R&gt; {
-    <span class="kw">fn </span>left_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>L&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Left(left) =&gt; <span class="prelude-val">Some</span>(left),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-        }
-    }
+<span class="kw">async fn </span>fetch_stream_from_url(url: <span class="kw-2">&amp;</span>Url) -&gt; anyhow::Result&lt;(DownloadStream, ProgressBar)&gt; {
+    <span class="kw">let </span>client = https_client();
+    <span class="kw">let </span>url = {
+        <span class="kw">let </span>head_response = client
+            .request(hyper::Request::head(url.as_str()).body(<span class="string">&quot;&quot;</span>.into())<span class="question-mark">?</span>)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">fn </span>right_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>R&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Right(right) =&gt; <span class="prelude-val">Some</span>(right),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        <span class="comment">// Use the redirect if available.
+        </span><span class="kw">match </span>head_response.headers().get(<span class="string">&quot;location&quot;</span>) {
+            <span class="prelude-val">Some</span>(url) =&gt; url.to_str()<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>,
+            <span class="prelude-val">None </span>=&gt; url.clone(),
         }
-    }
-}
-
-<span class="kw">impl</span>&lt;L: AsyncRead + Unpin, R: AsyncRead + Unpin&gt; AsyncRead <span class="kw">for </span>Either&lt;L, R&gt; {
-    <span class="kw">fn </span>poll_read(
-        <span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
-        cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        buf: <span class="kw-2">&amp;mut </span>[u8],
-    ) -&gt; Poll&lt;std::io::Result&lt;usize&gt;&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(left) = <span class="self">self</span>.left_mut() {
-            Pin::new(left).poll_read(cx, buf)
-        } <span class="kw">else if let </span><span class="prelude-val">Some</span>(right) = <span class="self">self</span>.right_mut() {
-            Pin::new(right).poll_read(cx, buf)
+    };
+    <span class="kw">let </span>total_size = {
+        <span class="kw">let </span>resp = client
+            .request(hyper::Request::head(url.as_str()).body(<span class="string">&quot;&quot;</span>.into())<span class="question-mark">?</span>)
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">if </span>resp.status().is_success() {
+            resp.headers()
+                .get(<span class="string">&quot;content-length&quot;</span>)
+                .and_then(|ct_len| ct_len.to_str().ok())
+                .and_then(|ct_len| ct_len.parse().ok())
+                .unwrap_or(<span class="number">0</span>)
         } <span class="kw">else </span>{
-            <span class="macro">panic!</span>(<span class="string">&quot;This branch should never be hit&quot;</span>)
+            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(DownloadError::HeaderError));
         }
-    }
+    };
+
+    <span class="kw">let </span>response = client.get(url.as_str().try_into()<span class="question-mark">?</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="kw">let </span>pb = ProgressBar::new(total_size);
+    pb.message(<span class="string">&quot;Downloading/Importing snapshot &quot;</span>);
+    pb.set_units(<span class="kw">crate</span>::io::progress_bar::Units::Bytes);
+    pb.set_max_refresh_rate(<span class="prelude-val">Some</span>(Duration::from_millis(<span class="number">500</span>)));
+
+    <span class="kw">let </span>map_err: <span class="kw">fn</span>(hyper::Error) -&gt; futures::io::Error =
+        |e| futures::io::Error::new(futures::io::ErrorKind::Other, e);
+    <span class="kw">let </span>stream = response.into_body().map_err(map_err).into_async_read();
+
+    <span class="prelude-val">Ok</span>((stream, pb))
 }
 </code></pre></div>
 </section></main></body></html>
