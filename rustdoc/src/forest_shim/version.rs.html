@@ -81,6 +81,8 @@
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
@@ -126,6 +128,8 @@
     <span class="kw">pub const </span>V16: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">16</span>));
     <span class="kw">pub const </span>V17: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">17</span>));
     <span class="kw">pub const </span>V18: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">18</span>));
+    <span class="kw">pub const </span>V19: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">19</span>));
+    <span class="kw">pub const </span>V20: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">20</span>));
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>NetworkVersion {

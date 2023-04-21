@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["PoStProof","RegisteredPoStProof","RegisteredSealProof","SectorInfo","SectorSize"]};
+window.SIDEBAR_ITEMS = {"fn":["convert_window_post_proof_v1_to_v1p1"],"struct":["PoStProof","RegisteredPoStProof","RegisteredSealProof","SectorInfo","SectorSize"]};

@@ -158,6 +158,10 @@
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
 <a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -220,6 +224,10 @@
 
     <span class="kw">pub fn </span>into_payload(<span class="self">self</span>) -&gt; Payload {
         <span class="self">self</span>.<span class="number">0</span>.into_payload()
+    }
+
+    <span class="kw">pub fn </span>from_bytes(bz: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
+        Address_v3::from_bytes(bz).map(Address)
     }
 }
 
