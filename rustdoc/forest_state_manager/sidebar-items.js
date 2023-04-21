@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["is_valid_for_sending"],"mod":["chain_rand"],"struct":["InvocResult","MarketBalance","StateManager"]};
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["is_valid_for_sending","reveal_five_trees"],"mod":["chain_rand"],"struct":["InvocResult","MarketBalance","StateManager"]};

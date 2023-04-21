@@ -1318,6 +1318,8 @@
 <a href="#1318" id="1318">1318</a>
 <a href="#1319" id="1319">1319</a>
 <a href="#1320" id="1320">1320</a>
+<a href="#1321" id="1321">1321</a>
+<a href="#1322" id="1322">1322</a>
 </pre><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1325,7 +1327,7 @@
 <span class="kw">mod </span>errors;
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
-<span class="kw">pub use </span>utils::is_valid_for_sending;
+<span class="kw">pub use </span>utils::{is_valid_for_sending, reveal_five_trees};
 
 <span class="kw">mod </span>vm_circ_supply;
 
@@ -1779,6 +1781,7 @@
                 )<span class="question-mark">?</span>;
                 <span class="kw">let </span>elapsed = start_time.elapsed().as_secs_f32();
                 <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
+                    reveal_five_trees();
                     <span class="macro">info!</span>(<span class="string">&quot;State migration successful, took: {elapsed}s&quot;</span>);
                 } <span class="kw">else </span>{
                     <span class="macro">bail!</span>(<span class="string">&quot;State post migration must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s&quot;</span>);
@@ -1796,6 +1799,7 @@
                 )<span class="question-mark">?</span>;
                 <span class="kw">let </span>elapsed = start_time.elapsed().as_secs_f32();
                 <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
+                    reveal_five_trees();
                     <span class="macro">info!</span>(<span class="string">&quot;State migration successful, took: {elapsed}s&quot;</span>);
                 } <span class="kw">else </span>{
                     <span class="macro">bail!</span>(<span class="string">&quot;State post migration must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s&quot;</span>);
