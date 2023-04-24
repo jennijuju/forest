@@ -29,6 +29,7 @@
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -36,7 +37,8 @@
 
 <span class="kw">use </span>anes::execute;
 <span class="kw">use </span>clap::Parser;
-<span class="kw">use </span>forest_cli_shared::cli::{CliOpts, FOREST_VERSION_STRING, HELP_MESSAGE};
+<span class="kw">use </span>forest_cli_shared::cli::{CliOpts, HELP_MESSAGE};
+<span class="kw">use </span>forest_utils::version::FOREST_VERSION_STRING;
 <span class="kw">use </span>tokio::{signal, task};
 
 <span class="doccomment">/// CLI structure generated when interacting with Forest binary

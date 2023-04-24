@@ -426,13 +426,6 @@
 <a href="#426" id="426">426</a>
 <a href="#427" id="427">427</a>
 <a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -452,18 +445,11 @@
 <span class="kw">use </span>directories::ProjectDirs;
 <span class="kw">use </span>forest_networks::ChainConfig;
 <span class="kw">use </span>forest_utils::io::{read_file_to_string, read_toml, ProgressBarVisibility};
-<span class="kw">use </span>git_version::git_version;
 <span class="kw">use </span>log::error;
 <span class="kw">use </span>num::BigInt;
-<span class="kw">use </span>once_cell::sync::Lazy;
 
 <span class="kw">pub use </span><span class="self">self</span>::{client::<span class="kw-2">*</span>, config::<span class="kw-2">*</span>, snapshot_fetch::<span class="kw-2">*</span>};
 <span class="kw">use </span><span class="kw">crate</span>::logger::LoggingColor;
-
-<span class="kw">const </span>GIT_HASH: <span class="kw-2">&amp;</span>str = <span class="macro">git_version!</span>(args = [<span class="string">&quot;--always&quot;</span>, <span class="string">&quot;--exclude&quot;</span>, <span class="string">&quot;*&quot;</span>], fallback = <span class="string">&quot;unknown&quot;</span>);
-
-<span class="kw">pub static </span>FOREST_VERSION_STRING: Lazy&lt;String&gt; =
-    Lazy::new(|| <span class="macro">format!</span>(<span class="string">&quot;{}+git.{}&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>), GIT_HASH));
 
 <span class="kw">pub static </span>HELP_MESSAGE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;\
 {name} {version}

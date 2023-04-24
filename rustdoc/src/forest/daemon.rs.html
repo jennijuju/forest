@@ -725,6 +725,8 @@
 <a href="#725" id="725">725</a>
 <a href="#726" id="726">726</a>
 <a href="#727" id="727">727</a>
+<a href="#728" id="728">728</a>
+<a href="#729" id="729">729</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -740,7 +742,7 @@
     chain_path,
     cli::{
         default_snapshot_dir, is_aria2_installed, snapshot_fetch, snapshot_fetch_size,
-        to_size_string, CliOpts, Client, Config, SnapshotServer, FOREST_VERSION_STRING,
+        to_size_string, CliOpts, Client, Config, SnapshotServer,
     },
 };
 <span class="kw">use </span>forest_daemon::bundle::load_bundles;
@@ -759,7 +761,9 @@
 <span class="kw">use </span>forest_rpc_api::data_types::RPCState;
 <span class="kw">use </span>forest_shim::version::NetworkVersion;
 <span class="kw">use </span>forest_state_manager::StateManager;
-<span class="kw">use </span>forest_utils::{io::write_to_file, monitoring::MemStatsTracker, retry};
+<span class="kw">use </span>forest_utils::{
+    io::write_to_file, monitoring::MemStatsTracker, retry, version::FOREST_VERSION_STRING,
+};
 <span class="kw">use </span>futures::{select, FutureExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>log::{debug, error, info, warn};

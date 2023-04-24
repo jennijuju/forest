@@ -139,12 +139,13 @@
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>ahash::{HashMap, HashSet};
 <span class="kw">use </span>forest_libp2p_bitswap::BitswapBehaviour;
-<span class="kw">use </span>forest_utils::encoding::blake2b_256;
+<span class="kw">use </span>forest_utils::{encoding::blake2b_256, version::FOREST_VERSION_STRING};
 <span class="kw">use </span>libp2p::{
     core::identity::Keypair,
     gossipsub::{
@@ -237,14 +238,15 @@
             .with_user_defined(config.bootstrap_peers.clone())
             .target_peer_count(config.target_peer_count <span class="kw">as </span>u64);
 
+        <span class="macro">warn!</span>(<span class="string">&quot;libp2p Forest version: {}&quot;</span>, FOREST_VERSION_STRING.as_str());
         ForestBehaviour {
             gossipsub,
             discovery: discovery_config.finish(),
             ping: Default::default(),
-            identify: identify::Behaviour::new(identify::Config::new(
-                <span class="string">&quot;ipfs/0.1.0&quot;</span>.into(),
-                local_key.public(),
-            )),
+            identify: identify::Behaviour::new(
+                identify::Config::new(<span class="string">&quot;ipfs/0.1.0&quot;</span>.into(), local_key.public())
+                    .with_agent_version(FOREST_VERSION_STRING.to_string()),
+            ),
             bitswap,
             hello: HelloBehaviour::default(),
             chain_exchange: ChainExchangeBehaviour::default(),
