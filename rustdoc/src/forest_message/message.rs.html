@@ -45,6 +45,7 @@
 <a href="#45" id="45">45</a>
 <a href="#46" id="46">46</a>
 <a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -56,7 +57,8 @@
     min_gas: Gas,
     version: NetworkVersion,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-    <span class="kw">use </span>fvm_shared3::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN, ZERO_ADDRESS};
+    <span class="kw">use </span>forest_shim::address::ZERO_ADDRESS;
+    <span class="kw">use </span>fvm_shared3::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN};
     <span class="kw">if </span>msg.version != <span class="number">0 </span>{
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Message version: {} not supported&quot;</span>, msg.version);
     }

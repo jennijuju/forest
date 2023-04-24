@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SignatureType_v2","SignatureType_v3"],"struct":["Signature","SignatureType","Signature_v2","Signature_v3"]};
+window.SIDEBAR_ITEMS = {"enum":["SignatureType","SignatureType_v2","SignatureType_v3"],"fn":["verify_bls_aggregate"],"struct":["Signature","Signature_v2","Signature_v3"]};

@@ -156,162 +156,208 @@
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
-</span><span class="kw">use </span>std::ops::{Deref, DerefMut};
+</span><span class="kw">use </span>std::borrow::Cow;
 
+<span class="kw">use </span>bls_signatures::{verify_messages, PublicKey <span class="kw">as </span>BlsPubKey, Signature <span class="kw">as </span>BlsSignature};
+<span class="kw">use </span>fvm_ipld_encoding3::{
+    de,
+    repr::{Deserialize_repr, Serialize_repr},
+    ser, strict_bytes,
+};
 <span class="kw">pub use </span>fvm_shared::crypto::signature::{
     Signature <span class="kw">as </span>Signature_v2, SignatureType <span class="kw">as </span>SignatureType_v2,
 };
 <span class="kw">pub use </span>fvm_shared3::crypto::signature::{
     Signature <span class="kw">as </span>Signature_v3, SignatureType <span class="kw">as </span>SignatureType_v3,
 };
-<span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>num::FromPrimitive;
+<span class="kw">use </span>num_derive::FromPrimitive;
 
-<span class="attr">#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize, Hash)]
-#[repr(transparent)]
-#[serde(transparent)]
-</span><span class="kw">pub struct </span>Signature(<span class="kw">pub </span>Signature_v3);
+<span class="doccomment">/// A cryptographic signature, represented in bytes, of any key protocol.
+</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>Signature {
+    <span class="kw">pub </span>sig_type: SignatureType,
+    <span class="kw">pub </span>bytes: Vec&lt;u8&gt;,
+}
+
+<span class="kw">impl </span>ser::Serialize <span class="kw">for </span>Signature {
+    <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
+    <span class="kw">where
+        </span>S: ser::Serializer,
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::with_capacity(<span class="self">self</span>.bytes.len() + <span class="number">1</span>);
+        <span class="comment">// Insert signature type byte
+        </span>bytes.push(<span class="self">self</span>.sig_type <span class="kw">as </span>u8);
+        bytes.extend_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes);
+
+        strict_bytes::Serialize::serialize(<span class="kw-2">&amp;</span>bytes, serializer)
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; de::Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>Signature {
+    <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
+    <span class="kw">where
+        </span>D: de::Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+    {
+        <span class="kw">let </span>bytes: Cow&lt;<span class="lifetime">&#39;de</span>, [u8]&gt; = strict_bytes::Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
+        <span class="kw">if </span>bytes.is_empty() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(de::Error::custom(<span class="string">&quot;Cannot deserialize empty bytes&quot;</span>));
+        }
+
+        <span class="comment">// Remove signature type byte
+        </span><span class="kw">let </span>sig_type = SignatureType::from_u8(bytes[<span class="number">0</span>]).ok_or_else(|| {
+            de::Error::custom(<span class="macro">format!</span>(
+                <span class="string">&quot;Invalid signature type byte (must be 1, 2 or 3), was {}&quot;</span>,
+                bytes[<span class="number">0</span>]
+            ))
+        })<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(Signature {
+            bytes: bytes[<span class="number">1</span>..].to_vec(),
+            sig_type,
+        })
+    }
+}
 
 <span class="kw">impl </span>Signature {
     <span class="kw">pub fn </span>new(sig_type: SignatureType, bytes: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
-        Signature(Signature_v3 {
-            sig_type: <span class="kw-2">*</span>sig_type,
-            bytes,
-        })
+        Signature { sig_type, bytes }
     }
 
     <span class="doccomment">/// Creates a BLS Signature given the raw bytes.
     </span><span class="kw">pub fn </span>new_bls(bytes: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
-        Signature(Signature_v3::new_bls(bytes))
+        <span class="self">Self </span>{
+            sig_type: SignatureType::BLS,
+            bytes,
+        }
     }
 
     <span class="doccomment">/// Creates a SECP Signature given the raw bytes.
     </span><span class="kw">pub fn </span>new_secp256k1(bytes: Vec&lt;u8&gt;) -&gt; <span class="self">Self </span>{
-        Signature(Signature_v3::new_secp256k1(bytes))
+        <span class="self">Self </span>{
+            sig_type: SignatureType::Secp256k1,
+            bytes,
+        }
     }
 
     <span class="kw">pub fn </span>signature_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SignatureType {
-        <span class="self">self</span>.<span class="number">0</span>.signature_type().into()
+        <span class="self">self</span>.sig_type
     }
+
+    <span class="doccomment">/// Checks if a signature is valid given data and address.
+    </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>, data: <span class="kw-2">&amp;</span>[u8], addr: <span class="kw-2">&amp;</span><span class="kw">crate</span>::address::Address) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+        <span class="kw">use </span>fvm_shared3::crypto::signature::ops::{verify_bls_sig, verify_secp256k1_sig};
+        <span class="kw">match </span><span class="self">self</span>.sig_type {
+            SignatureType::BLS =&gt; verify_bls_sig(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes, data, addr),
+            SignatureType::Secp256k1 =&gt; verify_secp256k1_sig(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes, data, addr),
+            SignatureType::Delegated =&gt; <span class="prelude-val">Ok</span>(()),
+        }
+    }
+
+    <span class="doccomment">/// Returns reference to signature bytes.
+    </span><span class="kw">pub fn </span>bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.bytes
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>Signature&gt; <span class="kw">for </span>BlsSignature {
+    <span class="kw">type </span>Error = anyhow::Error;
+    <span class="kw">fn </span>try_from(value: <span class="kw-2">&amp;</span>Signature) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">use </span>bls_signatures::Serialize;
+        <span class="kw">match </span>value.sig_type {
+            SignatureType::Secp256k1 =&gt; {
+                <span class="macro">anyhow::bail!</span>(<span class="string">&quot;cannot convert Secp256k1 signature to bls signature&quot;</span>)
+            }
+            SignatureType::BLS =&gt; <span class="prelude-val">Ok</span>(BlsSignature::from_bytes(<span class="kw-2">&amp;</span>value.bytes)<span class="question-mark">?</span>),
+            SignatureType::Delegated =&gt; {
+                <span class="macro">anyhow::bail!</span>(<span class="string">&quot;cannot convert delegated signature to bls signature&quot;</span>)
+            }
+        }
+    }
+}
+
+<span class="doccomment">/// Aggregates and verifies BLS signatures collectively.
+</span><span class="kw">pub fn </span>verify_bls_aggregate(data: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[u8]], pub_keys: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[u8]], sig: <span class="kw-2">&amp;</span>Signature) -&gt; bool {
+    <span class="kw">use </span>bls_signatures::Serialize;
+
+    <span class="comment">// If the number of public keys and data does not match, then return false
+    </span><span class="kw">if </span>data.len() != pub_keys.len() {
+        <span class="kw">return </span><span class="bool-val">false</span>;
+    }
+    <span class="kw">if </span>data.is_empty() {
+        <span class="kw">return </span><span class="bool-val">true</span>;
+    }
+
+    <span class="kw">let </span>bls_sig = <span class="kw">match </span>sig.try_into() {
+        <span class="prelude-val">Ok</span>(bls_sig) =&gt; bls_sig,
+        <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="bool-val">false</span>,
+    };
+
+    <span class="kw">let </span>pk_map_results: <span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt; =
+        pub_keys.iter().map(|x| BlsPubKey::from_bytes(x)).collect();
+
+    <span class="kw">let </span>pks = <span class="kw">match </span>pk_map_results {
+        <span class="prelude-val">Ok</span>(v) =&gt; v,
+        <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="kw">return </span><span class="bool-val">false</span>,
+    };
+
+    <span class="comment">// Does the aggregate verification
+    </span>verify_messages(<span class="kw-2">&amp;</span>bls_sig, data, <span class="kw-2">&amp;</span>pks[..])
 }
 
 <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>Signature {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        Signature(Signature_v3::arbitrary(g))
-    }
-}
-
-<span class="kw">impl </span>Deref <span class="kw">for </span>Signature {
-    <span class="kw">type </span>Target = Signature_v3;
-    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>DerefMut <span class="kw">for </span>Signature {
-    <span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Target {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>From&lt;Signature_v2&gt; <span class="kw">for </span>Signature {
-    <span class="kw">fn </span>from(value: Signature_v2) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>sig_type: SignatureType = value.signature_type().into();
-        <span class="kw">let </span>sig: Signature_v3 = Signature_v3 {
-            sig_type: sig_type.into(),
-            bytes: value.bytes().into(),
-        };
-        Signature(sig)
-    }
-}
-
-<span class="kw">impl </span>From&lt;Signature_v3&gt; <span class="kw">for </span>Signature {
-    <span class="kw">fn </span>from(value: Signature_v3) -&gt; <span class="self">Self </span>{
-        Signature(value)
-    }
-}
-
-<span class="kw">impl </span>From&lt;Signature&gt; <span class="kw">for </span>Signature_v3 {
-    <span class="kw">fn </span>from(other: Signature) -&gt; <span class="self">Self </span>{
-        Signature_v3 {
-            sig_type: other.signature_type().into(),
-            bytes: other.bytes().into(),
+        <span class="self">Self </span>{
+            bytes: Vec::arbitrary(g),
+            sig_type: SignatureType::arbitrary(g),
         }
     }
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Signature&gt; <span class="kw">for </span>Signature_v2 {
-    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Signature) -&gt; Signature_v2 {
-        <span class="kw">let </span>sig_type: SignatureType = other.signature_type();
-        <span class="kw">let </span>sig: Signature_v2 = Signature_v2 {
-            sig_type: sig_type.into(),
-            bytes: other.bytes().into(),
-        };
-        sig
-    }
-}
-
-<span class="attr">#[derive(Debug, Eq, PartialEq, Clone, Copy, Serialize, Deserialize)]
-#[repr(transparent)]
-#[serde(transparent)]
-</span><span class="kw">pub struct </span>SignatureType(<span class="kw">pub </span>SignatureType_v3);
-
-<span class="kw">impl </span>SignatureType {
-    <span class="kw">pub const </span>BLS: <span class="self">Self </span>= <span class="self">Self</span>(SignatureType_v3::BLS);
-    <span class="attr">#[allow(non_upper_case_globals)]
-    </span><span class="kw">pub const </span>Secp256k1: <span class="self">Self </span>= <span class="self">Self</span>(SignatureType_v3::Secp256k1);
-    <span class="attr">#[allow(non_upper_case_globals)]
-    </span><span class="kw">pub const </span>Delegated: <span class="self">Self </span>= <span class="self">Self</span>(SignatureType_v3::Delegated);
+<span class="doccomment">/// Signature variants for Filecoin signatures.
+</span><span class="attr">#[derive(
+    Clone, Debug, PartialEq, FromPrimitive, Copy, Eq, Serialize_repr, Deserialize_repr, Hash,
+)]
+#[repr(u8)]
+</span><span class="kw">pub enum </span>SignatureType {
+    Secp256k1 = <span class="number">1</span>,
+    BLS = <span class="number">2</span>,
+    Delegated = <span class="number">3</span>,
 }
 
 <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>SignatureType {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        SignatureType(SignatureType_v3::arbitrary(g))
-    }
-}
-
-<span class="kw">impl </span>Deref <span class="kw">for </span>SignatureType {
-    <span class="kw">type </span>Target = SignatureType_v3;
-    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>DerefMut <span class="kw">for </span>SignatureType {
-    <span class="kw">fn </span>deref_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self</span>::Target {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>From&lt;SignatureType_v2&gt; <span class="kw">for </span>SignatureType {
-    <span class="kw">fn </span>from(value: SignatureType_v2) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>value {
-            SignatureType_v2::Secp256k1 =&gt; SignatureType(SignatureType_v3::Secp256k1),
-            SignatureType_v2::BLS =&gt; SignatureType(SignatureType_v3::BLS),
-        }
-    }
-}
-
-<span class="kw">impl </span>From&lt;SignatureType_v3&gt; <span class="kw">for </span>SignatureType {
-    <span class="kw">fn </span>from(value: SignatureType_v3) -&gt; <span class="self">Self </span>{
-        SignatureType(value)
-    }
-}
-
-<span class="kw">impl </span>From&lt;SignatureType&gt; <span class="kw">for </span>SignatureType_v3 {
-    <span class="kw">fn </span>from(other: SignatureType) -&gt; <span class="self">Self </span>{
-        other.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>From&lt;SignatureType&gt; <span class="kw">for </span>SignatureType_v2 {
-    <span class="kw">fn </span>from(other: SignatureType) -&gt; SignatureType_v2 {
-        <span class="kw">match </span>other.<span class="number">0 </span>{
-            SignatureType_v3::Secp256k1 =&gt; SignatureType_v2::Secp256k1,
-            SignatureType_v3::BLS =&gt; SignatureType_v2::BLS,
-            SignatureType_v3::Delegated =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Delegated signature type not possible in fvm2&quot;</span>),
-        }
+        <span class="kw-2">*</span>g.choose(<span class="kw-2">&amp;</span>[
+            SignatureType::Secp256k1,
+            SignatureType::BLS,
+            SignatureType::Delegated,
+        ])
+        .unwrap()
     }
 }
 </code></pre></div></section></main></body></html>

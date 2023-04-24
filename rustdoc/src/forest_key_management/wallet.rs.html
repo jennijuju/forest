@@ -900,11 +900,11 @@
         <span class="kw">let </span>msg = [<span class="number">0u8</span>; <span class="number">64</span>];
 
         <span class="kw">let </span>sig = wallet.sign(<span class="kw-2">&amp;</span>addr, <span class="kw-2">&amp;</span>msg).unwrap();
-        sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>addr.into()).unwrap();
+        sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>addr).unwrap();
 
         <span class="comment">// invalid verify check
         </span><span class="kw">let </span>invalid_addr = wallet.generate_addr(SignatureType::Secp256k1).unwrap();
-        <span class="macro">assert!</span>(sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>invalid_addr.into()).is_err())
+        <span class="macro">assert!</span>(sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>invalid_addr).is_err())
     }
 
     <span class="attr">#[test]
@@ -919,11 +919,11 @@
         <span class="kw">let </span>msg = [<span class="number">0u8</span>; <span class="number">64</span>];
 
         <span class="kw">let </span>sig = wallet.sign(<span class="kw-2">&amp;</span>addr, <span class="kw-2">&amp;</span>msg).unwrap();
-        sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>addr.into()).unwrap();
+        sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>addr).unwrap();
 
         <span class="comment">// invalid verify check
         </span><span class="kw">let </span>invalid_addr = wallet.generate_addr(SignatureType::BLS).unwrap();
-        <span class="macro">assert!</span>(sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>invalid_addr.into()).is_err())
+        <span class="macro">assert!</span>(sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>invalid_addr).is_err())
     }
 }
 </code></pre></div></section></main></body></html>

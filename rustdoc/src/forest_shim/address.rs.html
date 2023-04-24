@@ -162,6 +162,15 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -178,7 +187,16 @@
     current_network, set_current_network, Error, Network, Payload, Protocol, BLS_PUB_LEN,
     PAYLOAD_HASH_LEN,
 };
+<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+
+<span class="comment">// XXX: Copied from ref-fvm due to a bug in their definition.
+</span><span class="macro">lazy_static! </span>{
+    <span class="doccomment">/// Zero address used to avoid allowing it to be used for verification.
+    /// This is intentionally disallowed because it is an edge case with Filecoin&#39;s BLS
+    /// signature verification.
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>ZERO_ADDRESS: Address_v3 = Network::Mainnet.parse_address(<span class="string">&quot;f3yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaby2smx7a&quot;</span>).unwrap();
+}
 
 <span class="attr">#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]

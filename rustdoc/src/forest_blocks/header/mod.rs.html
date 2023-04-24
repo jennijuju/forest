@@ -868,7 +868,7 @@
             .ok_or_else(|| Error::InvalidSignature(<span class="string">&quot;Signature is nil in header&quot;</span>.to_owned()))<span class="question-mark">?</span>;
 
         signature
-            .verify(<span class="kw-2">&amp;</span><span class="self">self</span>.to_signing_bytes(), <span class="kw-2">&amp;</span>addr.into())
+            .verify(<span class="kw-2">&amp;</span><span class="self">self</span>.to_signing_bytes(), addr)
             .map_err(|e| Error::InvalidSignature(<span class="macro">format!</span>(<span class="string">&quot;Block signature invalid: {e}&quot;</span>)))<span class="question-mark">?</span>;
 
         <span class="comment">// Set validated cache to true

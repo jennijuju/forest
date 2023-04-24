@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BLS_PUB_LEN","PAYLOAD_HASH_LEN"],"enum":["Error","Network","Payload","Protocol"],"fn":["current_network","set_current_network"],"struct":["Address"]};
+window.SIDEBAR_ITEMS = {"constant":["BLS_PUB_LEN","PAYLOAD_HASH_LEN"],"enum":["Error","Network","Payload","Protocol"],"fn":["current_network","set_current_network"],"struct":["Address","ZERO_ADDRESS"]};

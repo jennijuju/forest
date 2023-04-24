@@ -167,7 +167,7 @@
     /// The signature will be verified.
     </span><span class="kw">pub fn </span>new_from_parts(message: Message, signature: Signature) -&gt; anyhow::Result&lt;SignedMessage&gt; {
         signature
-            .verify(<span class="kw-2">&amp;</span>message.cid()<span class="question-mark">?</span>.to_bytes(), <span class="kw-2">&amp;</span>message.from().into())
+            .verify(<span class="kw-2">&amp;</span>message.cid()<span class="question-mark">?</span>.to_bytes(), <span class="kw-2">&amp;</span>message.from())
             .map_err(anyhow::Error::msg)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(SignedMessage { message, signature })
     }
@@ -211,7 +211,7 @@
     <span class="doccomment">/// Verifies that the from address of the message generated the signature.
     </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
         <span class="self">self</span>.signature
-            .verify(<span class="kw-2">&amp;</span><span class="self">self</span>.message.cid().unwrap().to_bytes(), <span class="kw-2">&amp;</span><span class="self">self</span>.from().into())
+            .verify(<span class="kw-2">&amp;</span><span class="self">self</span>.message.cid().unwrap().to_bytes(), <span class="kw-2">&amp;</span><span class="self">self</span>.from())
     }
 }
 

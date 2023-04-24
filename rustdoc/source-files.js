@@ -28,7 +28,7 @@ var sourcesIndex = JSON.parse('{\
 "forest_rpc":["",[],["auth_api.rs","beacon_api.rs","chain_api.rs","common_api.rs","db_api.rs","gas_api.rs","lib.rs","mpool_api.rs","net_api.rs","rpc_http_handler.rs","rpc_util.rs","rpc_ws_handler.rs","state_api.rs","sync_api.rs","wallet_api.rs"]],\
 "forest_rpc_api":["",[],["data_types.rs","lib.rs"]],\
 "forest_rpc_client":["",[],["auth_ops.rs","chain_ops.rs","common_ops.rs","db_ops.rs","lib.rs","mpool_ops.rs","net_ops.rs","state_ops.rs","sync_ops.rs","wallet_ops.rs"]],\
-"forest_shim":["",[],["address.rs","bigint.rs","clock.rs","crypto.rs","econ.rs","error.rs","executor.rs","gas.rs","lib.rs","machine.rs","message.rs","randomness.rs","sector.rs","state_tree.rs","version.rs"]],\
+"forest_shim":["",[["machine",[],["manifest.rs"]]],["address.rs","bigint.rs","clock.rs","crypto.rs","econ.rs","error.rs","executor.rs","gas.rs","lib.rs","machine.rs","message.rs","randomness.rs","sector.rs","state_tree.rs","version.rs"]],\
 "forest_state_manager":["",[],["chain_rand.rs","errors.rs","lib.rs","metrics.rs","utils.rs","vm_circ_supply.rs"]],\
 "forest_state_migration":["",[["common",[],["migration_job.rs","migrators.rs","mod.rs","state_migration.rs","verifier.rs"]],["nv18",[],["eam.rs","eth_account.rs","init.rs","migration.rs","mod.rs","system.rs","verifier.rs"]],["nv19",[],["migration.rs","miner.rs","mod.rs","power.rs","system.rs","verifier.rs"]]],["lib.rs"]],\
 "forest_statediff":["",[],["lib.rs","resolve.rs"]],\
