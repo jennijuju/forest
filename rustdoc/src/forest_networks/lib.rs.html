@@ -211,11 +211,33 @@
 <a href="#211" id="211">211</a>
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::sync::Arc;
+</span><span class="kw">use </span>std::{str::FromStr, sync::Arc};
 
+<span class="kw">use </span>anyhow::Error;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actors_runtime_v10::runtime::Policy;
 <span class="kw">use </span>forest_beacon::{BeaconPoint, BeaconSchedule, DrandBeacon, DrandConfig};
@@ -237,6 +259,26 @@
 
 <span class="doccomment">/// Newest network version for all networks
 </span><span class="kw">pub const </span>NEWEST_NETWORK_VERSION: NetworkVersion = NetworkVersion::V17;
+
+<span class="doccomment">/// The `filecoin` network chain. In general only `mainnet` and its chain
+/// information should be considered stable.
+</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+</span><span class="kw">pub enum </span>NetworkChain {
+    Mainnet,
+    Calibnet,
+}
+
+<span class="kw">impl </span>FromStr <span class="kw">for </span>NetworkChain {
+    <span class="kw">type </span><span class="prelude-val">Err </span>= Error;
+
+    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+        <span class="kw">match </span>s {
+            <span class="string">&quot;mainnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Mainnet),
+            <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Calibnet),
+            name =&gt; <span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;unsupported network chain: {name}&quot;</span>)),
+        }
+    }
+}
 
 <span class="doccomment">/// Defines the meaningful heights of the protocol.
 </span><span class="attr">#[derive(Debug, Display, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
