@@ -245,7 +245,7 @@
             ping: Default::default(),
             identify: identify::Behaviour::new(
                 identify::Config::new(<span class="string">&quot;ipfs/0.1.0&quot;</span>.into(), local_key.public())
-                    .with_agent_version(FOREST_VERSION_STRING.to_string()),
+                    .with_agent_version(<span class="macro">format!</span>(<span class="string">&quot;forest-{}&quot;</span>, FOREST_VERSION_STRING.as_str())),
             ),
             bitswap,
             hello: HelloBehaviour::default(),

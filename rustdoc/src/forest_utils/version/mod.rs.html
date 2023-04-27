@@ -23,7 +23,7 @@
     <span class="macro">git_version!</span>(args = [<span class="string">&quot;--always&quot;</span>, <span class="string">&quot;--exclude&quot;</span>, <span class="string">&quot;*&quot;</span>], fallback = <span class="string">&quot;unknown&quot;</span>);
 
 <span class="doccomment">/// Current version of the Forest repository with git hash embedded
-/// E.g., `forest-0.8.0+git.e69baf3e4`
+/// E.g., `0.8.0+git.e69baf3e4`
 </span><span class="kw">pub static </span>FOREST_VERSION_STRING: Lazy&lt;String&gt; =
     Lazy::new(|| <span class="macro">format!</span>(<span class="string">&quot;{}+git.{}&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>), GIT_HASH));
 </code></pre></div></section></main></body></html>
