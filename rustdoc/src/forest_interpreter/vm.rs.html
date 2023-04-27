@@ -468,12 +468,6 @@
 <a href="#468" id="468">468</a>
 <a href="#469" id="469">469</a>
 <a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -803,11 +797,6 @@
 
         <span class="kw">let </span>unsigned = msg.message().clone();
         <span class="kw">let </span>raw_length = msg.marshal_cbor().expect(<span class="string">&quot;encoding error&quot;</span>).len();
-        <span class="comment">// set the current network to mainnet. This doesn&#39;t affect message execution but
-        // it does get around a bug in the FVM. The code can be deleted once the FVM has
-        // been fixed.
-        </span><span class="kw">let </span>prev_network = forest_shim::address::current_network();
-        forest_shim::address::set_current_network(forest_shim::address::Network::Mainnet);
         <span class="kw">let </span>ret: ApplyRet = <span class="kw">match </span><span class="self">self </span>{
             VM::VM2 { fvm_executor, .. } =&gt; fvm_executor
                 .execute_message(
@@ -824,7 +813,6 @@
                 )<span class="question-mark">?
                 </span>.into(),
         };
-        forest_shim::address::set_current_network(prev_network);
 
         <span class="kw">let </span>exit_code = ret.msg_receipt().exit_code();
 
