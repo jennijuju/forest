@@ -153,6 +153,11 @@
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -236,7 +241,12 @@
                     );
 
                     <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">2 </span>{
-                        stdout.write_all(<span class="string">&quot;\r\x1b[2K\x1b[A&quot;</span>.as_bytes())<span class="question-mark">?</span>;
+                        <span class="macro">write!</span>(
+                            stdout,
+                            <span class="string">&quot;\r{}{}&quot;</span>,
+                            anes::ClearLine::All,
+                            anes::MoveCursorUp(<span class="number">1</span>)
+                        )<span class="question-mark">?</span>;
                     }
 
                     <span class="kw">if </span>state.stage() == SyncStage::Complete &amp;&amp; !watch {
