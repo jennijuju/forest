@@ -320,18 +320,22 @@
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{fmt, sync::Arc};
 
+<span class="attr">#[cfg(test)]
+</span><span class="kw">use </span>chrono::TimeZone;
+<span class="kw">use </span>chrono::{DateTime, Duration, Utc};
 <span class="kw">use </span>forest_blocks::{
     tipset::tipset_json::{TipsetJson, TipsetJsonRef},
     Tipset,
 };
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
-<span class="kw">use </span>time::{Duration, OffsetDateTime};
 
 <span class="doccomment">/// Current state of the `ChainSyncer` using the `ChainExchange` protocol.
 </span><span class="attr">#[derive(PartialEq, Eq, Debug, Clone, Copy)]
@@ -422,8 +426,8 @@
     stage: SyncStage,
     epoch: ChainEpoch,
 
-    start: <span class="prelude-ty">Option</span>&lt;OffsetDateTime&gt;,
-    end: <span class="prelude-ty">Option</span>&lt;OffsetDateTime&gt;,
+    start: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
+    end: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
     message: String,
 }
 
@@ -438,12 +442,12 @@
             start: <span class="kw">if </span>bool::arbitrary(g) {
                 <span class="prelude-val">None
             </span>} <span class="kw">else </span>{
-                <span class="prelude-val">Some</span>(OffsetDateTime::UNIX_EPOCH)
+                <span class="prelude-val">Some</span>(Utc.timestamp_nanos(<span class="number">0</span>))
             },
             end: <span class="kw">if </span>bool::arbitrary(g) {
                 <span class="prelude-val">None
             </span>} <span class="kw">else </span>{
-                <span class="prelude-val">Some</span>(OffsetDateTime::UNIX_EPOCH)
+                <span class="prelude-val">Some</span>(Utc.timestamp_nanos(<span class="number">0</span>))
             },
             message: String::arbitrary(g),
         }
@@ -457,7 +461,7 @@
         <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self </span>{
             target: <span class="prelude-val">Some</span>(target),
             base: <span class="prelude-val">Some</span>(base),
-            start: <span class="prelude-val">Some</span>(OffsetDateTime::now_utc()),
+            start: <span class="prelude-val">Some</span>(Utc::now()),
             ..Default::default()
         }
     }
@@ -486,7 +490,7 @@
     /// Returns `None` if syncing has not started
     </span><span class="kw">pub fn </span>get_elapsed_time(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Duration&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(start) = <span class="self">self</span>.start {
-            <span class="kw">let </span>elapsed_time = OffsetDateTime::now_utc() - start;
+            <span class="kw">let </span>elapsed_time = Utc::now() - start;
             <span class="prelude-val">Some</span>(elapsed_time)
         } <span class="kw">else </span>{
             <span class="prelude-val">None
@@ -497,7 +501,7 @@
     /// end timer to now.
     </span><span class="kw">pub fn </span>set_stage(<span class="kw-2">&amp;mut </span><span class="self">self</span>, stage: SyncStage) {
         <span class="kw">if let </span>SyncStage::Complete = stage {
-            <span class="self">self</span>.end = <span class="prelude-val">Some</span>(OffsetDateTime::now_utc());
+            <span class="self">self</span>.end = <span class="prelude-val">Some</span>(Utc::now());
         }
         <span class="self">self</span>.stage = stage;
     }
@@ -511,7 +515,7 @@
     </span><span class="kw">pub fn </span>error(<span class="kw-2">&amp;mut </span><span class="self">self</span>, err: String) {
         <span class="self">self</span>.message = err;
         <span class="self">self</span>.stage = SyncStage::Error;
-        <span class="self">self</span>.end = <span class="prelude-val">Some</span>(OffsetDateTime::now_utc());
+        <span class="self">self</span>.end = <span class="prelude-val">Some</span>(Utc::now());
     }
 }
 
@@ -529,8 +533,8 @@
             stage: SyncStage,
             epoch: ChainEpoch,
 
-            start: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="prelude-ty">Option</span>&lt;OffsetDateTime&gt;,
-            end: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="prelude-ty">Option</span>&lt;OffsetDateTime&gt;,
+            start: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
+            end: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
             message: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
         }
 
@@ -562,8 +566,8 @@
             </span>stage: SyncStage,
             epoch: ChainEpoch,
 
-            start: <span class="prelude-ty">Option</span>&lt;OffsetDateTime&gt;,
-            end: <span class="prelude-ty">Option</span>&lt;OffsetDateTime&gt;,
+            start: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
+            end: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
             message: String,
         }
 

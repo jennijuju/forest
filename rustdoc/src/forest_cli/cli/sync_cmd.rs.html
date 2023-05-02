@@ -290,7 +290,7 @@
                 <span class="macro">println!</span>(<span class="string">&quot;Height:\t{}&quot;</span>, state.epoch());
 
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(duration) = elapsed_time {
-                    <span class="macro">println!</span>(<span class="string">&quot;Elapsed time:\t{}s&quot;</span>, duration.whole_seconds());
+                    <span class="macro">println!</span>(<span class="string">&quot;Elapsed time:\t{}s&quot;</span>, duration.num_seconds());
                 }
                 <span class="prelude-val">Ok</span>(())
             }

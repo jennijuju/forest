@@ -828,10 +828,6 @@
 <a href="#828" id="828">828</a>
 <a href="#829" id="829">829</a>
 <a href="#830" id="830">830</a>
-<a href="#831" id="831">831</a>
-<a href="#832" id="832">832</a>
-<a href="#833" id="833">833</a>
-<a href="#834" id="834">834</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{
@@ -842,7 +838,7 @@
 };
 
 <span class="kw">use </span>anyhow::bail;
-<span class="kw">use </span>chrono::DateTime;
+<span class="kw">use </span>chrono::{DateTime, NaiveDate};
 <span class="kw">use </span>forest_utils::{
     io::{progress_bar::Units, ProgressBar, TempFile},
     net::{
@@ -855,7 +851,6 @@
 <span class="kw">use </span>regex::Regex;
 <span class="kw">use </span>s3::Bucket;
 <span class="kw">use </span>sha2::{Digest, Sha256};
-<span class="kw">use </span>time::{format_description, format_description::well_known::Iso8601, Date};
 <span class="kw">use </span>tokio::{
     fs::{create_dir_all, File},
     io::{AsyncWriteExt, BufWriter},
@@ -900,7 +895,7 @@
 <span class="doccomment">/// Snapshot attributes
 </span><span class="kw">pub struct </span>SnapshotInfo {
     <span class="kw">pub </span>network: String,
-    <span class="kw">pub </span>date: Date,
+    <span class="kw">pub </span>date: NaiveDate,
     <span class="kw">pub </span>height: i64,
     <span class="kw">pub </span>path: PathBuf,
 }
@@ -925,9 +920,9 @@
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(captures) = pattern.captures(filename) {
                             <span class="kw">let </span>network: String = captures.name(<span class="string">&quot;network&quot;</span>).unwrap().as_str().into();
                             <span class="kw">if </span>network == config.chain.name {
-                                <span class="kw">let </span>date = Date::parse(
+                                <span class="kw">let </span>date = NaiveDate::parse_from_str(
                                     captures.name(<span class="string">&quot;date&quot;</span>).unwrap().as_str(),
-                                    <span class="kw-2">&amp;</span>Iso8601::DEFAULT,
+                                    <span class="string">&quot;%Y-%m-%d&quot;</span>,
                                 )
                                 .unwrap();
                                 <span class="kw">let </span>height = captures
@@ -1345,16 +1340,13 @@
     )
     .unwrap();
     <span class="kw">if let </span><span class="prelude-val">Some</span>(captures) = pattern.captures(filename) {
-        <span class="kw">let </span>date = Date::parse(
-            captures.name(<span class="string">&quot;date&quot;</span>).unwrap().as_str(),
-            <span class="kw-2">&amp;</span>format_description::parse(<span class="string">&quot;[year]_[month]_[day]&quot;</span>).unwrap(),
-        )<span class="question-mark">?</span>;
+        <span class="kw">let </span>date = NaiveDate::parse_from_str(captures.name(<span class="string">&quot;date&quot;</span>).unwrap().as_str(), <span class="string">&quot;%Y_%m_%d&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>height = captures.name(<span class="string">&quot;height&quot;</span>).unwrap().as_str().parse::&lt;i64&gt;()<span class="question-mark">?</span>;
         <span class="kw">let </span>ext = captures.name(<span class="string">&quot;ext&quot;</span>).unwrap().as_str();
         <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(
             <span class="string">&quot;filecoin_snapshot_{network}_{}_height_{height}{ext}&quot;</span>,
-            date.format(<span class="kw-2">&amp;</span>format_description::parse(<span class="string">&quot;[year]-[month]-[day]&quot;</span>).unwrap())<span class="question-mark">?
-        </span>))
+            date.format(<span class="string">&quot;%Y-%m-%d&quot;</span>)
+        ))
     } <span class="kw">else </span>{
         <span class="macro">bail!</span>(<span class="string">&quot;Cannot parse filename: {filename}&quot;</span>);
     }

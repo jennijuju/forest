@@ -534,6 +534,7 @@
 </span><span class="kw">use </span>std::{fs, path::PathBuf, sync::Arc, time::Duration};
 
 <span class="kw">use </span>anyhow::bail;
+<span class="kw">use </span>chrono::{Datelike, Utc};
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
 <span class="kw">use </span>forest_blocks::{tipset_keys_json::TipsetKeysJson, Tipset, TipsetKeys};
@@ -551,7 +552,6 @@
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>strfmt::strfmt;
 <span class="kw">use </span>tempfile::TempDir;
-<span class="kw">use </span>time::OffsetDateTime;
 <span class="kw">use </span>tokio::time::sleep;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -696,7 +696,7 @@
 
                 <span class="kw">let </span>epoch = chain_head.epoch();
 
-                <span class="kw">let </span>now = OffsetDateTime::now_utc();
+                <span class="kw">let </span>now = Utc::now();
 
                 <span class="kw">let </span>month_string = <span class="macro">format!</span>(<span class="string">&quot;{:02}&quot;</span>, now.month() <span class="kw">as </span>u8);
                 <span class="kw">let </span>year = now.year();
