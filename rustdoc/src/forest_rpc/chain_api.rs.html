@@ -323,6 +323,10 @@
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -410,7 +414,11 @@
         </span>))<span class="question-mark">?</span>;
     }
 
-    <span class="kw">let </span>tmp_file = NamedTempFile::new()<span class="question-mark">?</span>;
+    <span class="kw">let </span>output_dir = output_path.parent().ok_or_else(|| JsonRpcError::Provided {
+        code: http::StatusCode::INTERNAL_SERVER_ERROR.as_u16() <span class="kw">as _</span>,
+        message: <span class="string">&quot;Failed to determine snapshot export directory&quot;</span>,
+    })<span class="question-mark">?</span>;
+    <span class="kw">let </span>tmp_file = NamedTempFile::new_in(output_dir)<span class="question-mark">?</span>;
     <span class="kw">let </span>head = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>start_ts = data.chain_store.tipset_by_height(epoch, head, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 
