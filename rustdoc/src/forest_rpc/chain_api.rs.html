@@ -323,10 +323,6 @@
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -352,16 +348,14 @@
     db::BlockstoreExt,
     io::{AsyncWriterWithChecksum, VoidAsyncWriterWithNoChecksum},
 };
+<span class="kw">use </span>futures::io::BufWriter;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>hex::ToHex;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>sha2::{digest::Output, Sha256};
 <span class="kw">use </span>tempfile::NamedTempFile;
-<span class="kw">use </span>tokio::{
-    fs::File,
-    io::{AsyncWriteExt, BufWriter},
-    sync::Mutex,
-};
+<span class="kw">use </span>tokio::{fs::File, io::AsyncWriteExt, sync::Mutex};
+<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>chain_get_message&lt;DB, B&gt;(
     data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
@@ -418,7 +412,7 @@
         code: http::StatusCode::INTERNAL_SERVER_ERROR.as_u16() <span class="kw">as _</span>,
         message: <span class="string">&quot;Failed to determine snapshot export directory&quot;</span>,
     })<span class="question-mark">?</span>;
-    <span class="kw">let </span>tmp_file = NamedTempFile::new_in(output_dir)<span class="question-mark">?</span>;
+    <span class="kw">let </span>temp_path = NamedTempFile::new_in(output_dir)<span class="question-mark">?</span>.into_temp_path();
     <span class="kw">let </span>head = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>start_ts = data.chain_store.tipset_by_height(epoch, head, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
 
@@ -431,21 +425,19 @@
             )
             .<span class="kw">await
     </span>} <span class="kw">else </span>{
-        <span class="kw">let </span>file = File::from_std(tmp_file.reopen()<span class="question-mark">?</span>);
+        <span class="kw">let </span>file = tokio::fs::File::create(<span class="kw-2">&amp;</span>temp_path).<span class="kw">await</span><span class="question-mark">?</span>;
         data.chain_store
             .export(
                 <span class="kw-2">&amp;</span>start_ts,
                 recent_roots,
-                AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(BufWriter::new(file)),
+                AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(BufWriter::new(file.compat())),
             )
             .<span class="kw">await
     </span>} {
         <span class="prelude-val">Ok</span>(checksum) <span class="kw">if </span>!dry_run =&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = tmp_file.persist(<span class="kw-2">&amp;</span>output_path) {
-                <span class="comment">// Temporary files cannot be persisted across filesystems, so we fallback to a
-                // copy in case it happens.
-                </span>tokio::fs::copy(e.file, <span class="kw-2">&amp;</span>output_path).<span class="kw">await</span><span class="question-mark">?</span>;
-            }
+            <span class="comment">// `persist`is expected to succeed since we&#39;ve made sure the temp-file is in the
+            // same folder as the final file.
+            </span>temp_path.persist(<span class="kw-2">&amp;</span>output_path)<span class="question-mark">?</span>;
             <span class="kw">if </span>!skip_checksum {
                 save_checksum(<span class="kw-2">&amp;</span>output_path, checksum).<span class="kw">await</span><span class="question-mark">?</span>;
             }

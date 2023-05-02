@@ -965,19 +965,13 @@
 <a href="#965" id="965">965</a>
 <a href="#966" id="966">966</a>
 <a href="#967" id="967">967</a>
-<a href="#968" id="968">968</a>
-<a href="#969" id="969">969</a>
-<a href="#970" id="970">970</a>
-<a href="#971" id="971">971</a>
-<a href="#972" id="972">972</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{num::NonZeroUsize, path::Path, sync::Arc, time::SystemTime};
+</span><span class="kw">use </span>std::{num::NonZeroUsize, ops::DerefMut, path::Path, sync::Arc, time::SystemTime};
 
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
 <span class="kw">use </span>anyhow::Result;
-<span class="kw">use </span>async_stream::stream;
 <span class="kw">use </span>bls_signatures::Serialize <span class="kw">as </span>SerializeBls;
 <span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
 <span class="kw">use </span>digest::Digest;
@@ -1004,6 +998,7 @@
     },
     io::Checksum,
 };
+<span class="kw">use </span>futures::AsyncWrite;
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
@@ -1013,14 +1008,10 @@
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>serde::{de::DeserializeOwned, Serialize};
-<span class="kw">use </span>tokio::{
-    io::AsyncWrite,
-    sync::{
-        broadcast::{<span class="self">self</span>, Sender <span class="kw">as </span>Publisher},
-        Mutex <span class="kw">as </span>TokioMutex,
-    },
+<span class="kw">use </span>tokio::sync::{
+    broadcast::{<span class="self">self</span>, Sender <span class="kw">as </span>Publisher},
+    Mutex <span class="kw">as </span>TokioMutex,
 };
-<span class="kw">use </span>tokio_util::compat::TokioAsyncWriteCompatExt;
 
 <span class="kw">use super</span>::{
     index::{checkpoint_tipsets, ChainIndex},
@@ -1513,21 +1504,15 @@
         <span class="kw">let </span>(tx, rx) = flume::bounded(CHANNEL_CAP);
         <span class="kw">let </span>header = CarHeader::from(tipset.key().cids().to_vec());
 
-        <span class="kw">let </span>writer = Arc::new(TokioMutex::new(writer.compat_write()));
+        <span class="kw">let </span>writer = Arc::new(TokioMutex::new(writer));
         <span class="kw">let </span>writer_clone = writer.clone();
 
         <span class="comment">// Spawns task which receives blocks to write to the car writer.
         </span><span class="kw">let </span>write_task = tokio::task::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>writer = writer_clone.lock().<span class="kw">await</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>stream = rx.stream();
             header
-                .write_stream_async(
-                    <span class="kw-2">&amp;mut *</span>writer,
-                    <span class="kw-2">&amp;mut </span>Box::pin(<span class="macro">stream! </span>{
-                        <span class="kw">while let </span><span class="prelude-val">Ok</span>(val) = rx.recv_async().<span class="kw">await </span>{
-                            <span class="kw">yield </span>val;
-                        }
-                    }),
-                )
+                .write_stream_async(writer.deref_mut(), <span class="kw-2">&amp;mut </span>stream)
                 .<span class="kw">await
                 </span>.map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Failed to write blocks in export: {e}&quot;</span>)))
         });
@@ -1571,7 +1556,12 @@
                 .as_secs()
         );
 
-        <span class="kw">let </span>digest = writer.lock().<span class="kw">await</span>.get_mut().finalize();
+        <span class="kw">let </span>digest = writer
+            .lock()
+            .<span class="kw">await
+            </span>.finalize()
+            .<span class="kw">await
+            </span>.map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(digest)
     }
 }
