@@ -8,11 +8,13 @@ use cid::Cid;
 use forest_blocks::BlockHeader;
 use forest_networks::ChainConfig;
 use forest_shim::{
-    gas::price_list_by_network_version, state_tree::StateTree, version::NetworkVersion,
-};
-use fvm3::{
-    externs::{Chain, Consensus, Externs, Rand},
-    gas::{Gas, GasTracker},
+    fvm3::{
+        externs::{Chain, Consensus, Externs, Rand},
+        gas::{Gas, GasTracker},
+    },
+    gas::price_list_by_network_version,
+    state_tree::StateTree,
+    version::NetworkVersion,
 };
 use fvm_ipld_blockstore::{
     tracking::{BSStats, TrackingBlockstore},

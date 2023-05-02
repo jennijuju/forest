@@ -16,6 +16,9 @@ pub mod sector;
 pub mod state_tree;
 pub mod version;
 
+pub use fvm;
+pub use fvm3;
+
 ///
 /// Helper trait to re-use static methods and constants.
 /// The usage is awkward but it avoids code duplication.

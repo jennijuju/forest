@@ -4,6 +4,7 @@
 use std::fmt::Debug;
 
 use forest_db::Error as DbErr;
+use forest_shim::fvm;
 use thiserror::Error;
 use tokio::task::JoinError;
 

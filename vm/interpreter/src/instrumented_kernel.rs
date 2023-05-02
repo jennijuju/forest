@@ -3,7 +3,7 @@
 use std::time;
 
 use cid::Cid;
-use fvm::{
+use forest_shim::fvm::{
     call_manager::CallManager,
     gas::{Gas, PriceList},
     kernel::{

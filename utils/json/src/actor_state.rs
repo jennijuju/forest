@@ -5,7 +5,7 @@ pub mod json {
     use std::str::FromStr;
 
     use cid::Cid;
-    use fvm::state_tree::ActorState;
+    use forest_shim::state_tree::ActorState;
     use fvm_shared::econ::TokenAmount;
     use num_bigint::BigInt;
     use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
@@ -71,19 +71,20 @@ pub mod json {
             sequence,
             balance,
         } = Deserialize::deserialize(deserializer)?;
-        Ok(ActorState {
+        Ok(ActorState::new(
             code,
             state,
+            TokenAmount::from_atto(BigInt::from_str(&balance).map_err(de::Error::custom)?).into(),
             sequence,
-            balance: TokenAmount::from_atto(BigInt::from_str(&balance).map_err(de::Error::custom)?),
-        })
+            None,
+        ))
     }
 }
 
 #[cfg(test)]
 mod tests {
     use cid::Cid;
-    use fvm::state_tree::ActorState;
+    use forest_shim::fvm::state_tree::ActorState;
     use fvm_shared::econ::TokenAmount;
     use quickcheck_macros::quickcheck;
 
