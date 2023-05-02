@@ -536,7 +536,7 @@
 <span class="kw">const </span>NUM_SIGNIFICANT_DIGITS: u32 = <span class="number">4</span>;
 
 <span class="attr">#[allow(clippy::enum_variant_names)]
-</span><span class="kw">enum </span>FormattingMode {
+</span><span class="kw">pub enum </span>FormattingMode {
     <span class="doccomment">/// mode to show data in `FIL` units
     /// in full accuracy
     /// E.g. `0.50023677980 FIL`
@@ -810,7 +810,7 @@
 /// in full accuracy for `ExactNotFixed` mode,
 /// mode to show data in SI units
 /// with 4 significant digits for `NotExactNotFixed` mode
-</span><span class="kw">fn </span>format_balance_string(
+</span><span class="kw">pub fn </span>format_balance_string(
     token_amount: TokenAmount,
     mode: FormattingMode,
 ) -&gt; anyhow::Result&lt;String&gt; {
@@ -886,7 +886,7 @@
     <span class="prelude-val">Ok</span>(res)
 }
 
-<span class="kw">fn </span>bool_pair_to_mode(exact: bool, fixed: bool) -&gt; FormattingMode {
+<span class="kw">pub fn </span>bool_pair_to_mode(exact: bool, fixed: bool) -&gt; FormattingMode {
     <span class="kw">if </span>exact &amp;&amp; fixed {
         FormattingMode::ExactFixed
     } <span class="kw">else if </span>!exact &amp;&amp; fixed {
