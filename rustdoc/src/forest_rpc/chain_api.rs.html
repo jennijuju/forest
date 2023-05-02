@@ -323,6 +323,27 @@
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
 <a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -333,6 +354,7 @@
 };
 
 <span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>async_compression::futures::write::ZstdEncoder;
 <span class="kw">use </span>forest_beacon::Beacon;
 <span class="kw">use </span>forest_blocks::{
     header::json::BlockHeaderJson, tipset_json::TipsetJson, tipset_keys_json::TipsetKeysJson,
@@ -354,7 +376,7 @@
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>sha2::{digest::Output, Sha256};
 <span class="kw">use </span>tempfile::NamedTempFile;
-<span class="kw">use </span>tokio::{fs::File, io::AsyncWriteExt, sync::Mutex};
+<span class="kw">use </span>tokio::{io::AsyncWriteExt, sync::Mutex};
 <span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>chain_get_message&lt;DB, B&gt;(
@@ -381,7 +403,8 @@
         recent_roots,
         output_path,
         tipset_keys: TipsetKeysJson(tsk),
-        skip_checksum,
+        compressed,
+        <span class="kw-2">mut </span>skip_checksum,
         dry_run,
     }): Params&lt;ChainExportParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainExportResult, JsonRpcError&gt;
@@ -389,6 +412,9 @@
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
     B: Beacon,
 {
+    <span class="comment">// Skip checksum when in compression mode
+    </span>skip_checksum |= compressed;
+
     <span class="macro">lazy_static::lazy_static! </span>{
         <span class="kw">static </span><span class="kw-2">ref </span>LOCK: Mutex&lt;()&gt; = Mutex::new(());
     }
@@ -426,19 +452,35 @@
             .<span class="kw">await
     </span>} <span class="kw">else </span>{
         <span class="kw">let </span>file = tokio::fs::File::create(<span class="kw-2">&amp;</span>temp_path).<span class="kw">await</span><span class="question-mark">?</span>;
-        data.chain_store
-            .export(
-                <span class="kw-2">&amp;</span>start_ts,
-                recent_roots,
-                AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(BufWriter::new(file.compat())),
-            )
-            .<span class="kw">await
-    </span>} {
-        <span class="prelude-val">Ok</span>(checksum) <span class="kw">if </span>!dry_run =&gt; {
+        <span class="kw">if </span>compressed {
+            data.chain_store
+                .export(
+                    <span class="kw-2">&amp;</span>start_ts,
+                    recent_roots,
+                    AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(
+                        BufWriter::new(ZstdEncoder::new(file.compat())),
+                        <span class="bool-val">false</span>,
+                    ),
+                )
+                .<span class="kw">await
+        </span>} <span class="kw">else </span>{
+            data.chain_store
+                .export(
+                    <span class="kw-2">&amp;</span>start_ts,
+                    recent_roots,
+                    AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(
+                        BufWriter::new(file.compat()),
+                        !skip_checksum,
+                    ),
+                )
+                .<span class="kw">await
+        </span>}
+    } {
+        <span class="prelude-val">Ok</span>(checksum_opt) <span class="kw">if </span>!dry_run =&gt; {
             <span class="comment">// `persist`is expected to succeed since we&#39;ve made sure the temp-file is in the
             // same folder as the final file.
             </span>temp_path.persist(<span class="kw-2">&amp;</span>output_path)<span class="question-mark">?</span>;
-            <span class="kw">if </span>!skip_checksum {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(checksum) = checksum_opt {
                 save_checksum(<span class="kw-2">&amp;</span>output_path, checksum).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
@@ -459,7 +501,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>checksum_path = PathBuf::from(source);
     checksum_path.set_extension(<span class="string">&quot;sha256sum&quot;</span>);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>checksum_file = File::create(<span class="kw-2">&amp;</span>checksum_path).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>checksum_file = tokio::fs::File::create(<span class="kw-2">&amp;</span>checksum_path).<span class="kw">await</span><span class="question-mark">?</span>;
     checksum_file.write_all(encoded_hash.as_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
     checksum_file.flush().<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="macro">log::info!</span>(

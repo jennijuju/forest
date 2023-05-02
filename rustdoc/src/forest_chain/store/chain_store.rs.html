@@ -1494,7 +1494,7 @@
         tipset: <span class="kw-2">&amp;</span>Tipset,
         recent_roots: ChainEpoch,
         writer: W,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;digest::Output&lt;D&gt;, Error&gt;
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;digest::Output&lt;D&gt;&gt;, Error&gt;
     <span class="kw">where
         </span>D: Digest,
         W: AsyncWrite + Checksum&lt;D&gt; + Send + Unpin + <span class="lifetime">&#39;static</span>,
