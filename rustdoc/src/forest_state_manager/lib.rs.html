@@ -1580,7 +1580,7 @@
 
     <span class="doccomment">/// Gets actor from given [`Cid`], if it exists.
     </span><span class="kw">pub fn </span>get_actor(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address, state_cid: Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorState&gt;&gt; {
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore().clone(), <span class="kw-2">&amp;</span>state_cid)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>state_cid)<span class="question-mark">?</span>;
         state.get_actor(addr)
     }
 

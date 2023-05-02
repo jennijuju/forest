@@ -1258,7 +1258,7 @@
     }
 
     <span class="doccomment">/// Checks metadata file if block has already been validated.
-    </span><span class="kw">pub fn </span>is_block_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt; {
+    </span><span class="kw">pub fn </span>is_block_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {
         <span class="kw">let </span>validated = <span class="self">self
             </span>.file_backed_validated_blocks
             .lock()
@@ -1267,7 +1267,7 @@
         <span class="kw">if </span>validated {
             <span class="macro">log::debug!</span>(<span class="string">&quot;Block {cid} was previously validated&quot;</span>);
         }
-        <span class="prelude-val">Ok</span>(validated)
+        validated
     }
 
     <span class="doccomment">/// Marks block as validated in the metadata file.
@@ -1936,10 +1936,10 @@
         <span class="kw">let </span>cs = ChainStore::new(db, chain_config, <span class="kw-2">&amp;</span>gen_block, chain_data_root.path()).unwrap();
 
         <span class="kw">let </span>cid = Cid::new_v1(DAG_CBOR, Blake2b256.digest(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
-        <span class="macro">assert!</span>(!cs.is_block_validated(<span class="kw-2">&amp;</span>cid).unwrap());
+        <span class="macro">assert!</span>(!cs.is_block_validated(<span class="kw-2">&amp;</span>cid));
 
         cs.mark_block_as_validated(<span class="kw-2">&amp;</span>cid).unwrap();
-        <span class="macro">assert!</span>(cs.is_block_validated(<span class="kw-2">&amp;</span>cid).unwrap());
+        <span class="macro">assert!</span>(cs.is_block_validated(<span class="kw-2">&amp;</span>cid));
     }
 }
 </code></pre></div></section></main></body></html>
