@@ -828,6 +828,19 @@
 <a href="#828" id="828">828</a>
 <a href="#829" id="829">829</a>
 <a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{
@@ -1083,12 +1096,13 @@
         .<span class="kw">await</span><span class="question-mark">?
     </span>} <span class="kw">else </span>{
         <span class="kw">let </span>total_size = last_modified.size;
-        download_snapshot_and_validate_checksum(
+        download_snapshot_and_validate_checksum_if_needed(
             client,
             url,
             <span class="kw-2">&amp;</span>snapshot_path,
             snapshot_response,
             total_size,
+            use_compressed,
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
     }
@@ -1162,12 +1176,13 @@
             .and_then(|ct_len| ct_len.parse::&lt;u64&gt;().ok())
             .ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Couldn&#39;t retrieve content length&quot;</span>))<span class="question-mark">?</span>;
 
-        download_snapshot_and_validate_checksum(
+        download_snapshot_and_validate_checksum_if_needed(
             client,
             snapshot_url,
             <span class="kw-2">&amp;</span>snapshot_path,
             snapshot_response,
             total_size,
+            use_compressed,
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
     }
@@ -1176,12 +1191,13 @@
 
 <span class="doccomment">/// Downloads snapshot to a file with a progress bar. Returns the digest of the
 /// downloaded file.
-</span><span class="kw">async fn </span>download_snapshot_and_validate_checksum&lt;C&gt;(
+</span><span class="kw">async fn </span>download_snapshot_and_validate_checksum_if_needed&lt;C&gt;(
     client: hyper::Client&lt;C&gt;,
     url: Url,
     snapshot_path: <span class="kw-2">&amp;</span>Path,
     snapshot_response: Response&lt;Body&gt;,
     total_size: u64,
+    use_compressed: bool,
 ) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>C: Connect + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
@@ -1204,13 +1220,20 @@
     <span class="kw">let </span><span class="kw-2">mut </span>downloaded: u64 = <span class="number">0</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>stream = snapshot_response.into_body();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>snapshot_hasher = Sha256::new();
+    <span class="kw">let </span><span class="kw-2">mut </span>snapshot_hasher = <span class="kw">if </span>use_compressed {
+        <span class="prelude-val">None
+    </span>} <span class="kw">else </span>{
+        <span class="prelude-val">Some</span>(Sha256::new())
+    };
+
     <span class="kw">while let </span><span class="prelude-val">Some</span>(item) = futures::StreamExt::next(<span class="kw-2">&amp;mut </span>stream).<span class="kw">await </span>{
         <span class="kw">let </span>chunk = item<span class="question-mark">?</span>;
         writer.write_all(<span class="kw-2">&amp;</span>chunk).<span class="kw">await</span><span class="question-mark">?</span>;
         downloaded = total_size.min(downloaded + chunk.len() <span class="kw">as </span>u64);
         progress_bar.set(downloaded);
-        snapshot_hasher.update(chunk);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(snapshot_hasher) = <span class="kw-2">&amp;mut </span>snapshot_hasher {
+            snapshot_hasher.update(chunk);
+        }
     }
     writer.flush().<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1221,7 +1244,10 @@
 
     progress_bar.finish_println(<span class="string">&quot;Finished downloading the snapshot.&quot;</span>);
 
-    fetch_checksum_and_validate(client, url, <span class="kw-2">&amp;</span>snapshot_hasher.finalize()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(snapshot_hasher) = snapshot_hasher {
+        fetch_checksum_and_validate(client, url, <span class="kw-2">&amp;</span>snapshot_hasher.finalize()).<span class="kw">await</span><span class="question-mark">?</span>;
+    }
+
     std::fs::rename(snapshot_file_tmp.path(), snapshot_path)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
