@@ -820,7 +820,7 @@
         <span class="kw">let </span>bls_zero_addr = Network::Mainnet.parse_address(<span class="string">&quot;f3yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaby2smx7a&quot;</span>).unwrap();
         <span class="macro">assert!</span>(bls_zero_addr.is_bls_zero_address());
     }
-    <span class="kw">if </span>config.chain.name == <span class="string">&quot;calibnet&quot; </span>{
+    <span class="kw">if </span>config.chain.is_testnet() {
         forest_shim::address::set_current_network(forest_shim::address::Network::Testnet);
     }
 

@@ -232,6 +232,18 @@
 <a href="#232" id="232">232</a>
 <a href="#233" id="233">233</a>
 <a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -260,8 +272,8 @@
 <span class="doccomment">/// Newest network version for all networks
 </span><span class="kw">pub const </span>NEWEST_NETWORK_VERSION: NetworkVersion = NetworkVersion::V17;
 
-<span class="doccomment">/// The `filecoin` network chain. In general only `mainnet` and its chain
-/// information should be considered stable.
+<span class="doccomment">/// Forest builtin `filecoin` network chains. In general only `mainnet` and its
+/// chain information should be considered stable.
 </span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 </span><span class="kw">pub enum </span>NetworkChain {
     Mainnet,
@@ -392,6 +404,7 @@
             eth_chain_id: MAINNET_ETH_CHAIN_ID,
         }
     }
+
     <span class="kw">pub fn </span>calibnet() -&gt; <span class="self">Self </span>{
         <span class="kw">use </span>calibnet::<span class="kw-2">*</span>;
         <span class="self">Self </span>{
@@ -402,6 +415,13 @@
             height_infos: HEIGHT_INFOS.to_vec(),
             policy: Policy::calibnet(),
             eth_chain_id: CALIBNET_ETH_CHAIN_ID,
+        }
+    }
+
+    <span class="kw">pub fn </span>from_chain(network_chain: <span class="kw-2">&amp;</span>NetworkChain) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>network_chain {
+            NetworkChain::Mainnet =&gt; <span class="self">Self</span>::mainnet(),
+            NetworkChain::Calibnet =&gt; <span class="self">Self</span>::calibnet(),
         }
     }
 
@@ -453,6 +473,10 @@
             <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="prelude-val">Some</span>(calibnet::DEFAULT_GENESIS),
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         }
+    }
+
+    <span class="kw">pub fn </span>is_testnet(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="macro">matches!</span>(<span class="self">self</span>.name.as_ref(), <span class="string">&quot;mainnet&quot;</span>)
     }
 }
 
