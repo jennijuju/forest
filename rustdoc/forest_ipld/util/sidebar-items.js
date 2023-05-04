@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_RECENT_STATE_ROOTS"],"fn":["recurse_links_hash","should_save_block_to_snapshot","walk_snapshot"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_RECENT_STATE_ROOTS"],"fn":["recurse_links_hash","walk_snapshot"]};

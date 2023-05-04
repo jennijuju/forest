@@ -146,6 +146,10 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -251,6 +255,10 @@
             <span class="kw">continue</span>;
         }
 
+        <span class="kw">if </span>!should_save_block_to_snapshot(<span class="kw-2">&amp;</span>next) {
+            <span class="kw">continue</span>;
+        }
+
         <span class="kw">let </span>data = load_block(next).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>h = BlockHeader::unmarshal_cbor(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
@@ -281,7 +289,7 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">pub fn </span>should_save_block_to_snapshot(cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {
+<span class="kw">fn </span>should_save_block_to_snapshot(cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {
     <span class="comment">// Don&#39;t include identity CIDs.
     // We only include raw and dagcbor, for now.
     // Raw for &quot;code&quot; CIDs.
