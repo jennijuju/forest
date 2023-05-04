@@ -268,6 +268,8 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -359,6 +361,7 @@
     db: RollingDB,
     get_tipset: F,
     chain_finality: i64,
+    recent_state_roots: i64,
     lock: Mutex&lt;()&gt;,
     gc_tx: flume::Sender&lt;flume::Sender&lt;anyhow::Result&lt;()&gt;&gt;&gt;,
     gc_rx: flume::Receiver&lt;flume::Sender&lt;anyhow::Result&lt;()&gt;&gt;&gt;,
@@ -369,13 +372,14 @@
 <span class="kw">where
     </span>F: Fn() -&gt; Tipset + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">pub fn </span>new(db: RollingDB, chain_finality: i64, get_tipset: F) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(db: RollingDB, chain_finality: i64, recent_state_roots: i64, get_tipset: F) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>(gc_tx, gc_rx) = flume::unbounded();
 
         <span class="self">Self </span>{
             db,
             get_tipset,
             chain_finality,
+            recent_state_roots,
             lock: Default::default(),
             gc_tx,
             gc_rx,
@@ -490,7 +494,7 @@
             <span class="kw">let </span>db = db.current();
             <span class="kw">async move </span>{ db.buffered_write(rx, BUFFER_CAPCITY_BYTES).<span class="kw">await </span>}
         });
-        walk_snapshot(<span class="kw-2">&amp;</span>tipset, DEFAULT_RECENT_STATE_ROOTS, |cid| {
+        walk_snapshot(<span class="kw-2">&amp;</span>tipset, <span class="self">self</span>.recent_state_roots, |cid| {
             <span class="kw">let </span>db = db.clone();
             <span class="kw">let </span>tx = tx.clone();
             <span class="kw">let </span>reachable_bytes = reachable_bytes.clone();

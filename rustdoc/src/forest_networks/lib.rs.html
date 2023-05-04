@@ -244,6 +244,13 @@
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
 <a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -271,6 +278,8 @@
 
 <span class="doccomment">/// Newest network version for all networks
 </span><span class="kw">pub const </span>NEWEST_NETWORK_VERSION: NetworkVersion = NetworkVersion::V17;
+
+<span class="kw">const </span>DEFAULT_RECENT_STATE_ROOTS: i64 = <span class="number">2000</span>;
 
 <span class="doccomment">/// Forest builtin `filecoin` network chains. In general only `mainnet` and its
 /// chain information should be considered stable.
@@ -389,6 +398,9 @@
     <span class="attr">#[serde(default = <span class="string">&quot;default_policy&quot;</span>)]
     </span><span class="kw">pub </span>policy: Policy,
     <span class="kw">pub </span>eth_chain_id: u64,
+    <span class="doccomment">/// Number of default recent state roots to keep in memory and include in
+    /// the exported snapshot.
+    </span><span class="kw">pub </span>recent_state_roots: i64,
 }
 
 <span class="kw">impl </span>ChainConfig {
@@ -402,6 +414,7 @@
             height_infos: HEIGHT_INFOS.to_vec(),
             policy: Policy::mainnet(),
             eth_chain_id: MAINNET_ETH_CHAIN_ID,
+            recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
         }
     }
 
@@ -415,6 +428,7 @@
             height_infos: HEIGHT_INFOS.to_vec(),
             policy: Policy::calibnet(),
             eth_chain_id: CALIBNET_ETH_CHAIN_ID,
+            recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
         }
     }
 

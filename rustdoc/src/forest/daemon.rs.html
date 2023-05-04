@@ -735,6 +735,7 @@
 <a href="#735" id="735">735</a>
 <a href="#736" id="736">736</a>
 <a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -928,6 +929,7 @@
         Arc::new(DbGarbageCollector::new(
             db,
             config.chain.policy.chain_finality,
+            config.chain.recent_state_roots,
             get_tipset,
         ))
     };
