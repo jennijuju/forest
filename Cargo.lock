@@ -3898,6 +3898,7 @@ dependencies = [
  "forest_blocks",
  "forest_chain",
  "forest_db",
+ "forest_deleg_cns",
  "forest_json",
  "forest_libp2p",
  "forest_message",
@@ -3925,6 +3926,7 @@ dependencies = [
  "quickcheck_macros",
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror",
  "tokio",
 ]

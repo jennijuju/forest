@@ -1628,11 +1628,21 @@ fn validate_tipset_against_cache<C: Consensus>(
 
 #[cfg(test)]
 mod test {
-    use cid::Cid;
+    use cid::{
+        multihash::{
+            Code::{Blake2b256, Identity},
+            MultihashDigest,
+        },
+        Cid,
+    };
     use forest_blocks::{BlockHeader, ElectionProof, Ticket, Tipset};
+    use forest_deleg_cns::composition as cns;
     use forest_json::vrf::VRFProof;
+    use forest_networks::ChainConfig;
     use forest_shim::address::Address;
+    use fvm_ipld_encoding::DAG_CBOR;
     use num_bigint::BigInt;
+    use tempfile::TempDir;
 
     use super::*;
 
@@ -1680,5 +1690,52 @@ mod test {
         let (index, weight) = tsg.heaviest_weight();
         assert_eq!(index, 2);
         assert_eq!(weight, &BigInt::from(10));
+    }
+
+    #[tokio::test]
+    async fn deleg_state_state() {
+        let reward_calc = cns::reward_calc();
+
+        let db = forest_db::MemoryDB::default();
+        let chain_config = Arc::new(ChainConfig::default());
+
+        let gen_block = BlockHeader::builder()
+            .epoch(0)
+            .weight(2_u32.into())
+            .messages(Cid::new_v1(DAG_CBOR, Identity.digest(&[])))
+            .message_receipts(Cid::new_v1(DAG_CBOR, Identity.digest(&[])))
+            .state_root(Cid::new_v1(DAG_CBOR, Identity.digest(&[])))
+            .miner_address(Address::new_id(0))
+            .build()
+            .unwrap();
+        let genesis_tipset = Arc::new(Tipset::from(&gen_block));
+        let chain_data_root = TempDir::new().unwrap();
+        let cs = Arc::new(
+            ChainStore::new(db, chain_config.clone(), &gen_block, chain_data_root.path()).unwrap(),
+        );
+
+        let sm = Arc::new(StateManager::new(cs, chain_config, reward_calc).unwrap());
+
+        let no_func = None::<
+            fn(
+                &Cid,
+                &forest_message::ChainMessage,
+                &forest_shim::executor::ApplyRet,
+            ) -> Result<(), anyhow::Error>,
+        >;
+        let _ = sm.compute_tipset_state(&genesis_tipset, no_func);
+
+        let dummy_header = BlockHeader::builder()
+            .epoch(2)
+            .state_root(Cid::new_v1(DAG_CBOR, Identity.digest(&[])))
+            .miner_address(Address::new_id(0))
+            .build()
+            .unwrap();
+        let dummy_block = Block {
+            header: dummy_header,
+            bls_messages: vec![],
+            secp_messages: vec![],
+        };
+        // let full_tipset =
     }
 }
