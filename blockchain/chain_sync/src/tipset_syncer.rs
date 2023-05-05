@@ -1701,6 +1701,7 @@ mod test {
 
         let gen_block = BlockHeader::builder()
             .epoch(0)
+            .timestamp(1) // 'Genesis timestamp cannot be 0', blockchain/beacon/src/drand.rs:204:13
             .weight(2_u32.into())
             .messages(Cid::new_v1(DAG_CBOR, Identity.digest(&[])))
             .message_receipts(Cid::new_v1(DAG_CBOR, Identity.digest(&[])))
