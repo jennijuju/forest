@@ -736,6 +736,8 @@
 <a href="#736" id="736">736</a>
 <a href="#737" id="737">737</a>
 <a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -924,10 +926,12 @@
     chain_store.set_genesis(<span class="kw-2">&amp;</span>genesis_header)<span class="question-mark">?</span>;
     <span class="kw">let </span>db_garbage_collector = {
         <span class="kw">let </span>db = db.clone();
+        <span class="kw">let </span>file_backed_chain_meta = chain_store.file_backed_chain_meta().clone();
         <span class="kw">let </span>chain_store = chain_store.clone();
         <span class="kw">let </span>get_tipset = <span class="kw">move </span>|| chain_store.heaviest_tipset().as_ref().clone();
         Arc::new(DbGarbageCollector::new(
             db,
+            file_backed_chain_meta,
             config.chain.policy.chain_finality,
             config.chain.recent_state_roots,
             get_tipset,

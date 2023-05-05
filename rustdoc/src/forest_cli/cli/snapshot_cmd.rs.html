@@ -955,7 +955,7 @@
             tmp_chain_data_path.path(),
         )<span class="question-mark">?</span>);
 
-        <span class="kw">let </span>cids = {
+        <span class="kw">let </span>(cids, _n_records) = {
             <span class="kw">let </span>reader = get_fetch_progress_from_file(<span class="kw-2">&amp;</span>snapshot).<span class="kw">await</span><span class="question-mark">?</span>;
             forest_load_car(chain_store.blockstore().clone(), reader).<span class="kw">await</span><span class="question-mark">?
         </span>};

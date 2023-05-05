@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["SYNC_PERIOD"],"struct":["FileBacked"],"trait":["FileBackedObject"]};
+window.SIDEBAR_ITEMS = {"constant":["SYNC_PERIOD"],"struct":["ChainMeta","FileBacked"],"trait":["FileBackedObject"]};

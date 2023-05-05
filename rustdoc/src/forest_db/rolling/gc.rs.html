@@ -270,6 +270,21 @@
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -347,7 +362,7 @@
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>forest_blocks::Tipset;
 <span class="kw">use </span>forest_ipld::util::<span class="kw-2">*</span>;
-<span class="kw">use </span>forest_utils::db::{BlockstoreBufferedWriteExt, DB_KEY_BYTES};
+<span class="kw">use </span>forest_utils::db::{file_backed_obj::ChainMeta, BlockstoreBufferedWriteExt, DB_KEY_BYTES};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>human_repr::HumanCount;
 <span class="kw">use </span>tokio::sync::Mutex;
@@ -359,6 +374,7 @@
     </span>F: Fn() -&gt; Tipset + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     db: RollingDB,
+    file_backed_chain_meta: Arc&lt;parking_lot::Mutex&lt;FileBacked&lt;ChainMeta&gt;&gt;&gt;,
     get_tipset: F,
     chain_finality: i64,
     recent_state_roots: i64,
@@ -372,11 +388,18 @@
 <span class="kw">where
     </span>F: Fn() -&gt; Tipset + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">pub fn </span>new(db: RollingDB, chain_finality: i64, recent_state_roots: i64, get_tipset: F) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(
+        db: RollingDB,
+        file_backed_chain_meta: Arc&lt;parking_lot::Mutex&lt;FileBacked&lt;ChainMeta&gt;&gt;&gt;,
+        chain_finality: i64,
+        recent_state_roots: i64,
+        get_tipset: F,
+    ) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>(gc_tx, gc_rx) = flume::unbounded();
 
         <span class="self">Self </span>{
             db,
+            file_backed_chain_meta,
             get_tipset,
             chain_finality,
             recent_state_roots,
@@ -494,7 +517,7 @@
             <span class="kw">let </span>db = db.current();
             <span class="kw">async move </span>{ db.buffered_write(rx, BUFFER_CAPCITY_BYTES).<span class="kw">await </span>}
         });
-        walk_snapshot(<span class="kw-2">&amp;</span>tipset, <span class="self">self</span>.recent_state_roots, |cid| {
+        <span class="kw">let </span>n_records = walk_snapshot(<span class="kw-2">&amp;</span>tipset, <span class="self">self</span>.recent_state_roots, |cid| {
             <span class="kw">let </span>db = db.clone();
             <span class="kw">let </span>tx = tx.clone();
             <span class="kw">let </span>reachable_bytes = reachable_bytes.clone();
@@ -514,6 +537,13 @@
         })
         .<span class="kw">await</span><span class="question-mark">?</span>;
         drop(tx);
+
+        {
+            <span class="kw">let </span><span class="kw-2">mut </span>meta = <span class="self">self</span>.file_backed_chain_meta.lock();
+            meta.inner_mut().estimated_reachable_records = n_records;
+            meta.sync()<span class="question-mark">?</span>;
+        }
+
         write_task.<span class="kw">await</span><span class="question-mark">??</span>;
 
         <span class="kw">let </span>reachable_bytes = reachable_bytes.load(atomic::Ordering::Relaxed);

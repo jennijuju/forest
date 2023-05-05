@@ -107,7 +107,7 @@
     <span class="comment">// Nothing to do regarding Thunder since it&#39;s more like a &quot;ghost&quot; upgrade.
 
     </span><span class="kw">for </span>bundle <span class="kw">in </span>bundles {
-        <span class="kw">let </span>result = forest_load_car(db.clone(), bundle.compat()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(db.clone(), bundle.compat()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
             result.len(),
             <span class="number">1</span>,

@@ -236,7 +236,7 @@
     tipset: <span class="kw-2">&amp;</span>Tipset,
     recent_roots: i64,
     <span class="kw-2">mut </span>load_block: F,
-) -&gt; anyhow::Result&lt;()&gt;
+) -&gt; anyhow::Result&lt;usize&gt;
 <span class="kw">where
     </span>F: FnMut(Cid) -&gt; T + Send,
     T: Future&lt;Output = anyhow::Result&lt;Vec&lt;u8&gt;&gt;&gt; + Send,
@@ -282,7 +282,7 @@
         }
     }
 
-    <span class="prelude-val">Ok</span>(())
+    <span class="prelude-val">Ok</span>(seen.len())
 }
 
 <span class="kw">fn </span>should_save_block_to_snapshot(cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {

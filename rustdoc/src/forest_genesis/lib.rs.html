@@ -200,6 +200,19 @@
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -316,7 +329,7 @@
     <span class="macro">info!</span>(<span class="string">&quot;Importing chain from snapshot at: {path}&quot;</span>);
     <span class="comment">// start import
     </span><span class="kw">let </span>stopwatch = time::Instant::now();
-    <span class="kw">let </span>cids = <span class="kw">if </span>is_remote_file {
+    <span class="kw">let </span>(cids, n_records) = <span class="kw">if </span>is_remote_file {
         <span class="macro">info!</span>(<span class="string">&quot;Downloading file...&quot;</span>);
         <span class="kw">let </span>url = Url::parse(path)<span class="question-mark">?</span>;
         <span class="kw">let </span>reader = get_fetch_progress_from_url(<span class="kw-2">&amp;</span>url).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -327,7 +340,17 @@
         load_and_retrieve_header(sm.blockstore().clone(), reader, skip_load).<span class="kw">await</span><span class="question-mark">?
     </span>};
 
-    <span class="macro">info!</span>(<span class="string">&quot;Loaded .car file in {}s&quot;</span>, stopwatch.elapsed().as_secs());
+    <span class="macro">info!</span>(
+        <span class="string">&quot;Loaded {} records from .car file in {}s&quot;</span>,
+        n_records.unwrap_or_default(),
+        stopwatch.elapsed().as_secs()
+    );
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(n_records) = n_records {
+        <span class="kw">let </span><span class="kw-2">mut </span>meta = sm.chain_store().file_backed_chain_meta().lock();
+        meta.inner_mut().estimated_reachable_records = n_records;
+        meta.sync()<span class="question-mark">?</span>;
+    }
+
     <span class="kw">let </span>ts = sm.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(cids))<span class="question-mark">?</span>;
 
     <span class="kw">if </span>!skip_load {
@@ -367,21 +390,22 @@
     store: DB,
     <span class="kw-2">mut </span>reader: R,
     skip_load: bool,
-) -&gt; anyhow::Result&lt;Vec&lt;Cid&gt;&gt;
+) -&gt; anyhow::Result&lt;(Vec&lt;Cid&gt;, <span class="prelude-ty">Option</span>&lt;usize&gt;)&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
     R: AsyncRead + Send + Unpin,
 {
     <span class="kw">let </span>result = <span class="kw">if </span>skip_load {
-        CarReader::new(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>.header.roots
+        (CarReader::new(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>.header.roots, <span class="prelude-val">None</span>)
     } <span class="kw">else </span>{
-        forest_load_car(store, <span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?
-    </span>};
+        <span class="kw">let </span>(roots, n_records) = forest_load_car(store, <span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>;
+        (roots, <span class="prelude-val">Some</span>(n_records))
+    };
 
     <span class="prelude-val">Ok</span>(result)
 }
 
-<span class="kw">pub async fn </span>forest_load_car&lt;DB, R&gt;(store: DB, reader: R) -&gt; anyhow::Result&lt;Vec&lt;Cid&gt;&gt;
+<span class="kw">pub async fn </span>forest_load_car&lt;DB, R&gt;(store: DB, reader: R) -&gt; anyhow::Result&lt;(Vec&lt;Cid&gt;, usize)&gt;
 <span class="kw">where
     </span>R: futures::AsyncRead + Send + Unpin,
     DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
@@ -394,12 +418,14 @@
     </span><span class="kw">let </span>write_task =
         tokio::spawn(<span class="kw">async move </span>{ store.buffered_write(rx, BUFFER_CAPCITY_BYTES).<span class="kw">await </span>});
     <span class="kw">let </span><span class="kw-2">mut </span>car_reader = CarReader::new(reader).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>n_records = <span class="number">0</span>;
     <span class="kw">while let </span><span class="prelude-val">Some</span>(block) = car_reader.next_block().<span class="kw">await</span><span class="question-mark">? </span>{
         <span class="macro">debug!</span>(<span class="string">&quot;Importing block: {}&quot;</span>, block.cid);
+        n_records += <span class="number">1</span>;
         tx.send_async((block.cid, block.data)).<span class="kw">await</span><span class="question-mark">?</span>;
     }
     drop(tx);
     write_task.<span class="kw">await</span><span class="question-mark">??</span>;
-    <span class="prelude-val">Ok</span>(car_reader.header.roots)
+    <span class="prelude-val">Ok</span>((car_reader.header.roots, n_records))
 }
 </code></pre></div></section></main></body></html>
