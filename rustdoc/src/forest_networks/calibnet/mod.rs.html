@@ -149,6 +149,15 @@
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -164,13 +173,9 @@
 <span class="doccomment">/// Genesis CID
 </span><span class="kw">pub const </span>GENESIS_CID: <span class="kw-2">&amp;</span>str = <span class="string">&quot;bafy2bzacecyaggy24wol5ruvs6qm73gjibs2l2iyhcqmvi7r7a4ph7zx3yqd4&quot;</span>;
 
-<span class="doccomment">/// Bootstrap peer ids.
-</span><span class="kw">pub const </span>DEFAULT_BOOTSTRAP: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[
-    <span class="string">&quot;/dns4/bootstrap-0.calibration.fildev.network/tcp/1347/p2p/12D3KooWCi2w8U4DDB9xqrejb5KYHaQv2iA2AJJ6uzG3iQxNLBMy&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-1.calibration.fildev.network/tcp/1347/p2p/12D3KooWDTayrBojBn9jWNNUih4nNQQBGJD7Zo3gQCKgBkUsS6dp&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-2.calibration.fildev.network/tcp/1347/p2p/12D3KooWNRxTHUn8bf7jz1KEUPMc2dMgGfa4f8ZJTsquVSn3vHCG&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-3.calibration.fildev.network/tcp/1347/p2p/12D3KooWFWUqE9jgXvcKHWieYs9nhyp6NF4ftwLGAHm4sCv73jjK&quot;</span>,
-];
+<span class="doccomment">/// Default bootstrap peer ids.
+</span><span class="kw">pub const </span>DEFAULT_BOOTSTRAP: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] =
+    <span class="kw-2">&amp;</span><span class="macro">const_str::split!</span>(<span class="macro">include_str!</span>(<span class="string">&quot;../../../build/bootstrap/calibnet&quot;</span>), <span class="string">&quot;\n&quot;</span>);
 
 <span class="kw">const </span>LIGHTNING_EPOCH: i64 = <span class="number">489_094</span>;
 
@@ -300,4 +305,17 @@
     height: <span class="number">0</span>,
     config: <span class="kw-2">&amp;</span>DRAND_MAINNET,
 }];
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>default_boostrap_list_not_empty() {
+        <span class="macro">assert!</span>(!DEFAULT_BOOTSTRAP.is_empty());
+        DEFAULT_BOOTSTRAP.iter().for_each(|addr| {
+            <span class="macro">assert!</span>(addr.parse::&lt;multiaddr::Multiaddr&gt;().is_ok());
+        });
+    }
+}
 </code></pre></div></section></main></body></html>

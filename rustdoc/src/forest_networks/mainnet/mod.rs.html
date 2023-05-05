@@ -168,9 +168,6 @@
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
-<a href="#171" id="171">171</a>
-<a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -192,25 +189,9 @@
 <span class="doccomment">/// Genesis CID
 </span><span class="kw">pub const </span>GENESIS_CID: <span class="kw-2">&amp;</span>str = <span class="string">&quot;bafy2bzacecnamqgqmifpluoeldx7zzglxcljo6oja4vrmtj7432rphldpdmm2&quot;</span>;
 
-<span class="doccomment">/// Bootstrap peer ids.
-</span><span class="kw">pub const </span>DEFAULT_BOOTSTRAP: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[
-    <span class="string">&quot;/dns4/bootstrap-0.mainnet.filops.net/tcp/1347/p2p/12D3KooWCVe8MmsEMes2FzgTpt9fXtmCY7wrq91GRiaC8PHSCCBj&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-1.mainnet.filops.net/tcp/1347/p2p/12D3KooWCwevHg1yLCvktf2nvLu7L9894mcrJR4MsBCcm4syShVc&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-2.mainnet.filops.net/tcp/1347/p2p/12D3KooWEWVwHGn2yR36gKLozmb4YjDJGerotAPGxmdWZx2nxMC4&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-3.mainnet.filops.net/tcp/1347/p2p/12D3KooWKhgq8c7NQ9iGjbyK7v7phXvG6492HQfiDaGHLHLQjk7R&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-4.mainnet.filops.net/tcp/1347/p2p/12D3KooWL6PsFNPhYftrJzGgF5U18hFoaVhfGk7xwzD8yVrHJ3Uc&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-5.mainnet.filops.net/tcp/1347/p2p/12D3KooWLFynvDQiUpXoHroV1YxKHhPJgysQGH2k3ZGwtWzR4dFH&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-6.mainnet.filops.net/tcp/1347/p2p/12D3KooWP5MwCiqdMETF9ub1P3MbCvQCcfconnYHbWg6sUJcDRQQ&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-7.mainnet.filops.net/tcp/1347/p2p/12D3KooWRs3aY1p3juFjPy8gPN95PEQChm2QKGUCAdcDCC4EBMKf&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-8.mainnet.filops.net/tcp/1347/p2p/12D3KooWScFR7385LTyR4zU1bYdzSiiAb5rnNABfVahPvVSzyTkR&quot;</span>,
-    <span class="string">&quot;/dns4/lotus-bootstrap.ipfsforce.com/tcp/41778/p2p/12D3KooWGhufNmZHF3sv48aQeS13ng5XVJZ9E6qy2Ms4VzqeUsHk&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-0.starpool.in/tcp/12757/p2p/12D3KooWGHpBMeZbestVEWkfdnC9u7p6uFHXL1n7m1ZBqsEmiUzz&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-1.starpool.in/tcp/12757/p2p/12D3KooWQZrGH1PxSNZPum99M1zNvjNFM33d1AAu5DcvdHptuU7u&quot;</span>,
-    <span class="string">&quot;/dns4/node.glif.io/tcp/1235/p2p/12D3KooWBF8cpp65hp2u9LK5mh19x67ftAam84z9LsfaquTDSBpt&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-0.ipfsmain.cn/tcp/34721/p2p/12D3KooWQnwEGNqcM2nAcPtRR9rAX8Hrg4k9kJLCHoTR5chJfz6d&quot;</span>,
-    <span class="string">&quot;/dns4/bootstrap-1.ipfsmain.cn/tcp/34723/p2p/12D3KooWMKxMkD5DMpSWsW7dBddKxKT7L2GgbNuckz9otxvkvByP&quot;</span>,
-    <span class="string">&quot;/dns4/bootstarp-0.1475.io/tcp/61256/p2p/12D3KooWRzCVDwHUkgdK7eRgnoXbjDAELhxPErjHzbRLguSV1aRt&quot;
-</span>];
+<span class="doccomment">/// Default bootstrap peer ids.
+</span><span class="kw">pub const </span>DEFAULT_BOOTSTRAP: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] =
+    <span class="kw-2">&amp;</span><span class="macro">const_str::split!</span>(<span class="macro">include_str!</span>(<span class="string">&quot;../../../build/bootstrap/mainnet&quot;</span>), <span class="string">&quot;\n&quot;</span>);
 
 <span class="comment">// The rollover period is the duration between nv19 and nv20 which both old
 // proofs (v1) and the new proofs (v1_1) proofs will be accepted by the
@@ -344,4 +325,17 @@
         config: <span class="kw-2">&amp;</span>DRAND_MAINNET,
     },
 ];
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>default_boostrap_list_not_empty() {
+        <span class="macro">assert!</span>(!DEFAULT_BOOTSTRAP.is_empty());
+        DEFAULT_BOOTSTRAP.iter().for_each(|addr| {
+            <span class="macro">assert!</span>(addr.parse::&lt;multiaddr::Multiaddr&gt;().is_ok());
+        });
+    }
+}
 </code></pre></div></section></main></body></html>
