@@ -983,6 +983,13 @@
 <a href="#983" id="983">983</a>
 <a href="#984" id="984">984</a>
 <a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1298,6 +1305,13 @@
         <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.file_backed_validated_blocks.lock();
         <span class="prelude-val">Ok</span>(file.with_inner(|inner| {
             inner.insert(<span class="kw-2">*</span>cid);
+        })<span class="question-mark">?</span>)
+    }
+
+    <span class="kw">pub fn </span>unmark_block_as_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.file_backed_validated_blocks.lock();
+        <span class="prelude-val">Ok</span>(file.with_inner(|inner| {
+            <span class="kw">let </span>_did_work = inner.remove(cid);
         })<span class="question-mark">?</span>)
     }
 

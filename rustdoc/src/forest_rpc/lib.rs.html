@@ -145,6 +145,7 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -232,6 +233,7 @@
             .with_method(CHAIN_HEAD, chain_head::&lt;DB, B&gt;)
             .with_method(CHAIN_GET_BLOCK, chain_api::chain_get_block::&lt;DB, B&gt;)
             .with_method(CHAIN_GET_NAME, chain_api::chain_get_name::&lt;DB, B&gt;)
+            .with_method(CHAIN_SET_HEAD, chain_api::chain_set_head::&lt;DB, B&gt;)
             <span class="comment">// Message Pool API
             </span>.with_method(MPOOL_PENDING, mpool_pending::&lt;DB, B&gt;)
             .with_method(MPOOL_PUSH, mpool_push::&lt;DB, B&gt;)
