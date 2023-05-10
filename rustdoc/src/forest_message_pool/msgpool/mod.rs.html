@@ -951,12 +951,6 @@
 <a href="#951" id="951">951</a>
 <a href="#952" id="952">952</a>
 <a href="#953" id="953">953</a>
-<a href="#954" id="954">954</a>
-<a href="#955" id="955">955</a>
-<a href="#956" id="956">956</a>
-<a href="#957" id="957">957</a>
-<a href="#958" id="958">958</a>
-<a href="#959" id="959">959</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1284,31 +1278,27 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">pub mod </span>tests {
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    </span><span class="kw">use </span>std::borrow::BorrowMut;
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    </span><span class="kw">use </span>std::time::Duration;
+    <span class="kw">use </span>std::{borrow::BorrowMut, time::Duration};
 
     <span class="kw">use </span>forest_blocks::Tipset;
     <span class="kw">use </span>forest_key_management::{KeyStore, KeyStoreConfig, Wallet};
     <span class="kw">use </span>forest_message::SignedMessage;
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    </span><span class="kw">use </span>forest_networks::ChainConfig;
+    <span class="kw">use </span>forest_networks::ChainConfig;
     <span class="kw">use </span>forest_shim::{
         address::Address,
         crypto::SignatureType,
         econ::TokenAmount,
         message::{Message, Message_v3},
     };
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    </span><span class="kw">use </span>num_traits::Zero;
+    <span class="kw">use </span>num_traits::Zero;
     <span class="kw">use </span>test_provider::<span class="kw-2">*</span>;
     <span class="kw">use </span>tokio::task::JoinSet;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    </span><span class="kw">use </span><span class="kw">crate</span>::msg_chain::{create_message_chains, Chains};
-    <span class="kw">use </span><span class="kw">crate</span>::msg_pool::MessagePool;
+    <span class="kw">use crate</span>::{
+        msg_chain::{create_message_chains, Chains},
+        msg_pool::MessagePool,
+    };
 
     <span class="kw">pub fn </span>create_smsg(
         to: <span class="kw-2">&amp;</span>Address,
@@ -1529,8 +1519,7 @@
         <span class="macro">assert_eq!</span>(p.len(), <span class="number">3</span>);
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    #[tokio::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_async_message_pool() {
         <span class="kw">let </span>keystore = KeyStore::new(KeyStoreConfig::Memory).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>wallet = Wallet::new(keystore);
@@ -1578,8 +1567,7 @@
         <span class="macro">assert_eq!</span>(cur_ts.as_ref(), <span class="kw-2">&amp;</span>tipset);
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    #[tokio::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_msg_chains() {
         <span class="kw">let </span>keystore = KeyStore::new(KeyStoreConfig::Memory).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>wallet = Wallet::new(keystore);

@@ -1351,7 +1351,6 @@
 <a href="#1351" id="1351">1351</a>
 <a href="#1352" id="1352">1352</a>
 <a href="#1353" id="1353">1353</a>
-<a href="#1354" id="1354">1354</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2076,8 +2075,7 @@
         .unwrap()
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    #[tokio::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>basic_message_selection() {
         <span class="kw">let </span><span class="kw-2">mut </span>joinset = JoinSet::new();
         <span class="kw">let </span>mpool = make_test_mpool(<span class="kw-2">&amp;mut </span>joinset);
