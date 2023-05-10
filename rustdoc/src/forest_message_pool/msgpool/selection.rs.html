@@ -1352,14 +1352,6 @@
 <a href="#1352" id="1352">1352</a>
 <a href="#1353" id="1353">1353</a>
 <a href="#1354" id="1354">1354</a>
-<a href="#1355" id="1355">1355</a>
-<a href="#1356" id="1356">1356</a>
-<a href="#1357" id="1357">1357</a>
-<a href="#1358" id="1358">1358</a>
-<a href="#1359" id="1359">1359</a>
-<a href="#1360" id="1360">1360</a>
-<a href="#1361" id="1361">1361</a>
-<a href="#1362" id="1362">1362</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2064,7 +2056,7 @@
         head_change,
         msgpool::{
             test_provider::{mock_block, TestApi},
-            tests::create_smsg,
+            tests::{create_fake_smsg, create_smsg},
         },
     };
 
@@ -2249,9 +2241,6 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="comment">// #[ignore = &quot;test is incredibly slow&quot;]
-    // TODO optimize logic tested in this function
-    </span><span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
     </span><span class="kw">async fn </span>message_selection_trimming() {
         <span class="kw">let </span><span class="kw-2">mut </span>joinset = JoinSet::new();
         <span class="kw">let </span>mpool = make_test_mpool(<span class="kw-2">&amp;mut </span>joinset);
@@ -2294,19 +2283,19 @@
         <span class="comment">// make many small chains for the two actors
         </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..nmsgs {
             <span class="kw">let </span>bias = (nmsgs - i) / <span class="number">3</span>;
-            <span class="kw">let </span>m = create_smsg(
+            <span class="kw">let </span>m = create_fake_smsg(
+                <span class="kw-2">&amp;</span>mpool,
                 <span class="kw-2">&amp;</span>a2,
                 <span class="kw-2">&amp;</span>a1,
-                <span class="kw-2">&amp;mut </span>w1,
                 i <span class="kw">as </span>u64,
                 TEST_GAS_LIMIT,
                 (<span class="number">1 </span>+ i % <span class="number">3 </span>+ bias) <span class="kw">as </span>u64,
             );
             mpool.add(m).unwrap();
-            <span class="kw">let </span>m = create_smsg(
+            <span class="kw">let </span>m = create_fake_smsg(
+                <span class="kw-2">&amp;</span>mpool,
                 <span class="kw-2">&amp;</span>a1,
                 <span class="kw-2">&amp;</span>a2,
-                <span class="kw-2">&amp;mut </span>w2,
                 i <span class="kw">as </span>u64,
                 TEST_GAS_LIMIT,
                 (<span class="number">1 </span>+ i % <span class="number">3 </span>+ bias) <span class="kw">as </span>u64,
@@ -2421,8 +2410,7 @@
         }
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    #[tokio::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_optimal_msg_selection1() {
         <span class="comment">// this test uses just a single actor sending messages with a low tq
         // the chain depenent merging algorithm should pick messages from the actor
@@ -2471,10 +2459,10 @@
         // order his messages first
         </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..(n_msgs <span class="kw">as </span>usize) {
             <span class="kw">let </span>bias = (n_msgs <span class="kw">as </span>usize - i) / <span class="number">3</span>;
-            <span class="kw">let </span>m = create_smsg(
+            <span class="kw">let </span>m = create_fake_smsg(
+                <span class="kw-2">&amp;</span>mpool,
                 <span class="kw-2">&amp;</span>a2,
                 <span class="kw-2">&amp;</span>a1,
-                <span class="kw-2">&amp;mut </span>w1,
                 i <span class="kw">as </span>u64,
                 TEST_GAS_LIMIT,
                 (<span class="number">1 </span>+ i % <span class="number">3 </span>+ bias) <span class="kw">as </span>u64,
@@ -2500,8 +2488,7 @@
         }
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    #[tokio::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_optimal_msg_selection2() {
         <span class="kw">let </span><span class="kw-2">mut </span>joinset = JoinSet::new();
         <span class="comment">// this test uses two actors sending messages to each other, with the first
@@ -2547,19 +2534,19 @@
         </span><span class="kw">let </span>n_msgs = <span class="number">5 </span>* fvm_shared::BLOCK_GAS_LIMIT / TEST_GAS_LIMIT;
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n_msgs <span class="kw">as </span>usize {
             <span class="kw">let </span>bias = (n_msgs <span class="kw">as </span>usize - i) / <span class="number">3</span>;
-            <span class="kw">let </span>m = create_smsg(
+            <span class="kw">let </span>m = create_fake_smsg(
+                <span class="kw-2">&amp;</span>mpool,
                 <span class="kw-2">&amp;</span>a2,
                 <span class="kw-2">&amp;</span>a1,
-                <span class="kw-2">&amp;mut </span>w1,
                 i <span class="kw">as </span>u64,
                 TEST_GAS_LIMIT,
                 (<span class="number">200000 </span>+ i % <span class="number">3 </span>+ bias) <span class="kw">as </span>u64,
             );
             mpool.add(m).unwrap();
-            <span class="kw">let </span>m = create_smsg(
+            <span class="kw">let </span>m = create_fake_smsg(
+                <span class="kw-2">&amp;</span>mpool,
                 <span class="kw-2">&amp;</span>a1,
                 <span class="kw-2">&amp;</span>a2,
-                <span class="kw-2">&amp;mut </span>w2,
                 i <span class="kw">as </span>u64,
                 TEST_GAS_LIMIT,
                 (<span class="number">190000 </span>+ i % <span class="number">3 </span>+ bias) <span class="kw">as </span>u64,
@@ -2605,16 +2592,13 @@
             }
         }
 
-        <span class="macro">dbg!</span>(n_from1, n_from2);
-
         <span class="kw">if </span>n_from1 &gt; n_from2 {
             <span class="macro">panic!</span>(<span class="string">&quot;Expected more msgs from a2 than a1&quot;</span>);
         }
     }
 
-    <span class="attr">#[cfg(feature = <span class="string">&quot;slow_tests&quot;</span>)]
-    #[tokio::test]
-    </span><span class="kw">async fn </span>test_optimal_message_selection3() {
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_optimal_msg_selection3() {
         <span class="kw">let </span><span class="kw-2">mut </span>joinset = JoinSet::new();
         <span class="comment">// this test uses 10 actors sending a block of messages to each other, with the
         // the first actors paying higher gas premium than the subsequent
@@ -2670,10 +2654,10 @@
             <span class="kw">for </span>j <span class="kw">in </span><span class="number">0</span>..n_actors {
                 <span class="kw">let </span>premium =
                     <span class="number">500000 </span>+ <span class="number">10000 </span>* (n_actors - j) + (n_msgs + <span class="number">2 </span>- i) / (<span class="number">30 </span>* n_actors) + i % <span class="number">3</span>;
-                <span class="kw">let </span>m = create_smsg(
-                    <span class="kw-2">&amp;</span>actors[(j % n_actors) <span class="kw">as </span>usize],
+                <span class="kw">let </span>m = create_fake_smsg(
+                    <span class="kw-2">&amp;</span>mpool,
                     <span class="kw-2">&amp;</span>actors[j <span class="kw">as </span>usize],
-                    <span class="kw-2">&amp;mut </span>wallets[j <span class="kw">as </span>usize],
+                    <span class="kw-2">&amp;</span>actors[j <span class="kw">as </span>usize],
                     i <span class="kw">as </span>u64,
                     TEST_GAS_LIMIT,
                     premium <span class="kw">as </span>u64,

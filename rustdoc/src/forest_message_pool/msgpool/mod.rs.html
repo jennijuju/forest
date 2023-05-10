@@ -929,6 +929,34 @@
 <a href="#929" id="929">929</a>
 <a href="#930" id="930">930</a>
 <a href="#931" id="931">931</a>
+<a href="#932" id="932">932</a>
+<a href="#933" id="933">933</a>
+<a href="#934" id="934">934</a>
+<a href="#935" id="935">935</a>
+<a href="#936" id="936">936</a>
+<a href="#937" id="937">937</a>
+<a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1302,7 +1330,35 @@
         .into();
         <span class="kw">let </span>msg_signing_bytes = umsg.cid().unwrap().to_bytes();
         <span class="kw">let </span>sig = wallet.sign(from, msg_signing_bytes.as_slice()).unwrap();
-        SignedMessage::new_from_parts(umsg, sig).unwrap()
+        SignedMessage::new_unchecked(umsg, sig)
+    }
+
+    <span class="comment">// Create a fake signed message with a dummy signature. While the signature is
+    // not valid, it has been added to the validation cache and the message will
+    // appear authentic.
+    </span><span class="kw">pub fn </span>create_fake_smsg(
+        pool: <span class="kw-2">&amp;</span>MessagePool&lt;TestApi&gt;,
+        to: <span class="kw-2">&amp;</span>Address,
+        from: <span class="kw-2">&amp;</span>Address,
+        sequence: u64,
+        gas_limit: i64,
+        gas_price: u64,
+    ) -&gt; SignedMessage {
+        <span class="kw">let </span>umsg: Message = Message_v3 {
+            to: to.into(),
+            from: from.into(),
+            sequence,
+            gas_limit: gas_limit <span class="kw">as </span>u64,
+            gas_fee_cap: TokenAmount::from_atto(gas_price + <span class="number">100</span>).into(),
+            gas_premium: TokenAmount::from_atto(gas_price).into(),
+            ..Message_v3::default()
+        }
+        .into();
+        <span class="kw">let </span>sig = Signature::new_secp256k1(<span class="macro">vec!</span>[]);
+        <span class="kw">let </span>signed = SignedMessage::new_unchecked(umsg, sig);
+        <span class="kw">let </span>cid = signed.cid().unwrap();
+        pool.sig_val_cache.lock().put(cid, ());
+        signed
     }
 
     <span class="attr">#[tokio::test]
