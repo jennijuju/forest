@@ -219,8 +219,13 @@ fn validate_miner<DB: Blockstore + Clone + Send + Sync + 'static>(
         .map_err(|_| FilecoinConsensusError::PowerActorUnavailable)?
         .ok_or(FilecoinConsensusError::PowerActorUnavailable)?;
 
-    let state = power::State::load(state_manager.blockstore(), &actor.into())
-        .map_err(|err| FilecoinConsensusError::MinerPowerUnavailable(err.to_string()))?;
+    let actor_state: forest_shim::state_tree::ActorState = actor.into();
+    let state = power::State::load(
+        state_manager.blockstore(),
+        actor_state.code,
+        actor_state.state,
+    )
+    .map_err(|err| FilecoinConsensusError::MinerPowerUnavailable(err.to_string()))?;
 
     state
         .miner_power(state_manager.blockstore(), &miner_addr.into())

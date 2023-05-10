@@ -2668,9 +2668,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "fil_actor_account_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "frc42_dispatch",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 3.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "fil_actor_account_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "frc42_dispatch",
  "fvm_ipld_encoding 0.3.3",
@@ -2682,8 +2695,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_account_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.3.0",
@@ -2694,8 +2707,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_account_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "frc42_dispatch",
  "fvm_ipld_encoding 0.3.3",
@@ -2707,8 +2720,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_cron_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
@@ -2719,8 +2732,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_cron_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
@@ -2731,8 +2744,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_cron_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.3.0",
@@ -2743,8 +2756,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_cron_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.3.0",
@@ -2755,10 +2768,10 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_datacap_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "frc42_dispatch",
  "frc46_token",
  "fvm_ipld_blockstore",
@@ -2771,10 +2784,10 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_datacap_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
- "fil_actors_runtime_v11",
+ "fil_actors_runtime_v11 2.0.0",
  "frc42_dispatch",
  "frc46_token",
  "fvm_ipld_blockstore",
@@ -2787,10 +2800,10 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_evm_shared_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
  "hex",
@@ -2800,10 +2813,10 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_evm_shared_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
- "fil_actors_runtime_v11",
+ "fil_actors_runtime_v11 2.0.0",
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
  "hex",
@@ -2813,8 +2826,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_evm_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
  "fil_actor_evm_shared_v10",
@@ -2829,8 +2842,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_evm_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
  "fil_actor_evm_shared_v11",
@@ -2849,7 +2862,23 @@ version = "1.0.0"
 source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
 dependencies = [
  "cid",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 1.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 3.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_init_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fil_actors_runtime_v10 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -2861,11 +2890,11 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_init_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
- "fil_actors_runtime_v11",
+ "fil_actors_runtime_v11 2.0.0",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
@@ -2876,8 +2905,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_init_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
@@ -2897,7 +2926,22 @@ version = "1.0.0"
 source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
 dependencies = [
  "cid",
- "fil_actors_runtime_v9",
+ "fil_actors_runtime_v9 1.0.0",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 2.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_init_v9"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fil_actors_runtime_v9 2.0.0",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.3.0",
@@ -2908,13 +2952,12 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_interface"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "3.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
- "ahash 0.8.3",
  "anyhow",
  "cid",
- "fil_actor_account_v10",
+ "fil_actor_account_v10 2.0.0",
  "fil_actor_account_v11",
  "fil_actor_account_v8",
  "fil_actor_account_v9",
@@ -2926,38 +2969,37 @@ dependencies = [
  "fil_actor_datacap_v11",
  "fil_actor_evm_v10",
  "fil_actor_evm_v11",
- "fil_actor_init_v10",
+ "fil_actor_init_v10 2.0.0",
  "fil_actor_init_v11",
  "fil_actor_init_v8",
- "fil_actor_init_v9",
+ "fil_actor_init_v9 2.0.0",
  "fil_actor_market_v10",
  "fil_actor_market_v11",
  "fil_actor_market_v8",
  "fil_actor_market_v9",
- "fil_actor_miner_v10",
- "fil_actor_miner_v11",
+ "fil_actor_miner_v10 2.0.0",
+ "fil_actor_miner_v11 2.0.0",
  "fil_actor_miner_v8",
  "fil_actor_miner_v9",
  "fil_actor_multisig_v10",
  "fil_actor_multisig_v11",
  "fil_actor_multisig_v8",
  "fil_actor_multisig_v9",
- "fil_actor_power_v10",
- "fil_actor_power_v11",
+ "fil_actor_power_v10 2.0.0",
+ "fil_actor_power_v11 2.0.0",
  "fil_actor_power_v8",
  "fil_actor_power_v9",
  "fil_actor_reward_v10",
  "fil_actor_reward_v11",
  "fil_actor_reward_v8",
  "fil_actor_reward_v9",
- "fil_actor_system_v10",
- "fil_actor_system_v11",
+ "fil_actor_system_v10 2.0.0",
+ "fil_actor_system_v11 2.0.0",
  "fil_actor_system_v8",
- "fil_actor_system_v9",
- "fil_actors_runtime_v10",
- "fil_actors_runtime_v11",
- "fil_actors_runtime_v9",
- "fvm 2.3.0",
+ "fil_actor_system_v9 2.0.0",
+ "fil_actors_runtime_v10 2.0.0",
+ "fil_actors_runtime_v11 2.0.0",
+ "fil_actors_runtime_v9 2.0.0",
  "fvm_ipld_bitfield",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -2973,12 +3015,14 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_market_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
- "fil_actors_runtime_v10",
+ "fil_actor_verifreg_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "frc42_dispatch",
+ "fvm_ipld_bitfield",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_ipld_hamt 0.6.1",
@@ -2991,12 +3035,14 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_market_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
- "fil_actors_runtime_v11",
+ "fil_actor_verifreg_v11",
+ "fil_actors_runtime_v11 2.0.0",
  "frc42_dispatch",
+ "fvm_ipld_bitfield",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_ipld_hamt 0.6.1",
@@ -3009,17 +3055,19 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_market_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
  "fil_actors_runtime_v8",
+ "fvm_ipld_bitfield",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_ipld_hamt 0.6.1",
  "fvm_shared 2.3.0",
  "libipld-core 0.14.0",
+ "num-bigint",
  "num-derive",
  "num-traits",
  "serde",
@@ -3027,12 +3075,14 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_market_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v9",
+ "fil_actor_verifreg_v9",
+ "fil_actors_runtime_v9 2.0.0",
+ "fvm_ipld_bitfield",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_ipld_hamt 0.6.1",
@@ -3050,7 +3100,31 @@ source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 1.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_amt 0.5.1",
+ "fvm_ipld_bitfield",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 3.3.0",
+ "itertools 0.10.5",
+ "lazy_static",
+ "multihash 0.16.3",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_miner_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fil_actor_verifreg_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_amt 0.5.1",
  "fvm_ipld_bitfield",
@@ -3073,7 +3147,31 @@ source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v11",
+ "fil_actors_runtime_v11 1.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_amt 0.5.1",
+ "fvm_ipld_bitfield",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 3.3.0",
+ "itertools 0.10.5",
+ "lazy_static",
+ "multihash 0.16.3",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_miner_v11"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fil_actor_verifreg_v11",
+ "fil_actors_runtime_v11 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_amt 0.5.1",
  "fvm_ipld_bitfield",
@@ -3091,8 +3189,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_miner_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
@@ -3105,6 +3203,7 @@ dependencies = [
  "fvm_shared 2.3.0",
  "itertools 0.10.5",
  "lazy_static",
+ "num-bigint",
  "num-derive",
  "num-traits",
  "serde",
@@ -3112,12 +3211,13 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_miner_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v9",
+ "fil_actor_verifreg_v9",
+ "fil_actors_runtime_v9 2.0.0",
  "fvm_ipld_amt 0.5.1",
  "fvm_ipld_bitfield",
  "fvm_ipld_blockstore",
@@ -3134,11 +3234,11 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_multisig_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -3153,11 +3253,11 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_multisig_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
- "fil_actors_runtime_v11",
+ "fil_actors_runtime_v11 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -3172,8 +3272,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_multisig_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
@@ -3191,11 +3291,11 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_multisig_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
- "fil_actors_runtime_v9",
+ "fil_actors_runtime_v9 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -3215,7 +3315,27 @@ source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 1.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 3.3.0",
+ "integer-encoding",
+ "lazy_static",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_power_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fil_actors_runtime_v10 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -3235,7 +3355,27 @@ source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v11",
+ "fil_actors_runtime_v11 1.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 3.3.0",
+ "integer-encoding",
+ "lazy_static",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_power_v11"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fil_actors_runtime_v11 2.0.0",
  "frc42_dispatch",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -3250,8 +3390,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_power_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
@@ -3269,12 +3409,12 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_power_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v9",
+ "fil_actors_runtime_v9 2.0.0",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
  "fvm_ipld_hamt 0.6.1",
@@ -3288,8 +3428,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_reward_v10"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
@@ -3301,8 +3441,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_reward_v11"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 3.3.0",
@@ -3314,8 +3454,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_reward_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.3.0",
@@ -3327,8 +3467,8 @@ dependencies = [
 
 [[package]]
 name = "fil_actor_reward_v9"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.3.0",
@@ -3352,6 +3492,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "fil_actor_system_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 2.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "fil_actor_system_v11"
 version = "1.0.0"
 source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
@@ -3365,9 +3518,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "fil_actor_system_v11"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 2.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "fil_actor_system_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "cid",
  "fvm_ipld_encoding 0.3.3",
@@ -3391,9 +3557,94 @@ dependencies = [
 ]
 
 [[package]]
+name = "fil_actor_system_v9"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 2.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_verifreg_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fil_actors_runtime_v10 2.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 3.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_verifreg_v11"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fil_actors_runtime_v11 2.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 3.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
+name = "fil_actor_verifreg_v9"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "cid",
+ "fil_actors_runtime_v9 2.0.0",
+ "frc42_dispatch",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 2.3.0",
+ "num-derive",
+ "num-traits",
+ "serde",
+]
+
+[[package]]
 name = "fil_actors_runtime_v10"
 version = "1.0.0"
 source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fvm_ipld_amt 0.5.1",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 3.3.0",
+ "multihash 0.16.3",
+ "num-bigint",
+ "num-derive",
+ "num-traits",
+ "paste",
+ "serde",
+ "serde_repr",
+ "sha2 0.10.6",
+ "thiserror",
+ "unsigned-varint",
+]
+
+[[package]]
+name = "fil_actors_runtime_v10"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
@@ -3439,13 +3690,37 @@ dependencies = [
 ]
 
 [[package]]
-name = "fil_actors_runtime_v8"
-version = "1.0.0"
-source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+name = "fil_actors_runtime_v11"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
- "fil_actors_runtime_v9",
+ "fvm_ipld_amt 0.5.1",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 3.3.0",
+ "multihash 0.16.3",
+ "num-bigint",
+ "num-derive",
+ "num-traits",
+ "paste",
+ "serde",
+ "serde_repr",
+ "sha2 0.10.6",
+ "thiserror",
+ "unsigned-varint",
+]
+
+[[package]]
+name = "fil_actors_runtime_v8"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fil_actors_runtime_v9 2.0.0",
  "fvm_ipld_amt 0.5.1",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.3.3",
@@ -3464,6 +3739,29 @@ dependencies = [
 name = "fil_actors_runtime_v9"
 version = "1.0.0"
 source = "git+https://github.com/ChainSafe/fil-actor-states#d8b578d162fbf77ef5af13075e3b3dad98f8b32d"
+dependencies = [
+ "anyhow",
+ "cid",
+ "fvm_ipld_amt 0.5.1",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_ipld_hamt 0.6.1",
+ "fvm_shared 2.3.0",
+ "num",
+ "num-bigint",
+ "num-derive",
+ "num-traits",
+ "paste",
+ "serde",
+ "serde_repr",
+ "thiserror",
+ "unsigned-varint",
+]
+
+[[package]]
+name = "fil_actors_runtime_v9"
+version = "2.0.0"
+source = "git+https://github.com/ChainSafe/fil-actor-states?branch=creativcoder/rm-fvm-dep#501e8a0321790b5a614330ce8dd51735aaf45eb8"
 dependencies = [
  "anyhow",
  "cid",
@@ -4050,7 +4348,7 @@ dependencies = [
  "async-trait",
  "cid",
  "fil_actor_interface",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "filecoin-proofs-api 14.0.0",
  "forest_beacon",
  "forest_blocks",
@@ -4364,7 +4662,7 @@ dependencies = [
  "anyhow",
  "cid",
  "const-str",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "forest_beacon",
  "forest_shim",
  "fvm_shared 2.3.0",
@@ -4533,7 +4831,7 @@ dependencies = [
  "byteorder",
  "cid",
  "fil_actor_interface",
- "fil_actors_runtime_v10",
+ "fil_actors_runtime_v10 2.0.0",
  "filecoin-proofs-api 14.0.0",
  "forest_beacon",
  "forest_blocks",
@@ -4576,17 +4874,17 @@ dependencies = [
  "anyhow",
  "cid",
  "crossbeam-channel",
- "fil_actor_init_v10",
- "fil_actor_init_v9",
- "fil_actor_miner_v10",
- "fil_actor_miner_v11",
- "fil_actor_power_v10",
- "fil_actor_power_v11",
- "fil_actor_system_v10",
- "fil_actor_system_v11",
- "fil_actor_system_v9",
- "fil_actors_runtime_v10",
- "fil_actors_runtime_v11",
+ "fil_actor_init_v10 1.0.0",
+ "fil_actor_init_v9 1.0.0",
+ "fil_actor_miner_v10 1.0.0",
+ "fil_actor_miner_v11 1.0.0",
+ "fil_actor_power_v10 1.0.0",
+ "fil_actor_power_v11 1.0.0",
+ "fil_actor_system_v10 1.0.0",
+ "fil_actor_system_v11 1.0.0",
+ "fil_actor_system_v9 1.0.0",
+ "fil_actors_runtime_v10 2.0.0",
+ "fil_actors_runtime_v11 1.0.0",
  "forest_networks",
  "forest_shim",
  "forest_utils",
@@ -4607,7 +4905,7 @@ dependencies = [
  "clap",
  "colored",
  "directories",
- "fil_actor_account_v10",
+ "fil_actor_account_v10 1.0.0",
  "fil_actor_interface",
  "forest_cli_shared",
  "forest_db",

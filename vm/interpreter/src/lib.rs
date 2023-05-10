@@ -45,7 +45,9 @@ where
         return Ok(address.into());
     }
 
-    let acc_st = account::State::load(store, &act.into())?;
+    let actor_state: forest_shim::state_tree::ActorState = act.into();
+
+    let acc_st = account::State::load(store, actor_state.code, actor_state.state)?;
 
     Ok(acc_st.pubkey_address().into())
 }

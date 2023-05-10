@@ -37,10 +37,13 @@ where
         let actor = self
             .get_actor(miner_address, *st)?
             .ok_or_else(|| Error::State("Miner actor address could not be resolved".to_string()))?;
-        let mas = miner::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let mas = miner::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         let proving_sectors = {
             let mut proving_sectors = BitField::new();
+
+            // fil_actor_interface::Policy
 
             if nv < NetworkVersion::V7 {
                 mas.for_each_deadline(&self.chain_config.policy, store, |_, deadline| {

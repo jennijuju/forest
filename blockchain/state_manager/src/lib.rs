@@ -300,7 +300,8 @@ where
             .get_actor(&Address::POWER_ACTOR, *state_cid)?
             .ok_or_else(|| Error::State("Power actor address could not be resolved".to_string()))?;
 
-        let spas = power::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let spas = power::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         Ok(spas.miner_power(self.blockstore(), &addr.into())?.is_none())
     }
@@ -319,7 +320,8 @@ where
             .map_err(|e| Error::State(e.to_string()))?
             .ok_or_else(|| Error::State("Miner actor not found".to_string()))?;
 
-        let ms = miner::State::load(self.blockstore(), &act.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = act.into();
+        let ms = miner::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         let info = ms.info(self.blockstore()).map_err(|e| e.to_string())?;
 
@@ -338,7 +340,8 @@ where
             .get_actor(&Address::POWER_ACTOR, *state_cid)?
             .ok_or_else(|| Error::State("Power actor address could not be resolved".to_string()))?;
 
-        let spas = power::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let spas = power::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         let t_pow = spas.total_power();
 
@@ -749,13 +752,17 @@ where
             .get_actor(&Address::POWER_ACTOR, *base_tipset.parent_state())?
             .ok_or_else(|| Error::State("Power actor address could not be resolved".to_string()))?;
 
-        let power_state = power::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let power_state =
+            power::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         let actor = self
             .get_actor(address, *base_tipset.parent_state())?
             .ok_or_else(|| Error::State("Miner actor address could not be resolved".to_string()))?;
 
-        let miner_state = miner::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let miner_state =
+            miner::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         // Non-empty power claim.
         let claim = power_state
@@ -1178,7 +1185,9 @@ where
                 Error::State("Market actor address could not be resolved".to_string())
             })?;
 
-        let market_state = market::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let market_state =
+            market::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         let new_addr = self
             .lookup_id(addr, ts)?
@@ -1244,7 +1253,8 @@ where
         let actor = self
             .get_actor(&Address::POWER_ACTOR, *ts.parent_state())?
             .ok_or_else(|| Error::State("Power actor address could not be resolved".to_string()))?;
-        let ps = power::State::load(self.blockstore(), &actor.into())?;
+        let actor_state: forest_shim::state_tree::ActorState = actor.into();
+        let ps = power::State::load(self.blockstore(), actor_state.code, actor_state.state)?;
 
         ps.miner_nominal_power_meets_consensus_minimum(policy, self.blockstore(), &addr.into())
     }

@@ -154,7 +154,8 @@ fn get_fil_mined<DB: Blockstore + Clone>(
     let actor = state_tree
         .get_actor(&Address::REWARD_ACTOR)?
         .context("Reward actor address could not be resolved")?;
-    let state = reward::State::load(state_tree.store(), &actor.into())?;
+    let actor_state: forest_shim::state_tree::ActorState = actor.into();
+    let state = reward::State::load(state_tree.store(), actor_state.code, actor_state.state)?;
 
     Ok(state.into_total_storage_power_reward().into())
 }
@@ -165,7 +166,8 @@ fn get_fil_market_locked<DB: Blockstore + Clone>(
     let actor = state_tree
         .get_actor(&Address::MARKET_ACTOR)?
         .ok_or_else(|| Error::State("Market actor address could not be resolved".to_string()))?;
-    let state = market::State::load(state_tree.store(), &actor.into())?;
+    let actor_state: forest_shim::state_tree::ActorState = actor.into();
+    let state = market::State::load(state_tree.store(), actor_state.code, actor_state.state)?;
 
     Ok(state.total_locked().into())
 }
@@ -176,7 +178,8 @@ fn get_fil_power_locked<DB: Blockstore + Clone>(
     let actor = state_tree
         .get_actor(&Address::POWER_ACTOR)?
         .ok_or_else(|| Error::State("Power actor address could not be resolved".to_string()))?;
-    let state = power::State::load(state_tree.store(), &actor.into())?;
+    let actor_state: forest_shim::state_tree::ActorState = actor.into();
+    let state = power::State::load(state_tree.store(), actor_state.code, actor_state.state)?;
 
     Ok(state.into_total_locked().into())
 }
