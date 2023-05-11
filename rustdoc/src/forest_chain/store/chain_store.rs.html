@@ -990,6 +990,18 @@
 <a href="#990" id="990">990</a>
 <a href="#991" id="991">991</a>
 <a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
+<a href="#998" id="998">998</a>
+<a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
+<a href="#1004" id="1004">1004</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -997,6 +1009,7 @@
 
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
 <span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>async_compression::futures::write::ZstdEncoder;
 <span class="kw">use </span>bls_signatures::Serialize <span class="kw">as </span>SerializeBls;
 <span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
 <span class="kw">use </span>digest::Digest;
@@ -1021,9 +1034,10 @@
         file_backed_obj::{ChainMeta, FileBacked, SYNC_PERIOD},
         BlockstoreExt,
     },
-    io::Checksum,
+    io::{AsyncWriterWithChecksum, Checksum},
+    miscs::Either,
 };
-<span class="kw">use </span>futures::AsyncWrite;
+<span class="kw">use </span>futures::{io::BufWriter, AsyncWrite};
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
@@ -1540,11 +1554,19 @@
         tipset: <span class="kw-2">&amp;</span>Tipset,
         recent_roots: ChainEpoch,
         writer: W,
+        compressed: bool,
+        skip_checksum: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;digest::Output&lt;D&gt;&gt;, Error&gt;
     <span class="kw">where
-        </span>D: Digest,
-        W: AsyncWrite + Checksum&lt;D&gt; + Send + Unpin + <span class="lifetime">&#39;static</span>,
+        </span>D: Digest + Send + <span class="lifetime">&#39;static</span>,
+        W: AsyncWrite + Send + Unpin + <span class="lifetime">&#39;static</span>,
     {
+        <span class="kw">let </span>writer = AsyncWriterWithChecksum::&lt;D, <span class="kw">_</span>&gt;::new(BufWriter::new(writer), !skip_checksum);
+        <span class="kw">let </span>writer = <span class="kw">if </span>compressed {
+            Either::Left(ZstdEncoder::new(writer))
+        } <span class="kw">else </span>{
+            Either::Right(writer)
+        };
         <span class="comment">// Channel cap is equal to buffered write size
         </span><span class="kw">const </span>CHANNEL_CAP: usize = <span class="number">1000</span>;
         <span class="kw">let </span>(tx, rx) = flume::bounded(CHANNEL_CAP);
@@ -1557,10 +1579,11 @@
         </span><span class="kw">let </span>write_task = tokio::task::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>writer = writer_clone.lock().<span class="kw">await</span>;
             <span class="kw">let </span><span class="kw-2">mut </span>stream = rx.stream();
-            header
-                .write_stream_async(writer.deref_mut(), <span class="kw-2">&amp;mut </span>stream)
-                .<span class="kw">await
-                </span>.map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Failed to write blocks in export: {e}&quot;</span>)))
+            <span class="kw">match </span>writer.deref_mut() {
+                Either::Left(left) =&gt; header.write_stream_async(left, <span class="kw-2">&amp;mut </span>stream).<span class="kw">await</span>,
+                Either::Right(right) =&gt; header.write_stream_async(right, <span class="kw-2">&amp;mut </span>stream).<span class="kw">await</span>,
+            }
+            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Failed to write blocks in export: {e}&quot;</span>)))
         });
 
         <span class="kw">let </span>global_pre_time = SystemTime::now();
@@ -1606,12 +1629,13 @@
                 .as_secs()
         );
 
-        <span class="kw">let </span>digest = writer
-            .lock()
-            .<span class="kw">await
-            </span>.finalize()
-            .<span class="kw">await
-            </span>.map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>writer = writer.lock().<span class="kw">await</span>;
+        <span class="kw">let </span>digest = <span class="kw">match </span><span class="kw-2">&amp;mut *</span>writer {
+            Either::Left(left) =&gt; left.get_mut().finalize().<span class="kw">await</span>,
+            Either::Right(right) =&gt; right.finalize().<span class="kw">await</span>,
+        }
+        .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
+
         <span class="prelude-val">Ok</span>(digest)
     }
 }
