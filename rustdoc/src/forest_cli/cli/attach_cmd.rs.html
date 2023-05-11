@@ -441,6 +441,7 @@
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
 <a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -465,13 +466,12 @@
 <span class="kw">use </span>forest_rpc_client::<span class="kw-2">*</span>;
 <span class="kw">use </span>forest_shim::{address::Address, econ::TokenAmount, message::Message_v3};
 <span class="kw">use </span>fvm_shared::{clock::ChainEpoch, METHOD_SEND};
-<span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>rustyline::{config::Config <span class="kw">as </span>RustyLineConfig, EditMode, Editor};
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>JsonValue;
 <span class="kw">use </span>tokio::time;
 
-<span class="kw">use </span><span class="kw">super</span>::Config;
+<span class="kw">use super</span>::{send_cmd::FILAmount, Config};
 
 <span class="attr">#[derive(Debug, clap::Args)]
 </span><span class="kw">pub struct </span>AttachCommand {
@@ -666,10 +666,12 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushMessageResult, jsonrpc_v2::Error&gt; {
     <span class="kw">let </span>(from, to, value) = params;
 
+    <span class="kw">let </span>parsed_string = FILAmount::from_str(<span class="kw-2">&amp;</span>value).map_err(|err| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{err:?}&quot;</span>))<span class="question-mark">?</span>;
+
     <span class="kw">let </span>message = Message_v3 {
         from: Address::from_str(<span class="kw-2">&amp;</span>from)<span class="question-mark">?</span>.into(),
         to: Address::from_str(<span class="kw-2">&amp;</span>to)<span class="question-mark">?</span>.into(),
-        value: TokenAmount::from_atto(BigInt::from_str(<span class="kw-2">&amp;</span>value)<span class="question-mark">?</span>).into(),
+        value: TokenAmount::from(parsed_string.value).into(),
         method_num: METHOD_SEND,
         gas_limit: <span class="number">0</span>,
         ..Default::default()
