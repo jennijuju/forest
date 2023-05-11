@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["recurse_links_hash","walk_snapshot"]};
+window.SIDEBAR_ITEMS = {"fn":["recurse_links_hash","walk_snapshot"],"struct":["WALK_SNAPSHOT_PROGRESS_DB_GC","WALK_SNAPSHOT_PROGRESS_EXPORT"],"type":["ProgressBarCurrentTotalPair"]};

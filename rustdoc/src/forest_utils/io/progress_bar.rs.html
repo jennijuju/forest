@@ -125,11 +125,30 @@
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
-</span><span class="kw">use </span>std::{cell::RefCell, io::Stdout, str::FromStr, time::Duration};
+</span><span class="kw">use </span>std::{io::Stdout, str::FromStr, sync::Arc, time::Duration};
 
-<span class="kw">use </span>parking_lot::RwLock;
+<span class="kw">use </span>parking_lot::{Mutex, RwLock};
 <span class="kw">pub use </span>pbr::Units;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -162,34 +181,49 @@
     RwLock::new(ProgressBarVisibility::Auto);
 
 <span class="doccomment">/// Progress bar wrapper, allows suppressing progress bars.
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>ProgressBar {
-    inner: RefCell&lt;pbr::ProgressBar&lt;Stdout&gt;&gt;,
+    inner: Arc&lt;Mutex&lt;pbr::ProgressBar&lt;Stdout&gt;&gt;&gt;,
     display: bool,
 }
 
 <span class="kw">impl </span>ProgressBar {
     <span class="kw">pub fn </span>new(size: u64) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            inner: RefCell::new(pbr::ProgressBar::new(size)),
+            inner: Arc::new(Mutex::new(pbr::ProgressBar::new(size))),
             display: <span class="self">Self</span>::should_display(),
         }
     }
 
     <span class="kw">pub fn </span>message(<span class="kw-2">&amp;</span><span class="self">self</span>, message: <span class="kw-2">&amp;</span>str) {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().message(message);
+            <span class="self">self</span>.inner.lock().message(message);
         }
     }
 
     <span class="kw">pub fn </span>set_max_refresh_rate(<span class="kw-2">&amp;</span><span class="self">self</span>, w: <span class="prelude-ty">Option</span>&lt;Duration&gt;) {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().set_max_refresh_rate(w);
+            <span class="self">self</span>.inner.lock().set_max_refresh_rate(w);
+        }
+    }
+
+    <span class="kw">pub fn </span>set_total(<span class="kw-2">&amp;</span><span class="self">self</span>, i: u64) {
+        <span class="kw">if </span><span class="self">self</span>.display {
+            <span class="self">self</span>.inner.lock().total = i;
         }
     }
 
     <span class="kw">pub fn </span>add(<span class="kw-2">&amp;</span><span class="self">self</span>, i: u64) -&gt; u64 {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().add(i)
+            <span class="self">self</span>.inner.lock().add(i)
+        } <span class="kw">else </span>{
+            <span class="number">0
+        </span>}
+    }
+
+    <span class="kw">pub fn </span>inc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        <span class="kw">if </span><span class="self">self</span>.display {
+            <span class="self">self</span>.inner.lock().inc()
         } <span class="kw">else </span>{
             <span class="number">0
         </span>}
@@ -197,27 +231,31 @@
 
     <span class="kw">pub fn </span>set_units(<span class="kw-2">&amp;</span><span class="self">self</span>, u: Units) {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().set_units(u)
+            <span class="self">self</span>.inner.lock().set_units(u)
         }
     }
 
     <span class="kw">pub fn </span>set(<span class="kw-2">&amp;</span><span class="self">self</span>, i: u64) -&gt; u64 {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().set(i)
+            <span class="self">self</span>.inner.lock().set(i)
         } <span class="kw">else </span>{
             <span class="number">0
         </span>}
     }
 
-    <span class="kw">pub</span>(<span class="self">self</span>) <span class="kw">fn </span>finish(<span class="kw-2">&amp;</span><span class="self">self</span>) {
+    <span class="kw">pub fn </span>is_finish(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.inner.lock().is_finish
+    }
+
+    <span class="kw">pub fn </span>finish(<span class="kw-2">&amp;</span><span class="self">self</span>) {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().finish();
+            <span class="self">self</span>.inner.lock().finish();
         }
     }
 
     <span class="kw">pub fn </span>finish_println(<span class="kw-2">&amp;</span><span class="self">self</span>, s: <span class="kw-2">&amp;</span>str) {
         <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.borrow_mut().finish_println(s);
+            <span class="self">self</span>.inner.lock().finish_println(s);
         }
     }
 

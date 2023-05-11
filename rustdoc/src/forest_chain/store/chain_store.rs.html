@@ -1002,6 +1002,16 @@
 <a href="#1002" id="1002">1002</a>
 <a href="#1003" id="1003">1003</a>
 <a href="#1004" id="1004">1004</a>
+<a href="#1005" id="1005">1005</a>
+<a href="#1006" id="1006">1006</a>
+<a href="#1007" id="1007">1007</a>
+<a href="#1008" id="1008">1008</a>
+<a href="#1009" id="1009">1009</a>
+<a href="#1010" id="1010">1010</a>
+<a href="#1011" id="1011">1011</a>
+<a href="#1012" id="1012">1012</a>
+<a href="#1013" id="1013">1013</a>
+<a href="#1014" id="1014">1014</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1016,7 +1026,7 @@
 <span class="kw">use </span>forest_beacon::{BeaconEntry, IGNORE_DRAND_VAR};
 <span class="kw">use </span>forest_blocks::{Block, BlockHeader, FullTipset, Tipset, TipsetKeys, TxMeta};
 <span class="kw">use </span>forest_interpreter::BlockMessages;
-<span class="kw">use </span>forest_ipld::walk_snapshot;
+<span class="kw">use </span>forest_ipld::{walk_snapshot, WALK_SNAPSHOT_PROGRESS_EXPORT};
 <span class="kw">use </span>forest_libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
 <span class="kw">use </span>forest_message::{ChainMessage, Message <span class="kw">as </span>MessageTrait, SignedMessage};
 <span class="kw">use </span>forest_metrics::metrics;
@@ -1589,21 +1599,31 @@
         <span class="kw">let </span>global_pre_time = SystemTime::now();
         <span class="macro">info!</span>(<span class="string">&quot;chain export started&quot;</span>);
 
+        <span class="kw">let </span>estimated_reachable_records = <span class="prelude-val">Some</span>(
+            <span class="self">self</span>.file_backed_chain_meta()
+                .lock()
+                .inner()
+                .estimated_reachable_records <span class="kw">as </span>u64,
+        );
         <span class="comment">// Walks over tipset and historical data, sending all blocks visited into the
         // car writer.
-        </span><span class="kw">let </span>n_records = walk_snapshot(tipset, recent_roots, |cid| {
-            <span class="kw">let </span>tx_clone = tx.clone();
-            <span class="kw">async move </span>{
-                <span class="kw">let </span>block = <span class="self">self
-                    </span>.blockstore()
-                    .get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?
-                    </span>.ok_or_else(|| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Cid {cid} not found in blockstore&quot;</span>)))<span class="question-mark">?</span>;
-
-                tx_clone.send_async((cid, block.clone())).<span class="kw">await</span><span class="question-mark">?</span>;
-
-                <span class="prelude-val">Ok</span>(block)
-            }
-        })
+        </span><span class="kw">let </span>n_records = walk_snapshot(
+            tipset,
+            recent_roots,
+            |cid| {
+                <span class="kw">let </span>tx_clone = tx.clone();
+                <span class="kw">async move </span>{
+                    <span class="kw">let </span>block = <span class="self">self</span>.blockstore().get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>.ok_or_else(|| {
+                        Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Cid {cid} not found in blockstore&quot;</span>))
+                    })<span class="question-mark">?</span>;
+                    tx_clone.send_async((cid, block.clone())).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="prelude-val">Ok</span>(block)
+                }
+            },
+            <span class="prelude-val">Some</span>(<span class="string">&quot;Exporting snapshot | blocks &quot;</span>),
+            <span class="prelude-val">Some</span>(WALK_SNAPSHOT_PROGRESS_EXPORT.clone()),
+            estimated_reachable_records,
+        )
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
         {

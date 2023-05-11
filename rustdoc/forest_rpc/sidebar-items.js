@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["start_rpc"]};
+window.SIDEBAR_ITEMS = {"fn":["start_rpc"],"type":["RpcResult"]};

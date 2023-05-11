@@ -21,6 +21,11 @@
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -31,9 +36,14 @@
 </span><span class="kw">pub struct </span>CidHashSet(HashSet&lt;u64&gt;);
 
 <span class="kw">impl </span>CidHashSet {
-    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {
+    <span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid, on_inserted: <span class="kw-2">&amp;</span><span class="kw">impl </span>Fn(usize)) -&gt; bool {
         <span class="kw">let </span>hash = <span class="self">self</span>.<span class="number">0</span>.hasher().hash_one(cid);
-        <span class="self">self</span>.<span class="number">0</span>.insert(hash)
+        <span class="kw">if </span><span class="self">self</span>.<span class="number">0</span>.insert(hash) {
+            on_inserted(<span class="self">self</span>.<span class="number">0</span>.len());
+            <span class="bool-val">true
+        </span>} <span class="kw">else </span>{
+            <span class="bool-val">false
+        </span>}
     }
 
     <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {

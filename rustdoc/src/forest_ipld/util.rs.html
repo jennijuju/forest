@@ -148,14 +148,69 @@
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
 <a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{collections::VecDeque, future::Future};
+</span><span class="kw">use </span>std::{
+    collections::VecDeque,
+    future::Future,
+    sync::{
+        atomic::{<span class="self">self</span>, AtomicU64},
+        Arc,
+    },
+    time::Duration,
+};
 
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>forest_blocks::{BlockHeader, Tipset};
+<span class="kw">use </span>forest_utils::io::{progress_bar, ProgressBar};
 <span class="kw">use </span>fvm_ipld_encoding::{from_slice, Cbor};
+<span class="kw">use </span>lazy_static::lazy_static;
 
 <span class="kw">use crate</span>::{CidHashSet, Ipld};
 
@@ -166,6 +221,7 @@
     walked: <span class="kw-2">&amp;mut </span>CidHashSet,
     load_block: <span class="kw-2">&amp;mut </span>F,
     ipld: <span class="kw-2">&amp;</span>Ipld,
+    on_inserted: <span class="kw-2">&amp;</span>(<span class="kw">impl </span>Fn(usize) + Send + Sync),
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;
 <span class="kw">where
     </span>F: FnMut(Cid) -&gt; T + Send,
@@ -174,29 +230,29 @@
     <span class="kw">match </span>ipld {
         Ipld::Map(m) =&gt; {
             <span class="kw">for </span>(<span class="kw">_</span>, v) <span class="kw">in </span>m.iter() {
-                traverse_ipld_links_hash(walked, load_block, v).<span class="kw">await</span><span class="question-mark">?</span>;
+                traverse_ipld_links_hash(walked, load_block, v, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
         Ipld::List(list) =&gt; {
             <span class="kw">for </span>v <span class="kw">in </span>list.iter() {
-                traverse_ipld_links_hash(walked, load_block, v).<span class="kw">await</span><span class="question-mark">?</span>;
+                traverse_ipld_links_hash(walked, load_block, v, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
         Ipld::Link(cid) =&gt; {
             <span class="comment">// WASM blocks are stored as IPLD_RAW. They should be loaded but not traversed.
             </span><span class="kw">if </span>cid.codec() == fvm_shared::IPLD_RAW {
-                <span class="kw">if </span>!walked.insert(cid) {
+                <span class="kw">if </span>!walked.insert(cid, on_inserted) {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
                 <span class="kw">let _ </span>= load_block(<span class="kw-2">*</span>cid).<span class="kw">await</span><span class="question-mark">?</span>;
             }
             <span class="kw">if </span>cid.codec() == fvm_ipld_encoding::DAG_CBOR {
-                <span class="kw">if </span>!walked.insert(cid) {
+                <span class="kw">if </span>!walked.insert(cid, on_inserted) {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
                 <span class="kw">let </span>bytes = load_block(<span class="kw-2">*</span>cid).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="kw">let </span>ipld = from_slice(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
-                traverse_ipld_links_hash(walked, load_block, <span class="kw-2">&amp;</span>ipld).<span class="kw">await</span><span class="question-mark">?</span>;
+                traverse_ipld_links_hash(walked, load_block, <span class="kw-2">&amp;</span>ipld, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
         <span class="kw">_ </span>=&gt; (),
@@ -209,12 +265,13 @@
     walked: <span class="kw-2">&amp;mut </span>CidHashSet,
     root: Cid,
     load_block: <span class="kw-2">&amp;mut </span>F,
+    on_inserted: <span class="kw-2">&amp;</span>(<span class="kw">impl </span>Fn(usize) + Send + Sync),
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;
 <span class="kw">where
     </span>F: FnMut(Cid) -&gt; T + Send,
     T: Future&lt;Output = <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, anyhow::Error&gt;&gt; + Send,
 {
-    <span class="kw">if </span>!walked.insert(<span class="kw-2">&amp;</span>root) {
+    <span class="kw">if </span>!walked.insert(<span class="kw-2">&amp;</span>root, on_inserted) {
         <span class="comment">// Cid has already been traversed
         </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
@@ -225,9 +282,16 @@
     <span class="kw">let </span>bytes = load_block(root).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>ipld = from_slice(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
 
-    traverse_ipld_links_hash(walked, load_block, <span class="kw-2">&amp;</span>ipld).<span class="kw">await</span><span class="question-mark">?</span>;
+    traverse_ipld_links_hash(walked, load_block, <span class="kw-2">&amp;</span>ipld, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">pub type </span>ProgressBarCurrentTotalPair = Arc&lt;(AtomicU64, AtomicU64)&gt;;
+
+<span class="macro">lazy_static! </span>{
+    <span class="kw">pub static </span><span class="kw-2">ref </span>WALK_SNAPSHOT_PROGRESS_EXPORT: ProgressBarCurrentTotalPair = Default::default();
+    <span class="kw">pub static </span><span class="kw-2">ref </span>WALK_SNAPSHOT_PROGRESS_DB_GC: ProgressBarCurrentTotalPair = Default::default();
 }
 
 <span class="doccomment">/// Walks over tipset and state data and loads all blocks not yet seen.
@@ -236,27 +300,52 @@
     tipset: <span class="kw-2">&amp;</span>Tipset,
     recent_roots: i64,
     <span class="kw-2">mut </span>load_block: F,
+    progress_bar_message: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+    progress_tracker: <span class="prelude-ty">Option</span>&lt;ProgressBarCurrentTotalPair&gt;,
+    estimated_total_records: <span class="prelude-ty">Option</span>&lt;u64&gt;,
 ) -&gt; anyhow::Result&lt;usize&gt;
 <span class="kw">where
     </span>F: FnMut(Cid) -&gt; T + Send,
     T: Future&lt;Output = anyhow::Result&lt;Vec&lt;u8&gt;&gt;&gt; + Send,
 {
+    <span class="kw">let </span>estimated_total_records = estimated_total_records.unwrap_or_default();
+    <span class="kw">let </span>bar = ProgressBar::new(estimated_total_records);
+    bar.message(progress_bar_message.unwrap_or(<span class="string">&quot;Walking snapshot &quot;</span>));
+    bar.set_units(progress_bar::Units::Default);
+    bar.set_max_refresh_rate(<span class="prelude-val">Some</span>(Duration::from_millis(<span class="number">500</span>)));
+
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
     <span class="kw">let </span><span class="kw-2">mut </span>blocks_to_walk: VecDeque&lt;Cid&gt; = tipset.cids().to_vec().into();
     <span class="kw">let </span><span class="kw-2">mut </span>current_min_height = tipset.epoch();
     <span class="kw">let </span>incl_roots_epoch = tipset.epoch() - recent_roots;
 
-    <span class="kw">while let </span><span class="prelude-val">Some</span>(next) = blocks_to_walk.pop_front() {
-        <span class="kw">if </span>!seen.insert(<span class="kw-2">&amp;</span>next) {
-            <span class="kw">continue</span>;
+    <span class="kw">let </span>on_inserted = {
+        <span class="kw">let </span>bar = bar.clone();
+        <span class="kw">let </span>progress_tracker = progress_tracker.clone();
+        <span class="kw">move </span>|len: usize| {
+            <span class="kw">let </span>progress = len <span class="kw">as </span>u64;
+            <span class="kw">let </span>total = progress.max(estimated_total_records);
+            bar.set(progress);
+            bar.set_total(total);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(progress_tracker) = <span class="kw-2">&amp;</span>progress_tracker {
+                progress_tracker
+                    .<span class="number">0
+                    </span>.store(progress, atomic::Ordering::Relaxed);
+                progress_tracker.<span class="number">1</span>.store(total, atomic::Ordering::Relaxed);
+            }
         }
+    };
+
+    <span class="kw">while let </span><span class="prelude-val">Some</span>(next) = blocks_to_walk.pop_front() {
+        <span class="kw">if </span>!seen.insert(<span class="kw-2">&amp;</span>next, <span class="kw-2">&amp;</span>on_inserted) {
+            <span class="kw">continue</span>;
+        };
 
         <span class="kw">if </span>!should_save_block_to_snapshot(<span class="kw-2">&amp;</span>next) {
             <span class="kw">continue</span>;
         }
 
         <span class="kw">let </span>data = load_block(next).<span class="kw">await</span><span class="question-mark">?</span>;
-
         <span class="kw">let </span>h = BlockHeader::unmarshal_cbor(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
 
         <span class="kw">if </span>current_min_height &gt; h.epoch() {
@@ -264,7 +353,7 @@
         }
 
         <span class="kw">if </span>h.epoch() &gt; incl_roots_epoch {
-            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.messages(), <span class="kw-2">&amp;mut </span>load_block).<span class="kw">await</span><span class="question-mark">?</span>;
+            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.messages(), <span class="kw-2">&amp;mut </span>load_block, <span class="kw-2">&amp;</span>on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
         }
 
         <span class="kw">if </span>h.epoch() &gt; <span class="number">0 </span>{
@@ -278,10 +367,11 @@
         }
 
         <span class="kw">if </span>h.epoch() == <span class="number">0 </span>|| h.epoch() &gt; incl_roots_epoch {
-            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.state_root(), <span class="kw-2">&amp;mut </span>load_block).<span class="kw">await</span><span class="question-mark">?</span>;
+            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.state_root(), <span class="kw-2">&amp;mut </span>load_block, <span class="kw-2">&amp;</span>on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
         }
     }
 
+    bar.finish();
     <span class="prelude-val">Ok</span>(seen.len())
 }
 
