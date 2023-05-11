@@ -147,7 +147,7 @@ which = "4.3"
 fil_actor_account_v10 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_init_v10 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_init_v9 = { git = "https://github.com/ChainSafe/fil-actor-states" }
-fil_actor_interface = { git = "https://github.com/ChainSafe/fil-actor-states", branch="creativcoder/rm-fvm-dep" }
+fil_actor_interface = { git = "https://github.com/ChainSafe/fil-actor-states", rev="cd6e054" }
 fil_actor_miner_v10 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_miner_v11 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_power_v10 = { git = "https://github.com/ChainSafe/fil-actor-states" }
@@ -155,7 +155,7 @@ fil_actor_power_v11 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_system_v10 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_system_v11 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 fil_actor_system_v9 = { git = "https://github.com/ChainSafe/fil-actor-states" }
-fil_actors_runtime_v10 = { git = "https://github.com/ChainSafe/fil-actor-states", branch="creativcoder/rm-fvm-dep" }
+fil_actors_runtime_v10 = { git = "https://github.com/ChainSafe/fil-actor-states",  rev="cd6e054" }
 fil_actors_runtime_v11 = { git = "https://github.com/ChainSafe/fil-actor-states" }
 
 forest_auth = { path = "./utils/auth" }
