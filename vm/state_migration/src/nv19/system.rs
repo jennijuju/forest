@@ -33,7 +33,6 @@ impl<BS: Blockstore + Clone + Send + Sync> ActorMigration<BS> for SystemMigrator
         store: BS,
         _input: ActorMigrationInput,
     ) -> anyhow::Result<ActorMigrationOutput> {
-        // TODO: check if its State11
         let state = StateV11 {
             builtin_actors: self.new_builtin_actors_cid,
         };
