@@ -1274,52 +1274,6 @@
 <a href="#1274" id="1274">1274</a>
 <a href="#1275" id="1275">1275</a>
 <a href="#1276" id="1276">1276</a>
-<a href="#1277" id="1277">1277</a>
-<a href="#1278" id="1278">1278</a>
-<a href="#1279" id="1279">1279</a>
-<a href="#1280" id="1280">1280</a>
-<a href="#1281" id="1281">1281</a>
-<a href="#1282" id="1282">1282</a>
-<a href="#1283" id="1283">1283</a>
-<a href="#1284" id="1284">1284</a>
-<a href="#1285" id="1285">1285</a>
-<a href="#1286" id="1286">1286</a>
-<a href="#1287" id="1287">1287</a>
-<a href="#1288" id="1288">1288</a>
-<a href="#1289" id="1289">1289</a>
-<a href="#1290" id="1290">1290</a>
-<a href="#1291" id="1291">1291</a>
-<a href="#1292" id="1292">1292</a>
-<a href="#1293" id="1293">1293</a>
-<a href="#1294" id="1294">1294</a>
-<a href="#1295" id="1295">1295</a>
-<a href="#1296" id="1296">1296</a>
-<a href="#1297" id="1297">1297</a>
-<a href="#1298" id="1298">1298</a>
-<a href="#1299" id="1299">1299</a>
-<a href="#1300" id="1300">1300</a>
-<a href="#1301" id="1301">1301</a>
-<a href="#1302" id="1302">1302</a>
-<a href="#1303" id="1303">1303</a>
-<a href="#1304" id="1304">1304</a>
-<a href="#1305" id="1305">1305</a>
-<a href="#1306" id="1306">1306</a>
-<a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
-<a href="#1314" id="1314">1314</a>
-<a href="#1315" id="1315">1315</a>
-<a href="#1316" id="1316">1316</a>
-<a href="#1317" id="1317">1317</a>
-<a href="#1318" id="1318">1318</a>
-<a href="#1319" id="1319">1319</a>
-<a href="#1320" id="1320">1320</a>
-<a href="#1321" id="1321">1321</a>
-<a href="#1322" id="1322">1322</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1327,14 +1281,14 @@
 <span class="kw">mod </span>errors;
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
-<span class="kw">pub use </span>utils::{is_valid_for_sending, reveal_five_trees};
+<span class="kw">use </span>forest_state_migration::run_state_migrations;
+<span class="kw">pub use </span>utils::is_valid_for_sending;
 
 <span class="kw">mod </span>vm_circ_supply;
 
 <span class="kw">use </span>std::{num::NonZeroUsize, sync::Arc};
 
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
-<span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>chain_rand::ChainRand;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::<span class="kw-2">*</span>;
@@ -1345,7 +1299,7 @@
 <span class="kw">use </span>forest_interpreter::{resolve_to_key_addr, BlockMessages, RewardCalc, VM};
 <span class="kw">use </span>forest_json::message_receipt;
 <span class="kw">use </span>forest_message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
-<span class="kw">use </span>forest_networks::{ChainConfig, Height};
+<span class="kw">use </span>forest_networks::ChainConfig;
 <span class="kw">use </span>forest_shim::{
     address::{Address, Payload, Protocol, BLS_PUB_LEN},
     econ::TokenAmount,
@@ -1368,10 +1322,7 @@
 <span class="kw">use </span>once_cell::unsync::Lazy;
 <span class="kw">use </span>parking_lot::Mutex <span class="kw">as </span>SyncMutex;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>tokio::{
-    sync::{broadcast::error::RecvError, Mutex <span class="kw">as </span>TokioMutex, RwLock},
-    time,
-};
+<span class="kw">use </span>tokio::sync::{broadcast::error::RecvError, Mutex <span class="kw">as </span>TokioMutex, RwLock};
 <span class="kw">use </span>tracing::{debug, error, info, instrument, trace, warn};
 <span class="kw">use </span>vm_circ_supply::GenesisInfo;
 
@@ -1743,7 +1694,12 @@
                 parent_state = vm.flush()<span class="question-mark">?</span>;
             }
 
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(new_state) = <span class="self">self</span>.handle_state_migrations(<span class="kw-2">&amp;</span>parent_state, epoch_i)<span class="question-mark">? </span>{
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(new_state) = run_state_migrations(
+                epoch_i,
+                <span class="self">self</span>.chain_config(),
+                <span class="self">self</span>.blockstore(),
+                <span class="kw-2">&amp;</span>parent_state,
+            )<span class="question-mark">? </span>{
                 parent_state = new_state;
             }
         }
@@ -1760,54 +1716,6 @@
         </span><span class="kw">let </span>state_root = vm.flush()<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>((state_root, receipt_root))
-    }
-
-    <span class="doccomment">/// Handles state migrations. Returns the new state root if a migration was
-    /// run.
-    </span><span class="kw">fn </span>handle_state_migrations(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        parent_state: <span class="kw-2">&amp;</span>Cid,
-        epoch: ChainEpoch,
-    ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Cid&gt;&gt; {
-        <span class="kw">match </span>epoch {
-            x <span class="kw">if </span>x == <span class="self">self</span>.chain_config.epoch(Height::Hygge) =&gt; {
-                <span class="macro">info!</span>(<span class="string">&quot;Running Hygge migration at epoch {epoch}&quot;</span>);
-                <span class="kw">let </span>start_time = time::Instant::now();
-                <span class="kw">let </span>new_state = forest_state_migration::run_nv18_migration(
-                    <span class="kw-2">&amp;</span><span class="self">self</span>.chain_config,
-                    <span class="self">self</span>.blockstore(),
-                    parent_state,
-                    epoch,
-                )<span class="question-mark">?</span>;
-                <span class="kw">let </span>elapsed = start_time.elapsed().as_secs_f32();
-                <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
-                    reveal_five_trees();
-                    <span class="macro">info!</span>(<span class="string">&quot;State migration successful, took: {elapsed}s&quot;</span>);
-                } <span class="kw">else </span>{
-                    <span class="macro">bail!</span>(<span class="string">&quot;State post migration must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s&quot;</span>);
-                }
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(new_state))
-            }
-            x <span class="kw">if </span>x == <span class="self">self</span>.chain_config.epoch(Height::Lightning) =&gt; {
-                <span class="macro">info!</span>(<span class="string">&quot;Running Lightning migration at epoch {epoch}&quot;</span>);
-                <span class="kw">let </span>start_time = time::Instant::now();
-                <span class="kw">let </span>new_state = forest_state_migration::run_nv19_migration(
-                    <span class="kw-2">&amp;</span><span class="self">self</span>.chain_config,
-                    <span class="self">self</span>.blockstore(),
-                    parent_state,
-                    epoch,
-                )<span class="question-mark">?</span>;
-                <span class="kw">let </span>elapsed = start_time.elapsed().as_secs_f32();
-                <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
-                    reveal_five_trees();
-                    <span class="macro">info!</span>(<span class="string">&quot;State migration successful, took: {elapsed}s&quot;</span>);
-                } <span class="kw">else </span>{
-                    <span class="macro">bail!</span>(<span class="string">&quot;State post migration must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s&quot;</span>);
-                }
-                <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(new_state))
-            }
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-        }
     }
 
     <span class="doccomment">/// Returns the pair of (parent state root, message receipt root). This will

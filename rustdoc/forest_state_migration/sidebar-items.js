@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["run_nv18_migration","run_nv19_migration"]};
+window.SIDEBAR_ITEMS = {"fn":["run_state_migrations"]};
