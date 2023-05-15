@@ -74,8 +74,6 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -98,15 +96,13 @@
 {
     <span class="comment">// collect bundles to load into the database.
     </span><span class="kw">let </span><span class="kw-2">mut </span>bundles = Vec::new();
-    <span class="kw">if </span>epoch &lt; config.chain.epoch(Height::Hygge) {
-        bundles.push(get_actors_bundle(config, Height::Hygge).<span class="kw">await</span><span class="question-mark">?</span>);
+    <span class="kw">for </span>info <span class="kw">in </span><span class="kw-2">&amp;</span>config.chain.height_infos {
+        <span class="kw">if </span>info.bundle.is_some() &amp;&amp; epoch &lt; config.chain.epoch(info.height) {
+            bundles.push(get_actors_bundle(config, info.height).<span class="kw">await</span><span class="question-mark">?</span>);
+        }
     }
-    <span class="kw">if </span>epoch &lt; config.chain.epoch(Height::Lightning) {
-        bundles.push(get_actors_bundle(config, Height::Lightning).<span class="kw">await</span><span class="question-mark">?</span>);
-    }
-    <span class="comment">// Nothing to do regarding Thunder since it&#39;s more like a &quot;ghost&quot; upgrade.
 
-    </span><span class="kw">for </span>bundle <span class="kw">in </span>bundles {
+    <span class="kw">for </span>bundle <span class="kw">in </span>bundles {
         <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(db.clone(), bundle.compat()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
             result.len(),
