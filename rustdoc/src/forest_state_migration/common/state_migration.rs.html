@@ -127,9 +127,6 @@
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -182,18 +179,15 @@
             verifier.verify_migration(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span><span class="self">self</span>.migrations, <span class="kw-2">&amp;</span>actors_in)<span class="question-mark">?</span>;
         }
 
-        <span class="kw">let </span>cpus = num_cpus::get();
-        <span class="kw">let </span>chan_size = cpus / <span class="number">2</span>;
+        <span class="comment">// we need at least 3 threads for the migration to work
+        </span><span class="kw">let </span>threads = num_cpus::get().max(<span class="number">3</span>);
+        <span class="kw">let </span>chan_size = threads / <span class="number">2</span>;
 
-        <span class="macro">log::info!</span>(
-            <span class="string">&quot;Using {} CPUs for migration and channel size of {}&quot;</span>,
-            cpus,
-            chan_size
-        );
+        <span class="macro">log::info!</span>(<span class="string">&quot;Using {threads} threads for migration and channel size of {chan_size}&quot;</span>,);
 
         <span class="kw">let </span>pool = rayon::ThreadPoolBuilder::new()
             .thread_name(|id| <span class="macro">format!</span>(<span class="string">&quot;state migration thread: {id}&quot;</span>))
-            .num_threads(cpus)
+            .num_threads(threads)
             .build()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(state_tx, state_rx) = crossbeam_channel::bounded(chan_size);
