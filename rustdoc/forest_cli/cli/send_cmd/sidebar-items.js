@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["FILAmount","SendCommand"]};
+window.SIDEBAR_ITEMS = {"struct":["SendCommand"]};

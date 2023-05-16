@@ -243,6 +243,10 @@
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
 <a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -316,6 +320,10 @@
 
     <span class="kw">pub fn </span>from_atto(atto: <span class="kw">impl </span>Into&lt;BigInt&gt;) -&gt; <span class="self">Self </span>{
         TokenAmount_v3::from_atto(atto).into()
+    }
+
+    <span class="kw">pub fn </span>from_nano(nano: <span class="kw">impl </span>Into&lt;BigInt&gt;) -&gt; <span class="self">Self </span>{
+        TokenAmount_v3::from_nano(nano).into()
     }
 
     <span class="kw">pub fn </span>from_whole(fil: <span class="kw">impl </span>Into&lt;BigInt&gt;) -&gt; <span class="self">Self </span>{
