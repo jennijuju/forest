@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["run_state_migrations"]};
+window.SIDEBAR_ITEMS = {"fn":["run_state_migrations"],"macro":["define_manifests","define_system_states","impl_system","impl_verifier"]};

@@ -50,6 +50,8 @@
 <a href="#50" id="50">50</a>
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -61,6 +63,8 @@
 };
 <span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+
+<span class="kw">use </span><span class="kw">super</span>::SystemStateNew;
 
 <span class="doccomment">/// Creates the Ethereum Account actor in the state tree.
 </span><span class="kw">pub fn </span>create_eth_account_actor&lt;BS: Blockstore + Clone + Send + Sync&gt;(
@@ -85,7 +89,7 @@
         </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;failed to get system actor&quot;</span>))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>system_actor_state = store
-        .get_obj::&lt;fil_actor_system_v10::State&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
+        .get_obj::&lt;SystemStateNew&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
         </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;failed to get system actor state&quot;</span>))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>manifest_data = system_actor_state.builtin_actors;

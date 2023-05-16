@@ -108,7 +108,6 @@
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -116,12 +115,10 @@
 
 <span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fil_actor_system_v9::State <span class="kw">as </span>SystemStateV9;
 <span class="kw">use </span>forest_networks::{ChainConfig, Height};
 <span class="kw">use </span>forest_shim::{
     address::Address,
     clock::ChainEpoch,
-    machine::{Manifest, ManifestV2},
     state_tree::{StateTree, StateTreeVersion},
 };
 <span class="kw">use </span>forest_utils::db::BlockstoreExt;
@@ -130,6 +127,7 @@
 
 <span class="kw">use super</span>::{
     eam::create_eam_actor, eth_account::create_eth_account_actor, init, system, verifier::Verifier,
+    ManifestNew, ManifestOld, SystemStateOld,
 };
 <span class="kw">use </span><span class="kw">crate</span>::common::{migrators::nil_migrator, PostMigrationAction, StateMigration};
 <span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; StateMigration&lt;BS&gt; {
@@ -145,15 +143,15 @@
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;system actor not found&quot;</span>))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>system_actor_state = store
-            .get_obj::&lt;SystemStateV9&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
+            .get_obj::&lt;SystemStateOld&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;system actor state not found&quot;</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>current_manifest_data = system_actor_state.builtin_actors;
-        <span class="kw">let </span>current_manifest = ManifestV2::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>current_manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>current_manifest = ManifestOld::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>current_manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(version, new_manifest_data): (u32, Cid) = store
             .get_cbor(new_manifest)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;new manifest not found&quot;</span>))<span class="question-mark">?</span>;
-        <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>new_manifest_data, version)<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_manifest = ManifestNew::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>new_manifest_data, version)<span class="question-mark">?</span>;
 
         current_manifest.builtin_actor_codes().for_each(|code| {
             <span class="kw">let </span>id = current_manifest.id_by_code(code);

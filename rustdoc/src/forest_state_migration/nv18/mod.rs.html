@@ -15,6 +15,15 @@
 <a href="#15" id="15">15</a>
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -26,10 +35,19 @@
 <span class="kw">mod </span>eth_account;
 <span class="kw">mod </span>init;
 <span class="kw">mod </span>migration;
-<span class="kw">mod </span>system;
-<span class="kw">mod </span>verifier;
 
 <span class="doccomment">/// Run migration for `NV18`. This should be the only exported method in this
 /// module.
 </span><span class="kw">pub use </span>migration::run_migration;
+
+<span class="kw">use crate</span>::<span class="kw-2">*</span>;
+
+<span class="macro">define_manifests!</span>(
+    forest_shim::machine::ManifestV2,
+    forest_shim::machine::Manifest
+);
+<span class="macro">define_system_states!</span>(fil_actor_system_v9::State, fil_actor_system_v10::State);
+
+<span class="macro">impl_system!</span>();
+<span class="macro">impl_verifier!</span>();
 </code></pre></div></section></main></body></html>
