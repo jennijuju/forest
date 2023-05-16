@@ -841,6 +841,9 @@
 <a href="#841" id="841">841</a>
 <a href="#842" id="842">842</a>
 <a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{
@@ -974,8 +977,8 @@
 <span class="doccomment">/// gets the size of a snapshot from Filecoin.
 </span><span class="kw">pub async fn </span>snapshot_fetch_size(config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;u64&gt; {
     <span class="kw">let </span>service_url = <span class="kw">match </span>config.chain.name.to_lowercase().as_ref() {
-        <span class="string">&quot;mainnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.mainnet.clone(),
-        <span class="string">&quot;calibnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.calibnet.clone(),
+        <span class="string">&quot;mainnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.mainnet_compressed.clone(),
+        <span class="string">&quot;calibnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.calibnet_compressed.clone(),
         <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {}&quot;</span>, config.chain.name,),
     };
     <span class="kw">let </span>client = https_client();
@@ -1119,21 +1122,15 @@
     use_compressed: bool,
     use_aria2: bool,
 ) -&gt; anyhow::Result&lt;PathBuf&gt; {
+    <span class="kw">if </span>!use_compressed {
+        <span class="macro">bail!</span>(
+            <span class="string">&quot;Uncompressed snapshot fetch service not provided by Filecoin. \
+                Suggestion: use `--compressed` to fetch compressed snapshots.&quot;
+        </span>);
+    }
     <span class="kw">let </span>service_url = <span class="kw">match </span>config.chain.name.to_lowercase().as_ref() {
-        <span class="string">&quot;mainnet&quot; </span>=&gt; {
-            <span class="kw">if </span>use_compressed {
-                config.snapshot_fetch.filecoin.mainnet_compressed.clone()
-            } <span class="kw">else </span>{
-                config.snapshot_fetch.filecoin.mainnet.clone()
-            }
-        }
-        <span class="string">&quot;calibnet&quot; </span>=&gt; {
-            <span class="kw">if </span>use_compressed {
-                config.snapshot_fetch.filecoin.calibnet_compressed.clone()
-            } <span class="kw">else </span>{
-                config.snapshot_fetch.filecoin.calibnet.clone()
-            }
-        }
+        <span class="string">&quot;mainnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.mainnet_compressed.clone(),
+        <span class="string">&quot;calibnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.calibnet_compressed.clone(),
         <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {}&quot;</span>, config.chain.name,),
     };
     <span class="macro">info!</span>(<span class="string">&quot;Snapshot url: {service_url}&quot;</span>);
@@ -1146,7 +1143,16 @@
 
         <span class="comment">// Use the redirect if available.
         </span><span class="kw">match </span>head_response.headers().get(<span class="string">&quot;location&quot;</span>) {
-            <span class="prelude-val">Some</span>(url) =&gt; url.to_str()<span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>,
+            <span class="prelude-val">Some</span>(url) =&gt; {
+                <span class="kw">let </span>url = url.to_str()<span class="question-mark">?</span>;
+                <span class="kw">if </span>url.starts_with(<span class="string">&#39;/&#39;</span>) {
+                    <span class="kw">let </span><span class="kw-2">mut </span>result_url = Url::parse(service_url.as_str())<span class="question-mark">?</span>;
+                    result_url.set_path(url);
+                    result_url
+                } <span class="kw">else </span>{
+                    url.try_into()<span class="question-mark">?
+                </span>}
+            }
             <span class="prelude-val">None </span>=&gt; service_url,
         }
     };
