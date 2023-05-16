@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Manifest","ManifestV2"]};
+window.SIDEBAR_ITEMS = {"struct":["ManifestV2","ManifestV3"]};

@@ -58,7 +58,7 @@
 </span><span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>forest_shim::{
     address::Address,
-    machine::Manifest,
+    machine::ManifestV3,
     state_tree::{ActorState, StateTree},
 };
 <span class="kw">use </span>forest_utils::db::BlockstoreExt;
@@ -93,7 +93,7 @@
         </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;failed to get system actor state&quot;</span>))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>manifest_data = system_actor_state.builtin_actors;
-    <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_manifest = ManifestV3::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>eth_account_actor = ActorState::new(
         <span class="kw-2">*</span>new_manifest.get_ethaccount_code(),
