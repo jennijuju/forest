@@ -1,0 +1,761 @@
+       Fresh unicode-ident v1.0.8
+       Fresh cfg-if v1.0.0
+       Fresh version_check v0.9.4
+       Fresh autocfg v1.1.0
+       Fresh subtle v2.4.1
+       Fresh proc-macro2 v1.0.56
+       Fresh futures-sink v0.3.28
+       Fresh pin-project-lite v0.2.9
+       Fresh cpufeatures v0.2.7
+       Fresh quote v1.0.26
+       Fresh libc v0.2.142
+       Fresh memchr v2.5.0
+       Fresh typenum v1.16.0
+       Fresh futures-io v0.3.28
+       Fresh bytes v1.4.0
+       Fresh scopeguard v1.1.0
+       Fresh arrayref v0.3.7
+       Fresh ppv-lite86 v0.2.17
+       Fresh syn v2.0.15
+       Fresh syn v1.0.109
+       Fresh getrandom v0.2.9
+       Fresh jobserver v0.1.26
+       Fresh generic-array v0.14.7
+       Fresh futures-core v0.3.28
+       Fresh num_cpus v1.15.0
+       Fresh pin-utils v0.1.0
+       Fresh either v1.8.1
+       Fresh bitflags v1.3.2
+       Fresh unicode-xid v0.2.4
+       Fresh serde_derive v1.0.160
+       Fresh cc v1.0.79
+       Fresh thiserror-impl v1.0.40
+       Fresh ctor v0.1.26
+       Fresh block-buffer v0.10.4
+       Fresh slab v0.4.8
+       Fresh futures-channel v0.3.28
+       Fresh futures-macro v0.3.28
+       Fresh adler v1.0.2
+       Fresh synstructure v0.12.6
+       Fresh zeroize_derive v1.4.2
+       Fresh constant_time_eq v0.2.5
+       Fresh thiserror v1.0.40
+       Fresh value-bag v1.0.0-alpha.9
+       Fresh serde v1.0.160
+       Fresh rand_chacha v0.3.1
+       Fresh futures-task v0.3.28
+       Fresh miniz_oxide v0.6.2
+       Fresh zeroize v1.6.0
+       Fresh data-encoding v2.3.3
+       Fresh gimli v0.27.2
+       Fresh futures-util v0.3.28
+       Fresh lock_api v0.4.9
+       Fresh addr2line v0.19.0
+       Fresh object v0.30.3
+       Fresh itoa v1.0.6
+       Fresh rustc-demangle v0.1.23
+       Fresh data-encoding-macro-internal v0.1.10
+       Fresh log v0.4.17
+       Fresh proc-macro-crate v1.1.3
+       Fresh proc-macro-error-attr v1.0.4
+       Fresh backtrace v0.3.67
+       Fresh core2 v0.4.0
+       Fresh static_assertions v1.1.0
+       Fresh once_cell v1.17.1
+       Fresh data-encoding-macro v0.1.12
+       Fresh base-x v0.2.11
+       Fresh pin-project-internal v1.0.12
+       Fresh lazy_static v1.4.0
+       Fresh asynchronous-codec v0.6.1
+       Fresh proc-macro-error v1.0.4
+       Fresh pin-project v1.0.12
+       Fresh linux-raw-sys v0.3.5
+       Fresh tap v1.0.1
+       Fresh blake2s_simd v1.0.1
+       Fresh opaque-debug v0.3.0
+       Fresh ryu v1.0.13
+       Fresh funty v2.0.0
+       Fresh multihash-derive v0.8.1
+       Fresh crossbeam-utils v0.8.15
+       Fresh wyz v0.5.1
+       Fresh crypto-common v0.1.6
+       Fresh aho-corasick v1.0.1
+       Fresh keccak v0.1.3
+       Fresh regex-syntax v0.7.1
+       Fresh rand_core v0.6.4
+       Fresh arrayvec v0.7.2
+       Fresh fastrand v1.9.0
+       Fresh hex v0.4.3
+       Fresh radium v0.7.0
+       Fresh digest v0.10.6
+       Fresh regex v1.8.1
+       Fresh rand v0.8.5
+       Fresh blake2b_simd v1.0.1
+       Fresh crossbeam-channel v0.5.8
+       Fresh spin v0.9.8
+       Fresh bitvec v1.0.1
+       Fresh async-trait v0.1.68
+       Fresh sha2 v0.10.6
+       Fresh rustversion v1.0.12
+       Fresh ec-gpu v0.2.0
+       Fresh threadpool v1.8.1
+       Fresh block-buffer v0.9.0
+       Fresh libm v0.2.6
+       Fresh memoffset v0.8.0
+       Fresh byte-slice-cast v1.2.2
+       Fresh ff v0.12.1
+       Fresh rand_xorshift v0.3.0
+       Fresh execute-command-tokens v0.1.6
+       Fresh sha2 v0.9.9
+       Fresh nanorand v0.7.0
+       Fresh crossbeam-epoch v0.9.14
+       Fresh blst v0.3.10
+       Fresh group v0.12.1
+       Fresh execute-command-macro-impl v0.1.9
+       Fresh flume v0.10.14
+       Fresh bincode v1.3.3
+       Fresh crossbeam-deque v0.8.3
+       Fresh semver v1.0.17
+       Fresh blake3 v1.3.3
+       Fresh execute-command-macro v0.1.8
+       Fresh pairing v0.22.0
+       Fresh block-padding v0.3.3
+       Fresh memmap2 v0.5.10
+       Fresh yastl v0.1.2
+       Fresh env_logger v0.8.4
+       Fresh rayon-core v1.11.0
+       Fresh execute v0.2.12
+       Fresh blstrs v0.6.1
+       Fresh inout v0.1.3
+       Fresh base64 v0.13.1
+       Fresh quickcheck v1.0.3
+       Fresh minimal-lexical v0.2.1
+       Fresh arrayvec v0.5.2
+       Fresh constant_time_eq v0.1.5
+       Fresh fil_pasta_curves v0.5.2
+       Fresh serde_tuple_macros v0.5.0
+       Fresh itertools v0.8.2
+       Fresh rayon v1.7.0
+       Fresh cipher v0.4.4
+       Fresh blake2s_simd v0.5.11
+       Fresh nom v7.1.3
+       Fresh trait-set v0.3.0
+       Fresh positioned-io v0.3.1
+       Fresh toml v0.5.11
+       Fresh serde_repr v0.1.12
+       Fresh fs2 v0.4.3
+       Fresh pathdiff v0.2.1
+       Fresh ec-gpu-gen v0.5.2
+       Fresh merkletree v0.22.1
+       Fresh aes v0.8.2
+       Fresh cbc v0.1.2
+       Fresh config v0.12.0
+       Fresh fake-simd v0.1.2
+       Fresh diff v0.1.13
+       Fresh yansi v0.5.1
+       Fresh sha2-asm v0.6.2
+       Fresh crossbeam-queue v0.3.8
+       Fresh pretty_assertions v1.3.0
+       Fresh fdlimit v0.2.1
+       Fresh digest v0.9.0
+       Fresh num-derive v0.3.3
+       Fresh crypto-mac v0.8.0
+       Fresh bls-signatures v0.13.0
+       Fresh fnv v1.0.7
+       Fresh crossbeam v0.8.2
+       Fresh hmac v0.8.1
+       Fresh fvm_ipld_encoding v0.3.3
+       Fresh fr32 v6.0.0
+       Fresh sha2raw v8.0.0
+       Fresh smallvec v1.10.0
+       Fresh tracing-core v0.1.30
+       Fresh tinyvec_macros v0.1.1
+       Fresh tracing-attributes v0.1.24
+       Fresh bellperson v0.24.1
+       Fresh crunchy v0.2.2
+       Fresh hmac-drbg v0.3.0
+       Fresh anyhow v1.0.70
+       Fresh paste v1.0.12
+       Fresh tinyvec v1.6.0
+       Fresh tracing v0.1.37
+       Fresh socket2 v0.4.9
+       Fresh unicode-bidi v0.3.13
+       Fresh percent-encoding v2.2.0
+       Fresh libipld-core v0.14.0
+       Fresh mio v0.8.6
+       Fresh tokio-macros v2.1.0
+       Fresh neptune v8.0.0
+       Fresh libsecp256k1-core v0.3.0
+       Fresh ahash v0.7.6
+       Fresh unicode-normalization v0.1.22
+       Fresh form_urlencoded v1.1.0
+       Fresh signal-hook-registry v1.4.1
+       Fresh forest_hash_utils v0.1.0
+       Fresh bumpalo v3.12.1
+       Fresh fr32 v7.0.0
+       Fresh fvm_ipld_amt v0.5.1
+       Fresh sha2raw v9.0.0
+       Fresh futures-executor v0.3.28
+       Fresh libsecp256k1-gen-genmult v0.3.0
+       Fresh libsecp256k1-gen-ecmult v0.3.0
+       Fresh filecoin-hashers v8.0.0
+       Fresh idna v0.3.0
+       Fresh tokio v1.28.0
+       Fresh filecoin-hashers v9.0.0
+       Fresh fvm_ipld_hamt v0.6.1
+       Fresh futures v0.3.28
+       Fresh derive_arbitrary v1.3.0
+       Fresh sha3 v0.10.7
+       Fresh ripemd v0.1.3
+       Fresh storage-proofs-core v13.0.0
+       Fresh url v2.3.1
+       Fresh storage-proofs-core v14.0.0
+       Fresh parking_lot_core v0.9.7
+       Fresh arbitrary v1.3.0
+       Fresh serde-big-array v0.3.3
+       Fresh untrusted v0.7.1
+       Fresh unsigned-varint v0.7.1
+       Fresh spin v0.5.2
+       Fresh multibase v0.9.1
+       Fresh serde_bytes v0.11.9
+       Fresh storage-proofs-porep v13.0.0
+       Fresh storage-proofs-post v13.0.0
+       Fresh storage-proofs-porep v14.0.0
+       Fresh storage-proofs-post v14.0.0
+       Fresh parking_lot v0.12.1
+       Fresh crc32fast v1.3.2
+       Fresh multihash v0.16.3
+       Fresh ring v0.16.20
+       Fresh strsim v0.10.0
+       Fresh num-complex v0.4.3
+       Fresh pkg-config v0.3.26
+       Fresh libsecp256k1 v0.7.1
+       Fresh storage-proofs-update v13.0.0
+       Fresh storage-proofs-update v14.0.0
+       Fresh cid v0.8.6
+       Fresh num-rational v0.4.1
+       Fresh ident_case v1.0.1
+       Fresh http v0.2.9
+       Fresh itertools v0.10.5
+       Fresh cranelift-entity v0.89.2
+       Fresh cbor4ii v0.2.14
+       Fresh filecoin-proofs v13.0.0
+       Fresh filecoin-proofs v14.0.0
+       Fresh num-traits v0.2.15
+       Fresh httparse v1.8.0
+       Fresh num-iter v0.1.43
+       Fresh prost-derive v0.11.9
+       Fresh fallible-iterator v0.2.0
+       Fresh stable_deref_trait v1.2.0
+       Fresh base64 v0.21.0
+       Fresh fvm_ipld_blockstore v0.1.1
+       Fresh serde_ipld_dagcbor v0.2.2
+       Fresh webpki v0.22.0
+       Fresh filecoin-proofs-api v13.0.0
+       Fresh filecoin-proofs-api v14.0.0
+       Fresh wasm-bindgen-shared v0.2.84
+       Fresh prost v0.11.9
+       Fresh getrandom v0.1.16
+       Fresh num v0.4.0
+       Fresh gimli v0.26.2
+       Fresh num-integer v0.1.45
+       Fresh serde_tuple v0.5.0
+       Fresh cs_serde_bytes v0.12.2
+       Fresh sct v0.7.0
+       Fresh fxhash v0.2.1
+       Fresh instant v0.1.12
+       Fresh fvm_shared v3.3.0
+       Fresh wasm-bindgen-backend v0.2.84
+       Fresh fvm_ipld_encoding v0.2.3
+       Fresh rand_core v0.5.1
+       Fresh target-lexicon v0.12.7
+       Fresh num-bigint v0.4.3
+       Fresh cranelift-codegen-shared v0.89.2
+       Fresh byteorder v1.4.3
+       Fresh darling_core v0.14.4
+       Fresh wasmparser v0.92.0
+       Fresh wasm-bindgen-macro-support v0.2.84
+       Fresh rustls v0.20.8
+       Fresh fvm_shared v2.3.0
+       Fresh cranelift-codegen-meta v0.89.2
+       Fresh cranelift-isle v0.89.2
+       Fresh heck v0.4.1
+       Fresh slice-group-by v0.3.0
+       Fresh rand_chacha v0.2.2
+       Fresh curve25519-dalek v3.2.0
+       Fresh darling_macro v0.14.4
+       Fresh wasmtime-types v2.0.2
+       Fresh cranelift-bforest v0.89.2
+       Fresh wasm-bindgen-macro v0.2.84
+       Fresh fvm_sdk v2.2.0
+       Fresh memoffset v0.6.5
+       Fresh regalloc2 v0.4.2
+       Fresh ahash v0.8.3
+       Fresh tokio-util v0.7.8
+       Fresh signature v1.6.4
+       Fresh tower-service v0.3.2
+       Fresh event-listener v2.5.3
+       Fresh rand v0.7.3
+       Fresh darling v0.14.4
+       Fresh http-body v0.4.5
+       Fresh object v0.29.0
+       Fresh wasm-bindgen v0.2.84
+       Fresh frc42_hasher v1.3.0
+       Fresh ed25519 v1.5.3
+       Fresh multihash v0.17.0
+       Fresh concurrent-queue v2.2.0
+       Fresh quick-protobuf v0.8.1
+       Fresh parking v2.1.0
+       Fresh waker-fn v1.1.0
+       Fresh try-lock v0.2.4
+       Fresh h2 v0.3.18
+       Fresh wasmtime-environ v2.0.2
+       Fresh async-lock v2.7.0
+       Fresh js-sys v0.3.61
+       Fresh cranelift-codegen v0.89.2
+       Fresh frc42_macros v1.0.0
+       Fresh want v0.3.0
+       Fresh multiaddr v0.17.1
+       Fresh io-lifetimes v0.7.5
+       Fresh ed25519-dalek v1.0.1
+       Fresh futures-lite v1.13.0
+       Fresh linux-raw-sys v0.0.46
+       Fresh send_wrapper v0.4.0
+       Fresh bs58 v0.4.0
+       Fresh httpdate v1.0.2
+       Fresh multistream-select v0.12.1
+       Fresh frc42_dispatch v3.0.0
+       Fresh gloo-timers v0.2.6
+       Fresh libp2p-identity v0.1.1
+       Fresh hyper v0.14.26
+       Fresh cranelift-frontend v0.89.2
+       Fresh rustix v0.35.13
+       Fresh rw-stream-sink v0.3.0
+       Fresh libipld-core v0.13.1
+       Fresh memfd v0.6.3
+       Fresh wasmtime-jit-debug v2.0.2
+       Fresh wasmtime-asm-macros v2.0.2
+       Fresh async-task v4.4.0
+       Fresh void v1.0.2
+       Fresh cranelift-native v0.89.2
+       Fresh futures-timer v3.0.2
+       Fresh cpp_demangle v0.3.5
+       Fresh wasmtime-runtime v2.0.2
+       Fresh cranelift-wasm v0.89.2
+       Fresh fvm_ipld_hamt v0.5.1
+       Fresh async-channel v1.8.0
+       Fresh addr2line v0.17.0
+       Fresh fvm_ipld_amt v0.4.2
+       Fresh atomic-waker v1.1.1
+       Fresh derive_builder_core v0.11.2
+       Fresh convert_case v0.4.0
+       Fresh wasmparser v0.104.0
+       Fresh replace_with v0.1.7
+       Fresh libp2p-core v0.39.1
+       Fresh psm v0.1.21
+       Fresh wasmtime-jit v2.0.2
+       Fresh wasmtime-cranelift v2.0.2
+       Fresh blocking v1.3.1
+       Fresh derive_more v0.99.17
+       Fresh derive_builder_macro v0.11.2
+       Fresh parity-wasm v0.42.2
+       Fresh leb128 v0.2.5
+       Fresh wasmprinter v0.2.56
+       Fresh rustls-pemfile v1.0.2
+       Fresh wasmparser v0.95.0
+       Fresh derive-getters v0.2.1
+       Fresh wasmtime v2.0.2
+       Fresh wasm-encoder v0.20.0
+       Fresh derive_builder v0.11.2
+       Fresh fvm-wasm-instrument v0.2.0
+       Fresh openssl-probe v0.1.5
+       Fresh zstd-sys v2.0.8+zstd.1.5.5
+       Fresh tokio-rustls v0.23.4
+       Fresh minstant v0.1.2
+       Fresh time v0.1.45
+       Fresh iana-time-zone v0.1.56
+       Fresh wasm-bindgen-futures v0.4.34
+       Fresh integer-encoding v3.0.4
+       Fresh serde_spanned v0.6.1
+       Fresh toml_datetime v0.6.1
+       Fresh fvm v2.3.0
+       Fresh fvm-wasm-instrument v0.4.0
+       Fresh rustls-native-certs v0.6.2
+       Fresh proc-macro-hack v0.5.20+deprecated
+       Fresh chrono v0.4.24
+       Fresh unsafe-libyaml v0.2.8
+       Fresh winnow v0.4.1
+       Fresh libp2p-swarm-derive v0.32.0
+       Fresh fil_actors_runtime_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh uint v0.9.5
+       Fresh const_format_proc_macros v0.2.29
+       Fresh atty v0.2.14
+       Fresh ipnet v2.7.2
+       Fresh hyper-rustls v0.23.2
+       Fresh fvm v3.3.1
+       Fresh zstd-safe v5.0.2+zstd.1.5.2
+       Fresh serde_yaml v0.9.21
+       Fresh git-version-macro v0.3.5
+       Fresh toml_edit v0.19.8
+       Fresh libp2p-swarm v0.42.1
+       Fresh const_format v0.2.30
+       Fresh netlink-packet-utils v0.5.2
+       Fresh pbr v1.1.1
+       Fresh memory-stats v1.1.0
+       Fresh human-repr v1.1.0
+       Fresh zstd v0.11.2+zstd.1.5.2
+       Fresh forest_shim v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/forest_shim)
+       Fresh toml v0.7.3
+       Fresh async-fs v1.6.0
+       Fresh git-version v0.3.5
+       Fresh netlink-packet-core v0.4.2
+       Fresh fil_actors_runtime_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh webpki-roots v0.22.6
+       Fresh netlink-sys v0.8.5
+       Fresh protobuf-support v3.2.0
+       Fresh async-compression v0.3.15
+       Fresh parking_lot_core v0.8.6
+       Fresh fil_actors_runtime_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh io-lifetimes v1.0.10
+       Fresh libz-sys v1.1.8
+       Fresh matches v0.1.10
+       Fresh netlink-packet-route v0.12.0
+       Fresh netlink-proto v0.10.0
+       Fresh enum-as-inner v0.5.1
+       Fresh rustc_version v0.4.0
+       Fresh nix v0.24.3
+       Fresh siphasher v0.3.10
+       Fresh forest_utils v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/forest_utils)
+       Fresh parking_lot v0.11.2
+       Fresh idna v0.2.3
+       Fresh flate2 v1.0.25
+       Fresh rustix v0.37.15
+       Fresh match_cfg v0.1.0
+       Fresh hashbrown v0.12.3
+       Fresh rtnetlink v0.10.1
+       Fresh quick-protobuf-codec v0.1.0
+       Fresh hashbrown v0.13.2
+       Fresh tempfile v3.5.0
+       Fresh hostname v0.3.1
+       Fresh trust-dns-proto v0.22.0
+       Fresh indexmap v1.9.3
+       Fresh which v4.4.0
+       Fresh prometheus-client-derive-encode v0.4.1
+       Fresh linux-raw-sys v0.1.4
+       Fresh dtoa v1.0.6
+       Fresh quick-error v1.2.3
+       Fresh linked-hash-map v0.5.6
+       Fresh resolv-conf v0.7.0
+       Fresh lru-cache v0.1.2
+       Fresh protobuf-parse v3.2.0
+       Fresh prometheus-client v0.19.0
+       Fresh rustix v0.36.13
+       Fresh wasm-timer v0.2.5
+       Fresh if-watch v3.0.1
+       Fresh polling v2.8.0
+       Fresh lru v0.9.0
+       Fresh forest_message v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/vm/message)
+       Fresh sha-1 v0.9.8
+       Fresh same-file v1.0.6
+       Fresh hashbrown v0.11.2
+       Fresh nohash-hasher v0.2.0
+       Fresh hex_fmt v0.3.0
+       Fresh pin-project-lite v0.1.12
+       Fresh mime v0.3.17
+       Fresh protobuf-codegen v3.2.0
+       Fresh async-io v1.13.0
+       Fresh protobuf v2.28.0
+       Fresh cached v0.30.0
+       Fresh procfs v0.14.2
+       Fresh forest_json v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/json)
+       Fresh soketto v0.7.1
+       Fresh trust-dns-resolver v0.22.0
+       Fresh walkdir v2.3.3
+       Fresh libp2p-identify v0.42.1
+       Fresh quicksink v0.1.2
+       Fresh yamux v0.10.2
+       Fresh libp2p-gossipsub v0.44.3
+       Fresh snow v0.9.2
+       Fresh forest_beacon v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/beacon)
+       Fresh libp2p-kad v0.43.2
+       Fresh libp2p-ping v0.42.0
+       Fresh fil_actors_runtime_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh async-executor v1.5.1
+       Fresh derive_builder_core v0.12.0
+       Fresh x25519-dalek v1.1.1
+       Fresh futures-rustls v0.22.2
+       Fresh serde_urlencoded v0.7.1
+       Fresh libipld-cbor v0.14.0
+       Fresh libipld-macro v0.14.0
+       Fresh libipld-json v0.14.0
+       Fresh fvm_ipld_bitfield v0.5.4
+       Fresh libipld-cbor-derive v0.14.0
+       Fresh sha1 v0.10.5
+       Fresh tower-layer v0.3.2
+       Fresh parity-send-wrapper v0.1.0
+       Fresh utf-8 v0.7.6
+       Fresh derive_builder_macro v0.12.0
+       Fresh libp2p-metrics v0.12.0
+       Fresh prometheus v0.13.3
+       Fresh libp2p-yamux v0.43.0
+       Fresh libp2p-noise v0.42.1
+       Fresh serde_json v1.0.96
+       Fresh async-global-executor v2.3.1
+       Fresh libp2p-wasm-ext v0.39.0
+       Fresh tungstenite v0.18.0
+       Fresh libipld v0.14.0
+       Fresh libp2p-websocket v0.41.0
+       Fresh libp2p-dns v0.39.0
+       Fresh libp2p-mdns v0.43.1
+       Fresh libp2p-tcp v0.39.0
+       Fresh libp2p-request-response v0.24.0
+       Fresh blake2 v0.10.6
+       Fresh kv-log-macro v1.0.7
+       Fresh tower v0.4.13
+       Fresh tokio-tungstenite v0.18.0
+       Fresh libp2p v0.51.1
+       Fresh async-std v1.12.0
+       Fresh axum-core v0.3.4
+       Fresh derive_builder v0.12.0
+       Fresh protobuf v3.2.0
+       Fresh fvm_actor_utils v3.0.0
+       Fresh serde_path_to_error v0.1.11
+       Fresh sync_wrapper v0.1.2
+       Fresh matchit v0.7.0
+       Fresh hex-literal v0.3.4
+       Fresh fil_actor_miner_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh frc46_token v3.1.0
+       Fresh axum v0.6.17
+       Fresh forest_libp2p_bitswap v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/forest_libp2p/bitswap)
+       Fresh lz4-sys v1.9.4
+       Fresh snap v1.1.0
+       Fresh forest_blocks v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/blocks)
+       Fresh fil_actor_miner_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_evm_shared_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_power_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_evm_shared_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_init_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_power_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_init_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh strum_macros v0.24.3
+       Fresh fil_actor_system_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh lz4 v1.24.0
+       Fresh fil_actor_system_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_system_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh async-recursion v1.0.4
+       Fresh const-str v0.5.4
+       Fresh fil_actor_datacap_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_evm_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_datacap_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_evm_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_miner_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_miner_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_market_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_power_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_init_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_multisig_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh forest_networks v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/networks)
+       Fresh forest_ipld v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/ipld)
+       Fresh parity-db v0.4.6
+       Fresh fil_actor_init_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_multisig_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_market_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_multisig_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_market_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_power_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_market_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_multisig_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_account_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_account_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_account_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_reward_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_reward_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_cron_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_reward_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_account_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_reward_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_system_v8 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_cron_v10 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_cron_v9 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh fil_actor_cron_v11 v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh uuid v1.3.1
+       Fresh fs_extra v1.3.0
+       Fresh tokio-stream v0.1.14
+       Fresh fvm_ipld_car v0.6.0
+       Fresh bytemuck v1.13.1
+       Fresh approx v0.5.1
+       Fresh rawpointer v0.2.1
+       Fresh forest_state_migration v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/vm/state_migration)
+       Fresh fil_actor_interface v1.0.0 (https://github.com/ChainSafe/fil-actor-states#d8b578d1)
+       Fresh forest_db v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/db)
+       Fresh safe_arch v0.6.0
+       Fresh matrixmultiply v0.3.3
+       Fresh rand_distr v0.4.3
+       Fresh universal-hash v0.5.0
+       Fresh nalgebra-macros v0.1.0
+       Fresh base64ct v1.6.0
+       Fresh time-core v0.1.0
+       Fresh salsa20 v0.10.2
+       Fresh aead v0.5.2
+       Fresh darling_core v0.20.0
+       Fresh regex-syntax v0.6.29
+       Fresh nonempty v0.8.1
+       Fresh forest_interpreter v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/vm/interpreter)
+       Fresh forest_metrics v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/metrics)
+       Fresh wide v0.7.8
+       Fresh password-hash v0.5.0
+       Fresh poly1305 v0.8.0
+       Fresh time-macros v0.2.8
+       Fresh regex-automata v0.1.10
+       Fresh darling_macro v0.20.0
+       Fresh overload v0.1.1
+       Fresh extensions v0.2.0
+       Fresh tracing-log v0.1.3
+       Fresh sharded-slab v0.1.4
+       Fresh jsonrpc-v2-macros v0.1.0
+       Fresh thread_local v1.1.7
+       Fresh forest_chain v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/chain)
+       Fresh simba v0.6.0
+       Fresh slotmap v1.0.6
+       Fresh time v0.3.20
+       Fresh argon2 v0.5.0
+       Fresh xsalsa20poly1305 v0.9.0
+       Fresh nu-ansi-term v0.46.0
+       Fresh erased-serde v0.3.25
+       Fresh matchers v0.1.0
+       Fresh darling v0.20.0
+       Fresh utf8parse v0.2.1
+       Fresh bytes v0.5.6
+       Fresh prost-types v0.11.9
+       Fresh tokio-io-timeout v1.2.0
+       Fresh async-stream-impl v0.3.5
+       Fresh forest_libp2p v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/forest_libp2p)
+       Fresh nalgebra v0.29.0
+       Fresh forest_state_manager v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/state_manager)
+       Fresh forest_key_management v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/key_management)
+       Fresh serde_with_macros v2.3.3
+       Fresh tracing-subscriber v0.3.17
+       Fresh jsonrpc-v2 v0.11.0
+       Fresh dirs-sys v0.3.7
+       Fresh dlv-list v0.3.0
+       Fresh hyper-timeout v0.4.1
+       Fresh anstyle-parse v0.2.0
+       Fresh async-stream v0.3.5
+       Fresh tracing-futures v0.2.5
+       Fresh is-terminal v0.4.7
+       Fresh smartstring v0.2.10
+       Fresh statrs v0.16.0
+       Fresh ordered-multimap v0.4.3
+       Fresh serde_with v2.3.3
+       Fresh colorchoice v1.0.0
+       Fresh wildmatch v2.1.1
+       Fresh rxml_validation v0.8.2
+       Fresh anstyle v1.0.0
+       Fresh anstyle-query v1.0.0
+       Fresh xml-rs v0.8.4
+       Fresh dirs v4.0.0
+       Fresh tonic v0.8.3
+       Fresh encoding_rs v0.8.32
+       Fresh clap_lex v0.4.1
+       Fresh loki-api v0.1.1
+       Fresh hdrhistogram v7.5.2
+       Fresh forest_message_pool v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/message_pool)
+       Fresh attohttpc v0.19.1
+       Fresh rust-ini v0.18.0
+       Fresh anstream v0.3.1
+       Fresh serde-xml-rs v0.5.1
+       Fresh rxml v0.8.2
+       Fresh console-api v0.4.0
+       Fresh reqwest v0.11.16
+       Fresh clap_derive v4.2.0
+       Fresh tracing-serde v0.1.3
+       Fresh hmac v0.12.1
+       Fresh aws-region v0.25.3
+       Fresh maybe-async v0.2.7
+       Fresh md5 v0.7.0
+       Fresh humantime v2.1.0
+       Fresh forest_chain_sync v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/chain_sync)
+       Fresh minidom v0.15.1
+       Fresh tikv-jemalloc-sys v0.5.3+5.3.0-patched
+       Fresh clap_builder v4.2.5
+       Fresh aws-creds v0.30.0
+       Fresh utf8-width v0.1.6
+       Fresh tracing-loki v0.2.2
+       Fresh console-subscriber v0.1.8
+       Fresh tracing-appender v0.2.2
+       Fresh directories v4.0.1
+       Fresh simple_asn1 v0.6.2
+       Fresh pem v1.1.1
+       Fresh gethostname v0.4.2
+       Fresh unicode-width v0.1.10
+       Fresh forest_rpc-api v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/rpc-api)
+       Fresh byte-unit v4.0.19
+       Fresh rust-s3 v0.32.3
+       Fresh tikv-jemallocator v0.5.0
+       Fresh clap v4.2.5
+       Fresh phf_generator v0.11.1
+       Fresh jsonwebtoken v8.3.0
+       Fresh console v0.15.5
+       Fresh phf_shared v0.11.1
+       Fresh backoff v0.4.0
+       Fresh gc_derive v0.4.1
+       Fresh rtoolbox v0.0.1
+       Fresh shell-words v1.1.0
+       Fresh forest_rpc-client v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/rpc-client)
+       Fresh phf_macros v0.11.1
+       Fresh forest_auth v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/auth)
+       Fresh memoffset v0.7.1
+       Fresh rpassword v7.2.0
+       Fresh dialoguer v0.10.4
+       Fresh gc v0.4.1
+       Fresh forest_paramfetch v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/paramfetch)
+       Fresh forest_genesis v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/genesis)
+       Fresh nix v0.23.2
+       Fresh nibble_vec v0.1.0
+       Fresh dirs-sys-next v0.1.2
+       Fresh unicode-segmentation v1.10.1
+       Fresh forest_cli_shared v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/forest/shared)
+       Fresh unicode-general-category v0.6.0
+       Fresh phf v0.11.1
+       Fresh anes v0.1.6
+       Fresh endian-type v0.1.2
+       Fresh rustc-hash v1.1.0
+       Fresh nix v0.26.2
+       Fresh boa_gc v0.16.0
+       Fresh dirs-next v2.0.0
+       Fresh fd-lock v3.0.12
+       Fresh nix v0.25.1
+       Fresh regress v0.4.1
+       Fresh fast-float v0.2.0
+       Fresh cfg-if v0.1.10
+       Fresh boa_interner v0.16.0
+       Fresh radix_trie v0.2.1
+       Fresh boa_unicode v0.16.0
+       Fresh ryu-js v0.2.2
+       Fresh boa_profiler v0.16.0
+       Fresh dyn-clone v1.0.11
+       Fresh rust_decimal_macros v1.29.1
+       Fresh raw_sync v0.1.5
+       Fresh rust_decimal v1.29.1
+       Fresh forest_rpc v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/rpc)
+       Fresh daemonize-me v2.0.1
+       Fresh shared_memory v0.12.4
+       Fresh convert_case v0.6.0
+       Fresh forest_fil_cns v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/consensus/fil_cns)
+       Fresh colored v2.0.0
+       Fresh similar v2.2.1
+       Fresh boa_engine v0.16.0
+       Fresh rustyline v10.1.1
+       Fresh ticker v0.1.1
+       Fresh strfmt v0.2.4
+       Fresh bitswap-in-browser-lib v0.1.0 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/forest_libp2p/bitswap/examples/bitswap-in-browser/wasm)
+       Fresh forest_deleg_cns v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/blockchain/consensus/deleg_cns)
+       Fresh forest_test_utils v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/test_utils)
+       Fresh serialization_tests v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/tests/serialization_tests)
+       Fresh bitswap-in-browser v0.1.0 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/node/forest_libp2p/bitswap/examples/bitswap-in-browser)
+       Fresh forest_statediff v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/utils/statediff)
+       Fresh forest-daemon v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/forest/daemon)
+       Dirty forest-cli v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/forest/cli): the file `forest/cli/src/main.rs` has changed (1684245013.809558993s, 5m 1s after last build at 1684244712.361236509s)
+   Compiling forest-cli v0.8.2 (/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/forest/cli)
+     Running `CARGO=/home/aatif/.rustup/toolchains/nightly-2023-04-19-x86_64-unknown-linux-gnu/bin/cargo CARGO_BIN_NAME=forest-cli CARGO_CRATE_NAME=forest_cli CARGO_MANIFEST_DIR=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/forest/cli CARGO_PKG_AUTHORS='ChainSafe Systems <info@chainsafe.io>' CARGO_PKG_DESCRIPTION='Filecoin implementation in Rust. This crate contains all the subcommands except the daemon.' CARGO_PKG_HOMEPAGE='' CARGO_PKG_LICENSE='MIT OR Apache-2.0' CARGO_PKG_LICENSE_FILE='' CARGO_PKG_NAME=forest-cli CARGO_PKG_README='' CARGO_PKG_REPOSITORY='https://github.com/ChainSafe/forest' CARGO_PKG_RUST_VERSION='' CARGO_PKG_VERSION=0.8.2 CARGO_PKG_VERSION_MAJOR=0 CARGO_PKG_VERSION_MINOR=8 CARGO_PKG_VERSION_PATCH=2 CARGO_PKG_VERSION_PRE='' CARGO_PRIMARY_PACKAGE=1 LD_LIBRARY_PATH='/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps:/home/aatif/.rustup/toolchains/nightly-2023-04-19-x86_64-unknown-linux-gnu/lib:/home/aatif/.rustup/toolchains/nightly-2023-04-19-x86_64-unknown-linux-gnu/lib' rustc --crate-name forest_cli --edition=2021 forest/cli/src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C split-debuginfo=unpacked -C debuginfo=0 --cfg 'feature="default"' --cfg 'feature="jemalloc"' --cfg 'feature="paritydb"' -C metadata=f38cd2dd636e20bb -C extra-filename=-f38cd2dd636e20bb --out-dir /home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps -C linker=clang -C incremental=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/incremental -L dependency=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps --extern ahash=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libahash-5acb19836b5818ab.rlib --extern anes=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libanes-59dc3796d812182a.rlib --extern anyhow=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libanyhow-5c71b40cc5a4ceab.rlib --extern atty=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libatty-15f16a6b98dcd0f3.rlib --extern base64=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libbase64-605b1b7ddad6d078.rlib --extern boa_engine=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libboa_engine-162eb906b90f12be.rlib --extern cfg_if=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libcfg_if-f0511984e9feefc0.rlib --extern chrono=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libchrono-f84d317aa78aab3c.rlib --extern cid=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libcid-b855f1ab18b98323.rlib --extern clap=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libclap-88db0ab1ce9c78ad.rlib --extern convert_case=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libconvert_case-57403e0a56ee64a2.rlib --extern dialoguer=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libdialoguer-2be5d1e578b98342.rlib --extern directories=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libdirectories-51c08251321239d5.rlib --extern forest_cli=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_cli-a5e0eac6b0825ec7.rlib --extern forest_auth=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_auth-220fbbf4009e172f.rlib --extern forest_blocks=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_blocks-f79aeefdf9323617.rlib --extern forest_chain=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_chain-9fb80d9a86e8d8c6.rlib --extern forest_chain_sync=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_chain_sync-45672e4c9e6bb388.rlib --extern forest_cli_shared=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_cli_shared-656d42b841db833c.rlib --extern forest_db=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_db-c849ac882b9f2c59.rlib --extern forest_genesis=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_genesis-635629683ba8a2dd.rlib --extern forest_ipld=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_ipld-6e6f96fca806ce85.rlib --extern forest_json=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_json-370bce0f7d616339.rlib --extern forest_key_management=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_key_management-fcba8621724a79f8.rlib --extern forest_libp2p=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_libp2p-60831a40de0f5b8b.rlib --extern forest_networks=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_networks-ac815e51c413c1db.rlib --extern forest_paramfetch=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_paramfetch-42cfcb484c9dc0b5.rlib --extern forest_rpc_api=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_rpc_api-9fa04dbe25efa4d2.rlib --extern forest_rpc_client=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_rpc_client-444cfba8be7d4e54.rlib --extern forest_shim=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_shim-d5c1ed84d948093b.rlib --extern forest_utils=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libforest_utils-e03b18d4cba92006.rlib --extern fs_extra=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libfs_extra-e15f4d27b2ee4e4a.rlib --extern fvm_ipld_blockstore=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libfvm_ipld_blockstore-40b7923283ffc11c.rlib --extern fvm_ipld_encoding=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libfvm_ipld_encoding-52709b55fe8a8dab.rlib --extern fvm_shared=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libfvm_shared-18e4cacf2faaf62b.rlib --extern hex=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libhex-9f765bb56bbc1675.rlib --extern human_repr=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libhuman_repr-dbb567e78e9f457e.rlib --extern jsonrpc_v2=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libjsonrpc_v2-662d126b7c868988.rlib --extern log=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/liblog-bb40bd51e8a2ac99.rlib --extern multibase=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libmultibase-4e12f6d6bba0f5e1.rlib --extern num=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libnum-108459fc42fa19c2.rlib --extern rpassword=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/librpassword-ef4135f7b74d028c.rlib --extern rust_decimal=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/librust_decimal-175ef3b078358b1f.rlib --extern rust_decimal_macros=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/librust_decimal_macros-f2a249dc3aa30220.so --extern rustyline=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/librustyline-423009ec58dac4b6.rlib --extern serde=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libserde-17e2263e72e738f0.rlib --extern serde_json=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libserde_json-7e6a06aa2e9941fb.rlib --extern serde_tuple=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libserde_tuple-87063c99882332f6.rlib --extern strfmt=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libstrfmt-8b84d8f231e2e040.rlib --extern tempfile=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libtempfile-fedcb0fbf43c0cc6.rlib --extern ticker=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libticker-d335d61dcbbffb4f.rlib --extern tokio=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libtokio-71be97ae60c98d16.rlib --extern toml=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/deps/libtoml-42ed4d7b2bb6fbf1.rlib -Ctarget-feature=+avx2,+fma -Zshare-generics=y --cfg tokio_unstable -C link-arg=--ld-path=/usr/bin/mold -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/blake3-6181abd9fa6981ef/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/blake3-6181abd9fa6981ef/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/blst-3ad3cf121df7ead4/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/sha2-asm-5c1592638600ada4/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/sha2-asm-5c1592638600ada4/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/psm-51fc56b6a2546f7e/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/wasmtime-runtime-e92e2cdd74aa09fc/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/zstd-sys-031fb8d6ff58d88c/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/ring-5ae9421ce2f3cc38/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/lz4-sys-8683c213e11230d3/out -L native=/home/aatif/chainsafe/forest.worktrees/aatifsyed/benchmark-linkers/target/debug/build/tikv-jemalloc-sys-877a1204dc5ebaac/out/build/lib`
+    Finished dev [unoptimized] target(s) in 3.25s

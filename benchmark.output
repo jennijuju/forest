@@ -1,0 +1,31 @@
+Benchmark 1: ./do-link.bash
+  Time (mean ± σ):     12.742 s ±  0.734 s    [User: 10.116 s, System: 1.474 s]
+  Range (min … max):   12.204 s … 14.506 s    10 runs
+
+Benchmark 2: ./do-link.bash -C linker=clang
+  Time (mean ± σ):     12.365 s ±  0.289 s    [User: 9.804 s, System: 1.452 s]
+  Range (min … max):   11.823 s … 12.958 s    10 runs
+
+Benchmark 3: ./do-link.bash -C link-arg=-fuse-ld=lld
+  Time (mean ± σ):      3.131 s ±  0.052 s    [User: 2.509 s, System: 0.872 s]
+  Range (min … max):    3.068 s …  3.202 s    10 runs
+
+Benchmark 4: ./do-link.bash -C link-arg=-fuse-ld=mold
+  Time (mean ± σ):      2.573 s ±  0.162 s    [User: 1.261 s, System: 0.248 s]
+  Range (min … max):    2.409 s …  2.951 s    10 runs
+
+Benchmark 5: ./do-link.bash -C linker=clang -C link-arg=-fuse-ld=lld
+  Time (mean ± σ):      3.107 s ±  0.067 s    [User: 2.504 s, System: 0.865 s]
+  Range (min … max):    3.000 s …  3.220 s    10 runs
+
+Benchmark 6: ./do-link.bash -C linker=clang -C link-arg=-fuse-ld=mold
+  Time (mean ± σ):      2.628 s ±  0.243 s    [User: 1.363 s, System: 0.244 s]
+  Range (min … max):    2.415 s …  3.274 s    10 runs
+
+Summary
+  './do-link.bash -C link-arg=-fuse-ld=mold' ran
+    1.02 ± 0.11 times faster than './do-link.bash -C linker=clang -C link-arg=-fuse-ld=mold'
+    1.21 ± 0.08 times faster than './do-link.bash -C linker=clang -C link-arg=-fuse-ld=lld'
+    1.22 ± 0.08 times faster than './do-link.bash -C link-arg=-fuse-ld=lld'
+    4.81 ± 0.32 times faster than './do-link.bash -C linker=clang'
+    4.95 ± 0.42 times faster than './do-link.bash'
