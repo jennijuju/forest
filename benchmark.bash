@@ -4,7 +4,7 @@ set -euxo pipefail
 # no spaces please
 snapshot=/home/aatif/chainsafe/snapshots/567120_2023_05_17T16_13_00Z.car
 snapshot_height=567120
-tipsets_to_validate=30
+tipsets_to_validate=100
 ((start_height = snapshot_height - tipsets_to_validate))
 
 function do-benchmark() {
@@ -20,24 +20,24 @@ function do-benchmark() {
 
 }
 
-slug=import do-benchmark \
+# slug=import do-benchmark \
+# "\
+# target_{variant}/release/forest \
+# --encrypt-keystore=false \
+# --chain=calibnet \
+# --import-snapshot=$snapshot \
+# --halt-after-import \
+# --no-gc \
+# "
+
+slug=validate do-benchmark \
 "\
 target_{variant}/release/forest \
 --encrypt-keystore=false \
 --chain=calibnet \
 --import-snapshot=$snapshot \
 --halt-after-import \
+--skip-load=true \
 --no-gc \
+--height=$start_height \
 "
-
-# aborted after >1h
-# slug=validate do-benchmark \
-# "\
-# target_{variant}/release/forest \
-# --encrypt-keystore=false \
-# --chain=calibnet \
-# --import-snapshot=$snapshot \
-# --skip-load=true \
-# --no-gc \
-# --height=$start_height \
-# "
