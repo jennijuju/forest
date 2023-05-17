@@ -1,10 +1,13 @@
 [build]
+# TODO(aatifsyed): remove once we have a dev/ci container
 incremental = true
 
+# TODO(aatifsyed): remove - this can be pushed out to readme
 # In all cases, pass --cfg=tokio_unstable for tokio console integration
 # See (https://github.com/ChainSafe/forest/pull/2245)
 rustflags = ["--cfg=tokio_unstable"]
 
+# TODO(aatifsyed): remove the rest of this file once we have a dev/ci container
 [net]
 git-fetch-with-cli = true
 retry = 5

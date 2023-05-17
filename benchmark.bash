@@ -7,14 +7,20 @@ snapshot_height=567120
 tipsets_to_validate=30
 ((start_height = snapshot_height - tipsets_to_validate))
 
-hyperfine \
---warmup=1 \
---min-runs=20 \
---export-json=benchmark.json \
---export-markdown=benchmark.md \
---parameter-list variant avx2,no_avx2 \
---prepare="target_{variant}/release/forest-cli db clean --force" \
---command-name="{variant}" \
+function do-benchmark() {
+    hyperfine \
+        --warmup=1 \
+        --min-runs=20 \
+        "--export-json=$slug-benchmark.json" \
+        "--export-markdown=$slug-benchmark.md" \
+        --parameter-list variant avx2,no_avx2 \
+        --prepare="target_{variant}/release/forest-cli db clean --force" \
+        --command-name="{variant}" \
+        "$@"
+
+}
+
+slug=import do-benchmark \
 "\
 target_{variant}/release/forest \
 --encrypt-keystore=false \
@@ -23,6 +29,9 @@ target_{variant}/release/forest \
 --halt-after-import \
 --no-gc \
 "
+
+# aborted after >1h
+# slug=validate do-benchmark \
 # "\
 # target_{variant}/release/forest \
 # --encrypt-keystore=false \

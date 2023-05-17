@@ -1,0 +1,11 @@
+Benchmark 1: avx2
+  Time (mean ± σ):     36.508 s ± 10.011 s    [User: 16.235 s, System: 12.392 s]
+  Range (min … max):   21.245 s … 66.273 s    20 runs
+
+Benchmark 2: no_avx2
+  Time (mean ± σ):     32.762 s ±  5.676 s    [User: 16.193 s, System: 12.210 s]
+  Range (min … max):   22.025 s … 45.221 s    20 runs
+
+Summary
+  'no_avx2' ran
+    1.11 ± 0.36 times faster than 'avx2'
