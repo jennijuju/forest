@@ -20,15 +20,15 @@ function do-benchmark() {
 
 }
 
-# slug=import do-benchmark \
-# "\
-# target_{variant}/release/forest \
-# --encrypt-keystore=false \
-# --chain=calibnet \
-# --import-snapshot=$snapshot \
-# --halt-after-import \
-# --no-gc \
-# "
+slug=import do-benchmark \
+"\
+target_{variant}/release/forest \
+--encrypt-keystore=false \
+--chain=calibnet \
+--import-snapshot=$snapshot \
+--halt-after-import \
+--no-gc \
+"
 
 slug=validate do-benchmark \
 "\
