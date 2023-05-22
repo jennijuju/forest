@@ -251,6 +251,13 @@
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -280,6 +287,10 @@
 </span><span class="kw">pub const </span>NEWEST_NETWORK_VERSION: NetworkVersion = NetworkVersion::V17;
 
 <span class="kw">const </span>DEFAULT_RECENT_STATE_ROOTS: i64 = <span class="number">2000</span>;
+
+<span class="comment">// Sync the messages for one or many tipsets @ a time
+// Lotus uses a window size of 8: https://github.com/filecoin-project/lotus/blob/c1d22d8b3298fdce573107413729be608e72187d/chain/sync.go#L56
+</span><span class="kw">const </span>DEFAULT_REQUEST_WINDOW: usize = <span class="number">32</span>;
 
 <span class="doccomment">/// Forest builtin `filecoin` network chains. In general only `mainnet` and its
 /// chain information should be considered stable.
@@ -401,6 +412,7 @@
     <span class="doccomment">/// Number of default recent state roots to keep in memory and include in
     /// the exported snapshot.
     </span><span class="kw">pub </span>recent_state_roots: i64,
+    <span class="kw">pub </span>request_window: usize,
 }
 
 <span class="kw">impl </span>ChainConfig {
@@ -415,6 +427,7 @@
             policy: Policy::mainnet(),
             eth_chain_id: MAINNET_ETH_CHAIN_ID,
             recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
+            request_window: DEFAULT_REQUEST_WINDOW,
         }
     }
 
@@ -429,6 +442,7 @@
             policy: Policy::calibnet(),
             eth_chain_id: CALIBNET_ETH_CHAIN_ID,
             recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
+            request_window: DEFAULT_REQUEST_WINDOW,
         }
     }
 

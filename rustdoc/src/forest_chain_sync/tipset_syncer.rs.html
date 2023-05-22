@@ -1679,10 +1679,6 @@
 <a href="#1679" id="1679">1679</a>
 <a href="#1680" id="1680">1680</a>
 <a href="#1681" id="1681">1681</a>
-<a href="#1682" id="1682">1682</a>
-<a href="#1683" id="1683">1683</a>
-<a href="#1684" id="1684">1684</a>
-<a href="#1685" id="1685">1685</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2759,17 +2755,13 @@
     genesis: <span class="kw-2">&amp;</span>Tipset,
     invalid_block_strategy: InvalidBlockStrategy,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&lt;C&gt;&gt; {
-    <span class="comment">// Sync the messages for one or many tipsets @ a time
-    // Lotus uses a window size of 8: https://github.com/filecoin-project/lotus/blob/c1d22d8b3298fdce573107413729be608e72187d/chain/sync.go#L56
-    </span><span class="kw">const </span>REQUEST_WINDOW: usize = <span class="number">8</span>;
-
     <span class="kw">let </span>task_chainstore = chainstore.clone();
-
+    <span class="kw">let </span>request_window = state_manager.chain_config().request_window;
     <span class="comment">// Spawn a background task for the chain_exchange message requests
 
-    </span><span class="kw">let </span>(s, r) = flume::bounded(REQUEST_WINDOW * <span class="number">4</span>);
+    </span><span class="kw">let </span>(s, r) = flume::bounded(request_window * <span class="number">4</span>);
     <span class="kw">let </span>handle = tokio::task::spawn(<span class="kw">async move </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>batch: Vec&lt;Arc&lt;Tipset&gt;&gt; = Vec::with_capacity(REQUEST_WINDOW);
+        <span class="kw">let </span><span class="kw-2">mut </span>batch: Vec&lt;Arc&lt;Tipset&gt;&gt; = Vec::with_capacity(request_window);
 
         <span class="comment">// Visit tipsets in chronological order
         </span><span class="kw">for </span>tipset <span class="kw">in </span>tipsets.into_iter().rev() {
@@ -2785,7 +2777,7 @@
 
             <span class="comment">// Request tipset messages via chain_exchange
             </span>batch.push(tipset);
-            <span class="kw">if </span>batch.len() == REQUEST_WINDOW {
+            <span class="kw">if </span>batch.len() == request_window {
                 fetch_batch(<span class="kw-2">&amp;</span>batch, <span class="kw-2">&amp;</span>network, <span class="kw-2">&amp;</span>task_chainstore, <span class="kw-2">&amp;</span>s).<span class="kw">await</span><span class="question-mark">?</span>;
                 batch.clear();
             }
