@@ -472,7 +472,7 @@
 
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::power;
-<span class="kw">use </span>fil_actors_runtime_v10::runtime::DomainSeparationTag;
+<span class="kw">use </span>fil_actors_shared::v10::runtime::DomainSeparationTag;
 <span class="kw">use </span>filecoin_proofs_api::{post, PublicReplicaInfo, SectorId};
 <span class="kw">use </span>forest_beacon::{Beacon, BeaconEntry, BeaconSchedule, IGNORE_DRAND_VAR};
 <span class="kw">use </span>forest_blocks::{Block, BlockHeader, Tipset};
@@ -686,7 +686,7 @@
         .map_err(|<span class="kw">_</span>| FilecoinConsensusError::PowerActorUnavailable)<span class="question-mark">?
         </span>.ok_or(FilecoinConsensusError::PowerActorUnavailable)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>state = power::State::load(state_manager.blockstore(), <span class="kw-2">&amp;</span>actor.into())
+    <span class="kw">let </span>state = power::State::load(state_manager.blockstore(), actor.code, actor.state)
         .map_err(|err| FilecoinConsensusError::MinerPowerUnavailable(err.to_string()))<span class="question-mark">?</span>;
 
     state

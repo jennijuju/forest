@@ -419,7 +419,7 @@
     <span class="kw">let </span>actor = state_tree
         .get_actor(<span class="kw-2">&amp;</span>Address::REWARD_ACTOR)<span class="question-mark">?
         </span>.context(<span class="string">&quot;Reward actor address could not be resolved&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let </span>state = reward::State::load(state_tree.store(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+    <span class="kw">let </span>state = reward::State::load(state_tree.store(), actor.code, actor.state)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(state.into_total_storage_power_reward().into())
 }
@@ -430,7 +430,7 @@
     <span class="kw">let </span>actor = state_tree
         .get_actor(<span class="kw-2">&amp;</span>Address::MARKET_ACTOR)<span class="question-mark">?
         </span>.ok_or_else(|| Error::State(<span class="string">&quot;Market actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
-    <span class="kw">let </span>state = market::State::load(state_tree.store(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+    <span class="kw">let </span>state = market::State::load(state_tree.store(), actor.code, actor.state)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(state.total_locked().into())
 }
@@ -441,7 +441,7 @@
     <span class="kw">let </span>actor = state_tree
         .get_actor(<span class="kw-2">&amp;</span>Address::POWER_ACTOR)<span class="question-mark">?
         </span>.ok_or_else(|| Error::State(<span class="string">&quot;Power actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
-    <span class="kw">let </span>state = power::State::load(state_tree.store(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+    <span class="kw">let </span>state = power::State::load(state_tree.store(), actor.code, actor.state)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(state.into_total_locked().into())
 }

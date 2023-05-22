@@ -185,6 +185,7 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -306,7 +307,8 @@
         .state_manager
         .get_actor(<span class="kw-2">&amp;</span>Address::MARKET_ACTOR, <span class="kw-2">*</span>ts.parent_state())<span class="question-mark">?
         </span>.ok_or(<span class="string">&quot;Market actor address could not be resolved&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let </span>market_state = market::State::load(data.state_manager.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+    <span class="kw">let </span>market_state =
+        market::State::load(data.state_manager.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>da = market_state.proposals(data.state_manager.blockstore())<span class="question-mark">?</span>;
     <span class="kw">let </span>sa = market_state.states(data.state_manager.blockstore())<span class="question-mark">?</span>;

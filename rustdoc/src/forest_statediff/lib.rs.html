@@ -418,57 +418,57 @@
 
 <span class="kw">fn </span>pp_actor_state(
     bs: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore,
-    state: <span class="kw-2">&amp;</span>ActorState,
+    actor_state: <span class="kw-2">&amp;</span>ActorState,
     depth: <span class="prelude-ty">Option</span>&lt;u64&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;String, anyhow::Error&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>buffer = String::new();
-    <span class="macro">writeln!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{state:?}&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(miner_state) = MinerState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="macro">writeln!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{actor_state:?}&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(miner_state) = MinerState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{miner_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(cron_state) = CronState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(cron_state) = CronState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{cron_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(account_state) = AccountState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(account_state) = AccountState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{account_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(power_state) = PowerState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(power_state) = PowerState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{power_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(init_state) = InitState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(init_state) = InitState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{init_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(reward_state) = RewardState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(reward_state) = RewardState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{reward_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(system_state) = SystemState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(system_state) = SystemState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{system_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(multi_sig_state) = MultiSigState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(multi_sig_state) = MultiSigState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{multi_sig_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(market_state) = MarketState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(market_state) = MarketState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{market_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(datacap_state) = DatacapState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(datacap_state) = DatacapState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{datacap_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
-    <span class="kw">if let </span><span class="prelude-val">Ok</span>(evm_state) = EvmState::load(bs, <span class="kw-2">&amp;</span>state.into()) {
+    <span class="kw">if let </span><span class="prelude-val">Ok</span>(evm_state) = EvmState::load(bs, actor_state.code, actor_state.state) {
         <span class="macro">write!</span>(<span class="kw-2">&amp;mut </span>buffer, <span class="string">&quot;{evm_state:?}&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">return </span><span class="prelude-val">Ok</span>(buffer);
     }
 
-    <span class="kw">let </span>resolved = actor_to_resolved(bs, state, depth);
+    <span class="kw">let </span>resolved = actor_to_resolved(bs, actor_state, depth);
     buffer = serde_json::to_string_pretty(<span class="kw-2">&amp;</span>resolved)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(buffer)
 }
@@ -521,7 +521,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
-    <span class="kw">use </span>fil_actor_account_v10::State <span class="kw">as </span>AccountState;
+    <span class="kw">use </span>fil_actor_account_state::v10::State <span class="kw">as </span>AccountState;
     <span class="kw">use </span>forest_db::MemoryDB;
     <span class="kw">use </span>forest_shim::{address::Address, econ::TokenAmount, state_tree::ActorState};
     <span class="kw">use </span>forest_utils::db::BlockstoreExt;

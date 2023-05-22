@@ -91,7 +91,7 @@
         .map_err(|e| e.to_string())<span class="question-mark">?
         </span>.ok_or(<span class="string">&quot;Failed to load power actor for calculating weight&quot;</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>state = power::State::load(db, <span class="kw-2">&amp;</span>act.into()).map_err(|e| e.to_string())<span class="question-mark">?</span>;
+    <span class="kw">let </span>state = power::State::load(db, act.code, act.state).map_err(|e| e.to_string())<span class="question-mark">?</span>;
 
     <span class="kw">let </span>tpow = state.into_total_quality_adj_power();
 

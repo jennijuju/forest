@@ -1292,7 +1292,7 @@
 <span class="kw">use </span>chain_rand::ChainRand;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::<span class="kw-2">*</span>;
-<span class="kw">use </span>fil_actors_runtime_v10::runtime::Policy;
+<span class="kw">use </span>fil_actors_shared::v10::runtime::Policy;
 <span class="kw">use </span>forest_beacon::{BeaconSchedule, DrandBeacon};
 <span class="kw">use </span>forest_blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span>forest_chain::{ChainStore, HeadChange};
@@ -1573,7 +1573,7 @@
             </span>.get_actor(<span class="kw-2">&amp;</span>Address::POWER_ACTOR, <span class="kw-2">*</span>state_cid)<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Power actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>spas = power::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>spas = power::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(spas.miner_power(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?</span>.is_none())
     }
@@ -1592,7 +1592,7 @@
             .map_err(|e| Error::State(e.to_string()))<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Miner actor not found&quot;</span>.to_string()))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>ms = miner::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>act.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>ms = miner::State::load(<span class="self">self</span>.blockstore(), act.code, act.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>info = ms.info(<span class="self">self</span>.blockstore()).map_err(|e| e.to_string())<span class="question-mark">?</span>;
 
@@ -1611,7 +1611,7 @@
             </span>.get_actor(<span class="kw-2">&amp;</span>Address::POWER_ACTOR, <span class="kw-2">*</span>state_cid)<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Power actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>spas = power::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>spas = power::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>t_pow = spas.total_power();
 
@@ -1979,13 +1979,13 @@
             </span>.get_actor(<span class="kw-2">&amp;</span>Address::POWER_ACTOR, <span class="kw-2">*</span>base_tipset.parent_state())<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Power actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>power_state = power::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>power_state = power::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>actor = <span class="self">self
             </span>.get_actor(address, <span class="kw-2">*</span>base_tipset.parent_state())<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Miner actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>miner_state = miner::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>miner_state = miner::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="comment">// Non-empty power claim.
         </span><span class="kw">let </span>claim = power_state
@@ -2408,7 +2408,7 @@
                 Error::State(<span class="string">&quot;Market actor address could not be resolved&quot;</span>.to_string())
             })<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>market_state = market::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>market_state = market::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>new_addr = <span class="self">self
             </span>.lookup_id(addr, ts)<span class="question-mark">?
@@ -2474,7 +2474,7 @@
         <span class="kw">let </span>actor = <span class="self">self
             </span>.get_actor(<span class="kw-2">&amp;</span>Address::POWER_ACTOR, <span class="kw-2">*</span>ts.parent_state())<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Power actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
-        <span class="kw">let </span>ps = power::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>ps = power::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         ps.miner_nominal_power_meets_consensus_minimum(policy, <span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>addr.into())
     }

@@ -420,7 +420,7 @@
 
         <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.db);
 
-        <span class="kw">let </span>ms = fil_actor_interface::miner::State::load(<span class="kw-2">&amp;</span>tbs, <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>ms = fil_actor_interface::miner::State::load(<span class="kw-2">&amp;</span>tbs, actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>worker = ms.info(<span class="kw-2">&amp;</span>tbs)<span class="question-mark">?</span>.worker;
 

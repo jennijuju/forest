@@ -279,7 +279,7 @@
         <span class="kw">let </span>actor = <span class="self">self
             </span>.get_actor(miner_address, <span class="kw-2">*</span>st)<span class="question-mark">?
             </span>.ok_or_else(|| Error::State(<span class="string">&quot;Miner actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
-        <span class="kw">let </span>mas = miner::State::load(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>actor.into())<span class="question-mark">?</span>;
+        <span class="kw">let </span>mas = miner::State::load(<span class="self">self</span>.blockstore(), actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>proving_sectors = {
             <span class="kw">let </span><span class="kw-2">mut </span>proving_sectors = BitField::new();

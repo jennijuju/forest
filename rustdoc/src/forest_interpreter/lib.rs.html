@@ -96,7 +96,7 @@
         <span class="kw">return </span><span class="prelude-val">Ok</span>(address.into());
     }
 
-    <span class="kw">let </span>acc_st = account::State::load(store, <span class="kw-2">&amp;</span>act.into())<span class="question-mark">?</span>;
+    <span class="kw">let </span>acc_st = account::State::load(store, act.code, act.state)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(acc_st.pubkey_address().into())
 }
