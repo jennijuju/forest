@@ -122,7 +122,6 @@
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -175,8 +174,7 @@
     ws: WebSocketUpgrade,
 ) -&gt; <span class="kw">impl </span>IntoResponse {
     <span class="kw">let </span>authorization_header = get_auth_header(headers);
-    <span class="attr">#[allow(clippy::redundant_async_block)]
-    </span>ws.on_upgrade(<span class="kw">move </span>|socket| <span class="kw">async </span>{
+    ws.on_upgrade(<span class="kw">move </span>|socket| <span class="kw">async </span>{
         rpc_ws_handler_inner(socket, authorization_header, rpc_server).<span class="kw">await
     </span>})
 }

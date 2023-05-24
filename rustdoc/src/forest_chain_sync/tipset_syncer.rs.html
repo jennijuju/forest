@@ -1678,7 +1678,6 @@
 <a href="#1678" id="1678">1678</a>
 <a href="#1679" id="1679">1679</a>
 <a href="#1680" id="1680">1680</a>
-<a href="#1681" id="1681">1681</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -3052,8 +3051,7 @@
     }));
 
     <span class="kw">let </span>v_block = block.clone();
-    <span class="attr">#[allow(clippy::redundant_async_block)]
-    </span>validations.push(tokio::task::spawn(<span class="kw">async move </span>{
+    validations.push(tokio::task::spawn(<span class="kw">async move </span>{
         consensus
             .validate_block(state_manager, v_block)
             .map_err(|errs| {

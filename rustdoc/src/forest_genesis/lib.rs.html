@@ -212,7 +212,6 @@
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -414,8 +413,7 @@
     </span><span class="kw">const </span>BUFFER_CAPCITY_BYTES: usize = <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>;
 
     <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">100</span>);
-    <span class="attr">#[allow(clippy::redundant_async_block)]
-    </span><span class="kw">let </span>write_task =
+    <span class="kw">let </span>write_task =
         tokio::spawn(<span class="kw">async move </span>{ store.buffered_write(rx, BUFFER_CAPCITY_BYTES).<span class="kw">await </span>});
     <span class="kw">let </span><span class="kw-2">mut </span>car_reader = CarReader::new(reader).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>n_records = <span class="number">0</span>;
