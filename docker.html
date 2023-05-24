@@ -237,30 +237,28 @@ you obtained in the previous step)</p>
 </code></pre>
 <p>Create the wallet</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
-f1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
+t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 </code></pre>
 <p>Fund it using the
 <a href="https://faucet.calibration.fildev.network/funds.html">faucet</a>. You can verify
 it was funded after a few minutes in <a href="https://calibration.filscan.io/">Filscan</a>
 by pasting the Message ID obtained from the faucet. Example from
-<a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.
-Please note the first letter of the address is<code>t</code> and not <code>f</code>. This is a known
-issue.</p>
+<a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.</p>
 <p>Verify that your account has 100 FIL . The result is in <code>attoFIL</code>.</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 100000000000000000000
 </code></pre>
 <p>Create another wallet</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
-f1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
+t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 </code></pre>
 <p>Send 10 FIL from the original wallet to the new one</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN send --from f1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i f1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca 10000000000000000000
+<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN send --from t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca 10000000000000000000
 </code></pre>
 <p>Verify the balance of the new address.
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebymw25tedmec4xnwmf7fcrt64qvfbbuacbx6lnhyrcbfv3rgkn2a">Sample transaction</a>
 for this wallet.</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance f1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
+<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 10000000000000000000
 </code></pre>
 
