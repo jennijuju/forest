@@ -62,8 +62,6 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -87,7 +85,6 @@
     <span class="kw">pub </span>data_dir: PathBuf,
     <span class="kw">pub </span>genesis_file: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>enable_rpc: bool,
-    <span class="kw">pub </span>rpc_port: u16,
     <span class="kw">pub </span>rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// If this is true, then we do not validate the imported snapshot.
     /// Otherwise, we validate and compute the states.
@@ -116,7 +113,6 @@
             data_dir: dir.data_dir().to_path_buf(),
             genesis_file: <span class="prelude-val">None</span>,
             enable_rpc: <span class="bool-val">true</span>,
-            rpc_port: DEFAULT_PORT,
             rpc_token: <span class="prelude-val">None</span>,
             snapshot_path: <span class="prelude-val">None</span>,
             snapshot: <span class="bool-val">false</span>,
