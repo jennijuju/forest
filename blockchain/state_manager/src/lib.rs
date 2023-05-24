@@ -655,9 +655,11 @@ where
         // More null blocks than lookback
         if lbr >= tipset.epoch() {
             // This is not allowed to happen after network V3.
-            return Err(Error::Other(
-                "Failed to find look-back tipset: Unexpected number of null blocks.".to_string(),
-            ));
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            let (state, _) = rt.block_on(self.tipset_state(&tipset)).map_err(|e| {
+                Error::Other(format!("Could not get tipset state: {e:?}"))
+            })?;
+            return Ok((tipset, state));
         }
 
         let next_ts = self
