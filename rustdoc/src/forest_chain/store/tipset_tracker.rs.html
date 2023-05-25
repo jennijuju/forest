@@ -172,8 +172,8 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>forest_blocks::{BlockHeader, Tipset};
 <span class="kw">use </span>forest_networks::ChainConfig;
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>log::{debug, warn};
 <span class="kw">use </span>parking_lot::Mutex;
@@ -223,7 +223,7 @@
         <span class="kw">for </span>cid <span class="kw">in </span>cids.iter() {
             <span class="comment">// TODO: maybe cache the miner address to avoid having to do a `blockstore`
             // lookup here
-            </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(block)) = <span class="self">self</span>.db.get_obj::&lt;BlockHeader&gt;(cid) {
+            </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(block)) = <span class="self">self</span>.db.get_cbor::&lt;BlockHeader&gt;(cid) {
                 <span class="kw">if </span>header.miner_address() == block.miner_address() {
                     <span class="macro">warn!</span>(
                         <span class="string">&quot;Have multiple blocks from miner {} at height {} in our tipset cache {}-{}&quot;</span>,
@@ -267,7 +267,7 @@
                 // `blockstore` lookup here
                 </span><span class="kw">let </span>h = <span class="self">self
                     </span>.db
-                    .get_obj::&lt;BlockHeader&gt;(<span class="kw-2">&amp;</span>cid)
+                    .get_cbor::&lt;BlockHeader&gt;(<span class="kw-2">&amp;</span>cid)
                     .ok()
                     .flatten()
                     .ok_or_else(|| {

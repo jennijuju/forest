@@ -87,33 +87,6 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
-<a href="#95" id="95">95</a>
-<a href="#96" id="96">96</a>
-<a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -126,10 +99,10 @@
     Cid,
 };
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::{from_slice, to_vec, DAG_CBOR};
+<span class="kw">use </span>fvm_ipld_encoding::{to_vec, DAG_CBOR};
 <span class="kw">use </span>human_repr::HumanCount;
 <span class="kw">use </span>log::info;
-<span class="kw">use </span>serde::{de::DeserializeOwned, ser::Serialize};
+<span class="kw">use </span>serde::ser::Serialize;
 
 <span class="doccomment">/// DB key size in bytes for estimating reachable data size. Use parity-db value
 /// for simplicity. The actual value for other underlying DB might be slightly
@@ -138,33 +111,6 @@
 </span><span class="kw">pub const </span>DB_KEY_BYTES: usize = <span class="number">32</span>;
 <span class="doccomment">/// Extension methods for inserting and retrieving IPLD data with CIDs
 </span><span class="kw">pub trait </span>BlockstoreExt: Blockstore {
-    <span class="doccomment">/// Get typed object from block store by CID
-    </span><span class="kw">fn </span>get_obj&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;
-    <span class="kw">where
-        </span>T: DeserializeOwned,
-    {
-        <span class="kw">match </span><span class="self">self</span>.get(cid)<span class="question-mark">? </span>{
-            <span class="prelude-val">Some</span>(bz) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(from_slice(<span class="kw-2">&amp;</span>bz)<span class="question-mark">?</span>)),
-            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-        }
-    }
-
-    <span class="doccomment">/// Put an object in the block store and return the Cid identifier.
-    </span><span class="kw">fn </span>put_obj&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, obj: <span class="kw-2">&amp;</span>S, code: Code) -&gt; anyhow::Result&lt;Cid&gt;
-    <span class="kw">where
-        </span>S: Serialize,
-    {
-        <span class="kw">let </span>bytes = to_vec(obj)<span class="question-mark">?</span>;
-        <span class="self">self</span>.put_raw(bytes, code)
-    }
-
-    <span class="doccomment">/// Put raw bytes in the block store and return the Cid identifier.
-    </span><span class="kw">fn </span>put_raw(<span class="kw-2">&amp;</span><span class="self">self</span>, bytes: Vec&lt;u8&gt;, code: Code) -&gt; anyhow::Result&lt;Cid&gt; {
-        <span class="kw">let </span>cid = Cid::new_v1(DAG_CBOR, code.digest(<span class="kw-2">&amp;</span>bytes));
-        <span class="self">self</span>.put_keyed(<span class="kw-2">&amp;</span>cid, <span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(cid)
-    }
-
     <span class="doccomment">/// Batch put CBOR objects into block store and returns vector of CIDs
     </span><span class="kw">fn </span>bulk_put&lt;<span class="lifetime">&#39;a</span>, S, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, values: V, code: Code) -&gt; anyhow::Result&lt;Vec&lt;Cid&gt;&gt;
     <span class="kw">where

@@ -61,8 +61,8 @@
     machine::ManifestV3,
     state_tree::{ActorState, StateTree},
 };
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
 <span class="kw">use </span><span class="kw">super</span>::SystemStateNew;
 
@@ -75,7 +75,7 @@
         .get_actor(<span class="kw-2">&amp;</span>Address::INIT_ACTOR)<span class="question-mark">?
         </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Couldn&#39;t get init actor state&quot;</span>))<span class="question-mark">?</span>;
     <span class="kw">let </span>init_state: fil_actor_init_state::v10::State = store
-        .get_obj(<span class="kw-2">&amp;</span>init_actor.state)<span class="question-mark">?
+        .get_cbor(<span class="kw-2">&amp;</span>init_actor.state)<span class="question-mark">?
         </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Couldn&#39;t get statev10&quot;</span>))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>eth_zero_addr =
@@ -89,7 +89,7 @@
         </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;failed to get system actor&quot;</span>))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>system_actor_state = store
-        .get_obj::&lt;SystemStateNew&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
+        .get_cbor::&lt;SystemStateNew&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
         </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;failed to get system actor state&quot;</span>))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>manifest_data = system_actor_state.builtin_actors;

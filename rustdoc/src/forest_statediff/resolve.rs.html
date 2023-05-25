@@ -66,8 +66,8 @@
 
 </span><span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
 <span class="kw">use </span>libipld_core::ipld::Ipld;
 
@@ -81,7 +81,7 @@
     </span>BS: Blockstore,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>ipld = bs
-        .get_obj(cid)<span class="question-mark">?
+        .get_cbor(cid)<span class="question-mark">?
         </span>.context(<span class="string">&quot;Cid does not exist in blockstore&quot;</span>)<span class="question-mark">?</span>;
 
     resolve_ipld(bs, <span class="kw-2">&amp;mut </span>ipld, depth)<span class="question-mark">?</span>;
@@ -114,7 +114,7 @@
         }
         Ipld::Link(cid) =&gt; {
             <span class="kw">if </span>cid.codec() == DAG_CBOR {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>x) = bs.get_obj(cid)<span class="question-mark">? </span>{
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>x) = bs.get_cbor(cid)<span class="question-mark">? </span>{
                     resolve_ipld(bs, <span class="kw-2">&amp;mut </span>x, depth)<span class="question-mark">?</span>;
                     <span class="kw-2">*</span>ipld = x;
                 }

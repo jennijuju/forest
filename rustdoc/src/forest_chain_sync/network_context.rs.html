@@ -414,8 +414,8 @@
     rpc::RequestResponseError,
     NetworkMessage, PeerId, PeerManager, BITSWAP_TIMEOUT,
 };
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>log::{debug, trace, warn};
 <span class="kw">use </span>serde::de::DeserializeOwned;
@@ -530,7 +530,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;TMessage, String&gt; {
         <span class="comment">// Check if what we are fetching over Bitswap already exists in the
         // database. If it does, return it, else fetch over the network.
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(b) = <span class="self">self</span>.db.get_obj(<span class="kw-2">&amp;</span>content).map_err(|e| e.to_string())<span class="question-mark">? </span>{
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(b) = <span class="self">self</span>.db.get_cbor(<span class="kw-2">&amp;</span>content).map_err(|e| e.to_string())<span class="question-mark">? </span>{
             <span class="kw">return </span><span class="prelude-val">Ok</span>(b);
         }
 
@@ -551,7 +551,7 @@
         .<span class="kw">await
         </span>.is_ok();
 
-        <span class="kw">match </span><span class="self">self</span>.db.get_obj(<span class="kw-2">&amp;</span>content) {
+        <span class="kw">match </span><span class="self">self</span>.db.get_cbor(<span class="kw-2">&amp;</span>content) {
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(b)) =&gt; <span class="prelude-val">Ok</span>(b),
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>) =&gt; <span class="prelude-val">Err</span>(<span class="macro">format!</span>(
                 <span class="string">&quot;Not found in db, bitswap. success: {success} cid, {content:?}&quot;

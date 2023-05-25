@@ -141,8 +141,8 @@
     state_tree::{ActorState, StateTree},
 };
 <span class="kw">use </span>forest_state_manager::StateManager;
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>tokio::sync::broadcast::{Receiver <span class="kw">as </span>Subscriber, Sender <span class="kw">as </span>Publisher};
 
 <span class="kw">use </span><span class="kw">crate</span>::errors::Error;
@@ -212,7 +212,7 @@
         <span class="kw">let </span>cid = <span class="self">self
             </span>.sm
             .blockstore()
-            .put_obj(msg, Blake2b256)
+            .put_cbor(msg, Blake2b256)
             .map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(cid)
     }

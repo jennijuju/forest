@@ -104,8 +104,8 @@
     builtin::HAMT_BIT_WIDTH, make_empty_map, make_map_with_root_and_bitwidth,
 };
 <span class="kw">use </span>forest_shim::sector::convert_window_post_proof_v1_to_v1p1;
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
 <span class="kw">use </span><span class="kw">crate</span>::common::{ActorMigration, ActorMigrationInput, ActorMigrationOutput};
 
@@ -125,7 +125,7 @@
         input: ActorMigrationInput,
     ) -&gt; anyhow::Result&lt;ActorMigrationOutput&gt; {
         <span class="kw">let </span>in_state: StateV10 = store
-            .get_obj(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
+            .get_cbor(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Power actor: could not read v10 state&quot;</span>))<span class="question-mark">?</span>;
 
         <span class="comment">//
@@ -168,7 +168,7 @@
             proof_validation_batch: in_state.proof_validation_batch,
         };
 
-        <span class="kw">let </span>new_head = store.put_obj(<span class="kw-2">&amp;</span>out_state, Blake2b256)<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_head = store.put_cbor(<span class="kw-2">&amp;</span>out_state, Blake2b256)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(ActorMigrationOutput {
             new_code_cid: <span class="self">self</span>.<span class="number">0</span>,

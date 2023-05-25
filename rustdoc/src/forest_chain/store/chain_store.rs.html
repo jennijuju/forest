@@ -1051,7 +1051,7 @@
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
+<span class="kw">use </span>fvm_ipld_encoding::{Cbor, CborStore};
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>log::{debug, info, trace, warn};
 <span class="kw">use </span>lru::LruCache;
@@ -1222,7 +1222,7 @@
         <span class="self">self</span>.file_backed_genesis.lock().set_inner(<span class="kw-2">*</span>header.cid())<span class="question-mark">?</span>;
 
         <span class="self">self</span>.blockstore()
-            .put_obj(<span class="kw-2">&amp;</span>header, Blake2b256)
+            .put_cbor(<span class="kw-2">&amp;</span>header, Blake2b256)
             .map_err(Error::from)
     }
 
@@ -1258,7 +1258,7 @@
     <span class="doccomment">/// Returns genesis [`BlockHeader`] from the store based on a static key.
     </span><span class="kw">pub fn </span>genesis(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BlockHeader, Error&gt; {
         <span class="self">self</span>.blockstore()
-            .get_obj::&lt;BlockHeader&gt;(<span class="self">self</span>.file_backed_genesis.lock().inner())<span class="question-mark">?
+            .get_cbor::&lt;BlockHeader&gt;(<span class="self">self</span>.file_backed_genesis.lock().inner())<span class="question-mark">?
             </span>.ok_or_else(|| Error::Other(<span class="string">&quot;Genesis block not set&quot;</span>.into()))
     }
 
@@ -1683,7 +1683,7 @@
         .iter()
         .map(|c| {
             store
-                .get_obj(c)<span class="question-mark">?
+                .get_cbor(c)<span class="question-mark">?
                 </span>.ok_or_else(|| Error::NotFound(String::from(<span class="string">&quot;Key for header&quot;</span>)))
         })
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, Error&gt;&gt;()<span class="question-mark">?</span>;
@@ -1735,7 +1735,7 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(roots) = db.get_obj::&lt;TxMeta&gt;(msg_cid)<span class="question-mark">? </span>{
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(roots) = db.get_cbor::&lt;TxMeta&gt;(msg_cid)<span class="question-mark">? </span>{
         <span class="kw">let </span>bls_cids = read_amt_cids(db, <span class="kw-2">&amp;</span>roots.bls_message_root)<span class="question-mark">?</span>;
         <span class="kw">let </span>secpk_cids = read_amt_cids(db, <span class="kw-2">&amp;</span>roots.secp_message_root)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>((bls_cids, secpk_cids))
@@ -1781,7 +1781,7 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    db.get_obj(key)<span class="question-mark">?
+    db.get_cbor(key)<span class="question-mark">?
         </span>.ok_or_else(|| Error::UndefinedKey(key.to_string()))
 }
 
@@ -1849,7 +1849,7 @@
 {
     keys.iter()
         .map(|k| {
-            db.get_obj(k)<span class="question-mark">?
+            db.get_cbor(k)<span class="question-mark">?
                 </span>.ok_or_else(|| Error::UndefinedKey(k.to_string()))
         })
         .collect()
@@ -1928,11 +1928,11 @@
     <span class="kw">let </span><span class="kw-2">mut </span>bls_sigs = Vec::new();
     <span class="kw">for </span>msg <span class="kw">in </span>messages {
         <span class="kw">if </span>msg.signature().signature_type() == SignatureType::BLS {
-            <span class="kw">let </span>c = db.put_obj(<span class="kw-2">&amp;</span>msg.message, Blake2b256)<span class="question-mark">?</span>;
+            <span class="kw">let </span>c = db.put_cbor(<span class="kw-2">&amp;</span>msg.message, Blake2b256)<span class="question-mark">?</span>;
             bls_cids.push(c);
             bls_sigs.push(<span class="kw-2">&amp;</span>msg.signature);
         } <span class="kw">else </span>{
-            <span class="kw">let </span>c = db.put_obj(<span class="kw-2">&amp;</span>msg, Blake2b256)<span class="question-mark">?</span>;
+            <span class="kw">let </span>c = db.put_cbor(<span class="kw-2">&amp;</span>msg, Blake2b256)<span class="question-mark">?</span>;
             secp_cids.push(c);
         }
     }
@@ -1940,7 +1940,7 @@
     <span class="kw">let </span>bls_msg_root = Amt::new_from_iter(db, bls_cids.iter().copied())<span class="question-mark">?</span>;
     <span class="kw">let </span>secp_msg_root = Amt::new_from_iter(db, secp_cids.iter().copied())<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>mmcid = db.put_obj(
+    <span class="kw">let </span>mmcid = db.put_cbor(
         <span class="kw-2">&amp;</span>TxMeta {
             bls_message_root: bls_msg_root,
             secp_message_root: secp_msg_root,

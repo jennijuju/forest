@@ -1308,13 +1308,13 @@
     state_tree::{ActorState, StateTree},
     version::NetworkVersion,
 };
-<span class="kw">use </span>forest_utils::db::BlockstoreExt;
 <span class="kw">use </span>futures::{channel::oneshot, select, FutureExt};
 <span class="kw">use </span>fvm::externs::Rand;
 <span class="kw">use </span>fvm3::externs::Rand <span class="kw">as </span>Rand_v3;
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>num::BigInt;
@@ -2045,7 +2045,7 @@
                 .ok_or_else(|| Error::Other(<span class="string">&quot;block must have parents&quot;</span>.to_string()))<span class="question-mark">?</span>;
             <span class="kw">let </span>parent: BlockHeader = <span class="self">self
                 </span>.blockstore()
-                .get_obj(parent_cid)<span class="question-mark">?
+                .get_cbor(parent_cid)<span class="question-mark">?
                 </span>.ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Could not find parent block with cid {parent_cid}&quot;</span>))<span class="question-mark">?</span>;
             parent.epoch()
         } <span class="kw">else </span>{

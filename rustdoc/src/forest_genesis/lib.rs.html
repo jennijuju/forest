@@ -212,6 +212,7 @@
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -222,12 +223,13 @@
 <span class="kw">use </span>forest_blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span>forest_state_manager::StateManager;
 <span class="kw">use </span>forest_utils::{
-    db::{BlockstoreBufferedWriteExt, BlockstoreExt},
+    db::BlockstoreBufferedWriteExt,
     net::{get_fetch_progress_from_file, get_fetch_progress_from_url},
 };
 <span class="kw">use </span>futures::AsyncRead;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::{load_car, CarReader};
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>log::{debug, info};
 <span class="kw">use </span>tokio::{fs::File, io::BufReader};
 <span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
@@ -305,7 +307,7 @@
         <span class="macro">panic!</span>(<span class="string">&quot;Invalid Genesis. Genesis Tipset must have only 1 Block.&quot;</span>);
     }
 
-    <span class="kw">let </span>genesis_block: BlockHeader = db.get_obj(<span class="kw-2">&amp;</span>genesis_cids[<span class="number">0</span>])<span class="question-mark">?</span>.ok_or_else(|| {
+    <span class="kw">let </span>genesis_block: BlockHeader = db.get_cbor(<span class="kw-2">&amp;</span>genesis_cids[<span class="number">0</span>])<span class="question-mark">?</span>.ok_or_else(|| {
         <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Could not find genesis block despite being loaded using a genesis file&quot;</span>)
     })<span class="question-mark">?</span>;
 
