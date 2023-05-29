@@ -147,6 +147,7 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -155,14 +156,15 @@
     time::{SystemTime, UNIX_EPOCH},
 };
 
-<span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>forest_blocks::{Block, FullTipset, Tipset, TxMeta};
 <span class="kw">use </span>forest_chain::ChainStore;
 <span class="kw">use </span>forest_message::SignedMessage;
 <span class="kw">use </span>forest_shim::message::Message;
+<span class="kw">use </span>forest_utils::db::CborStoreExt;
 <span class="kw">use </span>fvm_ipld_amt::{Amtv0 <span class="kw">as </span>Amt, Error <span class="kw">as </span>IpldAmtError};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::{Cbor, CborStore, Error <span class="kw">as </span>EncodingError};
+<span class="kw">use </span>fvm_ipld_encoding::{Cbor, Error <span class="kw">as </span>EncodingError};
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">use </span><span class="kw">crate</span>::bad_block_cache::BadBlockCache;
@@ -292,7 +294,7 @@
 
         <span class="comment">// Store message roots and receive meta_root CID
         </span>blockstore
-            .put_cbor(<span class="kw-2">&amp;</span>meta, Blake2b256)
+            .put_cbor_default(<span class="kw-2">&amp;</span>meta)
             .map_err(|e| Box::new(TipsetValidationError::Blockstore(e.to_string())))
     }
 }

@@ -1009,9 +1009,6 @@
 <a href="#1009" id="1009">1009</a>
 <a href="#1010" id="1010">1010</a>
 <a href="#1011" id="1011">1011</a>
-<a href="#1012" id="1012">1012</a>
-<a href="#1013" id="1013">1013</a>
-<a href="#1014" id="1014">1014</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1021,7 +1018,7 @@
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>async_compression::futures::write::ZstdEncoder;
 <span class="kw">use </span>bls_signatures::Serialize <span class="kw">as </span>SerializeBls;
-<span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>digest::Digest;
 <span class="kw">use </span>forest_beacon::{BeaconEntry, IGNORE_DRAND_VAR};
 <span class="kw">use </span>forest_blocks::{Block, BlockHeader, FullTipset, Tipset, TipsetKeys, TxMeta};
@@ -1042,7 +1039,7 @@
 <span class="kw">use </span>forest_utils::{
     db::{
         file_backed_obj::{ChainMeta, FileBacked, SYNC_PERIOD},
-        BlockstoreExt,
+        BlockstoreExt, CborStoreExt,
     },
     io::{AsyncWriterWithChecksum, Checksum},
     misc::Either,
@@ -1222,7 +1219,7 @@
         <span class="self">self</span>.file_backed_genesis.lock().set_inner(<span class="kw-2">*</span>header.cid())<span class="question-mark">?</span>;
 
         <span class="self">self</span>.blockstore()
-            .put_cbor(<span class="kw-2">&amp;</span>header, Blake2b256)
+            .put_cbor_default(<span class="kw-2">&amp;</span>header)
             .map_err(Error::from)
     }
 
@@ -1753,7 +1750,7 @@
     C: Serialize,
 {
     <span class="kw">for </span>chunk <span class="kw">in </span>headers.chunks(<span class="number">256</span>) {
-        db.bulk_put(chunk, Blake2b256)<span class="question-mark">?</span>;
+        db.bulk_put(chunk, DB::default_code())<span class="question-mark">?</span>;
     }
     <span class="prelude-val">Ok</span>(())
 }
@@ -1928,11 +1925,11 @@
     <span class="kw">let </span><span class="kw-2">mut </span>bls_sigs = Vec::new();
     <span class="kw">for </span>msg <span class="kw">in </span>messages {
         <span class="kw">if </span>msg.signature().signature_type() == SignatureType::BLS {
-            <span class="kw">let </span>c = db.put_cbor(<span class="kw-2">&amp;</span>msg.message, Blake2b256)<span class="question-mark">?</span>;
+            <span class="kw">let </span>c = db.put_cbor_default(<span class="kw-2">&amp;</span>msg.message)<span class="question-mark">?</span>;
             bls_cids.push(c);
             bls_sigs.push(<span class="kw-2">&amp;</span>msg.signature);
         } <span class="kw">else </span>{
-            <span class="kw">let </span>c = db.put_cbor(<span class="kw-2">&amp;</span>msg, Blake2b256)<span class="question-mark">?</span>;
+            <span class="kw">let </span>c = db.put_cbor_default(<span class="kw-2">&amp;</span>msg)<span class="question-mark">?</span>;
             secp_cids.push(c);
         }
     }
@@ -1940,13 +1937,10 @@
     <span class="kw">let </span>bls_msg_root = Amt::new_from_iter(db, bls_cids.iter().copied())<span class="question-mark">?</span>;
     <span class="kw">let </span>secp_msg_root = Amt::new_from_iter(db, secp_cids.iter().copied())<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>mmcid = db.put_cbor(
-        <span class="kw-2">&amp;</span>TxMeta {
-            bls_message_root: bls_msg_root,
-            secp_message_root: secp_msg_root,
-        },
-        Blake2b256,
-    )<span class="question-mark">?</span>;
+    <span class="kw">let </span>mmcid = db.put_cbor_default(<span class="kw-2">&amp;</span>TxMeta {
+        bls_message_root: bls_msg_root,
+        secp_message_root: secp_msg_root,
+    })<span class="question-mark">?</span>;
 
     <span class="kw">let </span>bls_agg = <span class="kw">if </span>bls_sigs.is_empty() {
         Signature::new_bls(<span class="macro">vec!</span>[])

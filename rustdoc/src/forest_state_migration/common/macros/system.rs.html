@@ -80,9 +80,9 @@
         <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>system {
             <span class="kw">use </span>std::sync::Arc;
 
-            <span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+            <span class="kw">use </span>cid::Cid;
+            <span class="kw">use </span>forest_utils::db::CborStoreExt;
             <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-            <span class="kw">use </span>fvm_ipld_encoding::CborStore;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::common</span>::<span class="kw-2">*</span>;
 
             <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>system_migrator&lt;BS: Blockstore + Clone + Send + Sync&gt;(
@@ -109,7 +109,7 @@
                     <span class="kw">let </span>state = <span class="kw">super</span>::SystemStateNew {
                         builtin_actors: <span class="self">self</span>.new_builtin_actors_cid,
                     };
-                    <span class="kw">let </span>new_head = store.put_cbor(<span class="kw-2">&amp;</span>state, Blake2b256)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>new_head = store.put_cbor_default(<span class="kw-2">&amp;</span>state)<span class="question-mark">?</span>;
 
                     <span class="prelude-val">Ok</span>(ActorMigrationOutput {
                         new_code_cid: <span class="self">self</span>.new_code_cid,

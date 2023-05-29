@@ -81,12 +81,12 @@
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>cid::multihash::Code::Blake2b256;
-<span class="kw">use </span>fil_actor_miner_state::{
+</span><span class="kw">use </span>fil_actor_miner_state::{
     v10::{MinerInfo <span class="kw">as </span>MinerInfoV10, State <span class="kw">as </span>MinerStateV10},
     v11::{MinerInfo <span class="kw">as </span>MinerInfoV11, State <span class="kw">as </span>MinerStateV11},
 };
 <span class="kw">use </span>forest_shim::sector::convert_window_post_proof_v1_to_v1p1;
+<span class="kw">use </span>forest_utils::db::CborStoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
@@ -135,7 +135,7 @@
             }),
         };
 
-        <span class="kw">let </span>out_info_cid = store.put_cbor(<span class="kw-2">&amp;</span>out_info, Blake2b256)<span class="question-mark">?</span>;
+        <span class="kw">let </span>out_info_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>out_info)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>out_state = MinerStateV11 {
             info: out_info_cid,

@@ -87,6 +87,7 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -95,7 +96,7 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_power_state::{
     v10::{Claim <span class="kw">as </span>ClaimV10, State <span class="kw">as </span>StateV10},
     v11::{Claim <span class="kw">as </span>ClaimV11, State <span class="kw">as </span>StateV11},
@@ -104,6 +105,7 @@
     builtin::HAMT_BIT_WIDTH, make_empty_map, make_map_with_root_and_bitwidth,
 };
 <span class="kw">use </span>forest_shim::sector::convert_window_post_proof_v1_to_v1p1;
+<span class="kw">use </span>forest_utils::db::CborStoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
@@ -168,7 +170,7 @@
             proof_validation_batch: in_state.proof_validation_batch,
         };
 
-        <span class="kw">let </span>new_head = store.put_cbor(<span class="kw-2">&amp;</span>out_state, Blake2b256)<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_head = store.put_cbor_default(<span class="kw-2">&amp;</span>out_state)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(ActorMigrationOutput {
             new_code_cid: <span class="self">self</span>.<span class="number">0</span>,

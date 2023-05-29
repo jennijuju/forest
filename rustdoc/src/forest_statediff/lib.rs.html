@@ -520,12 +520,12 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+    <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>fil_actor_account_state::v10::State <span class="kw">as </span>AccountState;
     <span class="kw">use </span>forest_db::MemoryDB;
     <span class="kw">use </span>forest_shim::{address::Address, econ::TokenAmount, state_tree::ActorState};
+    <span class="kw">use </span>forest_utils::db::CborStoreExt;
     <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-    <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
     <span class="kw">use </span><span class="kw">super</span>::pp_actor_state;
 
@@ -534,7 +534,7 @@
         </span><span class="kw">let </span>account_cid =
             Cid::try_from(<span class="string">&quot;bafk2bzaceampw4romta75hyz5p4cqriypmpbgnkxncgxgqn6zptv5lsp2w2bo&quot;</span>)
                 .unwrap();
-        <span class="kw">let </span>actor_state_cid = db.put_cbor(<span class="kw-2">&amp;</span>account, Blake2b256).unwrap();
+        <span class="kw">let </span>actor_state_cid = db.put_cbor_default(<span class="kw-2">&amp;</span>account).unwrap();
         ActorState::new(
             account_cid,
             actor_state_cid,

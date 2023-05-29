@@ -43,6 +43,7 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -51,8 +52,9 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_init_state::{v10::State <span class="kw">as </span>InitStateNew, v9::State <span class="kw">as </span>InitStateOld};
+<span class="kw">use </span>forest_utils::db::CborStoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
@@ -80,7 +82,7 @@
 
         <span class="kw">let </span>out_state: InitStateNew = TypeMigrator::migrate_type(in_state, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>new_head = store.put_cbor(<span class="kw-2">&amp;</span>out_state, Blake2b256)<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_head = store.put_cbor_default(<span class="kw-2">&amp;</span>out_state)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(ActorMigrationOutput {
             new_code_cid: <span class="self">self</span>.<span class="number">0</span>,

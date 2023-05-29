@@ -129,7 +129,7 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>cid::{multihash::Code::Blake2b256, Cid};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>forest_blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span>forest_chain::HeadChange;
 <span class="kw">use </span>forest_message::{ChainMessage, SignedMessage};
@@ -141,8 +141,8 @@
     state_tree::{ActorState, StateTree},
 };
 <span class="kw">use </span>forest_state_manager::StateManager;
+<span class="kw">use </span>forest_utils::db::CborStoreExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>tokio::sync::broadcast::{Receiver <span class="kw">as </span>Subscriber, Sender <span class="kw">as </span>Publisher};
 
 <span class="kw">use </span><span class="kw">crate</span>::errors::Error;
@@ -212,7 +212,7 @@
         <span class="kw">let </span>cid = <span class="self">self
             </span>.sm
             .blockstore()
-            .put_cbor(msg, Blake2b256)
+            .put_cbor_default(msg)
             .map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(cid)
     }
