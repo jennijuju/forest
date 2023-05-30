@@ -258,10 +258,26 @@
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{str::FromStr, sync::Arc};
+</span><span class="kw">use </span>std::{fmt::Display, str::FromStr, sync::Arc};
 
 <span class="kw">use </span>anyhow::Error;
 <span class="kw">use </span>cid::Cid;
@@ -294,10 +310,12 @@
 
 <span class="doccomment">/// Forest builtin `filecoin` network chains. In general only `mainnet` and its
 /// chain information should be considered stable.
-</span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(tag = <span class="string">&quot;type&quot;</span>, content = <span class="string">&quot;name&quot;</span>, rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>NetworkChain {
     Mainnet,
     Calibnet,
+    Devnet(String),
 }
 
 <span class="kw">impl </span>FromStr <span class="kw">for </span>NetworkChain {
@@ -308,6 +326,16 @@
             <span class="string">&quot;mainnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Mainnet),
             <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Calibnet),
             name =&gt; <span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;unsupported network chain: {name}&quot;</span>)),
+        }
+    }
+}
+
+<span class="kw">impl </span>Display <span class="kw">for </span>NetworkChain {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            NetworkChain::Mainnet =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;mainnet&quot;</span>),
+            NetworkChain::Calibnet =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;calibnet&quot;</span>),
+            NetworkChain::Devnet(name) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;{name}&quot;</span>),
         }
     }
 }
@@ -401,7 +429,7 @@
 </span><span class="attr">#[derive(Serialize, Deserialize, PartialEq)]
 #[serde(default)]
 </span><span class="kw">pub struct </span>ChainConfig {
-    <span class="kw">pub </span>name: String,
+    <span class="kw">pub </span>network: NetworkChain,
     <span class="kw">pub </span>genesis_cid: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>bootstrap_peers: Vec&lt;String&gt;,
     <span class="kw">pub </span>block_delay_secs: u64,
@@ -419,7 +447,7 @@
     <span class="kw">pub fn </span>mainnet() -&gt; <span class="self">Self </span>{
         <span class="kw">use </span>mainnet::<span class="kw-2">*</span>;
         <span class="self">Self </span>{
-            name: <span class="string">&quot;mainnet&quot;</span>.to_string(),
+            network: NetworkChain::Mainnet,
             genesis_cid: <span class="prelude-val">Some</span>(GENESIS_CID.to_owned()),
             bootstrap_peers: DEFAULT_BOOTSTRAP.iter().map(|x| x.to_string()).collect(),
             block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u64,
@@ -434,7 +462,7 @@
     <span class="kw">pub fn </span>calibnet() -&gt; <span class="self">Self </span>{
         <span class="kw">use </span>calibnet::<span class="kw-2">*</span>;
         <span class="self">Self </span>{
-            name: <span class="string">&quot;calibnet&quot;</span>.to_string(),
+            network: NetworkChain::Calibnet,
             genesis_cid: <span class="prelude-val">Some</span>(GENESIS_CID.to_owned()),
             bootstrap_peers: DEFAULT_BOOTSTRAP.iter().map(|x| x.to_string()).collect(),
             block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u64,
@@ -450,6 +478,10 @@
         <span class="kw">match </span>network_chain {
             NetworkChain::Mainnet =&gt; <span class="self">Self</span>::mainnet(),
             NetworkChain::Calibnet =&gt; <span class="self">Self</span>::calibnet(),
+            NetworkChain::Devnet(name) =&gt; <span class="self">Self </span>{
+                network: NetworkChain::Devnet(name.clone()),
+                ..<span class="self">Self</span>::calibnet()
+            },
         }
     }
 
@@ -468,10 +500,10 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         genesis_ts: u64,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;BeaconSchedule&lt;DrandBeacon&gt;, anyhow::Error&gt; {
-        <span class="kw">let </span>ds_iter = <span class="kw">if </span><span class="self">self</span>.name == <span class="string">&quot;calibnet&quot; </span>{
-            calibnet::DRAND_SCHEDULE.iter()
-        } <span class="kw">else </span>{
-            mainnet::DRAND_SCHEDULE.iter()
+        <span class="kw">let </span>ds_iter = <span class="kw">match </span><span class="self">self</span>.network {
+            NetworkChain::Mainnet =&gt; mainnet::DRAND_SCHEDULE.iter(),
+            NetworkChain::Calibnet =&gt; calibnet::DRAND_SCHEDULE.iter(),
+            NetworkChain::Devnet(<span class="kw">_</span>) =&gt; mainnet::DRAND_SCHEDULE.iter(),
         };
         <span class="kw">let </span><span class="kw-2">mut </span>points = BeaconSchedule::with_capacity(ds_iter.len());
         <span class="kw">for </span>dc <span class="kw">in </span>ds_iter {
@@ -496,15 +528,15 @@
     }
 
     <span class="kw">pub fn </span>genesis_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[u8]&gt; {
-        <span class="kw">match </span><span class="self">self</span>.name.as_ref() {
-            <span class="string">&quot;mainnet&quot; </span>=&gt; <span class="prelude-val">Some</span>(mainnet::DEFAULT_GENESIS),
-            <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="prelude-val">Some</span>(calibnet::DEFAULT_GENESIS),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        <span class="kw">match </span><span class="self">self</span>.network {
+            NetworkChain::Mainnet =&gt; <span class="prelude-val">Some</span>(mainnet::DEFAULT_GENESIS),
+            NetworkChain::Calibnet =&gt; <span class="prelude-val">Some</span>(calibnet::DEFAULT_GENESIS),
+            NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
         }
     }
 
     <span class="kw">pub fn </span>is_testnet(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        !<span class="macro">matches!</span>(<span class="self">self</span>.name.as_ref(), <span class="string">&quot;mainnet&quot;</span>)
+        !<span class="macro">matches!</span>(<span class="self">self</span>.network, NetworkChain::Mainnet)
     }
 }
 

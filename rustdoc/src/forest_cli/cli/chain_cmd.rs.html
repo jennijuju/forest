@@ -273,7 +273,7 @@
                 <span class="kw">let </span>checkpoint_hash = chain_get_tipset_hash((tsk_json,), <span class="kw-2">&amp;</span>config.client.rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
-                <span class="macro">println!</span>(<span class="string">&quot;Chain:           {}&quot;</span>, config.chain.name);
+                <span class="macro">println!</span>(<span class="string">&quot;Chain:           {}&quot;</span>, config.chain.network);
                 <span class="macro">println!</span>(<span class="string">&quot;Epoch:           {}&quot;</span>, target_epoch);
                 <span class="macro">println!</span>(<span class="string">&quot;Checkpoint hash: {}&quot;</span>, checkpoint_hash);
                 <span class="prelude-val">Ok</span>(())

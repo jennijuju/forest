@@ -128,7 +128,7 @@
         .client
         .data_dir
         .join(<span class="string">&quot;bundles&quot;</span>)
-        .join(<span class="kw-2">&amp;</span>config.chain.name);
+        .join(config.chain.network.to_string());
 
     tokio::fs::create_dir_all(<span class="kw-2">&amp;</span>bundle_path_dir).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>bundle_path = bundle_path_dir.join(<span class="macro">format!</span>(<span class="string">&quot;bundle_{height}.car&quot;</span>));

@@ -1272,8 +1272,6 @@
 <a href="#1272" id="1272">1272</a>
 <a href="#1273" id="1273">1273</a>
 <a href="#1274" id="1274">1274</a>
-<a href="#1275" id="1275">1275</a>
-<a href="#1276" id="1276">1276</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1549,16 +1547,14 @@
     // state.
     </span><span class="doccomment">/// Returns the internal, protocol-level network name.
     </span><span class="kw">pub fn </span>get_network_name(<span class="kw-2">&amp;</span><span class="self">self</span>, _st: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">if </span><span class="self">self</span>.chain_config.name == <span class="string">&quot;calibnet&quot; </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="string">&quot;calibrationnet&quot;</span>.to_owned());
+        <span class="kw">let </span>name = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.chain_config.network {
+            forest_networks::NetworkChain::Mainnet =&gt; <span class="string">&quot;testnetnet&quot;</span>,
+            forest_networks::NetworkChain::Calibnet =&gt; <span class="string">&quot;calibrationnet&quot;</span>,
+            forest_networks::NetworkChain::Devnet(name) =&gt; name,
         }
-        <span class="kw">if </span><span class="self">self</span>.chain_config.name == <span class="string">&quot;mainnet&quot; </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="string">&quot;testnetnet&quot;</span>.to_owned());
-        }
-        <span class="kw">if </span><span class="self">self</span>.chain_config.name == <span class="string">&quot;devnet&quot; </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="string">&quot;devnet&quot;</span>.to_owned());
-        }
-        <span class="prelude-val">Err</span>(Error::Other(<span class="string">&quot;Cannot guess network name&quot;</span>.to_owned()))
+        .to_owned();
+
+        <span class="prelude-val">Ok</span>(name)
         <span class="comment">// let init_act = self
         //     .get_actor(actor::init::ADDRESS, *st)?
         //     .ok_or_else(|| Error::State(&quot;Init actor address could not be

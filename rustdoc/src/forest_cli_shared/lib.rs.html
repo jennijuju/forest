@@ -30,6 +30,6 @@
 
 <span class="doccomment">/// Gets chain data directory
 </span><span class="kw">pub fn </span>chain_path(config: <span class="kw-2">&amp;</span><span class="kw">crate</span>::cli::Config) -&gt; PathBuf {
-    PathBuf::from(<span class="kw-2">&amp;</span>config.client.data_dir).join(<span class="kw-2">&amp;</span>config.chain.name)
+    PathBuf::from(<span class="kw-2">&amp;</span>config.client.data_dir).join(config.chain.network.to_string())
 }
 </code></pre></div></section></main></body></html>

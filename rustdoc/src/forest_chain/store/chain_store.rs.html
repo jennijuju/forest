@@ -1027,7 +1027,7 @@
 <span class="kw">use </span>forest_libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
 <span class="kw">use </span>forest_message::{ChainMessage, Message <span class="kw">as </span>MessageTrait, SignedMessage};
 <span class="kw">use </span>forest_metrics::metrics;
-<span class="kw">use </span>forest_networks::ChainConfig;
+<span class="kw">use </span>forest_networks::{ChainConfig, NetworkChain};
 <span class="kw">use </span>forest_shim::{
     address::Address,
     crypto::{Signature, SignatureType},
@@ -1380,14 +1380,14 @@
     <span class="kw">pub fn </span>validate_tipset_checkpoints(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         from: Arc&lt;Tipset&gt;,
-        network: String,
+        network: <span class="kw-2">&amp;</span>NetworkChain,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="macro">info!</span>(
             <span class="string">&quot;Validating {network} tipset checkpoint hashes from: {}&quot;</span>,
             from.epoch()
         );
 
-        <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>hashes) = checkpoint_tipsets::get_tipset_hashes(<span class="kw-2">&amp;</span>network) <span class="kw">else </span>{
+        <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>hashes) = checkpoint_tipsets::get_tipset_hashes(network) <span class="kw">else </span>{
             <span class="macro">info!</span>(<span class="string">&quot;No checkpoint tipsets found for network: {network}, skipping validation.&quot;</span>);
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         };
@@ -1414,7 +1414,7 @@
             </span>)));
         }
 
-        <span class="kw">if </span>!checkpoint_tipsets::validate_genesis_cid(<span class="kw-2">&amp;</span>ts, <span class="kw-2">&amp;</span>network) {
+        <span class="kw">if </span>!checkpoint_tipsets::validate_genesis_cid(<span class="kw-2">&amp;</span>ts, network) {
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
                 <span class="string">&quot;Genesis cid {:?} on {network} network does not match with one stored in checkpoint registry&quot;</span>,
                 ts.key().cid()

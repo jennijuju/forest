@@ -1215,7 +1215,7 @@
 ) -&gt; anyhow::Result&lt;Config&gt; {
     <span class="kw">if </span>should_fetch_snapshot {
         <span class="kw">let </span>snapshot_path = default_snapshot_dir(<span class="kw-2">&amp;</span>config);
-        <span class="kw">let </span>provider = SnapshotServer::try_get_default(<span class="kw-2">&amp;</span>config.chain.name)<span class="question-mark">?</span>;
+        <span class="kw">let </span>provider = SnapshotServer::try_get_default(<span class="kw-2">&amp;</span>config.chain.network)<span class="question-mark">?</span>;
         <span class="comment">// FIXME: change this to `true` once zstd compressed snapshots is supported by
         // the forest provider
         </span><span class="kw">let </span>use_compressed = provider == SnapshotServer::Filecoin;

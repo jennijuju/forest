@@ -563,6 +563,7 @@
 <a href="#563" id="563">563</a>
 <a href="#564" id="564">564</a>
 <a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -580,6 +581,7 @@
 <span class="kw">use </span>forest_db::db_engine::{db_root, open_proxy_db};
 <span class="kw">use </span>forest_genesis::{forest_load_car, read_genesis_header};
 <span class="kw">use </span>forest_ipld::{recurse_links_hash, CidHashSet};
+<span class="kw">use </span>forest_networks::NetworkChain;
 <span class="kw">use </span>forest_rpc_api::{chain_api::ChainExportParams, progress_api::GetProgressType};
 <span class="kw">use </span>forest_rpc_client::{chain_ops::<span class="kw-2">*</span>, progress_ops::get_progress};
 <span class="kw">use </span>forest_utils::{
@@ -1004,7 +1006,7 @@
         <span class="kw">let </span>db_path = db_root(
             tmp_chain_data_path
                 .path()
-                .join(<span class="kw-2">&amp;</span>config.chain.name)
+                .join(config.chain.network.to_string())
                 .as_path(),
         );
         <span class="kw">let </span>db = open_proxy_db(db_path, config.db_config().clone())<span class="question-mark">?</span>;
@@ -1036,7 +1038,7 @@
             chain_store.blockstore(),
             <span class="kw-2">*</span>recent_stateroots,
             <span class="kw-2">&amp;</span>Tipset::from(genesis),
-            <span class="kw-2">&amp;</span>config.chain.name,
+            <span class="kw-2">&amp;</span>config.chain.network,
         )
         .<span class="kw">await</span><span class="question-mark">?</span>;
     }
@@ -1050,7 +1052,7 @@
     db: <span class="kw-2">&amp;</span>DB,
     recent_stateroots: ChainEpoch,
     genesis_tipset: <span class="kw-2">&amp;</span>Tipset,
-    network: <span class="kw-2">&amp;</span>str,
+    network: <span class="kw-2">&amp;</span>NetworkChain,
 ) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>DB: fvm_ipld_blockstore::Blockstore + Send + Sync,

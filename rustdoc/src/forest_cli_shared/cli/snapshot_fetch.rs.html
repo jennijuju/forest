@@ -844,6 +844,11 @@
 <a href="#844" id="844">844</a>
 <a href="#845" id="845">845</a>
 <a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{
@@ -855,6 +860,7 @@
 
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>chrono::{DateTime, NaiveDate};
+<span class="kw">use </span>forest_networks::NetworkChain;
 <span class="kw">use </span>forest_utils::{
     io::{progress_bar::Units, ProgressBar, TempFile},
     net::{
@@ -884,12 +890,11 @@
 }
 
 <span class="kw">impl </span>SnapshotServer {
-    <span class="kw">pub fn </span>try_get_default(chain: <span class="kw">impl </span>AsRef&lt;str&gt;) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>chain = chain.as_ref();
-        <span class="prelude-val">Ok</span>(<span class="kw">match </span>chain.to_lowercase().as_str() {
-            <span class="string">&quot;mainnet&quot; </span>=&gt; SnapshotServer::Filecoin,
-            <span class="string">&quot;calibnet&quot; </span>=&gt; SnapshotServer::Forest,
-            <span class="kw">_ </span>=&gt; <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Fetch not supported for chain {chain}&quot;</span>),
+    <span class="kw">pub fn </span>try_get_default(chain: <span class="kw-2">&amp;</span>NetworkChain) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span>chain {
+            NetworkChain::Mainnet =&gt; SnapshotServer::Filecoin,
+            NetworkChain::Calibnet =&gt; SnapshotServer::Forest,
+            NetworkChain::Devnet(name) =&gt; <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Fetch not supported for chain {name}&quot;</span>),
         })
     }
 }
@@ -935,7 +940,7 @@
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(filename) = path.file_name().and_then(|n| n.to_str()) {
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(captures) = pattern.captures(filename) {
                             <span class="kw">let </span>network: String = captures.name(<span class="string">&quot;network&quot;</span>).unwrap().as_str().into();
-                            <span class="kw">if </span>network == config.chain.name {
+                            <span class="kw">if </span>network == config.chain.network.to_string() {
                                 <span class="kw">let </span>date = NaiveDate::parse_from_str(
                                     captures.name(<span class="string">&quot;date&quot;</span>).unwrap().as_str(),
                                     <span class="string">&quot;%Y-%m-%d&quot;</span>,
@@ -976,10 +981,10 @@
 
 <span class="doccomment">/// gets the size of a snapshot from Filecoin.
 </span><span class="kw">pub async fn </span>snapshot_fetch_size(config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;u64&gt; {
-    <span class="kw">let </span>service_url = <span class="kw">match </span>config.chain.name.to_lowercase().as_ref() {
-        <span class="string">&quot;mainnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.mainnet_compressed.clone(),
-        <span class="string">&quot;calibnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.calibnet_compressed.clone(),
-        <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {}&quot;</span>, config.chain.name,),
+    <span class="kw">let </span>service_url = <span class="kw">match </span><span class="kw-2">&amp;</span>config.chain.network {
+        NetworkChain::Mainnet =&gt; config.snapshot_fetch.filecoin.mainnet_compressed.clone(),
+        NetworkChain::Calibnet =&gt; config.snapshot_fetch.filecoin.calibnet_compressed.clone(),
+        NetworkChain::Devnet(name) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {name}&quot;</span>),
     };
     <span class="kw">let </span>client = https_client();
 
@@ -1016,7 +1021,7 @@
 ) -&gt; anyhow::Result&lt;PathBuf&gt; {
     <span class="kw">let </span>server = <span class="kw">match </span>provider {
         <span class="prelude-val">Some</span>(s) =&gt; <span class="kw-2">*</span>s,
-        <span class="prelude-val">None </span>=&gt; SnapshotServer::try_get_default(<span class="kw-2">&amp;</span>config.chain.name)<span class="question-mark">?</span>,
+        <span class="prelude-val">None </span>=&gt; SnapshotServer::try_get_default(<span class="kw-2">&amp;</span>config.chain.network)<span class="question-mark">?</span>,
     };
     <span class="kw">match </span>server {
         SnapshotServer::Forest =&gt; {
@@ -1048,12 +1053,12 @@
         </span>);
     }
 
-    <span class="kw">let </span>snapshot_fetch_config = <span class="kw">match </span>config.chain.name.to_lowercase().as_str() {
-        <span class="string">&quot;mainnet&quot; </span>=&gt; <span class="macro">bail!</span>(
+    <span class="kw">let </span>snapshot_fetch_config = <span class="kw">match </span><span class="kw-2">&amp;</span>config.chain.network {
+        NetworkChain::Mainnet =&gt; <span class="macro">bail!</span>(
             <span class="string">&quot;Mainnet snapshot fetch service not provided by Forest yet. Suggestion: use `--provider=filecoin` to fetch from Filecoin server.&quot;
         </span>),
-        <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="kw-2">&amp;</span>config.snapshot_fetch.forest.calibnet,
-        <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {}&quot;</span>, config.chain.name,),
+        NetworkChain::Calibnet =&gt; <span class="kw-2">&amp;</span>config.snapshot_fetch.forest.calibnet,
+        NetworkChain::Devnet(name) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {name}&quot;</span>),
     };
     <span class="kw">let </span>name = <span class="kw-2">&amp;</span>snapshot_fetch_config.bucket_name;
     <span class="kw">let </span>region = <span class="kw-2">&amp;</span>snapshot_fetch_config.region;
@@ -1128,10 +1133,10 @@
                 Suggestion: use `--compressed` to fetch compressed snapshots.&quot;
         </span>);
     }
-    <span class="kw">let </span>service_url = <span class="kw">match </span>config.chain.name.to_lowercase().as_ref() {
-        <span class="string">&quot;mainnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.mainnet_compressed.clone(),
-        <span class="string">&quot;calibnet&quot; </span>=&gt; config.snapshot_fetch.filecoin.calibnet_compressed.clone(),
-        <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {}&quot;</span>, config.chain.name,),
+    <span class="kw">let </span>service_url = <span class="kw">match </span><span class="kw-2">&amp;</span>config.chain.network {
+        NetworkChain::Mainnet =&gt; config.snapshot_fetch.filecoin.mainnet_compressed.clone(),
+        NetworkChain::Calibnet =&gt; config.snapshot_fetch.filecoin.calibnet_compressed.clone(),
+        NetworkChain::Devnet(name) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;Fetch not supported for chain {name}&quot;</span>),
     };
     <span class="macro">info!</span>(<span class="string">&quot;Snapshot url: {service_url}&quot;</span>);
     <span class="kw">let </span>client = https_client();
@@ -1163,7 +1168,7 @@
     </span><span class="kw">let </span>filename = filename_from_url(<span class="kw-2">&amp;</span>snapshot_url)<span class="question-mark">?</span>;
     <span class="comment">// Create requested directory tree to store the snapshot
     </span>create_dir_all(snapshot_out_dir).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>snapshot_name = normalize_filecoin_snapshot_name(<span class="kw-2">&amp;</span>config.chain.name, <span class="kw-2">&amp;</span>filename)<span class="question-mark">?</span>;
+    <span class="kw">let </span>snapshot_name = normalize_filecoin_snapshot_name(<span class="kw-2">&amp;</span>config.chain.network, <span class="kw-2">&amp;</span>filename)<span class="question-mark">?</span>;
     <span class="kw">let </span>snapshot_path = snapshot_out_dir.join(<span class="kw-2">&amp;</span>snapshot_name);
     <span class="comment">// Download the file
     </span><span class="kw">if </span>use_aria2 {
@@ -1362,11 +1367,15 @@
 /// car`. # Example
 /// ```
 /// # use forest_cli_shared::cli::normalize_filecoin_snapshot_name;
+/// # use forest_networks::NetworkChain;
 /// let actual_name = &quot;64050_2022_11_24T00_00_00Z.car&quot;;
 /// let normalized_name = &quot;filecoin_snapshot_calibnet_2022-11-24_height_64050.car&quot;;
-/// assert_eq!(normalized_name, normalize_filecoin_snapshot_name(&quot;calibnet&quot;, actual_name).unwrap());
+/// assert_eq!(normalized_name, normalize_filecoin_snapshot_name(&amp;NetworkChain::Calibnet, actual_name).unwrap());
 /// ```
-</span><span class="kw">pub fn </span>normalize_filecoin_snapshot_name(network: <span class="kw-2">&amp;</span>str, filename: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;String&gt; {
+</span><span class="kw">pub fn </span>normalize_filecoin_snapshot_name(
+    network: <span class="kw-2">&amp;</span>NetworkChain,
+    filename: <span class="kw-2">&amp;</span>str,
+) -&gt; anyhow::Result&lt;String&gt; {
     <span class="kw">let </span>pattern = Regex::new(
         <span class="string">r&quot;(?P&lt;height&gt;\d+)_(?P&lt;date&gt;\d{4}_\d{2}_\d{2})T(?P&lt;time&gt;\d{2}_\d{2}_\d{2})Z(?P&lt;ext&gt;\.car(\.zst)?)$&quot;</span>,
     )
@@ -1376,7 +1385,8 @@
         <span class="kw">let </span>height = captures.name(<span class="string">&quot;height&quot;</span>).unwrap().as_str().parse::&lt;i64&gt;()<span class="question-mark">?</span>;
         <span class="kw">let </span>ext = captures.name(<span class="string">&quot;ext&quot;</span>).unwrap().as_str();
         <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(
-            <span class="string">&quot;filecoin_snapshot_{network}_{}_height_{height}{ext}&quot;</span>,
+            <span class="string">&quot;filecoin_snapshot_{}_{}_height_{height}{ext}&quot;</span>,
+            network,
             date.format(<span class="string">&quot;%Y-%m-%d&quot;</span>)
         ))
     } <span class="kw">else </span>{
@@ -1541,7 +1551,7 @@
 
     <span class="attr">#[quickcheck]
     </span><span class="kw">fn </span>test_normalize_filecoin_snapshot_name(filename: String) {
-        <span class="kw">_ </span>= normalize_filecoin_snapshot_name(<span class="string">&quot;calibnet&quot;</span>, <span class="kw-2">&amp;</span>filename);
+        <span class="kw">_ </span>= normalize_filecoin_snapshot_name(<span class="kw-2">&amp;</span>NetworkChain::Calibnet, <span class="kw-2">&amp;</span>filename);
     }
 
     <span class="attr">#[test]

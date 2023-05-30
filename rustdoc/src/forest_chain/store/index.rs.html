@@ -286,6 +286,7 @@
 <a href="#286" id="286">286</a>
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -317,6 +318,7 @@
     <span class="kw">use </span>ahash::HashSet;
     <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>forest_blocks::{Tipset, TipsetKeys};
+    <span class="kw">use </span>forest_networks::NetworkChain;
     <span class="kw">use </span>serde::{Deserialize, Serialize};
 
     <span class="comment">// Represents a static map of validated tipset hashes which helps to remove the
@@ -355,24 +357,24 @@
         <span class="prelude-val">None
     </span>}
 
-    <span class="kw">pub fn </span>get_tipset_hashes(network: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;HashSet&lt;String&gt;&gt; {
+    <span class="kw">pub fn </span>get_tipset_hashes(network: <span class="kw-2">&amp;</span>NetworkChain) -&gt; <span class="prelude-ty">Option</span>&lt;HashSet&lt;String&gt;&gt; {
         <span class="kw">match </span>network {
-            <span class="string">&quot;mainnet&quot; </span>=&gt; <span class="prelude-val">Some</span>(KNOWN_CHECKPOINTS.mainnet.clone()),
-            <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="prelude-val">Some</span>(KNOWN_CHECKPOINTS.calibnet.clone()),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>, <span class="comment">// skip and pass through if an unsupported network found
+            NetworkChain::Mainnet =&gt; <span class="prelude-val">Some</span>(KNOWN_CHECKPOINTS.mainnet.clone()),
+            NetworkChain::Calibnet =&gt; <span class="prelude-val">Some</span>(KNOWN_CHECKPOINTS.calibnet.clone()),
+            NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>, <span class="comment">// skip and pass through if an unsupported network found
         </span>}
     }
 
     <span class="comment">// Validate that the genesis tipset matches our hard-coded values
-    </span><span class="kw">pub fn </span>validate_genesis_cid(ts: <span class="kw-2">&amp;</span>Tipset, network: <span class="kw-2">&amp;</span>str) -&gt; bool {
+    </span><span class="kw">pub fn </span>validate_genesis_cid(ts: <span class="kw-2">&amp;</span>Tipset, network: <span class="kw-2">&amp;</span>NetworkChain) -&gt; bool {
         <span class="kw">match </span>network {
-            <span class="string">&quot;mainnet&quot; </span>=&gt; {
+            NetworkChain::Mainnet =&gt; {
                 ts.min_ticket_block().cid().to_string() == forest_networks::mainnet::GENESIS_CID
             }
-            <span class="string">&quot;calibnet&quot; </span>=&gt; {
+            NetworkChain::Calibnet =&gt; {
                 ts.min_ticket_block().cid().to_string() == forest_networks::calibnet::GENESIS_CID
             }
-            <span class="kw">_ </span>=&gt; <span class="bool-val">true</span>, <span class="comment">// skip and pass through if an unsupported network found
+            NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>, <span class="comment">// skip and pass through if an unsupported network found
         </span>}
     }
 
