@@ -127,15 +127,17 @@
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>ahash::{HashMap, HashMapExt};
+</span><span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>forest_shim::{clock::ChainEpoch, state_tree::StateTree};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
-<span class="kw">use super</span>::{verifier::MigrationVerifier, Migrator, PostMigrationAction};
+<span class="kw">use super</span>::{verifier::MigrationVerifier, Migrator, PostMigratorArc};
 <span class="kw">use </span><span class="kw">crate</span>::common::migration_job::{MigrationJob, MigrationJobOutput};
 
 <span class="doccomment">/// Handles several cases of migration:
@@ -146,25 +148,27 @@
     migrations: HashMap&lt;Cid, Migrator&lt;BS&gt;&gt;,
     <span class="doccomment">/// Verifies correctness of the migration specification.
     </span>verifier: <span class="prelude-ty">Option</span>&lt;MigrationVerifier&lt;BS&gt;&gt;,
-    <span class="doccomment">/// Post migration actions. This may include new actor creation.
-    </span>post_migration_actions: Vec&lt;PostMigrationAction&lt;BS&gt;&gt;,
+    <span class="doccomment">/// Post migrator(s). This may include new actor creation.
+    </span>post_migrators: Vec&lt;PostMigratorArc&lt;BS&gt;&gt;,
 }
 
 <span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; StateMigration&lt;BS&gt; {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
-        verifier: <span class="prelude-ty">Option</span>&lt;MigrationVerifier&lt;BS&gt;&gt;,
-        post_migration_actions: Vec&lt;PostMigrationAction&lt;BS&gt;&gt;,
-    ) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(verifier: <span class="prelude-ty">Option</span>&lt;MigrationVerifier&lt;BS&gt;&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            migrations: HashMap::new(),
+            migrations: Default::default(),
             verifier,
-            post_migration_actions,
+            post_migrators: Default::default(),
         }
     }
 
     <span class="doccomment">/// Inserts a new migrator into the migration specification.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>add_migrator(<span class="kw-2">&amp;mut </span><span class="self">self</span>, prior_cid: Cid, migrator: Migrator&lt;BS&gt;) {
         <span class="self">self</span>.migrations.insert(prior_cid, migrator);
+    }
+
+    <span class="doccomment">/// Inserts a new post migrator into the post migration specification.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>add_post_migrator(<span class="kw-2">&amp;mut </span><span class="self">self</span>, post_migrator: PostMigratorArc&lt;BS&gt;) {
+        <span class="self">self</span>.post_migrators.push(post_migrator);
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>migrate_state_tree(
@@ -249,8 +253,8 @@
         });
 
         <span class="comment">// execute post migration actions, e.g., create new actors
-        </span><span class="kw">for </span>action <span class="kw">in </span><span class="self">self</span>.post_migration_actions.iter() {
-            action(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;mut </span>actors_out)<span class="question-mark">?</span>;
+        </span><span class="kw">for </span>post_migrator <span class="kw">in </span><span class="self">self</span>.post_migrators.iter() {
+            post_migrator.post_migrate_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;mut </span>actors_out)<span class="question-mark">?</span>;
         }
 
         actors_out.flush()

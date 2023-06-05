@@ -106,7 +106,6 @@
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -124,10 +123,10 @@
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
 <span class="kw">use super</span>::{
-    eam::create_eam_actor, eth_account::create_eth_account_actor, init, system, verifier::Verifier,
+    eam::EamPostMigrator, eth_account::EthAccountPostMigrator, init, system, verifier::Verifier,
     ManifestNew, ManifestOld, SystemStateOld,
 };
-<span class="kw">use </span><span class="kw">crate</span>::common::{migrators::nil_migrator, PostMigrationAction, StateMigration};
+<span class="kw">use </span><span class="kw">crate</span>::common::{migrators::nil_migrator, StateMigration};
 <span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; StateMigration&lt;BS&gt; {
     <span class="kw">pub fn </span>add_nv18_migrations(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -167,6 +166,11 @@
             system::system_migrator(new_manifest_data, <span class="kw-2">*</span>new_manifest.get_system_code()),
         );
 
+        <span class="comment">// Add post-migration steps
+        </span><span class="self">self</span>.add_post_migrator(Arc::new(EamPostMigrator));
+
+        <span class="self">self</span>.add_post_migrator(Arc::new(EthAccountPostMigrator));
+
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -200,13 +204,7 @@
     <span class="comment">// Add migration specification verification
     </span><span class="kw">let </span>verifier = Arc::new(Verifier::default());
 
-    <span class="comment">// Add post-migration steps
-    </span><span class="kw">let </span>post_migration_actions = [create_eam_actor, create_eth_account_actor]
-        .into_iter()
-        .map(|action| Arc::new(action) <span class="kw">as </span>PostMigrationAction&lt;DB&gt;)
-        .collect();
-
-    <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier), post_migration_actions);
+    <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier));
     migration.add_nv18_migrations(blockstore.clone(), state, <span class="kw-2">&amp;</span>new_manifest_cid)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>actors_in = StateTree::new_from_root(blockstore.clone(), state)<span class="question-mark">?</span>;

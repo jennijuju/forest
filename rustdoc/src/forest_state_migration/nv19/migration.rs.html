@@ -200,7 +200,7 @@
     <span class="comment">// Add migration specification verification
     </span><span class="kw">let </span>verifier = Arc::new(Verifier::default());
 
-    <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier), <span class="macro">vec!</span>[]);
+    <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier));
     migration.add_nv19_migrations(blockstore.clone(), state, <span class="kw-2">&amp;</span>new_manifest_cid)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>actors_in = StateTree::new_from_root(blockstore.clone(), state)<span class="question-mark">?</span>;
