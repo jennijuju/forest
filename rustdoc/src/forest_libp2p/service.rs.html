@@ -865,6 +865,7 @@
 <a href="#865" id="865">865</a>
 <a href="#866" id="866">866</a>
 <a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1665,6 +1666,7 @@
         }
         ForestBehaviourEvent::Ping(ping_event) =&gt; handle_ping_event(ping_event, peer_manager).<span class="kw">await</span>,
         ForestBehaviourEvent::Identify(<span class="kw">_</span>) =&gt; {}
+        ForestBehaviourEvent::KeepAlive(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::ChainExchange(ce_event) =&gt; {
             handle_chain_exchange_event(
                 <span class="kw-2">&amp;mut </span>swarm.behaviour_mut().chain_exchange,
