@@ -467,7 +467,6 @@
 <a href="#467" id="467">467</a>
 <a href="#468" id="468">468</a>
 <a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -483,6 +482,7 @@
     econ::TokenAmount,
     error::ExitCode,
     executor::{ApplyRet, Receipt},
+    machine::MultiEngine,
     message::{Message, Message_v3},
     state_tree::ActorState,
     version::NetworkVersion,
@@ -491,10 +491,9 @@
 <span class="kw">use </span>fvm::{
     executor::{DefaultExecutor, Executor},
     externs::Rand,
-    machine::{DefaultMachine, Machine, MultiEngine <span class="kw">as </span>MultiEngine_v2, NetworkConfig},
+    machine::{DefaultMachine, Machine, NetworkConfig},
 };
 <span class="kw">use </span>fvm3::{
-    engine::MultiEngine <span class="kw">as </span>MultiEngine_v3,
     executor::{DefaultExecutor <span class="kw">as </span>DefaultExecutor_v3, Executor <span class="kw">as </span>Executor_v3},
     externs::Rand <span class="kw">as </span>Rand_v3,
     machine::{
@@ -580,8 +579,7 @@
         circ_supply: TokenAmount,
         reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
         lb_fn: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
-        multi_engine_v2: <span class="kw-2">&amp;</span>MultiEngine_v2,
-        multi_engine_v3: <span class="kw-2">&amp;</span>MultiEngine_v3,
+        multi_engine: <span class="kw-2">&amp;</span>MultiEngine,
         chain_config: Arc&lt;ChainConfig&gt;,
         timestamp: u64,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
@@ -591,7 +589,7 @@
             <span class="comment">// ChainId defines the chain ID used in the Ethereum JSON-RPC endpoint.
             </span>config.chain_id(chain_config.eth_chain_id.into());
 
-            <span class="kw">let </span>engine = multi_engine_v3.get(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
+            <span class="kw">let </span>engine = multi_engine.v3.get(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
             <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, timestamp, root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());
@@ -608,7 +606,7 @@
             })
         } <span class="kw">else </span>{
             <span class="kw">let </span>config = NetworkConfig::new(network_version.into());
-            <span class="kw">let </span>engine = multi_engine_v2.get(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
+            <span class="kw">let </span>engine = multi_engine.v2.get(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
             <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());

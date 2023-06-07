@@ -1277,15 +1277,6 @@
 <a href="#1277" id="1277">1277</a>
 <a href="#1278" id="1278">1278</a>
 <a href="#1279" id="1279">1279</a>
-<a href="#1280" id="1280">1280</a>
-<a href="#1281" id="1281">1281</a>
-<a href="#1282" id="1282">1282</a>
-<a href="#1283" id="1283">1283</a>
-<a href="#1284" id="1284">1284</a>
-<a href="#1285" id="1285">1285</a>
-<a href="#1286" id="1286">1286</a>
-<a href="#1287" id="1287">1287</a>
-<a href="#1288" id="1288">1288</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1495,8 +1486,7 @@
     genesis_info: GenesisInfo,
     beacon: Arc&lt;forest_beacon::BeaconSchedule&lt;DrandBeacon&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
-    engine_v2: fvm::machine::MultiEngine,
-    engine_v3: fvm3::engine::MultiEngine,
+    engine: forest_shim::machine::MultiEngine,
     reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
 }
 
@@ -1518,12 +1508,7 @@
             genesis_info: GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span>chain_config),
             beacon,
             chain_config,
-            engine_v2: fvm::machine::MultiEngine::new(),
-            engine_v3: fvm3::engine::MultiEngine::new(
-                std::thread::available_parallelism()
-                    .map(|x| x.get() <span class="kw">as </span>u32)
-                    .unwrap_or(<span class="number">1</span>),
-            ),
+            engine: forest_shim::machine::MultiEngine::default(),
             reward_calc,
         })
     }
@@ -1677,8 +1662,7 @@
                     .get_circulating_supply(epoch, <span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>,
                 <span class="self">self</span>.reward_calc.clone(),
                 chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>tipset)),
-                <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v2,
-                <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v3,
+                <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
                 Arc::clone(<span class="self">self</span>.chain_config()),
                 timestamp,
             )
@@ -1782,8 +1766,7 @@
                 .get_circulating_supply(bheight, <span class="self">self</span>.blockstore(), bstate)<span class="question-mark">?</span>,
             <span class="self">self</span>.reward_calc.clone(),
             chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(tipset)),
-            <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v2,
-            <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v3,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
             Arc::clone(<span class="self">self</span>.chain_config()),
             tipset.min_timestamp(),
         )<span class="question-mark">?</span>;
@@ -1855,8 +1838,7 @@
                 .get_circulating_supply(epoch, <span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>st)<span class="question-mark">?</span>,
             <span class="self">self</span>.reward_calc.clone(),
             chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>ts)),
-            <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v2,
-            <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v3,
+            <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
             Arc::clone(<span class="self">self</span>.chain_config()),
             ts.min_timestamp(),
         )<span class="question-mark">?</span>;
