@@ -1272,6 +1272,21 @@
 <a href="#1272" id="1272">1272</a>
 <a href="#1273" id="1273">1273</a>
 <a href="#1274" id="1274">1274</a>
+<a href="#1275" id="1275">1275</a>
+<a href="#1276" id="1276">1276</a>
+<a href="#1277" id="1277">1277</a>
+<a href="#1278" id="1278">1278</a>
+<a href="#1279" id="1279">1279</a>
+<a href="#1280" id="1280">1280</a>
+<a href="#1281" id="1281">1281</a>
+<a href="#1282" id="1282">1282</a>
+<a href="#1283" id="1283">1283</a>
+<a href="#1284" id="1284">1284</a>
+<a href="#1285" id="1285">1285</a>
+<a href="#1286" id="1286">1286</a>
+<a href="#1287" id="1287">1287</a>
+<a href="#1288" id="1288">1288</a>
+<a href="#1289" id="1289">1289</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1642,7 +1657,7 @@
         rand: R,
         base_fee: TokenAmount,
         <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
-        tipset: <span class="kw-2">&amp;</span>Arc&lt;Tipset&gt;,
+        tipset: Arc&lt;Tipset&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, anyhow::Error&gt;
     <span class="kw">where
         </span>R: Rand + Rand_v3 + Clone + <span class="lifetime">&#39;static</span>,
@@ -1662,7 +1677,7 @@
                 <span class="self">self</span>.genesis_info
                     .get_circulating_supply(epoch, <span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>,
                 <span class="self">self</span>.reward_calc.clone(),
-                chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(tipset)),
+                chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>tipset)),
                 <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v2,
                 <span class="kw-2">&amp;</span><span class="self">self</span>.engine_v3,
                 Arc::clone(<span class="self">self</span>.chain_config()),
@@ -1736,7 +1751,9 @@
                     <span class="comment">// generic constants are not implemented yet this is a lowcost method for now
                     </span><span class="kw">let </span>no_func =
                         <span class="prelude-val">None</span>::&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;&gt;;
-                    <span class="kw">let </span>ts_state = <span class="self">self</span>.compute_tipset_state(tipset, no_func).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">let </span>ts_state = <span class="self">self
+                        </span>.compute_tipset_state(Arc::clone(tipset), no_func)
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
                     <span class="macro">debug!</span>(<span class="string">&quot;Completed tipset state calculation {:?}&quot;</span>, tipset.cids());
                     ts_state
                 };
@@ -1885,7 +1902,9 @@
             }
             <span class="prelude-val">Ok</span>(())
         };
-        <span class="kw">let </span>result = <span class="self">self</span>.compute_tipset_state(ts, <span class="prelude-val">Some</span>(callback)).<span class="kw">await</span>;
+        <span class="kw">let </span>result = <span class="self">self
+            </span>.compute_tipset_state(Arc::clone(ts), <span class="prelude-val">Some</span>(callback))
+            .<span class="kw">await</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Err</span>(error_message) = result {
             <span class="kw">if </span>error_message.to_string() != ERROR_MSG {
@@ -2010,7 +2029,23 @@
     </span><span class="attr">#[instrument(skip(<span class="self">self</span>, callback))]
     </span><span class="kw">pub async fn </span>compute_tipset_state&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
-        tipset: <span class="kw-2">&amp;</span>Arc&lt;Tipset&gt;,
+        tipset: Arc&lt;Tipset&gt;,
+        callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, Error&gt;
+    <span class="kw">where
+        </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
+    {
+        <span class="kw">let </span>sm = Arc::clone(<span class="self">self</span>);
+        tokio::task::spawn_blocking(<span class="kw">move </span>|| sm.compute_tipset_state_blocking(tipset, callback))
+            .<span class="kw">await</span><span class="question-mark">?
+    </span>}
+
+    <span class="doccomment">/// Performs a state transition, and returns the state and receipt root of
+    /// the transition.
+    </span><span class="attr">#[instrument(skip(<span class="self">self</span>, callback))]
+    </span><span class="kw">pub fn </span>compute_tipset_state_blocking&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
+        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
+        tipset: Arc&lt;Tipset&gt;,
         callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, Error&gt;
     <span class="kw">where
@@ -2054,28 +2089,23 @@
 
         <span class="kw">let </span>blocks = <span class="self">self
             </span>.chain_store()
-            .block_msgs_for_tipset(tipset)
+            .block_msgs_for_tipset(<span class="kw-2">&amp;</span>tipset)
             .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>sm = Arc::clone(<span class="self">self</span>);
         <span class="kw">let </span>sr = <span class="kw-2">*</span>first_block.state_root();
         <span class="kw">let </span>epoch = first_block.epoch();
-        <span class="kw">let </span>ts_cloned = Arc::clone(tipset);
-        tokio::task::spawn_blocking(<span class="kw">move </span>|| {
-            <span class="prelude-val">Ok</span>(sm.apply_blocks(
-                parent_epoch,
-                <span class="kw-2">&amp;</span>sr,
-                <span class="kw-2">&amp;</span>blocks,
-                epoch,
-                chain_rand,
-                base_fee,
-                callback,
-                <span class="kw-2">&amp;</span>ts_cloned,
-            )<span class="question-mark">?</span>)
-        })
-        .<span class="kw">await
-        </span>.map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;failed to apply blocks: {e}&quot;</span>)))<span class="question-mark">?
-    </span>}
+        <span class="prelude-val">Ok</span>(sm.apply_blocks(
+            parent_epoch,
+            <span class="kw-2">&amp;</span>sr,
+            <span class="kw-2">&amp;</span>blocks,
+            epoch,
+            chain_rand,
+            base_fee,
+            callback,
+            tipset,
+        )<span class="question-mark">?</span>)
+    }
 
     <span class="doccomment">/// Check if tipset had executed the message, by loading the receipt based
     /// on the index of the message in the block.
