@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["set_sigint_handler"],"struct":["Cli"]};
+window.SIDEBAR_ITEMS = {"struct":["Cli"]};

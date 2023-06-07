@@ -272,6 +272,11 @@
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -283,6 +288,7 @@
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
 <span class="kw">use </span>clap::{arg, Subcommand};
+<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Password};
 <span class="kw">use </span>forest_json::{
     address::json::AddressJson,
     signature::json::{signature_type::SignatureTypeJson, SignatureJson},
@@ -296,7 +302,6 @@
 };
 <span class="kw">use </span>forest_utils::io::read_file_to_string;
 <span class="kw">use </span>num::BigInt;
-<span class="kw">use </span>rpassword::read_password;
 
 <span class="kw">use super</span>::{handle_rpc_err, Config};
 <span class="kw">use </span><span class="kw">crate</span>::humantoken::TokenAmountPretty <span class="kw">as _</span>;
@@ -424,8 +429,13 @@
                 <span class="kw">let </span>key = <span class="kw">match </span>path {
                     <span class="prelude-val">Some</span>(path) =&gt; read_file_to_string(<span class="kw-2">&amp;</span>PathBuf::from(path))<span class="question-mark">?</span>,
                     <span class="kw">_ </span>=&gt; {
-                        <span class="macro">println!</span>(<span class="string">&quot;Enter the private key: &quot;</span>);
-                        read_password()<span class="question-mark">?
+                        tokio::task::spawn_blocking(|| {
+                            Password::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+                                .allow_empty_password(<span class="bool-val">true</span>)
+                                .with_prompt(<span class="string">&quot;Enter the private key&quot;</span>)
+                                .interact()
+                        })
+                        .<span class="kw">await</span><span class="question-mark">??
                     </span>}
                 };
 

@@ -735,13 +735,16 @@
 <a href="#735" id="735">735</a>
 <a href="#736" id="736">736</a>
 <a href="#737" id="737">737</a>
+<a href="#738" id="738">738</a>
+<a href="#739" id="739">739</a>
+<a href="#740" id="740">740</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{io::prelude::<span class="kw-2">*</span>, net::TcpListener, path::PathBuf, sync::Arc, time, time::Duration};
+</span><span class="kw">use </span>std::{net::TcpListener, path::PathBuf, sync::Arc, time, time::Duration};
 
 <span class="kw">use </span>anyhow::Context;
-<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
+<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm, Password};
 <span class="kw">use </span>forest_auth::{create_token, generate_priv_key, ADMIN, JWT_IDENTIFIER};
 <span class="kw">use </span>forest_blocks::Tipset;
 <span class="kw">use </span>forest_chain::ChainStore;
@@ -756,7 +759,7 @@
 <span class="kw">use </span>forest_daemon::bundle::load_bundles;
 <span class="kw">use </span>forest_db::{
     db_engine::{db_root, open_proxy_db},
-    rolling::{DbGarbageCollector, RollingDB},
+    rolling::DbGarbageCollector,
     Store,
 };
 <span class="kw">use </span>forest_genesis::{get_network_name_from_genesis, import_chain, read_genesis_header};
@@ -776,15 +779,15 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>log::{debug, error, info, warn};
 <span class="kw">use </span>raw_sync::events::{Event, EventInit, EventState};
-<span class="kw">use </span>rpassword::read_password;
 <span class="kw">use </span>tokio::{
-    signal::unix::{signal, SignalKind},
-    sync::RwLock,
+    signal::{
+        ctrl_c,
+        unix::{signal, SignalKind},
+    },
+    sync::{mpsc, RwLock},
     task::JoinSet,
     time::sleep,
 };
-
-<span class="kw">use </span><span class="kw">super</span>::cli::set_sigint_handler;
 
 <span class="comment">// Initialize Consensus
 </span><span class="attr">#[cfg(not(any(feature = <span class="string">&quot;forest_fil_cns&quot;</span>, feature = <span class="string">&quot;forest_deleg_cns&quot;</span>)))]
@@ -810,8 +813,36 @@
         .map_err(|err| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{err}&quot;</span>))
 }
 
+<span class="comment">// Start the daemon and abort if we&#39;re interrupted by ctrl-c, SIGTERM, or `forest-cli shutdown`.
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>start_interruptable(opts: CliOpts, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>terminate = signal(SignalKind::terminate())<span class="question-mark">?</span>;
+    <span class="kw">let </span>(shutdown_send, <span class="kw-2">mut </span>shutdown_recv) = mpsc::channel(<span class="number">1</span>);
+
+    <span class="kw">let </span>result = <span class="macro">tokio::select! </span>{
+        ret = start(opts, config, shutdown_send) =&gt; ret,
+        <span class="kw">_ </span>= ctrl_c() =&gt; {
+            <span class="macro">info!</span>(<span class="string">&quot;Keyboard interrupt.&quot;</span>);
+            <span class="prelude-val">Ok</span>(())
+        },
+        <span class="kw">_ </span>= terminate.recv() =&gt; {
+            <span class="macro">info!</span>(<span class="string">&quot;Received SIGTERM.&quot;</span>);
+            <span class="prelude-val">Ok</span>(())
+        },
+        <span class="kw">_ </span>= shutdown_recv.recv() =&gt; {
+            <span class="macro">info!</span>(<span class="string">&quot;Client requested a shutdown.&quot;</span>);
+            <span class="prelude-val">Ok</span>(())
+        },
+    };
+    forest_utils::io::terminal_cleanup();
+    result
+}
+
 <span class="doccomment">/// Starts daemon process
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>start(opts: CliOpts, config: Config) -&gt; anyhow::Result&lt;RollingDB&gt; {
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>start(
+    opts: CliOpts,
+    config: Config,
+    shutdown_send: mpsc::Sender&lt;()&gt;,
+) -&gt; anyhow::Result&lt;()&gt; {
     {
         <span class="comment">// UGLY HACK:
         // This bypasses a bug in the FVM. Can be removed once the address parsing
@@ -823,11 +854,6 @@
     <span class="kw">if </span>config.chain.is_testnet() {
         forest_shim::address::set_current_network(forest_shim::address::Network::Testnet);
     }
-
-    set_sigint_handler();
-
-    <span class="kw">let </span>(shutdown_send, <span class="kw-2">mut </span>shutdown_recv) = tokio::sync::mpsc::channel(<span class="number">1</span>);
-    <span class="kw">let </span><span class="kw-2">mut </span>terminate = signal(SignalKind::terminate())<span class="question-mark">?</span>;
 
     <span class="macro">info!</span>(
         <span class="string">&quot;Starting Forest daemon, version {}&quot;</span>,
@@ -861,7 +887,7 @@
     // from.
     </span><span class="macro">info!</span>(<span class="string">&quot;PeerId: {}&quot;</span>, PeerId::from(net_keypair.public()));
 
-    <span class="kw">let </span><span class="kw-2">mut </span>keystore = create_keystore(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>keystore = create_keystore(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">if </span>keystore.get(JWT_IDENTIFIER).is_err() {
         keystore.put(JWT_IDENTIFIER.to_owned(), generate_priv_key())<span class="question-mark">?</span>;
@@ -989,7 +1015,7 @@
     };
 
     <span class="kw">if </span>opts.exit_after_init {
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(db);
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
     <span class="comment">// XXX: This code has to be run before starting the background services.
@@ -1122,26 +1148,7 @@
 
     <span class="kw">let </span>config = maybe_fetch_snapshot(should_fetch_snapshot, config).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="macro">tokio::select! </span>{
-        ret = sync_from_snapshot(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;</span>state_manager).fuse() =&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = ret {
-                services.shutdown().<span class="kw">await</span>;
-                <span class="kw">return </span><span class="prelude-val">Err</span>(err);
-            }
-        },
-        <span class="kw">_ </span>= tokio::signal::ctrl_c() =&gt; {
-            services.shutdown().<span class="kw">await</span>;
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(db);
-        },
-        <span class="kw">_ </span>= terminate.recv() =&gt; {
-            services.shutdown().<span class="kw">await</span>;
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(db);
-        },
-        <span class="kw">_ </span>= shutdown_recv.recv() =&gt; {
-            services.shutdown().<span class="kw">await</span>;
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(db);
-        },
-    }
+    sync_from_snapshot(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;</span>state_manager).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="comment">// For convenience, flush the database after we&#39;ve potentially loaded a new
     // snapshot. This ensures the snapshot won&#39;t have to be re-imported if
@@ -1153,23 +1160,14 @@
     </span><span class="kw">if </span>opts.halt_after_import {
         <span class="comment">// Cancel all async services
         </span>services.shutdown().<span class="kw">await</span>;
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(db);
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
     services.spawn(p2p_service.run());
 
     <span class="comment">// blocking until any of the services returns an error,
-    // or CTRL-C is pressed
-    </span><span class="macro">tokio::select! </span>{
-        err = propagate_error(<span class="kw-2">&amp;mut </span>services).fuse() =&gt; <span class="macro">error!</span>(<span class="string">&quot;services failure: {}&quot;</span>, err),
-        <span class="kw">_ </span>= tokio::signal::ctrl_c() =&gt; {},
-        <span class="kw">_ </span>= terminate.recv() =&gt; {},
-        <span class="kw">_ </span>= shutdown_recv.recv() =&gt; {},
-    }
-
-    services.shutdown().<span class="kw">await</span>;
-
-    <span class="prelude-val">Ok</span>(db)
+    </span><span class="kw">let </span>err = propagate_error(<span class="kw-2">&amp;mut </span>services).<span class="kw">await</span>;
+    <span class="macro">anyhow::bail!</span>(<span class="string">&quot;services failure: {}&quot;</span>, err);
 }
 
 <span class="doccomment">/// Generates, prints and optionally writes to a file the administrator JWT
@@ -1254,14 +1252,14 @@
     <span class="kw">let </span>should_download = <span class="kw">if </span>!auto_download_snapshot &amp;&amp; atty::is(atty::Stream::Stdin) {
         <span class="kw">let </span>required_size: u64 = snapshot_fetch_size(config).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span>required_size = to_size_string(<span class="kw-2">&amp;</span>required_size.into())<span class="question-mark">?</span>;
-        Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+        tokio::task::spawn_blocking(<span class="kw">move </span>|| Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
                 .with_prompt(
                     <span class="macro">format!</span>(<span class="string">&quot;Forest needs a snapshot to sync with the network. Would you like to download one now? Required disk space {required_size}.&quot;</span>),
                 )
                 .default(<span class="bool-val">false</span>)
                 .interact()
-                .unwrap_or_default()
-    } <span class="kw">else </span>{
+            ).<span class="kw">await</span><span class="question-mark">??
+    </span>} <span class="kw">else </span>{
         auto_download_snapshot
     };
 
@@ -1317,7 +1315,7 @@
     }
 }
 
-<span class="kw">fn </span>create_keystore(config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;KeyStore&gt; {
+<span class="kw">async fn </span>create_keystore(config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;KeyStore&gt; {
     <span class="kw">let </span>passphrase = std::env::var(FOREST_KEYSTORE_PHRASE_ENV);
     <span class="kw">let </span>is_interactive = atty::is(atty::Stream::Stdin);
 
@@ -1337,17 +1335,13 @@
     <span class="comment">// encrypted keystore, interactive, passphrase not provided
     </span>} <span class="kw">else if </span>config.client.encrypt_keystore &amp;&amp; passphrase.is_err() &amp;&amp; is_interactive {
         <span class="kw">loop </span>{
-            <span class="macro">print!</span>(<span class="string">&quot;Enter the keystore passphrase: &quot;</span>);
-            std::io::stdout().flush()<span class="question-mark">?</span>;
-
-            <span class="kw">let </span>passphrase = read_password()<span class="question-mark">?</span>;
+            <span class="kw">let </span>passphrase = password_prompt(<span class="string">&quot;Enter the keystore passphrase&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
             <span class="kw">let </span>data_dir = PathBuf::from(<span class="kw-2">&amp;</span>config.client.data_dir).join(ENCRYPTED_KEYSTORE_NAME);
             <span class="kw">if </span>!data_dir.exists() {
-                <span class="macro">print!</span>(<span class="string">&quot;Confirm passphrase: &quot;</span>);
-                std::io::stdout().flush()<span class="question-mark">?</span>;
+                <span class="kw">let </span>passphrase_again = password_prompt(<span class="string">&quot;Confirm passphrase&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-                <span class="kw">if </span>passphrase != read_password()<span class="question-mark">? </span>{
+                <span class="kw">if </span>passphrase != passphrase_again {
                     <span class="macro">error!</span>(<span class="string">&quot;Passphrases do not match. Please retry.&quot;</span>);
                     <span class="kw">continue</span>;
                 }
@@ -1371,6 +1365,18 @@
             config.client.data_dir.clone(),
         ))<span class="question-mark">?</span>)
     }
+}
+
+<span class="comment">// Prompt for password in a blocking thread such that tokio can still process interrupts.
+</span><span class="kw">async fn </span>password_prompt(prompt: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; anyhow::Result&lt;String&gt; {
+    <span class="kw">let </span>prompt: String = prompt.into();
+    <span class="prelude-val">Ok</span>(tokio::task::spawn_blocking(|| {
+        Password::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+            .allow_empty_password(<span class="bool-val">true</span>)
+            .with_prompt(prompt)
+            .interact()
+    })
+    .<span class="kw">await</span><span class="question-mark">??</span>)
 }
 
 <span class="attr">#[cfg(test)]
