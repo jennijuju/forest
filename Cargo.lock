@@ -2984,6 +2984,28 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 [[package]]
 name = "forest"
 version = "0.8.2"
+dependencies = [
+ "ahash 0.8.3",
+ "anyhow",
+ "bls-signatures",
+ "cid",
+ "filecoin-proofs-api",
+ "fvm 2.4.0",
+ "fvm 3.4.0",
+ "fvm_ipld_blockstore",
+ "fvm_ipld_encoding 0.2.3",
+ "fvm_ipld_encoding 0.3.3",
+ "fvm_shared 2.4.0",
+ "fvm_shared 3.3.1",
+ "lazy_static",
+ "num",
+ "num-bigint",
+ "num-derive",
+ "num-traits",
+ "quickcheck",
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "forest-cli"
