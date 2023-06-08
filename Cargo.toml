@@ -71,7 +71,6 @@ members = [
   "utils/test_utils",
   "utils/metrics",
   "utils/json",
-  "utils/forest_utils",
 ]
 resolver = "2"
 
@@ -211,7 +210,6 @@ forest_state_manager = { path = "./blockchain/state_manager" }
 forest_state_migration = { path = "./vm/state_migration" }
 forest_statediff = { path = "./utils/statediff" }
 forest_test_utils = { path = "./utils/test_utils" }
-forest_utils = { path = "./utils/forest_utils" }
 
 # This needs to be set as default. Otherwise, a regular build or test will produce
 # gargantuan artifacts (around 70G for all tests). For a debugging session, you can
