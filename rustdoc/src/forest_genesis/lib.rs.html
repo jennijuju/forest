@@ -213,6 +213,14 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -319,9 +327,8 @@
 </span><span class="kw">pub async fn </span>import_chain&lt;DB&gt;(
     sm: <span class="kw-2">&amp;</span>Arc&lt;StateManager&lt;DB&gt;&gt;,
     path: <span class="kw-2">&amp;</span>str,
-    validate_height: <span class="prelude-ty">Option</span>&lt;i64&gt;,
     skip_load: bool,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;
+) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
@@ -368,19 +375,28 @@
     }
 
     <span class="comment">// Update head with snapshot header tipset
-    </span>sm.chain_store().set_heaviest_tipset(ts.clone())<span class="question-mark">?</span>;
+    </span><span class="macro">info!</span>(<span class="string">&quot;Accepting {:?} as new head.&quot;</span>, ts.cids());
+    sm.chain_store().set_heaviest_tipset(ts)<span class="question-mark">?</span>;
 
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(height) = validate_height {
-        <span class="kw">let </span>height = <span class="kw">if </span>height &gt; <span class="number">0 </span>{
-            height
-        } <span class="kw">else </span>{
-            (ts.epoch() + height).max(<span class="number">0</span>)
-        };
-        <span class="macro">info!</span>(<span class="string">&quot;Validating imported chain from height: {}&quot;</span>, height);
-        sm.validate_chain(ts.clone(), height).<span class="kw">await</span><span class="question-mark">?</span>;
-    }
+    <span class="prelude-val">Ok</span>(())
+}
 
-    <span class="macro">info!</span>(<span class="string">&quot;Accepting {:?} as new head.&quot;</span>, ts.cids());
+<span class="kw">pub async fn </span>validate_chain&lt;DB&gt;(
+    sm: <span class="kw-2">&amp;</span>Arc&lt;StateManager&lt;DB&gt;&gt;,
+    validate_height: i64,
+) -&gt; anyhow::Result&lt;()&gt;
+<span class="kw">where
+    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">let </span>tipset = sm.chain_store().heaviest_tipset();
+    <span class="kw">let </span>height = <span class="kw">if </span>validate_height &gt; <span class="number">0 </span>{
+        validate_height
+    } <span class="kw">else </span>{
+        (tipset.epoch() + validate_height).max(<span class="number">0</span>)
+    };
+
+    <span class="macro">info!</span>(<span class="string">&quot;Validating imported chain from height: {}&quot;</span>, height);
+    sm.validate_chain(tipset.clone(), height).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }

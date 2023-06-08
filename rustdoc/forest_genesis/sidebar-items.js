@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["forest_load_car","get_network_name_from_genesis","import_chain","initialize_genesis","read_genesis_header"]};
+window.SIDEBAR_ITEMS = {"fn":["forest_load_car","get_network_name_from_genesis","import_chain","initialize_genesis","read_genesis_header","validate_chain"]};

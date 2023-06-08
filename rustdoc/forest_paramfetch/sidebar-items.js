@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["SectorSizeOpt"],"fn":["get_params","get_params_default","set_proofs_parameter_cache_dir_env"]};

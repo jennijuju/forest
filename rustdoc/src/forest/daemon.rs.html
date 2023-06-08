@@ -711,25 +711,6 @@
 <a href="#711" id="711">711</a>
 <a href="#712" id="712">712</a>
 <a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
-<a href="#719" id="719">719</a>
-<a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
-<a href="#722" id="722">722</a>
-<a href="#723" id="723">723</a>
-<a href="#724" id="724">724</a>
-<a href="#725" id="725">725</a>
-<a href="#726" id="726">726</a>
-<a href="#727" id="727">727</a>
-<a href="#728" id="728">728</a>
-<a href="#729" id="729">729</a>
-<a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -754,7 +735,9 @@
     rolling::DbGarbageCollector,
     Store,
 };
-<span class="kw">use </span>forest_genesis::{get_network_name_from_genesis, import_chain, read_genesis_header};
+<span class="kw">use </span>forest_genesis::{
+    get_network_name_from_genesis, import_chain, read_genesis_header, validate_chain,
+};
 <span class="kw">use </span>forest_key_management::{
     KeyStore, KeyStoreConfig, ENCRYPTED_KEYSTORE_NAME, FOREST_KEYSTORE_PHRASE_ENV,
 };
@@ -765,10 +748,10 @@
 <span class="kw">use </span>forest_shim::version::NetworkVersion;
 <span class="kw">use </span>forest_state_manager::StateManager;
 <span class="kw">use </span>forest_utils::{
-    io::write_to_file, monitoring::MemStatsTracker, retry, version::FOREST_VERSION_STRING,
+    io::write_to_file, monitoring::MemStatsTracker,
+    proofs_api::paramfetch::ensure_params_downloaded, retry, version::FOREST_VERSION_STRING,
 };
 <span class="kw">use </span>futures::{select, FutureExt};
-<span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>log::{debug, error, info, warn};
 <span class="kw">use </span>raw_sync::events::{Event, EventInit, EventState};
 <span class="kw">use </span>tokio::{
@@ -1120,19 +1103,34 @@
         unblock_parent_process()<span class="question-mark">?</span>;
     }
 
-    <span class="comment">// Fetch and ensure verification keys are downloaded
+    <span class="comment">// Sets proof parameter file download path early, the files will be checked and
+    // downloaded later right after snapshot import step
     </span><span class="kw">if </span>cns::FETCH_PARAMS {
-        <span class="kw">use </span>forest_paramfetch::{
-            get_params_default, set_proofs_parameter_cache_dir_env, SectorSizeOpt,
-        };
-        set_proofs_parameter_cache_dir_env(<span class="kw-2">&amp;</span>config.client.data_dir);
-
-        get_params_default(<span class="kw-2">&amp;</span>config.client.data_dir, SectorSizeOpt::Keys).<span class="kw">await</span><span class="question-mark">?</span>;
+        forest_utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
+            <span class="kw-2">&amp;</span>config.client.data_dir,
+        );
     }
 
     <span class="kw">let </span>config = maybe_fetch_snapshot(should_fetch_snapshot, config).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    sync_from_snapshot(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;</span>state_manager).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>config.client.snapshot_path {
+        <span class="kw">let </span>stopwatch = time::Instant::now();
+        import_chain::&lt;<span class="kw">_</span>&gt;(
+            <span class="kw-2">&amp;</span>state_manager,
+            <span class="kw-2">&amp;</span>path.display().to_string(),
+            config.client.skip_load,
+        )
+        .<span class="kw">await
+        </span>.context(<span class="string">&quot;Failed miserably while importing chain from snapshot&quot;</span>)<span class="question-mark">?</span>;
+        <span class="macro">info!</span>(<span class="string">&quot;Imported snapshot in: {}s&quot;</span>, stopwatch.elapsed().as_secs());
+    }
+
+    <span class="kw">if </span>config.client.snapshot {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(validate_height) = config.client.snapshot_height {
+            ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
+            validate_chain(<span class="kw-2">&amp;</span>state_manager, validate_height).<span class="kw">await</span><span class="question-mark">?</span>;
+        }
+    }
 
     <span class="comment">// For convenience, flush the database after we&#39;ve potentially loaded a new
     // snapshot. This ensures the snapshot won&#39;t have to be re-imported if
@@ -1147,6 +1145,7 @@
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
+    ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
     services.spawn(p2p_service.run());
 
     <span class="comment">// blocking until any of the services returns an error,
@@ -1252,43 +1251,6 @@
     } <span class="kw">else </span>{
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Forest cannot sync without a snapshot. Download a snapshot from a trusted source and import with --import-snapshot=[file] or --auto-download-snapshot to download one automatically&quot;</span>);
     }
-}
-
-<span class="kw">async fn </span>sync_from_snapshot&lt;DB&gt;(
-    config: <span class="kw-2">&amp;</span>Config,
-    state_manager: <span class="kw-2">&amp;</span>Arc&lt;StateManager&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;
-<span class="kw">where
-    </span>DB: Store + Send + Clone + Sync + Blockstore + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>config.client.snapshot_path {
-        <span class="kw">let </span>stopwatch = time::Instant::now();
-        <span class="kw">let </span>validate_height = <span class="kw">if </span>config.client.snapshot {
-            config.client.snapshot_height
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Some</span>(<span class="number">0</span>)
-        };
-
-        <span class="kw">match </span>import_chain::&lt;<span class="kw">_</span>&gt;(
-            state_manager,
-            <span class="kw-2">&amp;</span>path.display().to_string(),
-            validate_height,
-            config.client.skip_load,
-        )
-        .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
-                <span class="macro">info!</span>(<span class="string">&quot;Imported snapshot in: {}s&quot;</span>, stopwatch.elapsed().as_secs());
-            }
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="macro">anyhow::bail!</span>(
-                    <span class="string">&quot;Failed miserably while importing chain from snapshot {}: {err}&quot;</span>,
-                    path.display()
-                );
-            }
-        }
-    }
-    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="kw">fn </span>get_actual_chain_name(internal_network_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>str {
@@ -1430,7 +1392,7 @@
             chain_config,
             Arc::new(forest_interpreter::RewardActorMessageCalc),
         )<span class="question-mark">?</span>);
-        import_chain::&lt;<span class="kw">_</span>&gt;(<span class="kw-2">&amp;</span>sm, file_path, <span class="prelude-val">None</span>, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        import_chain::&lt;<span class="kw">_</span>&gt;(<span class="kw-2">&amp;</span>sm, file_path, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -1455,7 +1417,7 @@
             chain_config,
             Arc::new(forest_interpreter::RewardActorMessageCalc),
         )<span class="question-mark">?</span>);
-        import_chain::&lt;<span class="kw">_</span>&gt;(<span class="kw-2">&amp;</span>sm, <span class="string">&quot;test_files/chain4.car&quot;</span>, <span class="prelude-val">None</span>, <span class="bool-val">false</span>)
+        import_chain::&lt;<span class="kw">_</span>&gt;(<span class="kw-2">&amp;</span>sm, <span class="string">&quot;test_files/chain4.car&quot;</span>, <span class="bool-val">false</span>)
             .<span class="kw">await
             </span>.expect(<span class="string">&quot;Failed to import chain&quot;</span>);
 
