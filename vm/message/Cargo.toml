@@ -10,7 +10,7 @@ edition = "2021"
 [dependencies]
 anyhow.workspace = true
 cid.workspace = true
-forest_shim.workspace = true
+forest.workspace = true
 fvm_ipld_encoding.workspace = true
 fvm_ipld_encoding3.workspace = true
 fvm_shared = { workspace = true, default-features = false, features = ["testing"] }

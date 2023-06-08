@@ -9,7 +9,7 @@ edition = "2021"
 [dependencies]
 # Public
 chrono.workspace = true
-forest_shim.workspace = true
+forest.workspace = true
 jsonrpc-v2.workspace = true
 jsonwebtoken = "8.1"
 once_cell.workspace = true

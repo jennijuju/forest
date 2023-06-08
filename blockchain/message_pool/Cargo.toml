@@ -19,7 +19,7 @@ forest_json.workspace = true
 forest_libp2p.workspace = true
 forest_message = { workspace = true }
 forest_networks.workspace = true
-forest_shim.workspace = true
+forest.workspace = true
 forest_state_manager.workspace = true
 forest_utils.workspace = true
 futures.workspace = true
