@@ -95,29 +95,6 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
-<a href="#98" id="98">98</a>
-<a href="#99" id="99">99</a>
-<a href="#100" id="100">100</a>
-<a href="#101" id="101">101</a>
-<a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -125,8 +102,8 @@
     <span class="kw">use </span>std::str::FromStr;
 
     <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>fvm::state_tree::ActorState;
-    <span class="kw">use </span>fvm_shared::econ::TokenAmount;
+    <span class="kw">use </span>forest_shim::econ::TokenAmount;
+    <span class="kw">use </span>forest_shim::state_tree::ActorState;
     <span class="kw">use </span>num_bigint::BigInt;
     <span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
@@ -191,51 +168,28 @@
             sequence,
             balance,
         } = Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(ActorState {
+        <span class="prelude-val">Ok</span>(ActorState::new(
             code,
             state,
+            TokenAmount::from_atto(BigInt::from_str(<span class="kw-2">&amp;</span>balance).map_err(de::Error::custom)<span class="question-mark">?</span>),
             sequence,
-            balance: TokenAmount::from_atto(BigInt::from_str(<span class="kw-2">&amp;</span>balance).map_err(de::Error::custom)<span class="question-mark">?</span>),
-        })
+            <span class="prelude-val">None</span>,
+        ))
     }
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>fvm::state_tree::ActorState;
-    <span class="kw">use </span>fvm_shared::econ::TokenAmount;
+    <span class="kw">use </span>forest_shim::state_tree::ActorState;
     <span class="kw">use </span>quickcheck_macros::quickcheck;
 
     <span class="kw">use </span><span class="kw">crate</span>::actor_state::json::{ActorStateJson, ActorStateJsonRef};
 
-    <span class="attr">#[derive(Clone, Debug)]
-    </span><span class="kw">struct </span>ActorStateWrapper {
-        actorstate: ActorState,
-    }
-
-    <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>ActorStateWrapper {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-            <span class="kw">let </span>cid = Cid::new_v1(
-                u64::arbitrary(g),
-                cid::multihash::Multihash::wrap(u64::arbitrary(g), <span class="kw-2">&amp;</span>[u8::arbitrary(g)]).unwrap(),
-            );
-            <span class="kw">let </span>actorstate = ActorState {
-                code: cid,
-                state: cid,
-                sequence: u64::arbitrary(g),
-                balance: TokenAmount::from_atto(u64::arbitrary(g)),
-            };
-            ActorStateWrapper { actorstate }
-        }
-    }
-
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>actorstate_roundtrip(actorstate: ActorStateWrapper) {
-        <span class="kw">let </span>serialized: String =
-            serde_json::to_string(<span class="kw-2">&amp;</span>ActorStateJsonRef(<span class="kw-2">&amp;</span>actorstate.actorstate)).unwrap();
+    </span><span class="kw">fn </span>actorstate_roundtrip(actorstate: ActorState) {
+        <span class="kw">let </span>serialized: String = serde_json::to_string(<span class="kw-2">&amp;</span>ActorStateJsonRef(<span class="kw-2">&amp;</span>actorstate)).unwrap();
         <span class="kw">let </span>parsed: ActorStateJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
-        <span class="macro">assert_eq!</span>(actorstate.actorstate, parsed.<span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(actorstate, parsed.<span class="number">0</span>);
     }
 }
 </code></pre></div></section></main></body></html>
