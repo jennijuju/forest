@@ -72,7 +72,6 @@ members = [
   "utils/metrics",
   "utils/json",
   "utils/forest_utils",
-  "utils/forest_shim",
 ]
 resolver = "2"
 
@@ -208,7 +207,6 @@ forest_networks = { path = "./networks" }
 forest_rpc = { path = "./node/rpc" }
 forest_rpc-api = { path = "./node/rpc-api" }
 forest_rpc-client = { path = "./node/rpc-client" }
-forest_shim = { path = "./utils/forest_shim" }
 forest_state_manager = { path = "./blockchain/state_manager" }
 forest_state_migration = { path = "./vm/state_migration" }
 forest_statediff = { path = "./utils/statediff" }
