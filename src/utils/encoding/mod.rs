@@ -3,7 +3,7 @@
 
 use blake2b_simd::Params;
 use filecoin_proofs_api::ProverId;
-use forest::shim::address::Address;
+use crate::shim::address::Address;
 use fvm_ipld_encoding3::strict_bytes::{Deserialize, Serialize};
 pub use serde::{de, ser, Deserializer, Serializer};
 
@@ -54,7 +54,7 @@ pub mod serde_byte_array {
 ///
 /// # Example
 /// ```
-/// use forest::utils::encoding::blake2b_256;
+/// use crate::utils::encoding::blake2b_256;
 ///
 /// let ingest: Vec<u8> = vec![];
 /// let hash = blake2b_256(&ingest);
