@@ -414,18 +414,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "async-fs"
-version = "1.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "279cf904654eeebfa37ac9bb1598880884924aab82e290aa65c9e77a0e142e06"
-dependencies = [
- "async-lock",
- "autocfg",
- "blocking",
- "futures-lite",
-]
-
-[[package]]
 name = "async-global-executor"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -651,20 +639,6 @@ dependencies = [
  "rustversion",
  "tower-layer",
  "tower-service",
-]
-
-[[package]]
-name = "backoff"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b62ddb9cb1ec0a098ad4bbf9344d0713fa193ae1a80af55febcff2627b6a00c1"
-dependencies = [
- "futures-core",
- "getrandom 0.2.9",
- "instant",
- "pin-project-lite 0.2.9",
- "rand 0.8.5",
- "tokio",
 ]
 
 [[package]]
@@ -1463,26 +1437,6 @@ name = "const-str"
 version = "0.5.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b62c6d3ea43cbe0bc5a081f276fd477e4291d168aacc9f9d98073325333c0d4"
-
-[[package]]
-name = "const_format"
-version = "0.2.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c990efc7a285731f9a4378d81aff2f0e85a2c8781a05ef0f8baa8dac54d0ff48"
-dependencies = [
- "const_format_proc_macros",
-]
-
-[[package]]
-name = "const_format_proc_macros"
-version = "0.2.31"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e026b6ce194a874cb9cf32cd5772d1ef9767cc8fcb5765948d74f37a9d8b2bf6"
-dependencies = [
- "proc-macro2",
- "quote",
- "unicode-xid",
-]
 
 [[package]]
 name = "constant_time_eq"
@@ -3041,7 +2995,6 @@ dependencies = [
  "forest_networks",
  "forest_rpc-api",
  "forest_rpc-client",
- "forest_utils",
  "fs_extra",
  "futures",
  "fvm_ipld_blockstore",
@@ -3099,7 +3052,6 @@ dependencies = [
  "forest_rpc",
  "forest_rpc-api",
  "forest_state_manager",
- "forest_utils",
  "futures",
  "fvm_ipld_blockstore",
  "lazy_static",
@@ -3138,7 +3090,6 @@ dependencies = [
  "bls-signatures",
  "byteorder",
  "forest",
- "forest_utils",
  "fvm_shared 2.4.0",
  "hex",
  "parking_lot 0.12.1",
@@ -3165,7 +3116,6 @@ dependencies = [
  "forest_json",
  "forest_message",
  "forest_test_utils",
- "forest_utils",
  "fvm_ipld_encoding 0.2.3",
  "fvm_shared 2.4.0",
  "hex",
@@ -3204,7 +3154,6 @@ dependencies = [
  "forest_message",
  "forest_metrics",
  "forest_networks",
- "forest_utils",
  "futures",
  "fvm_ipld_amt 0.5.1",
  "fvm_ipld_blockstore",
@@ -3248,7 +3197,6 @@ dependencies = [
  "forest_networks",
  "forest_state_manager",
  "forest_test_utils",
- "forest_utils",
  "futures",
  "fvm_ipld_amt 0.5.1",
  "fvm_ipld_blockstore",
@@ -3285,12 +3233,12 @@ dependencies = [
  "clap",
  "console-subscriber",
  "directories",
+ "forest",
  "forest_chain_sync",
  "forest_db",
  "forest_libp2p",
  "forest_networks",
  "forest_rpc-client",
- "forest_utils",
  "futures",
  "gethostname",
  "hex",
@@ -3328,10 +3276,10 @@ dependencies = [
  "chrono",
  "cid",
  "flume",
+ "forest",
  "forest_blocks",
  "forest_ipld",
  "forest_libp2p_bitswap",
- "forest_utils",
  "fs_extra",
  "fvm_ipld_blockstore",
  "human-repr",
@@ -3396,7 +3344,6 @@ dependencies = [
  "forest_key_management",
  "forest_networks",
  "forest_state_manager",
- "forest_utils",
  "futures",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.2.3",
@@ -3417,9 +3364,9 @@ dependencies = [
  "anyhow",
  "cid",
  "flume",
+ "forest",
  "forest_blocks",
  "forest_state_manager",
- "forest_utils",
  "futures",
  "fvm_ipld_blockstore",
  "fvm_ipld_car",
@@ -3475,10 +3422,10 @@ dependencies = [
  "async-recursion",
  "async-trait",
  "cid",
+ "forest",
  "forest_blocks",
  "forest_db",
  "forest_json",
- "forest_utils",
  "fvm_ipld_encoding 0.2.3",
  "fvm_shared 2.4.0",
  "indexmap",
@@ -3507,7 +3454,6 @@ dependencies = [
  "forest",
  "forest_message",
  "forest_test_utils",
- "forest_utils",
  "fvm_ipld_encoding 0.2.3",
  "fvm_ipld_encoding 0.3.3",
  "fvm_shared 2.4.0",
@@ -3532,7 +3478,6 @@ dependencies = [
  "bls-signatures",
  "forest",
  "forest_json",
- "forest_utils",
  "libsecp256k1",
  "log",
  "quickcheck",
@@ -3565,7 +3510,6 @@ dependencies = [
  "forest_message",
  "forest_metrics",
  "forest_networks",
- "forest_utils",
  "futures",
  "futures-util",
  "fvm_ipld_blockstore",
@@ -3654,7 +3598,6 @@ dependencies = [
  "forest_message",
  "forest_networks",
  "forest_state_manager",
- "forest_utils",
  "futures",
  "fvm 3.4.0",
  "fvm_ipld_blockstore",
@@ -3740,7 +3683,6 @@ dependencies = [
  "forest_networks",
  "forest_rpc-api",
  "forest_state_manager",
- "forest_utils",
  "futures",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.2.3",
@@ -3804,9 +3746,9 @@ dependencies = [
 name = "forest_rpc-client"
 version = "0.8.2"
 dependencies = [
+ "forest",
  "forest_libp2p",
  "forest_rpc-api",
- "forest_utils",
  "jsonrpc-v2",
  "log",
  "once_cell",
@@ -3837,7 +3779,6 @@ dependencies = [
  "forest_metrics",
  "forest_networks",
  "forest_state_migration",
- "forest_utils",
  "futures",
  "fvm 2.4.0",
  "fvm 3.4.0",
@@ -3874,7 +3815,6 @@ dependencies = [
  "fil_actors_shared",
  "forest",
  "forest_networks",
- "forest_utils",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.2.3",
  "log",
@@ -3899,7 +3839,6 @@ dependencies = [
  "forest_db",
  "forest_ipld",
  "forest_json",
- "forest_utils",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding 0.2.3",
  "libipld-core 0.14.0",
@@ -3922,61 +3861,6 @@ dependencies = [
  "forest_message",
  "fvm_ipld_encoding 0.2.3",
  "num",
-]
-
-[[package]]
-name = "forest_utils"
-version = "0.8.2"
-dependencies = [
- "ahash 0.8.3",
- "anes",
- "anyhow",
- "async-compression",
- "async-fs",
- "async-trait",
- "atty",
- "backoff",
- "blake2b_simd",
- "chrono",
- "cid",
- "const_format",
- "cs_serde_bytes",
- "digest 0.10.7",
- "filecoin-proofs-api",
- "flume",
- "forest",
- "futures",
- "fvm_ipld_blockstore",
- "fvm_ipld_encoding 0.2.3",
- "fvm_ipld_encoding 0.3.3",
- "git-version",
- "human-repr",
- "hyper",
- "hyper-rustls",
- "libc",
- "log",
- "memory-stats",
- "multihash 0.16.3",
- "once_cell",
- "parking_lot 0.12.1",
- "pbr",
- "pin-project-lite 0.2.9",
- "quickcheck",
- "rand 0.8.5",
- "serde",
- "serde_derive",
- "serde_ipld_dagcbor",
- "serde_json",
- "serde_yaml",
- "sha2 0.10.6",
- "tempfile",
- "termios",
- "thiserror",
- "tokio",
- "tokio-util",
- "toml 0.7.4",
- "tracing",
- "url",
 ]
 
 [[package]]
@@ -4655,28 +4539,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "git-version"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6b0decc02f4636b9ccad390dcbe77b722a77efedfa393caf8379a51d5c61899"
-dependencies = [
- "git-version-macro",
- "proc-macro-hack",
-]
-
-[[package]]
-name = "git-version-macro"
-version = "0.3.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fe69f1cbdb6e28af2bac214e943b99ce8a0a06b447d15d3e61161b0423139f3f"
-dependencies = [
- "proc-macro-hack",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "glob"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4955,9 +4817,7 @@ checksum = "1788965e61b367cd03a62950836d5cd41560c3577d90e40e0819373194d1661c"
 dependencies = [
  "http",
  "hyper",
- "log",
  "rustls 0.20.8",
- "rustls-native-certs",
  "tokio",
  "tokio-rustls",
 ]
@@ -6138,16 +5998,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "memory-stats"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34f79cf9964c5c9545493acda1263f1912f8d2c56c8a2ffee2606cb960acaacc"
-dependencies = [
- "libc",
- "winapi",
-]
-
-[[package]]
 name = "merkletree"
 version = "0.22.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6685,12 +6535,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
-name = "openssl-probe"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
-
-[[package]]
 name = "ordered-multimap"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6864,17 +6708,6 @@ name = "pathdiff"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd"
-
-[[package]]
-name = "pbr"
-version = "1.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ed5827dfa0d69b6c92493d6c38e633bbaa5937c153d0d7c28bf12313f8c6d514"
-dependencies = [
- "crossbeam-channel",
- "libc",
- "winapi",
-]
 
 [[package]]
 name = "peeking_take_while"
@@ -7160,12 +6993,6 @@ dependencies = [
  "quote",
  "version_check",
 ]
-
-[[package]]
-name = "proc-macro-hack"
-version = "0.5.20+deprecated"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc375e1527247fe1a97d8b7156678dfe7c1af2fc075c9a4db3690ecd2a148068"
 
 [[package]]
 name = "proc-macro2"
@@ -7932,18 +7759,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rustls-native-certs"
-version = "0.6.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0167bac7a9f490495f3c33013e7722b53cb087ecbe082fb0c6387c96f634ea50"
-dependencies = [
- "openssl-probe",
- "rustls-pemfile",
- "schannel",
- "security-framework",
-]
-
-[[package]]
 name = "rustls-pemfile"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8051,15 +7866,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "schannel"
-version = "0.1.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "713cfb06c7059f3588fb8044c0fad1d09e3c01d225e25b9220dbfdcf16dbb1b3"
-dependencies = [
- "windows-sys 0.42.0",
-]
-
-[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8115,29 +7921,6 @@ dependencies = [
  "pkcs8",
  "subtle",
  "zeroize",
-]
-
-[[package]]
-name = "security-framework"
-version = "2.8.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a332be01508d814fed64bf28f798a146d73792121129962fdf335bb3c49a4254"
-dependencies = [
- "bitflags",
- "core-foundation",
- "core-foundation-sys",
- "libc",
- "security-framework-sys",
-]
-
-[[package]]
-name = "security-framework-sys"
-version = "2.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31c9bb296072e961fcbd8853511dd39c2d8be2deb1e17c6860b1d30732b323b4"
-dependencies = [
- "core-foundation-sys",
- "libc",
 ]
 
 [[package]]
@@ -8941,15 +8724,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "be55cf8942feac5c765c2c993422806843c9a9a45d4d5c407ad6dd2ea95eb9b6"
 dependencies = [
  "winapi-util",
-]
-
-[[package]]
-name = "termios"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "411c5bf740737c7918b8b1fe232dca4dc9f8e754b8ad5e20966814001ed0ac6b"
-dependencies = [
- "libc",
 ]
 
 [[package]]

@@ -17,7 +17,6 @@ base64.workspace = true
 bls-signatures.workspace = true
 forest_json.workspace = true
 forest.workspace = true
-forest_utils.workspace = true
 libsecp256k1.workspace = true
 log.workspace = true
 rand.workspace = true

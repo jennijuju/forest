@@ -21,7 +21,6 @@ forest_message.workspace = true
 forest_metrics.workspace = true
 forest_networks.workspace = true
 forest.workspace = true
-forest_utils.workspace = true
 futures-util.workspace = true
 futures.workspace = true
 fvm_ipld_blockstore.workspace = true

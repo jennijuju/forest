@@ -38,7 +38,6 @@ forest_rpc-api.workspace = true
 forest_rpc.workspace = true
 forest.workspace = true
 forest_state_manager.workspace = true
-forest_utils.workspace = true
 futures.workspace = true
 fvm_ipld_blockstore.workspace = true
 lazy_static.workspace = true
