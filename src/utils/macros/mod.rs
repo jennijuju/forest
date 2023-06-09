@@ -21,7 +21,7 @@ macro_rules! const_option {
         match $value {
             Some(v) => v,
             None => {
-                const error_msg: &str = $crate::const_format::concatcp!(
+                const error_msg: &str = $crate::utils::const_format::concatcp!(
                     "Failed on unwrapping expression ",
                     stringify!($value)
                 );

@@ -21,7 +21,7 @@ use tokio::{
 };
 use tokio_util::compat::FuturesAsyncReadCompatExt;
 
-use crate::net::{https_client, hyper};
+use crate::utils::net::{https_client, hyper};
 
 const GATEWAY: &str = "https://proofs.filecoin.io/ipfs/";
 const PARAM_DIR: &str = "filecoin-proof-parameters";
