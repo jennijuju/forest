@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use forest::utils::retry;
+use forest::retry;
 use log::info;
 use tokio::time::sleep;
 
