@@ -1208,16 +1208,18 @@ where
     pub async fn validate_chain(
         self: &Arc<Self>,
         mut ts: Arc<Tipset>,
-        height: i64,
+        start_epoch: i64, // start epoch
     ) -> Result<(), anyhow::Error> {
-        if height > ts.epoch() {
+        let current_epoch = ts.epoch();
+        if start_epoch > current_epoch {
             anyhow::bail!(
-                "height {height} cannot be greater than tipset epoch {}",
+                "height {start_epoch} cannot be greater than tipset epoch {}",
                 ts.epoch()
             );
         }
+        // get all tipsets in range
         let mut ts_chain = Vec::<Arc<Tipset>>::new();
-        while ts.epoch() != height {
+        while ts.epoch() != start_epoch {
             let next = self.cs.tipset_from_keys(ts.parents())?;
             ts_chain.push(std::mem::replace(&mut ts, next));
         }
@@ -1247,9 +1249,11 @@ where
                 ts.epoch(),
                 ts.cids()
             );
-            let (st, msg_root) = self.tipset_state(ts).await?;
-            last_state = st;
-            last_receipt = msg_root;
+            // this is the receipt that the next transaction should have
+
+            let (state_tree, receipt_cid) = self.tipset_state(ts).await?;
+            last_state = state_tree;
+            last_receipt = receipt_cid;
         }
         Ok(())
     }

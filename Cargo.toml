@@ -196,6 +196,6 @@ lto = "off"
 
 [profile.release]
 # https://doc.rust-lang.org/cargo/reference/profiles.html#strip
-strip = true
+debug = true
 panic = "abort"
 overflow-checks = true
