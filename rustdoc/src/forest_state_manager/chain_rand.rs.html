@@ -226,30 +226,6 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -262,9 +238,8 @@
 <span class="kw">use </span>forest_blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span>forest_chain::ChainStore;
 <span class="kw">use </span>forest_networks::ChainConfig;
+<span class="kw">use </span>forest_shim::externs::Rand;
 <span class="kw">use </span>forest_utils::encoding::blake2b_256;
-<span class="kw">use </span>fvm::externs::Rand <span class="kw">as </span>Rand_v2;
-<span class="kw">use </span>fvm3::externs::Rand <span class="kw">as </span>Rand_v3;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 
@@ -439,30 +414,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;DB&gt; Rand_v2 <span class="kw">for </span>ChainRand&lt;DB&gt;
-<span class="kw">where
-    </span>DB: Blockstore + Send + Sync,
-{
-    <span class="kw">fn </span>get_chain_randomness(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_chain_randomness_v2(<span class="kw-2">&amp;</span><span class="self">self</span>.blks, pers, round, entropy)
-    }
-
-    <span class="kw">fn </span>get_beacon_randomness(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_beacon_randomness_v3(<span class="kw-2">&amp;</span><span class="self">self</span>.blks, pers, round, entropy)
-    }
-}
-
-<span class="kw">impl</span>&lt;DB&gt; Rand_v3 <span class="kw">for </span>ChainRand&lt;DB&gt;
+<span class="kw">impl</span>&lt;DB&gt; Rand <span class="kw">for </span>ChainRand&lt;DB&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync,
 {

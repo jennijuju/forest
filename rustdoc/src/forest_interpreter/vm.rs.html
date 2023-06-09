@@ -467,6 +467,19 @@
 <a href="#467" id="467">467</a>
 <a href="#468" id="468">468</a>
 <a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -482,6 +495,7 @@
     econ::TokenAmount,
     error::ExitCode,
     executor::{ApplyRet, Receipt},
+    externs::{Rand, RandWrapper},
     machine::MultiEngine,
     message::{Message, Message_v3},
     state_tree::ActorState,
@@ -490,12 +504,10 @@
 };
 <span class="kw">use </span>fvm::{
     executor::{DefaultExecutor, Executor},
-    externs::Rand,
     machine::{DefaultMachine, Machine, NetworkConfig},
 };
 <span class="kw">use </span>fvm3::{
     executor::{DefaultExecutor <span class="kw">as </span>DefaultExecutor_v3, Executor <span class="kw">as </span>Executor_v3},
-    externs::Rand <span class="kw">as </span>Rand_v3,
     machine::{
         DefaultMachine <span class="kw">as </span>DefaultMachine_v3, Machine <span class="kw">as </span>Machine_v3,
         NetworkConfig <span class="kw">as </span>NetworkConfig_v3,
@@ -574,7 +586,7 @@
         root: Cid,
         store: DB,
         epoch: ChainEpoch,
-        rand: <span class="kw">impl </span>Rand + Rand_v3 + <span class="lifetime">&#39;static</span>,
+        rand: <span class="kw">impl </span>Rand + <span class="lifetime">&#39;static</span>,
         base_fee: TokenAmount,
         circ_supply: TokenAmount,
         reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
@@ -597,7 +609,14 @@
                 fvm3::machine::DefaultMachine::new(
                     <span class="kw-2">&amp;</span>context,
                     store.clone(),
-                    ForestExterns_v3::new(rand, epoch, root, lb_fn, store, chain_config),
+                    ForestExterns_v3::new(
+                        RandWrapper::from(rand),
+                        epoch,
+                        root,
+                        lb_fn,
+                        store,
+                        chain_config,
+                    ),
                 )<span class="question-mark">?</span>;
             <span class="kw">let </span>exec: ForestExecutorV3&lt;DB&gt; = DefaultExecutor_v3::new(engine, fvm)<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(VM::VM3 {
@@ -615,7 +634,14 @@
                     <span class="kw-2">&amp;</span>engine,
                     <span class="kw-2">&amp;</span>context,
                     store.clone(),
-                    ForestExternsV2::new(rand, epoch, root, lb_fn, store, chain_config),
+                    ForestExternsV2::new(
+                        RandWrapper::from(rand),
+                        epoch,
+                        root,
+                        lb_fn,
+                        store,
+                        chain_config,
+                    ),
                 )<span class="question-mark">?</span>;
             <span class="kw">let </span>exec: ForestExecutor&lt;DB&gt; = DefaultExecutor::new(fvm);
             <span class="prelude-val">Ok</span>(VM::VM2 {
