@@ -59,7 +59,7 @@ use crate::Scale;
 const SINK_CAP: usize = 200;
 
 const DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize =
-    forest::utils::const_option!(NonZeroUsize::new(8192));
+    forest::const_option!(NonZeroUsize::new(8192));
 
 /// `Enum` for `pubsub` channel that defines message type variant and data
 /// contained in message type.
