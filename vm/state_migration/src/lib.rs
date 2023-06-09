@@ -9,7 +9,7 @@ use std::sync::{
 use cid::Cid;
 use forest_networks::{ChainConfig, Height};
 use forest::shim::clock::ChainEpoch;
-use forest_utils::misc::reveal_five_trees;
+use forest::utils::misc::reveal_five_trees;
 use fvm_ipld_blockstore::Blockstore;
 
 pub(crate) mod common;

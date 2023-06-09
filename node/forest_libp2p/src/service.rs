@@ -17,7 +17,7 @@ use forest_libp2p_bitswap::{
     request_manager::BitswapRequestManager, BitswapStoreRead, BitswapStoreReadWrite,
 };
 use forest_message::SignedMessage;
-use forest_utils::io::read_file_to_vec;
+use forest::utils::io::read_file_to_vec;
 use futures::{channel::oneshot::Sender as OneShotSender, select};
 use futures_util::stream::StreamExt;
 use fvm_ipld_blockstore::Blockstore;

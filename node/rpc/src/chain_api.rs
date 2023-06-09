@@ -19,7 +19,7 @@ use forest_rpc_api::{
     data_types::{BlockMessages, RPCState},
 };
 use forest::shim::message::Message;
-use forest_utils::io::VoidAsyncWriter;
+use forest::utils::io::VoidAsyncWriter;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::CborStore;
 use hex::ToHex;

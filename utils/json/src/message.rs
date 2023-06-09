@@ -102,7 +102,7 @@ pub mod json {
     }
 
     pub mod vec {
-        use forest_utils::json::GoVecVisitor;
+        use forest::utils::json::GoVecVisitor;
         use serde::ser::SerializeSeq;
 
         use super::*;

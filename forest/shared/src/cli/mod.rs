@@ -16,7 +16,7 @@ use byte_unit::Byte;
 use clap::Parser;
 use directories::ProjectDirs;
 use forest_networks::{ChainConfig, NetworkChain};
-use forest_utils::io::{read_file_to_string, read_toml, ProgressBarVisibility};
+use forest::utils::io::{read_file_to_string, read_toml, ProgressBarVisibility};
 use log::error;
 use num::BigInt;
 

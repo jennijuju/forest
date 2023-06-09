@@ -27,7 +27,7 @@ use forest_cli_shared::{
     cli::{check_for_unknown_keys, cli_error_and_die, ConfigPath, DaemonConfig},
     logger,
 };
-use forest_utils::io::ProgressBar;
+use forest::utils::io::ProgressBar;
 use lazy_static::lazy_static;
 use log::info;
 use raw_sync::{

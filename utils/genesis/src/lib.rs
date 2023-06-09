@@ -7,7 +7,7 @@ use anyhow::bail;
 use cid::Cid;
 use forest_blocks::{BlockHeader, Tipset, TipsetKeys};
 use forest_state_manager::StateManager;
-use forest_utils::{
+use forest::utils::{
     db::BlockstoreBufferedWriteExt,
     net::{get_fetch_progress_from_file, get_fetch_progress_from_url},
 };

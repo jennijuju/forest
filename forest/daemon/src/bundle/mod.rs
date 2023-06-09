@@ -5,7 +5,7 @@ use forest_cli_shared::cli::Config;
 use forest_genesis::forest_load_car;
 use forest_networks::Height;
 use forest::shim::clock::ChainEpoch;
-use forest_utils::net::FetchProgress;
+use forest::utils::net::FetchProgress;
 use fvm_ipld_blockstore::Blockstore;
 use log::info;
 use tokio::{

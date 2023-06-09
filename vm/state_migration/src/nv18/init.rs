@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use cid::Cid;
 use fil_actor_init_state::{v10::State as InitStateNew, v9::State as InitStateOld};
-use forest_utils::db::CborStoreExt;
+use forest::utils::db::CborStoreExt;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::CborStore;
 

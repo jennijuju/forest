@@ -25,7 +25,7 @@ use forest::shim::{
     message::Message, state_tree::StateTree,
 };
 use forest_state_manager::{is_valid_for_sending, Error as StateManagerError, StateManager};
-use forest_utils::io::ProgressBar;
+use forest::utils::io::ProgressBar;
 use futures::{stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::Cbor;

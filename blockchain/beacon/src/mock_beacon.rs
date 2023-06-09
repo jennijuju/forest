@@ -6,7 +6,7 @@ use std::time::Duration;
 use async_trait::async_trait;
 use byteorder::{BigEndian, ByteOrder};
 use forest::shim::version::NetworkVersion;
-use forest_utils::encoding::blake2b_256;
+use forest::utils::encoding::blake2b_256;
 
 use crate::{Beacon, BeaconEntry};
 

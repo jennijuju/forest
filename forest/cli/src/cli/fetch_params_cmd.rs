@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 use forest::shim::{sector::SectorSize, Inner};
-use forest_utils::proofs_api::paramfetch::{get_params_default, SectorSizeOpt};
+use forest::utils::proofs_api::paramfetch::{get_params_default, SectorSizeOpt};
 
 use super::cli_error_and_die;
 use crate::cli::Config;

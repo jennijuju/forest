@@ -53,7 +53,7 @@ use vm_circ_supply::GenesisInfo;
 pub use self::errors::*;
 
 const DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize =
-    forest_utils::const_option!(NonZeroUsize::new(1024));
+    forest::utils::const_option!(NonZeroUsize::new(1024));
 
 /// Intermediary for retrieving state objects and updating actor states.
 type CidPair = (Cid, Cid);

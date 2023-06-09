@@ -9,7 +9,7 @@ use forest_cli_shared::{chain_path, cli::Config};
 use forest_db::db_engine::db_root;
 use forest_rpc_api::progress_api::GetProgressType;
 use forest_rpc_client::{db_ops::db_gc, progress_ops::get_progress};
-use forest_utils::io::ProgressBar;
+use forest::utils::io::ProgressBar;
 use log::error;
 
 use crate::cli::{handle_rpc_err, prompt_confirm};

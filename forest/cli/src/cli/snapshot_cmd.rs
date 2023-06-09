@@ -18,7 +18,7 @@ use forest_ipld::{recurse_links_hash, CidHashSet};
 use forest_networks::NetworkChain;
 use forest_rpc_api::{chain_api::ChainExportParams, progress_api::GetProgressType};
 use forest_rpc_client::{chain_ops::*, progress_ops::get_progress};
-use forest_utils::{
+use forest::utils::{
     io::{parser::parse_duration, ProgressBar},
     net::get_fetch_progress_from_file,
     retry,
@@ -497,7 +497,7 @@ where
     let mut tsk = ts.parents().clone();
 
     let total_size = ts.epoch();
-    let pb = forest_utils::io::ProgressBar::new(total_size as u64);
+    let pb = forest::utils::io::ProgressBar::new(total_size as u64);
     pb.message("Validating tipsets: ");
     pb.set_max_refresh_rate(Some(std::time::Duration::from_millis(500)));
 

@@ -9,7 +9,7 @@ use async_trait::async_trait;
 use bls_signatures::{PublicKey, Serialize, Signature};
 use byteorder::{BigEndian, WriteBytesExt};
 use forest::shim::version::NetworkVersion;
-use forest_utils::net::{https_client, HyperBodyExt};
+use forest::utils::net::{https_client, HyperBodyExt};
 use fvm_shared::clock::ChainEpoch;
 use parking_lot::RwLock;
 use serde::{Deserialize as SerdeDeserialize, Serialize as SerdeSerialize};

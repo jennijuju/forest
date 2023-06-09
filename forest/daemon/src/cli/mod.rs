@@ -3,7 +3,7 @@
 
 use clap::Parser;
 use forest_cli_shared::cli::{CliOpts, HELP_MESSAGE};
-use forest_utils::version::FOREST_VERSION_STRING;
+use forest::utils::version::FOREST_VERSION_STRING;
 
 /// CLI structure generated when interacting with Forest binary
 #[derive(Parser)]

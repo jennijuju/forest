@@ -3,7 +3,7 @@
 
 use ahash::{HashMap, HashSet};
 use forest_libp2p_bitswap::BitswapBehaviour;
-use forest_utils::{encoding::blake2b_256, version::FOREST_VERSION_STRING};
+use forest::utils::{encoding::blake2b_256, version::FOREST_VERSION_STRING};
 use libp2p::{
     core::identity::Keypair,
     gossipsub::{

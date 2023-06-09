@@ -5,7 +5,7 @@ use std::{num::NonZeroUsize, sync::Arc};
 
 use forest_blocks::{Tipset, TipsetKeys};
 use forest_metrics::metrics;
-use forest_utils::io::ProgressBar;
+use forest::utils::io::ProgressBar;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_shared::clock::ChainEpoch;
 use log::info;
@@ -15,7 +15,7 @@ use parking_lot::Mutex;
 use crate::{tipset_from_keys, Error, TipsetCache};
 
 const DEFAULT_CHAIN_INDEX_CACHE_SIZE: NonZeroUsize =
-    forest_utils::const_option!(NonZeroUsize::new(32 << 10));
+    forest::utils::const_option!(NonZeroUsize::new(32 << 10));
 
 /// Configuration which sets the length of tipsets to skip in between each
 /// cached entry.

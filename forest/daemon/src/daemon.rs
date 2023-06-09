@@ -34,7 +34,7 @@ use forest_rpc::start_rpc;
 use forest_rpc_api::data_types::RPCState;
 use forest::shim::version::NetworkVersion;
 use forest_state_manager::StateManager;
-use forest_utils::{
+use forest::utils::{
     io::write_to_file, monitoring::MemStatsTracker,
     proofs_api::paramfetch::ensure_params_downloaded, retry, version::FOREST_VERSION_STRING,
 };
@@ -95,7 +95,7 @@ pub(super) async fn start_interruptable(opts: CliOpts, config: Config) -> anyhow
             Ok(())
         },
     };
-    forest_utils::io::terminal_cleanup();
+    forest::utils::io::terminal_cleanup();
     result
 }
 
@@ -131,7 +131,7 @@ pub(super) async fn start(
                 "keypair",
             )?;
             // Restrict permissions on files containing private keys
-            forest_utils::io::set_user_perm(&file)?;
+            forest::utils::io::set_user_perm(&file)?;
             Ok(gen_keypair)
         }
     }?;
@@ -393,7 +393,7 @@ pub(super) async fn start(
     // Sets proof parameter file download path early, the files will be checked and
     // downloaded later right after snapshot import step
     if cns::FETCH_PARAMS {
-        forest_utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
+        forest::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
             &config.client.data_dir,
         );
     }

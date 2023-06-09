@@ -6,13 +6,13 @@
 ///
 /// # Example
 /// ```
-/// use forest_utils::const_option;
+/// use forest::utils::const_option;
 /// const MY_CONST: i32 = const_option!(Some(42));
 /// ```
 ///
 /// # This will at fail compile-time.
 /// ```compile_fail
-/// use forest_utils::const_option;
+/// use forest::utils::const_option;
 /// const MY_CONST: i32 = const_option!(None);
 /// ```
 #[macro_export]

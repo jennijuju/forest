@@ -20,7 +20,7 @@ macro_rules! impl_system {
             use std::sync::Arc;
 
             use cid::Cid;
-            use forest_utils::db::CborStoreExt;
+            use forest::utils::db::CborStoreExt;
             use fvm_ipld_blockstore::Blockstore;
             use $crate::common::*;
 

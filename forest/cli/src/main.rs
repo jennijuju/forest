@@ -19,7 +19,7 @@ use forest_cli::{
     subcommand,
 };
 use forest_cli_shared::{cli::LogConfig, logger};
-use forest_utils::io::ProgressBar;
+use forest::utils::io::ProgressBar;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {

@@ -223,7 +223,7 @@ mod tests {
     use fil_actor_account_state::v10::State as AccountState;
     use forest_db::MemoryDB;
     use forest::shim::{address::Address, econ::TokenAmount, state_tree::ActorState};
-    use forest_utils::db::CborStoreExt;
+    use forest::utils::db::CborStoreExt;
     use fvm_ipld_blockstore::Blockstore;
 
     use super::pp_actor_state;

@@ -3,7 +3,7 @@
 
 use cid::Cid;
 use forest_libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
-use forest_utils::db::file_backed_obj::FileBackedObject;
+use forest::utils::db::file_backed_obj::FileBackedObject;
 use fvm_ipld_blockstore::Blockstore;
 use human_repr::HumanCount;
 use parking_lot::RwLock;

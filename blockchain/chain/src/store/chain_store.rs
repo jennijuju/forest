@@ -25,7 +25,7 @@ use forest::shim::{
     message::Message,
     state_tree::StateTree,
 };
-use forest_utils::{
+use forest::utils::{
     db::{
         file_backed_obj::{ChainMeta, FileBacked, SYNC_PERIOD},
         BlockstoreExt, CborStoreExt,
@@ -59,7 +59,7 @@ use crate::Scale;
 const SINK_CAP: usize = 200;
 
 const DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize =
-    forest_utils::const_option!(NonZeroUsize::new(8192));
+    forest::utils::const_option!(NonZeroUsize::new(8192));
 
 /// `Enum` for `pubsub` channel that defines message type variant and data
 /// contained in message type.

@@ -75,7 +75,7 @@ use std::{
 use chrono::Utc;
 use forest_blocks::Tipset;
 use forest_ipld::util::*;
-use forest_utils::db::{file_backed_obj::ChainMeta, BlockstoreBufferedWriteExt, DB_KEY_BYTES};
+use forest::utils::db::{file_backed_obj::ChainMeta, BlockstoreBufferedWriteExt, DB_KEY_BYTES};
 use fvm_ipld_blockstore::Blockstore;
 use human_repr::HumanCount;
 use tokio::sync::Mutex;

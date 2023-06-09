@@ -21,7 +21,7 @@ use forest::shim::{
     crypto::{Signature, SignatureType},
     econ::TokenAmount,
 };
-use forest_utils::io::read_file_to_string;
+use forest::utils::io::read_file_to_string;
 use num::BigInt;
 
 use super::{handle_rpc_err, Config};

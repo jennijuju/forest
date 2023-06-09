@@ -16,7 +16,7 @@ use forest::shim::{
     state_tree::{ActorState, StateTree},
 };
 use forest_state_manager::StateManager;
-use forest_utils::db::CborStoreExt;
+use forest::utils::db::CborStoreExt;
 use fvm_ipld_blockstore::Blockstore;
 use tokio::sync::broadcast::{Receiver as Subscriber, Sender as Publisher};
 

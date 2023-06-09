@@ -14,7 +14,7 @@ use forest_ipld::{
     json::{self, IpldJson},
     selector::{LastBlockInfo, LinkResolver, Selector, VisitReason},
 };
-use forest_utils::db::CborStoreExt;
+use forest::utils::db::CborStoreExt;
 use fvm_ipld_encoding::CborStore;
 use libipld::Path;
 use libipld_core::ipld::Ipld;

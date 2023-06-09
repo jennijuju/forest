@@ -10,7 +10,7 @@ use std::{
 use anyhow::bail;
 use chrono::{DateTime, NaiveDate};
 use forest_networks::NetworkChain;
-use forest_utils::{
+use forest::utils::{
     io::{progress_bar::Units, ProgressBar, TempFile},
     net::{
         https_client,

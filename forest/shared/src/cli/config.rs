@@ -208,7 +208,7 @@ mod test {
     };
 
     use chrono::Duration;
-    use forest_utils::io::ProgressBarVisibility;
+    use forest::utils::io::ProgressBarVisibility;
     use quickcheck::Arbitrary;
     use quickcheck_macros::quickcheck;
     use tracing_subscriber::EnvFilter;

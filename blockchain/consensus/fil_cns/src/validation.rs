@@ -18,7 +18,7 @@ use forest::shim::{
     version::NetworkVersion,
 };
 use forest_state_manager::StateManager;
-use forest_utils::encoding::prover_id_from_u64;
+use forest::utils::encoding::prover_id_from_u64;
 use futures::stream::FuturesUnordered;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::{bytes_32, Cbor};

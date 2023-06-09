@@ -20,7 +20,7 @@ use std::{
     sync::Arc,
 };
 
-use forest_utils::db::file_backed_obj::FileBacked;
+use forest::utils::db::file_backed_obj::FileBacked;
 use log::{info, warn};
 use parking_lot::RwLock;
 use serde::{Deserialize, Serialize};

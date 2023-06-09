@@ -13,7 +13,7 @@ use std::{
 
 use cid::Cid;
 use forest_blocks::{BlockHeader, Tipset};
-use forest_utils::io::{progress_bar, ProgressBar};
+use forest::utils::io::{progress_bar, ProgressBar};
 use fvm_ipld_encoding::{from_slice, Cbor};
 use lazy_static::lazy_static;
 

@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use cid::Cid;
 use fil_actor_miner_state::{v10::State as MinerStateOld, v11::State as MinerStateNew};
-use forest_utils::db::CborStoreExt;
+use forest::utils::db::CborStoreExt;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::CborStore;
 

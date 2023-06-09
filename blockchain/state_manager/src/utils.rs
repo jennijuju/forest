@@ -11,7 +11,7 @@ use forest::shim::{
     state_tree::ActorState,
     version::NetworkVersion,
 };
-use forest_utils::encoding::prover_id_from_u64;
+use forest::utils::encoding::prover_id_from_u64;
 use fvm_ipld_bitfield::BitField;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::bytes_32;
