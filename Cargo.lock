@@ -3924,6 +3924,8 @@ dependencies = [
  "forest_blocks",
  "forest_chain",
  "forest_db",
+ "forest_fil_cns",
+ "forest_genesis",
  "forest_interpreter",
  "forest_json",
  "forest_message",
