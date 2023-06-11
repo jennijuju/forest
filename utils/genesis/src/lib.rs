@@ -15,7 +15,7 @@ use futures::AsyncRead;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_car::{load_car, CarReader};
 use fvm_ipld_encoding::CborStore;
-use log::{debug, info};
+use tracing::{debug, info};
 use tokio::{fs::File, io::BufReader};
 use tokio_util::compat::TokioAsyncReadCompatExt;
 use url::Url;

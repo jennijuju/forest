@@ -14,7 +14,7 @@ use url::Url;
 
 use super::client::Client;
 
-#[derive(Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Debug)]
 pub struct LogConfig {
     pub filters: Vec<LogValue>,
 }
@@ -46,7 +46,7 @@ impl Default for LogConfig {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug)]
 pub struct LogValue {
     pub module: String,
     pub level: LevelFilter,
@@ -61,13 +61,13 @@ impl LogValue {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Eq, Default)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Default, Debug)]
 pub struct SnapshotFetchConfig {
     pub forest: ForestSnapshotFetchConfig,
     pub filecoin: FilecoinSnapshotFetchConfig,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct FilecoinSnapshotFetchConfig {
     pub mainnet_compressed: Url,
     pub calibnet_compressed: Url,
@@ -90,13 +90,13 @@ impl Default for FilecoinSnapshotFetchConfig {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ForestSnapshotFetchConfig {
     pub mainnet: ForestFetchConfig,
     pub calibnet: ForestFetchConfig,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct ForestFetchConfig {
     pub snapshot_spaces_url: Url,
     pub bucket_name: String,
@@ -133,7 +133,7 @@ impl Default for ForestSnapshotFetchConfig {
 }
 
 /// Structure that defines daemon configuration when process is detached
-#[derive(Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Deserialize, Serialize, PartialEq, Eq, Debug)]
 pub struct DaemonConfig {
     pub user: Option<String>,
     pub group: Option<String>,
@@ -162,7 +162,7 @@ impl Default for DaemonConfig {
     }
 }
 
-#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Default)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Eq, Clone, Default)]
 pub struct TokioConfig {
     pub worker_threads: Option<usize>,
     pub max_blocking_threads: Option<usize>,
@@ -171,7 +171,7 @@ pub struct TokioConfig {
     pub global_queue_interval: Option<u32>,
 }
 
-#[derive(Serialize, Deserialize, PartialEq, Default)]
+#[derive(Serialize, Deserialize, PartialEq, Default, Debug)]
 #[serde(default)]
 pub struct Config {
     pub client: Client,

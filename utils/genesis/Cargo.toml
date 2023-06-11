@@ -23,4 +23,5 @@ fvm_ipld_encoding.workspace = true
 log.workspace = true
 tokio-util = { workspace = true, features = ["compat"] }
 tokio.workspace = true
+tracing.workspace = true
 url.workspace = true
