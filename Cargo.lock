@@ -3494,7 +3494,6 @@ dependencies = [
  "log",
  "tokio",
  "tokio-util",
- "tracing",
  "url",
 ]
 
@@ -3953,8 +3952,6 @@ dependencies = [
  "thiserror",
  "tokio",
  "tracing",
- "tracing-subscriber",
- "tracing-timing",
 ]
 
 [[package]]
@@ -4862,7 +4859,6 @@ checksum = "7f19b9f54f7c7f55e31401bb647626ce0cf0f67b0004982ce815b3ee72a02aa8"
 dependencies = [
  "base64 0.13.1",
  "byteorder",
- "crossbeam-channel",
  "flate2",
  "nom",
  "num-traits",
@@ -7467,22 +7463,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "quanta"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20afe714292d5e879d8b12740aa223c6a88f118af41870e8b6196e39a02238a8"
-dependencies = [
- "crossbeam-utils",
- "libc",
- "mach",
- "once_cell",
- "raw-cpuid",
- "wasi 0.10.0+wasi-snapshot-preview1",
- "web-sys",
- "winapi",
-]
-
-[[package]]
 name = "quick-error"
 version = "1.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7674,15 +7654,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d25bf25ec5ae4a3f1b92f929810509a2f53d7dca2f50b794ff57e3face536c8f"
 dependencies = [
  "rand_core 0.6.4",
-]
-
-[[package]]
-name = "raw-cpuid"
-version = "10.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6c297679cb867470fa8c9f67dbba74a78d78e3e98d7cf2b08d6d71540f797332"
-dependencies = [
- "bitflags",
 ]
 
 [[package]]
@@ -9572,23 +9543,6 @@ dependencies = [
  "tracing",
  "tracing-core",
  "tracing-log",
-]
-
-[[package]]
-name = "tracing-timing"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fbe4966d7b6ae25201de6ff9fa822afb0c9e933809187d5b82ad846ec108771b"
-dependencies = [
- "crossbeam",
- "doc-comment",
- "fxhash",
- "hdrhistogram",
- "indexmap",
- "quanta",
- "slab",
- "tracing-core",
- "tracing-subscriber",
 ]
 
 [[package]]

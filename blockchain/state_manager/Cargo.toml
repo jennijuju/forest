@@ -44,8 +44,6 @@ prometheus.workspace = true
 serde = { workspace = true, features = ["derive"] }
 thiserror.workspace = true
 tokio = { workspace = true, features = ["sync"] }
-tracing-subscriber.workspace = true
-tracing-timing.workspace = true
 tracing.workspace = true
 
 [features]

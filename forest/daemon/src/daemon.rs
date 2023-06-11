@@ -105,8 +105,6 @@ pub(super) async fn start(
     config: Config,
     shutdown_send: mpsc::Sender<()>,
 ) -> anyhow::Result<()> {
-    let opts = dbg!(opts);
-    let config = dbg!(config);
     if config.chain.is_testnet() {
         forest_shim::address::set_current_network(forest_shim::address::Network::Testnet);
     }
@@ -417,10 +415,7 @@ pub(super) async fn start(
     if config.client.snapshot {
         if let Some(validate_height) = config.client.snapshot_height {
             ensure_params_downloaded().await?;
-            let start = std::time::Instant::now();
             validate_chain(&state_manager, validate_height).await?;
-            let end = start.elapsed();
-            println!(">>>>>> {}s", end.as_secs_f64());
         }
     }
 
