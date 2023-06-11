@@ -62,7 +62,7 @@ bls-signatures = { version = "0.13", default-features = false, features = ["blst
 byteorder = "1.4.3"
 bytes = "1.2"
 cfg-if = "1"
-chrono = { version = "0.4", default-features = false, features = ["clock", "serde"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 cid = { version = "0.8", default-features = false, features = ["std"] }
 clap = { version = "4.0", features = ["derive"] }
 console-subscriber = { version = "0.1", features = ["parking_lot"] }

@@ -18,7 +18,7 @@ filecoin-proofs-api = { workspace = true }
 forest_beacon.workspace = true
 forest_blocks.workspace = true
 forest_chain.workspace = true
-forest_db = { workspace = true, features = ["paritydb"] }
+forest_db.workspace = true
 forest_interpreter.workspace = true
 forest_json.workspace = true
 forest_message = { workspace = true }
@@ -51,14 +51,8 @@ default = []
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["csv_output", "async_tokio"] }
-forest_fil_cns.workspace = true
-forest_genesis.workspace = true
 tokio = { workspace = true, features = ["full"] }
 
 [[bench]]
 name = "fibonacci"
-harness = false
-
-[[bench]]
-name = "investigate"
 harness = false
