@@ -48,11 +48,3 @@ tracing.workspace = true
 
 [features]
 default = []
-
-[dev-dependencies]
-criterion = { version = "0.5.1", features = ["csv_output", "async_tokio"] }
-tokio = { workspace = true, features = ["full"] }
-
-[[bench]]
-name = "fibonacci"
-harness = false
