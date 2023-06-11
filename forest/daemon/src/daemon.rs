@@ -100,7 +100,7 @@ pub async fn start_interruptable(opts: CliOpts, config: Config) -> anyhow::Resul
 }
 
 /// Starts daemon process
-pub(super) async fn start(
+pub async fn start(
     opts: CliOpts,
     config: Config,
     shutdown_send: mpsc::Sender<()>,

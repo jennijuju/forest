@@ -39,7 +39,7 @@ OPTIONS:
 ";
 
 /// CLI options
-#[derive(Default, Debug, Parser)]
+#[derive(Clone, Default, Debug, Parser)]
 pub struct CliOpts {
     /// A TOML file containing relevant configurations
     #[arg(short, long)]
