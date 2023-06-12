@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["IGNORE_DRAND_VAR"],"enum":["DrandNetwork"],"struct":["BeaconEntryJson","BeaconPoint","BeaconSchedule","ChainInfo","DrandBeacon","DrandConfig","DrandPublic"],"trait":["Beacon"]};

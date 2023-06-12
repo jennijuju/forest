@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["DbGarbageCollector","RollingDB"]};
+window.SIDEBAR_ITEMS = {"mod":["gc","impls"],"struct":["DbGarbageCollector","DbIndex","RollingDB"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["VM"],"fn":["resolve_to_key_addr"],"mod":["fvm3"],"struct":["BlockMessages","FixedRewardCalc","NoRewardCalc","RewardActorMessageCalc"],"trait":["RewardCalc"]};
+window.SIDEBAR_ITEMS = {"enum":["VM"],"fn":["resolve_to_key_addr"],"mod":["fvm","fvm3","vm"],"struct":["BlockMessages","FixedRewardCalc","NoRewardCalc","RewardActorMessageCalc"],"trait":["RewardCalc"]};

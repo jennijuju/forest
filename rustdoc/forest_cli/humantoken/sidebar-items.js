@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["parse"],"trait":["TokenAmountPretty"]};
+window.SIDEBAR_ITEMS = {"fn":["parse"],"mod":["parse","print","si"],"trait":["TokenAmountPretty"]};

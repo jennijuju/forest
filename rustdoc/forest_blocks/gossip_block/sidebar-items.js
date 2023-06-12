@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["json"],"struct":["GossipBlock"]};
+window.SIDEBAR_ITEMS = {"mod":["json"],"struct":["GossipBlock","Inner"]};

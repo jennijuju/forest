@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SET_HEAD_CONFIRMATION_MESSAGE"],"enum":["ChainCommands"],"fn":["maybe_confirm","tipset_by_epoch_or_offset"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SUPPORTED_PREFIXES","atto","exa","femto","giga","kilo","mega","micro","milli","nano","peta","pico","quecto","quetta","ronna","ronto","tera","yocto","yotta","zepto","zetta"],"macro":["define_prefixes"],"struct":["Prefix"]};

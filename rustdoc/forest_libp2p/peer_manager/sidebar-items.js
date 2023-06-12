@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["GLOBAL_INV_ALPHA","LOCAL_INV_ALPHA","NEW_PEER_MUL","SHUFFLE_PEERS_PREFIX"],"enum":["PeerOperation"],"fn":["log_time","remove_peer"],"struct":["PeerInfo","PeerManager","PeerSets"]};

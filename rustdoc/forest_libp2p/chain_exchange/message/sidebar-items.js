@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["HEADERS","MESSAGES"],"enum":["ChainExchangeResponseStatus"],"fn":["fts_from_bundle_parts"],"struct":["ChainExchangeRequest","ChainExchangeResponse","CompactedMessages","Inner","TipsetBundle"]};

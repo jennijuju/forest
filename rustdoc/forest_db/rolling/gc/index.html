@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The current implementation of the garbage collector is a concurrent, semi-space one."><title>forest_db::rolling::gc - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="forest_db" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../forest_db/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../forest_db/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module gc</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#constants">Constants</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">forest_db</a>::<wbr><a href="../index.html">rolling</a>::<wbr><a class="mod" href="#">gc</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../../src/forest_db/rolling/gc.rs.html#4-300">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The current implementation of the garbage collector is a concurrent,
+semi-space one.</p>
+<h3 id="design-goals"><a href="#design-goals">Design goals</a></h3>
+<p>Implement a correct GC algorithm that is simple and efficient for forest
+scenarios.</p>
+<h3 id="gc-algorithm"><a href="#gc-algorithm">GC algorithm</a></h3>
+<p>We chose the <code>semi-space</code> GC algorithm for simplicity and sufficiency
+Besides <code>semi-space</code>, <code>mark-and-sweep</code> was also considered and evaluated.
+However, it’s not feasible because of the limitations of the underlying DB
+we use, more specifically, limitations in iterating the DB and retrieving the original key. See <a href="https://github.com/paritytech/parity-db/issues/187">https://github.com/paritytech/parity-db/issues/187</a></p>
+<h3 id="gc-workflow"><a href="#gc-workflow">GC workflow</a></h3>
+<ol>
+<li>Walk back from the current heaviest tipset to the genesis block, collect
+all the blocks that are reachable from the snapshot</li>
+<li>writes blocks that are absent from the <code>current</code> database to it</li>
+<li>delete <code>old</code> database(s)</li>
+<li>sets <code>current</code> database to a newly created one</li>
+</ol>
+<h3 id="correctness"><a href="#correctness">Correctness</a></h3>
+<p>This algorithm considers all blocks that are visited during the snapshot
+export task reachable, and ensures they are all transferred and kept in the
+current DB space. A snapshot can be used to bootstrap a node from
+scratch thus the algorithm is considered appropriate when the post-GC
+database contains blocks that are sufficient for exporting a snapshot</p>
+<h3 id="disk-usage"><a href="#disk-usage">Disk usage</a></h3>
+<p>During <code>walk_snapshot</code>, data from the <code>old</code> DB is duplicated in the
+<code>current</code> DB, which uses extra disk space of up to 100% of the snapshot file
+size</p>
+<h3 id="memory-usage"><a href="#memory-usage">Memory usage</a></h3>
+<p>During the data carry-over process, a memory buffer with a fixed capacity is
+used to speed up the database write operation</p>
+<h3 id="scheduling"><a href="#scheduling">Scheduling</a></h3>
+<ol>
+<li>GC is triggered automatically when total DB size is greater than <code>2x</code> of
+the last reachable data size</li>
+<li>GC can be triggered manually by <code>forest-cli db gc</code> command</li>
+<li>There’s a global GC lock to ensure at most one GC job is running</li>
+</ol>
+<h3 id="performance"><a href="#performance">Performance</a></h3>
+<p>GC performance is typically <code>1x-1.5x</code> of <code>snapshot export</code>, depending on
+number of write operations to the <code>current</code> DB space.</p>
+<h4 id="look-up-performance"><a href="#look-up-performance">Look up performance</a></h4>
+<p>DB lookup performance is almost on-par between from single DB and two DBs.
+Time cost of <code>forest-cli snapshot export --dry-run</code> on DO droplet with 16
+GiB RAM is between <code>9000s</code> to <code>11000s</code> for both scenarios, no significant
+performance regression has been observed</p>
+<h4 id="write-performance"><a href="#write-performance">Write performance</a></h4>
+<p>DB write performance is typically on par with <code>snapshot import</code>. Note that
+when the <code>current</code> DB space is very large, it tends to trigger DB re-index
+more frequently, each DB re-index could pause the GC process for a few
+minutes. The same behavior is observed during snapshot import as well.</p>
+<h4 id="sample-mainnet-log"><a href="#sample-mainnet-log">Sample mainnet log</a></h4><div class="example-wrap"><pre class="language-text"><code>2023-03-16T19:50:40.323860Z  INFO forest_db::rolling::gc: Garbage collection started at epoch 2689660
+2023-03-16T22:27:36.484245Z  INFO forest_db::rolling::gc: Garbage collection finished at epoch 2689660, took 9416s, reachable data size: 135.71GB
+2023-03-16T22:27:38.793717Z  INFO forest_db::rolling::impls: Deleted database under /root/.local/share/forest/mainnet/paritydb/14d0f80992374fb8b20e3b1bd70d5d7b, size: 139.01GB
+</code></pre></div></div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.DbGarbageCollector.html" title="struct forest_db::rolling::gc::DbGarbageCollector">DbGarbageCollector</a></div></li></ul><h2 id="constants" class="small-section-header"><a href="#constants">Constants</a></h2><ul class="item-table"><li><div class="item-name"><a class="constant" href="constant.BUFFER_CAPCITY_BYTES.html" title="constant forest_db::rolling::gc::BUFFER_CAPCITY_BYTES">BUFFER_CAPCITY_BYTES</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li></ul><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.gc_trigger_factor.html" title="fn forest_db::rolling::gc::gc_trigger_factor">gc_trigger_factor</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li></ul></section></div></main></body></html>

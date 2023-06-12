@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize"],"mod":["labels","values"],"struct":["NETWORK_CONTAINER_CAPACITIES"]};

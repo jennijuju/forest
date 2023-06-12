@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["JWT_IDENTIFIER"],"enum":["Error"],"fn":["create_token","generate_priv_key","has_perms","verify_token"],"static":["ADMIN","READ","SIGN","WRITE"]};
+window.SIDEBAR_ITEMS = {"constant":["JWT_IDENTIFIER"],"enum":["Error"],"fn":["create_token","generate_priv_key","has_perms","verify_token"],"static":["ADMIN","READ","SIGN","WRITE"],"struct":["Claims"]};

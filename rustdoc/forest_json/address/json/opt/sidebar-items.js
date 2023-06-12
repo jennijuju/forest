@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["deserialize","serialize"]};
+window.SIDEBAR_ITEMS = {"constant":["UNDEF_ADDR_STRING"],"fn":["deserialize","serialize"]};

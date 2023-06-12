@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["block_probabilities","head_change"],"mod":["test_provider"],"struct":["MessagePool","MpoolConfig","MpoolRpcProvider"],"trait":["Provider"]};
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["block_probabilities","head_change"],"mod":["block_prob","config","errors","msg_chain","msgpool","test_provider"],"struct":["MessagePool","MpoolConfig","MpoolRpcProvider"],"trait":["Provider"]};

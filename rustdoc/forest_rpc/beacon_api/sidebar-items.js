@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["beacon_get_entry"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["HelloBehaviour","HelloRequest","HelloResponse"]};
+window.SIDEBAR_ITEMS = {"mod":["behaviour","codec","message"],"struct":["HelloBehaviour","HelloRequest","HelloResponse"]};

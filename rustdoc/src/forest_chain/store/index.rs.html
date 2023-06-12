@@ -299,12 +299,12 @@
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>lru::LruCache;
+<span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>parking_lot::Mutex;
 
 <span class="kw">use crate</span>::{tipset_from_keys, Error, TipsetCache};
 
-<span class="kw">const </span>DEFAULT_CHAIN_INDEX_CACHE_SIZE: NonZeroUsize =
-    <span class="macro">forest_utils::const_option!</span>(NonZeroUsize::new(<span class="number">32 </span>&lt;&lt; <span class="number">10</span>));
+<span class="kw">const </span>DEFAULT_CHAIN_INDEX_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">32usize </span>&lt;&lt; <span class="number">10</span>);
 
 <span class="doccomment">/// Configuration which sets the length of tipsets to skip in between each
 /// cached entry.

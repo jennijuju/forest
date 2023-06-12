@@ -711,11 +711,11 @@
     gas::{price_list_by_network_version, Gas},
 };
 <span class="kw">use </span>forest_state_manager::is_valid_for_sending;
-<span class="kw">use </span>forest_utils::const_option;
 <span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
 <span class="kw">use </span>log::warn;
 <span class="kw">use </span>lru::LruCache;
+<span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock <span class="kw">as </span>SyncRwLock};
 <span class="kw">use </span>tokio::{sync::broadcast::error::RecvError, task::JoinSet, time::interval};
@@ -733,8 +733,8 @@
 };
 
 <span class="comment">// LruCache sizes have been taken from the lotus implementation
-</span><span class="kw">const </span>BLS_SIG_CACHE_SIZE: NonZeroUsize = <span class="macro">const_option!</span>(NonZeroUsize::new(<span class="number">40000</span>));
-<span class="kw">const </span>SIG_VAL_CACHE_SIZE: NonZeroUsize = <span class="macro">const_option!</span>(NonZeroUsize::new(<span class="number">32000</span>));
+</span><span class="kw">const </span>BLS_SIG_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">40000usize</span>);
+<span class="kw">const </span>SIG_VAL_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">32000usize</span>);
 
 <span class="doccomment">/// Simple structure that contains a hash-map of messages where k: a message
 /// from address, v: a message which corresponds to that address.
