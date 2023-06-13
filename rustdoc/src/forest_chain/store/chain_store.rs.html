@@ -997,18 +997,6 @@
 <a href="#997" id="997">997</a>
 <a href="#998" id="998">998</a>
 <a href="#999" id="999">999</a>
-<a href="#1000" id="1000">1000</a>
-<a href="#1001" id="1001">1001</a>
-<a href="#1002" id="1002">1002</a>
-<a href="#1003" id="1003">1003</a>
-<a href="#1004" id="1004">1004</a>
-<a href="#1005" id="1005">1005</a>
-<a href="#1006" id="1006">1006</a>
-<a href="#1007" id="1007">1007</a>
-<a href="#1008" id="1008">1008</a>
-<a href="#1009" id="1009">1009</a>
-<a href="#1010" id="1010">1010</a>
-<a href="#1011" id="1011">1011</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1038,7 +1026,7 @@
 };
 <span class="kw">use </span>forest_utils::{
     db::{
-        file_backed_obj::{ChainMeta, FileBacked, SYNC_PERIOD},
+        file_backed_obj::{ChainMeta, FileBacked},
         BlockstoreExt, CborStoreExt,
     },
     io::{AsyncWriterWithChecksum, Checksum},
@@ -1106,8 +1094,8 @@
     <span class="doccomment">/// File backed heaviest tipset keys
     </span>file_backed_heaviest_tipset_keys: Mutex&lt;FileBacked&lt;TipsetKeys&gt;&gt;,
 
-    <span class="doccomment">/// File backed validated blocks
-    </span>file_backed_validated_blocks: Mutex&lt;FileBacked&lt;HashSet&lt;Cid&gt;&gt;&gt;,
+    <span class="doccomment">/// validated blocks
+    </span>validated_blocks: Mutex&lt;HashSet&lt;Cid&gt;&gt;,
 
     <span class="doccomment">/// File backed chain metadata
     </span>file_backed_chain_meta: Arc&lt;Mutex&lt;FileBacked&lt;ChainMeta&gt;&gt;&gt;,
@@ -1169,11 +1157,7 @@
             }
             head_store
         });
-        <span class="kw">let </span>file_backed_validated_blocks = Mutex::new(FileBacked::load_from_file_or_create(
-            chain_data_root.join(<span class="string">&quot;VALIDATED_BLOCKS&quot;</span>),
-            HashSet::default,
-            <span class="prelude-val">Some</span>(SYNC_PERIOD),
-        )<span class="question-mark">?</span>);
+        <span class="kw">let </span>validated_blocks = Mutex::new(HashSet::default());
         <span class="kw">let </span>file_backed_chain_meta = Arc::new(Mutex::new(FileBacked::load_from_file_or_create(
             chain_data_root.join(<span class="string">&quot;meta.yaml&quot;</span>),
             ChainMeta::default,
@@ -1188,7 +1172,7 @@
             ts_cache,
             file_backed_genesis,
             file_backed_heaviest_tipset_keys,
-            file_backed_validated_blocks,
+            validated_blocks,
             file_backed_chain_meta,
         };
 
@@ -1310,11 +1294,7 @@
 
     <span class="doccomment">/// Checks metadata file if block has already been validated.
     </span><span class="kw">pub fn </span>is_block_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {
-        <span class="kw">let </span>validated = <span class="self">self
-            </span>.file_backed_validated_blocks
-            .lock()
-            .inner()
-            .contains(cid);
+        <span class="kw">let </span>validated = <span class="self">self</span>.validated_blocks.lock().contains(cid);
         <span class="kw">if </span>validated {
             <span class="macro">log::debug!</span>(<span class="string">&quot;Block {cid} was previously validated&quot;</span>);
         }
@@ -1322,18 +1302,14 @@
     }
 
     <span class="doccomment">/// Marks block as validated in the metadata file.
-    </span><span class="kw">pub fn </span>mark_block_as_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.file_backed_validated_blocks.lock();
-        <span class="prelude-val">Ok</span>(file.with_inner(|inner| {
-            inner.insert(<span class="kw-2">*</span>cid);
-        })<span class="question-mark">?</span>)
+    </span><span class="kw">pub fn </span>mark_block_as_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) {
+        <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.validated_blocks.lock();
+        file.insert(<span class="kw-2">*</span>cid);
     }
 
-    <span class="kw">pub fn </span>unmark_block_as_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.file_backed_validated_blocks.lock();
-        <span class="prelude-val">Ok</span>(file.with_inner(|inner| {
-            <span class="kw">let </span>_did_work = inner.remove(cid);
-        })<span class="question-mark">?</span>)
+    <span class="kw">pub fn </span>unmark_block_as_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) {
+        <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.validated_blocks.lock();
+        <span class="kw">let </span>_did_work = file.remove(cid);
     }
 
     <span class="doccomment">/// Returns the tipset behind `tsk` at a given `height`.
@@ -2016,7 +1992,7 @@
         <span class="kw">let </span>cid = Cid::new_v1(DAG_CBOR, Blake2b256.digest(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
         <span class="macro">assert!</span>(!cs.is_block_validated(<span class="kw-2">&amp;</span>cid));
 
-        cs.mark_block_as_validated(<span class="kw-2">&amp;</span>cid).unwrap();
+        cs.mark_block_as_validated(<span class="kw-2">&amp;</span>cid);
         <span class="macro">assert!</span>(cs.is_block_validated(<span class="kw-2">&amp;</span>cid));
     }
 }

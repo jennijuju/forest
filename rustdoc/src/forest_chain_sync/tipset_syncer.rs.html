@@ -1670,14 +1670,6 @@
 <a href="#1670" id="1670">1670</a>
 <a href="#1671" id="1671">1671</a>
 <a href="#1672" id="1672">1672</a>
-<a href="#1673" id="1673">1673</a>
-<a href="#1674" id="1674">1674</a>
-<a href="#1675" id="1675">1675</a>
-<a href="#1676" id="1676">1676</a>
-<a href="#1677" id="1677">1677</a>
-<a href="#1678" id="1678">1678</a>
-<a href="#1679" id="1679">1679</a>
-<a href="#1680" id="1680">1680</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2797,12 +2789,13 @@
                 state_manager.clone(),
                 <span class="kw-2">&amp;</span>chainstore,
                 bad_block_cache,
-                full_tipset,
+                full_tipset.clone(),
                 genesis,
                 invalid_block_strategy,
             )
             .<span class="kw">await</span><span class="question-mark">?</span>;
         }
+        chainstore.set_heaviest_tipset(Arc::new(full_tipset.into_tipset()))<span class="question-mark">?</span>;
         tracker.write().set_epoch(current_epoch);
         metrics::LAST_VALIDATED_TIPSET_EPOCH.set(current_epoch <span class="kw">as </span>u64);
     }
@@ -3072,16 +3065,7 @@
         <span class="kw">return </span><span class="prelude-val">Err</span>((<span class="kw-2">*</span>block_cid, TipsetRangeSyncerError::&lt;C&gt;::concat(errs)));
     }
 
-    chain_store
-        .mark_block_as_validated(block_cid)
-        .map_err(|e| {
-            (
-                <span class="kw-2">*</span>block_cid,
-                TipsetRangeSyncerError::&lt;C&gt;::Validation(<span class="macro">format!</span>(
-                    <span class="string">&quot;failed to mark block {block_cid} as validated {e}&quot;
-                </span>)),
-            )
-        })<span class="question-mark">?</span>;
+    chain_store.mark_block_as_validated(block_cid);
 
     <span class="prelude-val">Ok</span>(block)
 }

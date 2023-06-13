@@ -714,7 +714,7 @@
         <span class="kw">for </span>cid <span class="kw">in </span>current.key().cids() {
             data.state_manager
                 .chain_store()
-                .unmark_block_as_validated(cid)<span class="question-mark">?</span>;
+                .unmark_block_as_validated(cid);
         }
         <span class="kw">let </span>parents = current.blocks()[<span class="number">0</span>].parents();
         current = data.state_manager.chain_store().tipset_from_keys(parents)<span class="question-mark">?</span>;
