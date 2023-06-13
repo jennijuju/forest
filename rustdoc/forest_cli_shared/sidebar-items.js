@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["chain_path"],"mod":["cli","logger","snapshot"]};
+window.SIDEBAR_ITEMS = {"fn":["chain_path"],"mod":["cli","logger"]};

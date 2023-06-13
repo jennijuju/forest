@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["asyncify","create_password","fetch_snapshot_if_required","get_actual_chain_name","handle_admin_token","input_password_to_load_encrypted_keystore","load_or_create_keystore","propagate_error","start","start_interruptable","unblock_parent_process"]};
+window.SIDEBAR_ITEMS = {"fn":["create_keystore","get_actual_chain_name","handle_admin_token","maybe_fetch_snapshot","password_prompt","prompt_snapshot_or_die","propagate_error","start","start_interruptable","unblock_parent_process"]};

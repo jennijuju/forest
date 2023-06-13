@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["Config","DaemonConfig","LogConfig","LogValue","TokioConfig"]};

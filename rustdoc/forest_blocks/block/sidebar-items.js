@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["BLOCK_MESSAGE_LIMIT"],"struct":["Block","Inner","TxMeta"]};

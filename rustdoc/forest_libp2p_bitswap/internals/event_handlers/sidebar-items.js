@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["BitswapInboundResponseEvent"],"fn":["handle_event_impl","handle_inbound_request"]};

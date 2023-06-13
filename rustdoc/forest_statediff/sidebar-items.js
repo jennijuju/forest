@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["actor_to_resolved","pp_actor_state","print_diffs","print_state_diff","root_to_state_map","try_print_actor_states"],"mod":["resolve"],"struct":["ActorStateResolved"]};
+window.SIDEBAR_ITEMS = {"fn":["print_state_diff"]};

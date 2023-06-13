@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DemoBehaviourEvent"],"mod":["behaviour","transport"],"struct":["DemoBehaviour","TransportBuilder"],"type":["BoxedP2PTransport","P2PTransport"]};
+window.SIDEBAR_ITEMS = {"enum":["DemoBehaviourEvent"],"struct":["DemoBehaviour","TransportBuilder"],"type":["BoxedP2PTransport","P2PTransport"]};

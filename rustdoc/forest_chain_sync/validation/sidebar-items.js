@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_HEIGHT_DRIFT"],"enum":["TipsetValidationError"],"struct":["TipsetValidator"]};

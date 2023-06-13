@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["INIT","PRELUDE_PATH"],"fn":["check_result","eval","require","send_message","set_module","sleep","sleep_tipsets","to_position"],"macro":["bind_func"],"struct":["AttachCommand"],"type":["SendMessageParams","SleepParams","SleepResult","SleepTipsetsParams","SleepTipsetsResult"]};

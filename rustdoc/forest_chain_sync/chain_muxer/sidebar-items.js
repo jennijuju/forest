@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ChainMuxerError","ChainMuxerState","NetworkHeadEvaluation","PubsubMessageProcessingStrategy","UnexpectedReturnKind"],"struct":["ChainMuxer","SyncConfig"],"type":["ChainMuxerFuture","WorkerState"]};

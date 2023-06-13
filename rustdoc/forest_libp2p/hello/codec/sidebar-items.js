@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["HELLO_PROTOCOL_ID"],"struct":["HelloProtocolName"],"type":["HelloCodec"]};

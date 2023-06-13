@@ -711,104 +711,23 @@
 <a href="#711" id="711">711</a>
 <a href="#712" id="712">712</a>
 <a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
-<a href="#719" id="719">719</a>
-<a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
-<a href="#722" id="722">722</a>
-<a href="#723" id="723">723</a>
-<a href="#724" id="724">724</a>
-<a href="#725" id="725">725</a>
-<a href="#726" id="726">726</a>
-<a href="#727" id="727">727</a>
-<a href="#728" id="728">728</a>
-<a href="#729" id="729">729</a>
-<a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
-<a href="#735" id="735">735</a>
-<a href="#736" id="736">736</a>
-<a href="#737" id="737">737</a>
-<a href="#738" id="738">738</a>
-<a href="#739" id="739">739</a>
-<a href="#740" id="740">740</a>
-<a href="#741" id="741">741</a>
-<a href="#742" id="742">742</a>
-<a href="#743" id="743">743</a>
-<a href="#744" id="744">744</a>
-<a href="#745" id="745">745</a>
-<a href="#746" id="746">746</a>
-<a href="#747" id="747">747</a>
-<a href="#748" id="748">748</a>
-<a href="#749" id="749">749</a>
-<a href="#750" id="750">750</a>
-<a href="#751" id="751">751</a>
-<a href="#752" id="752">752</a>
-<a href="#753" id="753">753</a>
-<a href="#754" id="754">754</a>
-<a href="#755" id="755">755</a>
-<a href="#756" id="756">756</a>
-<a href="#757" id="757">757</a>
-<a href="#758" id="758">758</a>
-<a href="#759" id="759">759</a>
-<a href="#760" id="760">760</a>
-<a href="#761" id="761">761</a>
-<a href="#762" id="762">762</a>
-<a href="#763" id="763">763</a>
-<a href="#764" id="764">764</a>
-<a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a>
-<a href="#768" id="768">768</a>
-<a href="#769" id="769">769</a>
-<a href="#770" id="770">770</a>
-<a href="#771" id="771">771</a>
-<a href="#772" id="772">772</a>
-<a href="#773" id="773">773</a>
-<a href="#774" id="774">774</a>
-<a href="#775" id="775">775</a>
-<a href="#776" id="776">776</a>
-<a href="#777" id="777">777</a>
-<a href="#778" id="778">778</a>
-<a href="#779" id="779">779</a>
-<a href="#780" id="780">780</a>
-<a href="#781" id="781">781</a>
-<a href="#782" id="782">782</a>
-<a href="#783" id="783">783</a>
-<a href="#784" id="784">784</a>
-<a href="#785" id="785">785</a>
-<a href="#786" id="786">786</a>
-<a href="#787" id="787">787</a>
-<a href="#788" id="788">788</a>
-<a href="#789" id="789">789</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{
-    cell::RefCell,
-    net::TcpListener,
-    path::{Path, PathBuf},
-    sync::Arc,
-    time,
-    time::Duration,
-};
+</span><span class="kw">use </span>std::{net::TcpListener, path::PathBuf, sync::Arc, time, time::Duration};
 
-<span class="kw">use </span>anyhow::{bail, Context};
-<span class="kw">use </span>dialoguer::{console::Term, theme::ColorfulTheme};
+<span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm, Password};
 <span class="kw">use </span>forest_auth::{create_token, generate_priv_key, ADMIN, JWT_IDENTIFIER};
 <span class="kw">use </span>forest_blocks::Tipset;
 <span class="kw">use </span>forest_chain::ChainStore;
 <span class="kw">use </span>forest_chain_sync::{consensus::SyncGossipSubmitter, ChainMuxer};
 <span class="kw">use </span>forest_cli_shared::{
     chain_path,
-    cli::{CliOpts, Config},
-    snapshot,
+    cli::{
+        default_snapshot_dir, is_aria2_installed, snapshot_fetch, snapshot_fetch_size,
+        to_size_string, CliOpts, Client, Config, SnapshotServer,
+    },
 };
 <span class="kw">use </span>forest_daemon::bundle::load_bundles;
 <span class="kw">use </span>forest_db::{
@@ -826,15 +745,14 @@
 <span class="kw">use </span>forest_message_pool::{MessagePool, MpoolConfig, MpoolRpcProvider};
 <span class="kw">use </span>forest_rpc::start_rpc;
 <span class="kw">use </span>forest_rpc_api::data_types::RPCState;
-<span class="kw">use </span>forest_shim::{clock::ChainEpoch, version::NetworkVersion};
+<span class="kw">use </span>forest_shim::version::NetworkVersion;
 <span class="kw">use </span>forest_state_manager::StateManager;
 <span class="kw">use </span>forest_utils::{
     io::write_to_file, monitoring::MemStatsTracker,
     proofs_api::paramfetch::ensure_params_downloaded, retry, version::FOREST_VERSION_STRING,
-    RetryArgs,
 };
-<span class="kw">use </span>futures::{select, Future, FutureExt};
-<span class="kw">use </span>log::{debug, info, warn};
+<span class="kw">use </span>futures::{select, FutureExt};
+<span class="kw">use </span>log::{debug, error, info, warn};
 <span class="kw">use </span>raw_sync::events::{Event, EventInit, EventState};
 <span class="kw">use </span>tokio::{
     signal::{
@@ -843,6 +761,7 @@
     },
     sync::{mpsc, RwLock},
     task::JoinSet,
+    time::sleep,
 };
 
 <span class="comment">// Initialize Consensus
@@ -935,7 +854,7 @@
     // from.
     </span><span class="macro">info!</span>(<span class="string">&quot;PeerId: {}&quot;</span>, PeerId::from(net_keypair.public()));
 
-    <span class="kw">let </span><span class="kw-2">mut </span>keystore = load_or_create_keystore(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>keystore = create_keystore(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">if </span>keystore.get(JWT_IDENTIFIER).is_err() {
         keystore.put(JWT_IDENTIFIER.to_owned(), generate_priv_key())<span class="question-mark">?</span>;
@@ -1066,7 +985,17 @@
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
-    <span class="kw">let </span>epoch = chain_store.heaviest_tipset().epoch();
+    <span class="comment">// XXX: This code has to be run before starting the background services.
+    //      If it isn&#39;t, several threads will be competing for access to stdout.
+    // Terminate if no snapshot is provided or DB isn&#39;t recent enough
+
+    </span><span class="kw">let </span>epoch = chain_store.heaviest_tipset().epoch();
+    <span class="kw">let </span>nv = config.chain.network_version(epoch);
+    <span class="kw">let </span>should_fetch_snapshot = <span class="kw">if </span>nv &lt; NetworkVersion::V16 {
+        prompt_snapshot_or_die(opts.auto_download_snapshot, <span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?
+    </span>} <span class="kw">else </span>{
+        <span class="bool-val">false
+    </span>};
 
     load_bundles(epoch, <span class="kw-2">&amp;</span>config, db.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1182,8 +1111,7 @@
         );
     }
 
-    <span class="kw">let </span><span class="kw-2">mut </span>config = config;
-    fetch_snapshot_if_required(<span class="kw-2">&amp;mut </span>config, epoch, opts.auto_download_snapshot).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>config = maybe_fetch_snapshot(should_fetch_snapshot, config).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>config.client.snapshot_path {
         <span class="kw">let </span>stopwatch = time::Instant::now();
@@ -1221,90 +1149,8 @@
     services.spawn(p2p_service.run());
 
     <span class="comment">// blocking until any of the services returns an error,
-    </span>propagate_error(<span class="kw-2">&amp;mut </span>services)
-        .<span class="kw">await
-        </span>.context(<span class="string">&quot;services failure&quot;</span>)
-        .map(|<span class="kw">_</span>| {})
-}
-
-<span class="doccomment">/// If our current chain is below a supported height, we need a snapshot to bring it up
-/// to a supported height. If we&#39;ve not been given a snapshot by the user, get one.
-///
-/// An [`Err`] should be considered fatal.
-</span><span class="kw">async fn </span>fetch_snapshot_if_required(
-    config: <span class="kw-2">&amp;mut </span>Config,
-    epoch: ChainEpoch,
-    auto_download_snapshot: bool,
-) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>vendor = snapshot::Vendor::default();
-    <span class="kw">let </span>path = Path::new(<span class="string">&quot;.&quot;</span>);
-    <span class="kw">let </span>chain = <span class="kw-2">&amp;</span>config.chain.network;
-
-    <span class="comment">// What height is our chain at right now, and what network version does that correspond to?
-    </span><span class="kw">let </span>network_version = config.chain.network_version(epoch);
-    <span class="kw">let </span>network_version_is_small = network_version &lt; NetworkVersion::V16;
-
-    <span class="comment">// We don&#39;t support small network versions (we can&#39;t validate from e.g genesis).
-    // So we need a snapshot (which will be from a recent network version)
-    </span><span class="kw">let </span>require_a_snapshot = network_version_is_small;
-    <span class="kw">let </span>have_a_snapshot = config.client.snapshot_path.is_some();
-
-    <span class="kw">match </span>(require_a_snapshot, have_a_snapshot, auto_download_snapshot) {
-        (<span class="bool-val">false</span>, <span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(()),   <span class="comment">// noop - don&#39;t need a snapshot
-        </span>(<span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; <span class="prelude-val">Ok</span>(()), <span class="comment">// noop - we need a snapshot, and we have one
-        </span>(<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; {
-            <span class="comment">// we need a snapshot, don&#39;t have one, and have permission to download one, so do that
-            </span><span class="kw">let </span>max_retries = <span class="number">3</span>;
-            <span class="kw">match </span>retry(
-                RetryArgs {
-                    timeout: <span class="prelude-val">None</span>,
-                    max_retries: <span class="prelude-val">Some</span>(max_retries),
-                    delay: <span class="prelude-val">Some</span>(Duration::from_secs(<span class="number">60</span>)),
-                },
-                || forest_cli_shared::snapshot::fetch(path, chain, vendor),
-            )
-            .<span class="kw">await
-            </span>{
-                <span class="prelude-val">Ok</span>(path) =&gt; {
-                    config.client.snapshot_path = <span class="prelude-val">Some</span>(path);
-                    config.client.snapshot = <span class="bool-val">true</span>;
-                    <span class="prelude-val">Ok</span>(())
-                }
-                <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;failed to fetch snapshot after {max_retries} attempts&quot;</span>),
-            }
-        }
-        (<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; {
-            <span class="comment">// we need a snapshot, don&#39;t have one, and don&#39;t have permission to download one, so ask the user
-            </span><span class="kw">let </span>(num_bytes, _url) =
-                forest_cli_shared::snapshot::peek(vendor, <span class="kw-2">&amp;</span>config.chain.network)
-                    .<span class="kw">await
-                    </span>.context(<span class="string">&quot;couldn&#39;t get snapshot size&quot;</span>)<span class="question-mark">?</span>;
-            <span class="kw">let </span>num_bytes = byte_unit::Byte::from(num_bytes)
-                .get_appropriate_unit(<span class="bool-val">true</span>)
-                .format(<span class="number">2</span>);
-            <span class="kw">let </span>message = <span class="macro">format!</span>(<span class="string">&quot;Forest requires a snapshot to sync with the network, but automatic fetching is disabled. Fetch a {num_bytes} snapshot to the current directory? (denying will exit the program). &quot;</span>);
-            <span class="kw">let </span>have_permission = asyncify(|| {
-                dialoguer::Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
-                    .with_prompt(message)
-                    .default(<span class="bool-val">false</span>)
-                    .interact()
-                    <span class="comment">// e.g not a tty (or some other error), so haven&#39;t got permission.
-                    </span>.unwrap_or(<span class="bool-val">false</span>)
-            })
-            .<span class="kw">await</span>;
-            <span class="kw">if </span>!have_permission {
-                <span class="macro">bail!</span>(<span class="string">&quot;Forest requires a snapshot to sync with the network, but automatic fetching is disabled.&quot;</span>)
-            }
-            <span class="kw">match </span>forest_cli_shared::snapshot::fetch(path, chain, vendor).<span class="kw">await </span>{
-                <span class="prelude-val">Ok</span>(path) =&gt; {
-                    config.client.snapshot_path = <span class="prelude-val">Some</span>(path);
-                    config.client.snapshot = <span class="bool-val">true</span>;
-                    <span class="prelude-val">Ok</span>(())
-                }
-                <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(e).context(<span class="string">&quot;downloading required snapshot failed&quot;</span>),
-            }
-        }
-    }
+    </span><span class="kw">let </span>err = propagate_error(<span class="kw-2">&amp;mut </span>services).<span class="kw">await</span>;
+    <span class="macro">anyhow::bail!</span>(<span class="string">&quot;services failure: {}&quot;</span>, err);
 }
 
 <span class="doccomment">/// Generates, prints and optionally writes to a file the administrator JWT
@@ -1321,22 +1167,91 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="doccomment">/// returns the first error with which any of the services end, or never returns at all
-</span><span class="comment">// This should return anyhow::Result&lt;!&gt; once the `Never` type is stabilized
-</span><span class="kw">async fn </span>propagate_error(
-    services: <span class="kw-2">&amp;mut </span>JoinSet&lt;<span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;&gt;,
-) -&gt; anyhow::Result&lt;std::convert::Infallible&gt; {
+<span class="comment">// returns the first error with which any of the services end
+// in case all services finished without an error sleeps for more than 2 years
+// and then returns with an error
+</span><span class="kw">async fn </span>propagate_error(services: <span class="kw-2">&amp;mut </span>JoinSet&lt;<span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;&gt;) -&gt; anyhow::Error {
     <span class="kw">while </span>!services.is_empty() {
         <span class="macro">select! </span>{
             option = services.join_next().fuse() =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(error_message))) = option {
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(error_message)
+                    <span class="kw">return </span>error_message
                 }
             },
         }
     }
-    std::future::pending().<span class="kw">await
-</span>}
+    <span class="comment">// In case all services are down without errors we are still willing
+    // to wait indefinitely for CTRL-C signal. As `tokio::time::sleep` has
+    // a limit of approximately 2.2 years we have to loop
+    </span><span class="kw">loop </span>{
+        tokio::time::sleep(Duration::new(<span class="number">64000000</span>, <span class="number">0</span>)).<span class="kw">await</span>;
+    }
+}
+
+<span class="doccomment">/// Optionally fetches the snapshot. Returns the configuration (modified
+/// accordingly if a snapshot was fetched).
+</span><span class="kw">async fn </span>maybe_fetch_snapshot(
+    should_fetch_snapshot: bool,
+    config: Config,
+) -&gt; anyhow::Result&lt;Config&gt; {
+    <span class="kw">if </span>should_fetch_snapshot {
+        <span class="kw">let </span>snapshot_path = default_snapshot_dir(<span class="kw-2">&amp;</span>config);
+        <span class="kw">let </span>provider = SnapshotServer::try_get_default(<span class="kw-2">&amp;</span>config.chain.network)<span class="question-mark">?</span>;
+        <span class="comment">// FIXME: change this to `true` once zstd compressed snapshots is supported by
+        // the forest provider
+        </span><span class="kw">let </span>use_compressed = provider == SnapshotServer::Filecoin;
+        <span class="kw">let </span>path = <span class="macro">retry!</span>(
+            snapshot_fetch,
+            config.daemon.default_retry,
+            config.daemon.default_delay,
+            <span class="kw-2">&amp;</span>snapshot_path,
+            <span class="kw-2">&amp;</span>config,
+            <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(provider),
+            use_compressed,
+            is_aria2_installed()
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(Config {
+            client: Client {
+                snapshot_path: <span class="prelude-val">Some</span>(path),
+                snapshot: <span class="bool-val">true</span>,
+                ..config.client
+            },
+            ..config
+        })
+    } <span class="kw">else </span>{
+        <span class="prelude-val">Ok</span>(config)
+    }
+}
+
+<span class="doccomment">/// Last resort in case a snapshot is needed. If it is not to be downloaded,
+/// this method fails and exits the process.
+</span><span class="kw">async fn </span>prompt_snapshot_or_die(
+    auto_download_snapshot: bool,
+    config: <span class="kw-2">&amp;</span>Config,
+) -&gt; anyhow::Result&lt;bool&gt; {
+    <span class="kw">if </span>config.client.snapshot_path.is_some() {
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
+    }
+    <span class="kw">let </span>should_download = <span class="kw">if </span>!auto_download_snapshot &amp;&amp; atty::is(atty::Stream::Stdin) {
+        <span class="kw">let </span>required_size: u64 = snapshot_fetch_size(config).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>required_size = to_size_string(<span class="kw-2">&amp;</span>required_size.into())<span class="question-mark">?</span>;
+        tokio::task::spawn_blocking(<span class="kw">move </span>|| Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+                .with_prompt(
+                    <span class="macro">format!</span>(<span class="string">&quot;Forest needs a snapshot to sync with the network. Would you like to download one now? Required disk space {required_size}.&quot;</span>),
+                )
+                .default(<span class="bool-val">false</span>)
+                .interact()
+            ).<span class="kw">await</span><span class="question-mark">??
+    </span>} <span class="kw">else </span>{
+        auto_download_snapshot
+    };
+
+    <span class="kw">if </span>should_download {
+        <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
+    } <span class="kw">else </span>{
+        <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Forest cannot sync without a snapshot. Download a snapshot from a trusted source and import with --import-snapshot=[file] or --auto-download-snapshot to download one automatically&quot;</span>);
+    }
+}
 
 <span class="kw">fn </span>get_actual_chain_name(internal_network_name: <span class="kw-2">&amp;</span>str) -&gt; <span class="kw-2">&amp;</span>str {
     <span class="kw">match </span>internal_network_name {
@@ -1346,140 +1261,68 @@
     }
 }
 
-<span class="doccomment">/// This may:
-/// - create a [`KeyStore`]
-/// - load a [`KeyStore`]
-/// - ask a user for password input
-</span><span class="kw">async fn </span>load_or_create_keystore(config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;KeyStore&gt; {
-    <span class="kw">use </span>std::env::VarError;
+<span class="kw">async fn </span>create_keystore(config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;KeyStore&gt; {
+    <span class="kw">let </span>passphrase = std::env::var(FOREST_KEYSTORE_PHRASE_ENV);
+    <span class="kw">let </span>is_interactive = atty::is(atty::Stream::Stdin);
 
-    <span class="kw">let </span>passphrase_from_env = std::env::var(FOREST_KEYSTORE_PHRASE_ENV);
-    <span class="kw">let </span>require_encryption = config.client.encrypt_keystore;
-    <span class="kw">let </span>keystore_already_exists = config
-        .client
-        .data_dir
-        .join(ENCRYPTED_KEYSTORE_NAME)
-        .is_dir();
+    <span class="comment">// encrypted keystore, headless
+    </span><span class="kw">if </span>config.client.encrypt_keystore &amp;&amp; passphrase.is_err() &amp;&amp; !is_interactive {
+        <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Passphrase for the keystore was not provided and the encryption was not explicitly disabled. Please set the {FOREST_KEYSTORE_PHRASE_ENV} environmental variable and re-run the command&quot;</span>);
+    <span class="comment">// encrypted keystore, either headless or interactive, passphrase provided
+    </span>} <span class="kw">else if </span>config.client.encrypt_keystore &amp;&amp; passphrase.is_ok() {
+        <span class="kw">let </span>passphrase = passphrase.unwrap();
 
-    <span class="kw">match </span>(require_encryption, passphrase_from_env) {
-        <span class="comment">// don&#39;t need encryption, we can implicitly create a keystore
-        </span>(<span class="bool-val">false</span>, maybe_passphrase) =&gt; {
-            <span class="macro">warn!</span>(<span class="string">&quot;Forest has encryption disabled&quot;</span>);
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="kw">_</span>) | <span class="prelude-val">Err</span>(VarError::NotUnicode(<span class="kw">_</span>)) = maybe_passphrase {
-                <span class="macro">warn!</span>(
-                    <span class="string">&quot;Ignoring passphrase provided in {} - encryption is disabled&quot;</span>,
-                    FOREST_KEYSTORE_PHRASE_ENV
-                )
-            }
-            KeyStore::new(KeyStoreConfig::Persistent(config.client.data_dir.clone()))
-                .map_err(anyhow::Error::new)
-        }
-
-        <span class="comment">// need encryption, the user has provided the password through env
-        </span>(<span class="bool-val">true</span>, <span class="prelude-val">Ok</span>(passphrase)) =&gt; KeyStore::new(KeyStoreConfig::Encrypted(
-            config.client.data_dir.clone(),
+        <span class="kw">let </span>keystore = KeyStore::new(KeyStoreConfig::Encrypted(
+            PathBuf::from(<span class="kw-2">&amp;</span>config.client.data_dir),
             passphrase,
-        ))
-        .map_err(anyhow::Error::new),
+        ));
 
-        <span class="comment">// need encryption, we&#39;ve not been given a password
-        </span>(<span class="bool-val">true</span>, <span class="prelude-val">Err</span>(error)) =&gt; {
-            <span class="comment">// prompt for passphrase and try and load the keystore
+        keystore.map_err(|<span class="kw">_</span>| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Incorrect passphrase. Please verify the {FOREST_KEYSTORE_PHRASE_ENV} environmental variable.&quot;</span>))
+    <span class="comment">// encrypted keystore, interactive, passphrase not provided
+    </span>} <span class="kw">else if </span>config.client.encrypt_keystore &amp;&amp; passphrase.is_err() &amp;&amp; is_interactive {
+        <span class="kw">loop </span>{
+            <span class="kw">let </span>passphrase = password_prompt(<span class="string">&quot;Enter the keystore passphrase&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-            </span><span class="kw">if let </span>VarError::NotUnicode(<span class="kw">_</span>) = error {
-                <span class="comment">// If we&#39;re ignoring the user&#39;s password, tell them why
-                </span><span class="macro">warn!</span>(
-                    <span class="string">&quot;Ignoring passphrase provided in {} - it&#39;s not utf-8&quot;</span>,
-                    FOREST_KEYSTORE_PHRASE_ENV
-                )
-            }
+            <span class="kw">let </span>data_dir = PathBuf::from(<span class="kw-2">&amp;</span>config.client.data_dir).join(ENCRYPTED_KEYSTORE_NAME);
+            <span class="kw">if </span>!data_dir.exists() {
+                <span class="kw">let </span>passphrase_again = password_prompt(<span class="string">&quot;Confirm passphrase&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
-            <span class="kw">let </span>data_dir = config.client.data_dir.clone();
-
-            <span class="kw">match </span>keystore_already_exists {
-                <span class="bool-val">true </span>=&gt; asyncify(<span class="kw">move </span>|| input_password_to_load_encrypted_keystore(data_dir))
-                    .<span class="kw">await
-                    </span>.context(<span class="string">&quot;Couldn&#39;t load keystore&quot;</span>),
-                <span class="bool-val">false </span>=&gt; {
-                    <span class="kw">let </span>password =
-                        asyncify(|| create_password(<span class="string">&quot;Create a password for Forest&#39;s keystore&quot;</span>))
-                            .<span class="kw">await</span><span class="question-mark">?</span>;
-                    KeyStore::new(KeyStoreConfig::Encrypted(data_dir, password))
-                        .context(<span class="string">&quot;Couldn&#39;t create keystore&quot;</span>)
+                <span class="kw">if </span>passphrase != passphrase_again {
+                    <span class="macro">error!</span>(<span class="string">&quot;Passphrases do not match. Please retry.&quot;</span>);
+                    <span class="kw">continue</span>;
                 }
             }
+
+            <span class="kw">let </span>key_store_init_result = KeyStore::new(KeyStoreConfig::Encrypted(
+                config.client.data_dir.clone(),
+                passphrase,
+            ));
+
+            <span class="kw">match </span>key_store_init_result {
+                <span class="prelude-val">Ok</span>(ks) =&gt; <span class="kw">break </span><span class="prelude-val">Ok</span>(ks),
+                <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
+                    <span class="macro">error!</span>(<span class="string">&quot;Incorrect passphrase entered. Please try again.&quot;</span>)
+                }
+            };
         }
+    } <span class="kw">else </span>{
+        <span class="macro">warn!</span>(<span class="string">&quot;Warning: Keystore encryption disabled!&quot;</span>);
+        <span class="prelude-val">Ok</span>(KeyStore::new(KeyStoreConfig::Persistent(
+            config.client.data_dir.clone(),
+        ))<span class="question-mark">?</span>)
     }
 }
 
-<span class="doccomment">/// Run the closure on a thread where blocking is allowed
-///
-/// # Panics
-/// If the closure panics
-</span><span class="kw">fn </span>asyncify&lt;T&gt;(f: <span class="kw">impl </span>FnOnce() -&gt; T + Send + <span class="lifetime">&#39;static</span>) -&gt; <span class="kw">impl </span>Future&lt;Output = T&gt;
-<span class="kw">where
-    </span>T: Send + <span class="lifetime">&#39;static</span>,
-{
-    tokio::task::spawn_blocking(f).then(|res| <span class="kw">async </span>{ res.expect(<span class="string">&quot;spawned task panicked&quot;</span>) })
-}
-
-<span class="doccomment">/// Prompts for password, looping until the [`KeyStore`] is successfully loaded.
-///
-/// This code makes blocking syscalls.
-</span><span class="kw">fn </span>input_password_to_load_encrypted_keystore(data_dir: PathBuf) -&gt; std::io::Result&lt;KeyStore&gt; {
-    <span class="kw">let </span>keystore = RefCell::new(<span class="prelude-val">None</span>);
-    <span class="kw">let </span>term = Term::stderr();
-
-    <span class="comment">// Unlike `dialoguer::Confirm`, `dialoguer::Password` doesn&#39;t fail if the terminal is not a tty
-    // so do that check ourselves.
-    // This means users can&#39;t pipe their password from stdin.
-    </span><span class="kw">if </span>!term.is_term() {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(std::io::Error::new(
-            std::io::ErrorKind::NotConnected,
-            <span class="string">&quot;cannot read password from non-terminal&quot;</span>,
-        ));
-    }
-
-    dialoguer::Password::new()
-        .with_prompt(<span class="string">&quot;Enter the password for Forest&#39;s keystore&quot;</span>)
-        .allow_empty_password(<span class="bool-val">true</span>) <span class="comment">// let validator do validation
-        </span>.validate_with(|input: <span class="kw-2">&amp;</span>String| {
-            KeyStore::new(KeyStoreConfig::Encrypted(data_dir.clone(), input.clone()))
-                .map(|created| <span class="kw-2">*</span>keystore.borrow_mut() = <span class="prelude-val">Some</span>(created))
-                .context(
-                    <span class="string">&quot;Error: couldn&#39;t load keystore with this password. Try again or press Ctrl+C to abort.&quot;</span>,
-                )
-        })
-        .interact_on(<span class="kw-2">&amp;</span>term)<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(keystore
-        .into_inner()
-        .expect(<span class="string">&quot;validation succeeded, so keystore must be emplaced&quot;</span>))
-}
-
-<span class="doccomment">/// Loops until the user provides two matching passwords.
-///
-/// This code makes blocking syscalls
-</span><span class="kw">fn </span>create_password(prompt: <span class="kw-2">&amp;</span>str) -&gt; std::io::Result&lt;String&gt; {
-    <span class="kw">let </span>term = Term::stderr();
-
-    <span class="comment">// Unlike `dialoguer::Confirm`, `dialoguer::Password` doesn&#39;t fail if the terminal is not a tty
-    // so do that check ourselves.
-    // This means users can&#39;t pipe their password from stdin.
-    </span><span class="kw">if </span>!term.is_term() {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(std::io::Error::new(
-            std::io::ErrorKind::NotConnected,
-            <span class="string">&quot;cannot read password from non-terminal&quot;</span>,
-        ));
-    }
-    dialoguer::Password::new()
-        .with_prompt(prompt)
-        .allow_empty_password(<span class="bool-val">false</span>)
-        .with_confirmation(
-            <span class="string">&quot;Confirm password&quot;</span>,
-            <span class="string">&quot;Error: the passwords do not match. Try again or press Ctrl+C to abort.&quot;</span>,
-        )
-        .interact_on(<span class="kw-2">&amp;</span>term)
+<span class="comment">// Prompt for password in a blocking thread such that tokio can still process interrupts.
+</span><span class="kw">async fn </span>password_prompt(prompt: <span class="kw">impl </span>Into&lt;String&gt;) -&gt; anyhow::Result&lt;String&gt; {
+    <span class="kw">let </span>prompt: String = prompt.into();
+    <span class="prelude-val">Ok</span>(tokio::task::spawn_blocking(|| {
+        Password::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+            .allow_empty_password(<span class="bool-val">true</span>)
+            .with_prompt(prompt)
+            .interact()
+    })
+    .<span class="kw">await</span><span class="question-mark">??</span>)
 }
 
 <span class="attr">#[cfg(test)]
@@ -1493,34 +1336,39 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>import_snapshot_from_file_valid() {
-        import_snapshot_from_file(<span class="string">&quot;test_files/chain4.car&quot;</span>)
+    </span><span class="kw">async fn </span>import_snapshot_from_file_valid() -&gt; anyhow::Result&lt;()&gt; {
+        <span class="macro">anyhow::ensure!</span>(import_snapshot_from_file(<span class="string">&quot;test_files/chain4.car&quot;</span>)
             .<span class="kw">await
-            </span>.unwrap();
+            </span>.is_ok());
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>import_snapshot_from_compressed_file_valid() {
-        import_snapshot_from_file(<span class="string">&quot;test_files/chain4.car.zst&quot;</span>)
+    </span><span class="kw">async fn </span>import_snapshot_from_compressed_file_valid() -&gt; anyhow::Result&lt;()&gt; {
+        <span class="macro">anyhow::ensure!</span>(import_snapshot_from_file(<span class="string">&quot;test_files/chain4.car.zst&quot;</span>)
             .<span class="kw">await
-            </span>.unwrap()
+            </span>.is_ok());
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>import_snapshot_from_file_invalid() {
-        import_snapshot_from_file(<span class="string">&quot;Cargo.toml&quot;</span>).<span class="kw">await</span>.unwrap_err();
+    </span><span class="kw">async fn </span>import_snapshot_from_file_invalid() -&gt; anyhow::Result&lt;()&gt; {
+        <span class="macro">anyhow::ensure!</span>(import_snapshot_from_file(<span class="string">&quot;Cargo.toml&quot;</span>).<span class="kw">await</span>.is_err());
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>import_snapshot_from_file_not_found() {
-        import_snapshot_from_file(<span class="string">&quot;dummy.car&quot;</span>).<span class="kw">await</span>.unwrap_err();
+    </span><span class="kw">async fn </span>import_snapshot_from_file_not_found() -&gt; anyhow::Result&lt;()&gt; {
+        <span class="macro">anyhow::ensure!</span>(import_snapshot_from_file(<span class="string">&quot;dummy.car&quot;</span>).<span class="kw">await</span>.is_err());
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>import_snapshot_from_url_not_found() {
-        import_snapshot_from_file(<span class="string">&quot;https://dummy.com/dummy.car&quot;</span>)
+    </span><span class="kw">async fn </span>import_snapshot_from_url_not_found() -&gt; anyhow::Result&lt;()&gt; {
+        <span class="macro">anyhow::ensure!</span>(import_snapshot_from_file(<span class="string">&quot;https://dummy.com/dummy.car&quot;</span>)
             .<span class="kw">await
-            </span>.unwrap_err();
+            </span>.is_err());
+        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">async fn </span>import_snapshot_from_file(file_path: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;()&gt; {
@@ -1571,7 +1419,7 @@
         )<span class="question-mark">?</span>);
         import_chain::&lt;<span class="kw">_</span>&gt;(<span class="kw-2">&amp;</span>sm, <span class="string">&quot;test_files/chain4.car&quot;</span>, <span class="bool-val">false</span>)
             .<span class="kw">await
-            </span>.context(<span class="string">&quot;Failed to import chain&quot;</span>)<span class="question-mark">?</span>;
+            </span>.expect(<span class="string">&quot;Failed to import chain&quot;</span>);
 
         <span class="prelude-val">Ok</span>(())
     }

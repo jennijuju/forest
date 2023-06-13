@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Condition","RecursionLimit","Selector","VisitReason"],"fn":["has_recursive_edge","replace_recursive_edge"],"mod":["empty_map","walk"],"struct":["LastBlockInfo","Progress"],"trait":["LinkResolver"]};
+window.SIDEBAR_ITEMS = {"enum":["Condition","RecursionLimit","Selector","VisitReason"],"struct":["LastBlockInfo","Progress"],"trait":["LinkResolver"]};

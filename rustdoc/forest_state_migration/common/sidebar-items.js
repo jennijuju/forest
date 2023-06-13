@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["macros","migration_job","migrators","state_migration","verifier"],"struct":["ActorMigrationInput","ActorMigrationOutput","TypeMigrator"],"trait":["ActorMigration","PostMigrator","TypeMigration"],"type":["Migrator","PostMigratorArc"]};

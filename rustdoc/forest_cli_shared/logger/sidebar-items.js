@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["LoggingColor"],"fn":["build_env_filter","setup_logger"]};
+window.SIDEBAR_ITEMS = {"enum":["LoggingColor"],"fn":["setup_logger"]};

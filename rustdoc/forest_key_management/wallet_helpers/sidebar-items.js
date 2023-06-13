@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["generate","new_address","sign","to_public"]};

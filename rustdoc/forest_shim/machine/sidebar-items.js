@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["manifest_v3"],"struct":["ManifestV2","ManifestV3","MultiEngine"]};
+window.SIDEBAR_ITEMS = {"struct":["ManifestV2","ManifestV3","MultiEngine"]};

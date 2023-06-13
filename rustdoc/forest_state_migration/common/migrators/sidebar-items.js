@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["nil_migrator"],"struct":["NilMigrator"]};

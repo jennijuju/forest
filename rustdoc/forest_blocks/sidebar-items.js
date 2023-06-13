@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BLOCK_MESSAGE_LIMIT"],"enum":["Error"],"mod":["block","election_proof","errors","gossip_block","header","persistence","ticket","tipset"],"struct":["ArbitraryCid","Block","TxMeta"]};
+window.SIDEBAR_ITEMS = {"constant":["BLOCK_MESSAGE_LIMIT"],"enum":["Error"],"mod":["election_proof","gossip_block","header","persistence","ticket","tipset"],"struct":["Block","TxMeta"]};

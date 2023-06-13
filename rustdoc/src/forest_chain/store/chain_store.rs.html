@@ -1052,7 +1052,6 @@
 <span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>log::{debug, info, trace, warn};
 <span class="kw">use </span>lru::LruCache;
-<span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>serde::{de::DeserializeOwned, Serialize};
 <span class="kw">use </span>tokio::sync::{
@@ -1070,7 +1069,8 @@
 <span class="comment">// A cap on the size of the future_sink
 </span><span class="kw">const </span>SINK_CAP: usize = <span class="number">200</span>;
 
-<span class="kw">const </span>DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">8192usize</span>);
+<span class="kw">const </span>DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize =
+    <span class="macro">forest_utils::const_option!</span>(NonZeroUsize::new(<span class="number">8192</span>));
 
 <span class="doccomment">/// `Enum` for `pubsub` channel that defines message type variant and data
 /// contained in message type.

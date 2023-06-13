@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["migration","miner","power","system","verifier"],"type":["ManifestNew","ManifestOld","SystemStateNew","SystemStateOld"]};

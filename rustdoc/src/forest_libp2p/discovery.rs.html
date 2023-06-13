@@ -435,6 +435,7 @@
 <a href="#435" id="435">435</a>
 <a href="#436" id="436">436</a>
 <a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -475,7 +476,8 @@
 <span class="doccomment">/// `DiscoveryBehaviour` configuration.
 ///
 /// Note: In order to discover nodes or load and store values via Kademlia one
-/// has to add at least one protocol.
+/// has to add at least       one protocol via
+/// [`DiscoveryConfig::add_protocol`].
 </span><span class="kw">pub struct </span>DiscoveryConfig&lt;<span class="lifetime">&#39;a</span>&gt; {
     local_peer_id: PeerId,
     user_defined: Vec&lt;(PeerId, Multiaddr)&gt;,

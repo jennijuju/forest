@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["read_file_to_string","read_file_to_vec","read_toml","set_user_perm","terminal_cleanup","write_to_file"],"mod":["parser","progress_bar","tempfile","writer_checksum"],"struct":["AsyncWriterWithChecksum","TempFile","VoidAsyncWriter"],"trait":["Checksum"]};
+window.SIDEBAR_ITEMS = {"fn":["read_file_to_string","read_file_to_vec","read_toml","set_user_perm","terminal_cleanup","write_to_file"],"mod":["parser","progress_bar"],"struct":["AsyncWriterWithChecksum","TempFile","VoidAsyncWriter"],"trait":["Checksum"]};

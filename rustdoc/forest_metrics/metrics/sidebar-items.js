@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize"],"mod":["labels","values"],"struct":["LRU_CACHE_HIT","LRU_CACHE_MISS"]};
+window.SIDEBAR_ITEMS = {"mod":["labels","values"],"struct":["LRU_CACHE_HIT","LRU_CACHE_MISS"]};

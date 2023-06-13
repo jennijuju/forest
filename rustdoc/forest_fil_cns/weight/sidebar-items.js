@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["BLOCKS_PER_EPOCH","W_RATIO_DEN","W_RATIO_NUM"],"fn":["weight"]};

@@ -241,6 +241,82 @@
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -248,16 +324,16 @@
 <span class="kw">use </span>std::{path::PathBuf, sync::Arc};
 
 <span class="kw">use </span>forest_chain_sync::SyncConfig;
-<span class="attr">#[cfg(any(feature = <span class="string">&quot;paritydb&quot;</span>, feature = <span class="string">&quot;rocksdb&quot;</span>))]
-</span><span class="kw">use </span>forest_db::db_engine::DbConfig;
+<span class="kw">use </span>forest_db::db_engine::DbConfig;
 <span class="kw">use </span>forest_libp2p::Libp2pConfig;
 <span class="kw">use </span>forest_networks::ChainConfig;
 <span class="kw">use </span>log::LevelFilter;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>url::Url;
 
 <span class="kw">use </span><span class="kw">super</span>::client::Client;
 
-<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>LogConfig {
     <span class="kw">pub </span>filters: Vec&lt;LogValue&gt;,
 }
@@ -289,7 +365,7 @@
     }
 }
 
-<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug, Clone)]
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>LogValue {
     <span class="kw">pub </span>module: String,
     <span class="kw">pub </span>level: LevelFilter,
@@ -304,8 +380,79 @@
     }
 }
 
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Default)]
+</span><span class="kw">pub struct </span>SnapshotFetchConfig {
+    <span class="kw">pub </span>forest: ForestSnapshotFetchConfig,
+    <span class="kw">pub </span>filecoin: FilecoinSnapshotFetchConfig,
+}
+
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>FilecoinSnapshotFetchConfig {
+    <span class="kw">pub </span>mainnet_compressed: Url,
+    <span class="kw">pub </span>calibnet_compressed: Url,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>FilecoinSnapshotFetchConfig {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="comment">// unfallible unwrap as we know that the value is correct
+        // &lt;https://lotus.filecoin.io/lotus/manage/chain-management/#lightweight-snapshot&gt;
+        </span><span class="self">Self </span>{
+            mainnet_compressed: Url::try_from(
+                <span class="string">&quot;https://snapshots.mainnet.filops.net/minimal/latest&quot;</span>,
+            )
+            .unwrap(),
+            calibnet_compressed: Url::try_from(
+                <span class="string">&quot;https://snapshots.calibrationnet.filops.net/minimal/latest&quot;</span>,
+            )
+            .unwrap(),
+        }
+    }
+}
+
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>ForestSnapshotFetchConfig {
+    <span class="kw">pub </span>mainnet: ForestFetchConfig,
+    <span class="kw">pub </span>calibnet: ForestFetchConfig,
+}
+
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>ForestFetchConfig {
+    <span class="kw">pub </span>snapshot_spaces_url: Url,
+    <span class="kw">pub </span>bucket_name: String,
+    <span class="kw">pub </span>region: String,
+    <span class="kw">pub </span>path: String,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>ForestSnapshotFetchConfig {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="comment">// unfallible unwrap as we know that the value is correct
+        </span><span class="self">Self </span>{
+            <span class="comment">// Forest does not support snapshot service for mainnet yet.
+            // TODO: Update config when mainnet snapshot service is available
+            </span>mainnet: ForestFetchConfig {
+                snapshot_spaces_url: Url::try_from(
+                    <span class="string">&quot;https://forest-snapshots.fra1.digitaloceanspaces.com&quot;</span>,
+                )
+                .unwrap(),
+                bucket_name: <span class="string">&quot;forest-snapshots&quot;</span>.to_string(),
+                region: <span class="string">&quot;fra1&quot;</span>.to_string(),
+                path: <span class="string">&quot;mainnet/&quot;</span>.to_string(),
+            },
+            calibnet: ForestFetchConfig {
+                snapshot_spaces_url: Url::try_from(
+                    <span class="string">&quot;https://forest-snapshots.fra1.digitaloceanspaces.com&quot;</span>,
+                )
+                .unwrap(),
+                bucket_name: <span class="string">&quot;forest-snapshots&quot;</span>.to_string(),
+                region: <span class="string">&quot;fra1&quot;</span>.to_string(),
+                path: <span class="string">&quot;calibnet/&quot;</span>.to_string(),
+            },
+        }
+    }
+}
+
 <span class="doccomment">/// Structure that defines daemon configuration when process is detached
-</span><span class="attr">#[derive(Deserialize, Serialize, PartialEq, Eq, Debug, Clone)]
+</span><span class="attr">#[derive(Deserialize, Serialize, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>DaemonConfig {
     <span class="kw">pub </span>user: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="kw">pub </span>group: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -314,6 +461,8 @@
     <span class="kw">pub </span>stderr: PathBuf,
     <span class="kw">pub </span>work_dir: PathBuf,
     <span class="kw">pub </span>pid_file: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
+    <span class="kw">pub </span>default_retry: i32,
+    <span class="kw">pub </span>default_delay: Duration,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>DaemonConfig {
@@ -326,11 +475,13 @@
             stderr: <span class="string">&quot;forest.err&quot;</span>.into(),
             work_dir: <span class="string">&quot;.&quot;</span>.into(),
             pid_file: <span class="prelude-val">None</span>,
+            default_retry: <span class="number">3</span>,
+            default_delay: Duration::from_secs(<span class="number">60</span>),
         }
     }
 }
 
-<span class="attr">#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Default, Debug)]
+<span class="attr">#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Default)]
 </span><span class="kw">pub struct </span>TokioConfig {
     <span class="kw">pub </span>worker_threads: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     <span class="kw">pub </span>max_blocking_threads: <span class="prelude-ty">Option</span>&lt;usize&gt;,
@@ -339,7 +490,7 @@
     <span class="kw">pub </span>global_queue_interval: <span class="prelude-ty">Option</span>&lt;u32&gt;,
 }
 
-<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Default, Debug, Clone)]
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Default)]
 #[serde(default)]
 </span><span class="kw">pub struct </span>Config {
     <span class="kw">pub </span>client: Client,
@@ -350,6 +501,7 @@
     <span class="kw">pub </span>chain: Arc&lt;ChainConfig&gt;,
     <span class="kw">pub </span>daemon: DaemonConfig,
     <span class="kw">pub </span>log: LogConfig,
+    <span class="kw">pub </span>snapshot_fetch: SnapshotFetchConfig,
     <span class="kw">pub </span>tokio: TokioConfig,
 }
 
@@ -384,7 +536,6 @@
 
     <span class="doccomment">/// Partial configuration, as some parts of the proper one don&#39;t implement
     /// required traits (i.e. Debug)
-    </span><span class="comment">// This should be removed in #2965
     </span><span class="attr">#[derive(Clone, Debug)]
     </span><span class="kw">struct </span>ConfigPartial {
         client: Client,
@@ -405,6 +556,7 @@
                 chain: Arc::new(ChainConfig::default()),
                 daemon: DaemonConfig::default(),
                 log: Default::default(),
+                snapshot_fetch: Default::default(),
                 tokio: Default::default(),
             }
         }

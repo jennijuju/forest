@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_PARAMETERS","DIR_ENV","GATEWAY","GATEWAY_ENV","PARAM_DIR","TRUST_PARAMS_ENV"],"enum":["SectorSizeOpt"],"fn":["check_file","ensure_params_downloaded","fetch_params","fetch_params_inner","fetch_verify_params","get_params","get_params_default","param_dir","set_proofs_parameter_cache_dir_env"],"struct":["ParameterData"],"type":["ParameterMap"]};
+window.SIDEBAR_ITEMS = {"enum":["SectorSizeOpt"],"fn":["ensure_params_downloaded","get_params","get_params_default","set_proofs_parameter_cache_dir_env"]};

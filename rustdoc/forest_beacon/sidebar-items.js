@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["IGNORE_DRAND_VAR"],"enum":["DrandNetwork"],"mod":["beacon_entries","drand","mock_beacon"],"struct":["BeaconEntryJson","BeaconPoint","BeaconSchedule","ChainInfo","DrandBeacon","DrandConfig","DrandPublic","MockBeacon"],"trait":["Beacon"]};
+window.SIDEBAR_ITEMS = {"constant":["IGNORE_DRAND_VAR"],"enum":["DrandNetwork"],"mod":["beacon_entries"],"struct":["BeaconEntryJson","BeaconPoint","BeaconSchedule","ChainInfo","DrandBeacon","DrandConfig","DrandPublic","MockBeacon"],"trait":["Beacon"]};

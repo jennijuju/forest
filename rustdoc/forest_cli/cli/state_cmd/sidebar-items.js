@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["StateCommands"],"struct":["Inner","VestingSchedule","VestingScheduleEntry"]};

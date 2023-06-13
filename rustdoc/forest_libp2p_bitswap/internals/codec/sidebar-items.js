@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_BUF_SIZE"],"static":["CALLSITE"],"struct":["BitswapRequestResponseCodec"]};

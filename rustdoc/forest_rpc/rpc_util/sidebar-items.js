@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["STREAMING_METHODS"],"fn":["call_rpc","call_rpc_str","check_permissions","get_auth_header","get_error_obj","get_error_res","get_error_str","is_streaming_method"]};

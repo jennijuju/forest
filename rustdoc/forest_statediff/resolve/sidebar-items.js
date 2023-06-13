@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["resolve_cids_recursive","resolve_ipld"]};

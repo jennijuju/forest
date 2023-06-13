@@ -3,12 +3,12 @@
     bls_sig_cache: &amp;Mutex&lt;LruCache&lt;Cid, <a class="struct" href="../forest_shim/crypto/struct.Signature.html" title="struct forest_shim::crypto::Signature">Signature</a>&gt;&gt;,
     repub_trigger: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;Sender&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>&gt;&gt;,
     republished: &amp;SyncRwLock&lt;HashSet&lt;Cid&gt;&gt;,
-    pending: &amp;SyncRwLock&lt;HashMap&lt;<a class="struct" href="../forest_shim/address/struct.Address.html" title="struct forest_shim::address::Address">Address</a>, <a class="struct" href="msgpool/msg_pool/struct.MsgSet.html" title="struct forest_message_pool::msgpool::msg_pool::MsgSet">MsgSet</a>&gt;&gt;,
+    pending: &amp;SyncRwLock&lt;HashMap&lt;<a class="struct" href="../forest_shim/address/struct.Address.html" title="struct forest_shim::address::Address">Address</a>, MsgSet&gt;&gt;,
     cur_tipset: &amp;Mutex&lt;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;Tipset&gt;&gt;,
     revert: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;Tipset&gt;,
     apply: <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/vec/struct.Vec.html" title="struct alloc::vec::Vec">Vec</a>&lt;Tipset&gt;
-) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, <a class="enum" href="errors/enum.Error.html" title="enum forest_message_pool::errors::Error">Error</a>&gt;<span class="where fmt-newline">where
-    T: <a class="trait" href="msgpool/provider/trait.Provider.html" title="trait forest_message_pool::msgpool::provider::Provider">Provider</a> + 'static,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This function will revert and/or apply tipsets to the message pool. This
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, <a class="enum" href="enum.Error.html" title="enum forest_message_pool::Error">Error</a>&gt;<span class="where fmt-newline">where
+    T: <a class="trait" href="trait.Provider.html" title="trait forest_message_pool::Provider">Provider</a> + 'static,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This function will revert and/or apply tipsets to the message pool. This
 function should be called every time that there is a head change in the
 message pool.</p>
 </div></details></section></div></main></body></html>

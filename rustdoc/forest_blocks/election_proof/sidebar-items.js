@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_WIN_COUNT","PRECISION"],"fn":["__stability","__static_ref_initialize","expneg","lambda","parse","poly_val"],"mod":["json"],"struct":["EXP_DENO_COEF","EXP_NUM_COEF","ElectionProof","Inner","Poiss"]};
+window.SIDEBAR_ITEMS = {"mod":["json"],"struct":["ElectionProof"]};

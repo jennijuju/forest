@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["auth_new","auth_verify"]};

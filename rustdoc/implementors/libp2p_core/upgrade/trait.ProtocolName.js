@@ -1,4 +1,3 @@
 (function() {var implementors = {
-"forest_libp2p":[["impl ProtocolName for <a class=\"struct\" href=\"forest_libp2p/chain_exchange/struct.ChainExchangeProtocolName.html\" title=\"struct forest_libp2p::chain_exchange::ChainExchangeProtocolName\">ChainExchangeProtocolName</a>"],["impl ProtocolName for <a class=\"struct\" href=\"forest_libp2p/hello/codec/struct.HelloProtocolName.html\" title=\"struct forest_libp2p::hello::codec::HelloProtocolName\">HelloProtocolName</a>"]],
-"forest_libp2p_bitswap":[["impl ProtocolName for <a class=\"struct\" href=\"forest_libp2p_bitswap/internals/protocol/struct.BitswapProtocol.html\" title=\"struct forest_libp2p_bitswap::internals::protocol::BitswapProtocol\">BitswapProtocol</a>"]]
+"forest_libp2p":[["impl ProtocolName for <a class=\"struct\" href=\"forest_libp2p/chain_exchange/struct.ChainExchangeProtocolName.html\" title=\"struct forest_libp2p::chain_exchange::ChainExchangeProtocolName\">ChainExchangeProtocolName</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

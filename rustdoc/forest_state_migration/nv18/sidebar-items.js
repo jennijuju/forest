@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["eam","eth_account","init","migration","system","verifier"],"type":["ManifestNew","ManifestOld","SystemStateNew","SystemStateOld"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ProofType"],"fn":["block_sanity_checks","block_timestamp_checks","to_errs","to_fil_public_replica_infos","validate_block","validate_miner","validate_ticket_election","validate_winner_election","verify_election_post_vrf","verify_winning_post","verify_winning_post_proof"]};

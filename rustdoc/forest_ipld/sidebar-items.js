@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error","Ipld"],"fn":["from_ipld","lookup_segment","to_ipld"],"mod":["cid_hashset","error","json","selector","util"],"struct":["CidHashSet","Path"]};
+window.SIDEBAR_ITEMS = {"enum":["Error","Ipld"],"fn":["from_ipld","to_ipld"],"mod":["json","selector","util"],"struct":["CidHashSet","Path"]};
