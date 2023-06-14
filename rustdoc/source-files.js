@@ -1,7 +1,7 @@
 var sourcesIndex = JSON.parse('{\
 "bitswap_in_browser":["",[],["main.rs"]],\
 "bitswap_in_browser_lib":["",[],["behaviour.rs","lib.rs","transport.rs"]],\
-"forest":["",[["cli",[],["mod.rs"]]],["daemon.rs","main.rs"]],\
+"forest":["",[],["forest.rs"]],\
 "forest_auth":["",[],["lib.rs"]],\
 "forest_beacon":["",[],["beacon_entries.rs","drand.rs","lib.rs","mock_beacon.rs"]],\
 "forest_blocks":["",[["header",[],["json.rs","mod.rs"]]],["block.rs","election_proof.rs","errors.rs","gossip_block.rs","lib.rs","persistence.rs","ticket.rs","tipset.rs"]],\
@@ -9,7 +9,7 @@ var sourcesIndex = JSON.parse('{\
 "forest_chain_sync":["",[],["bad_block_cache.rs","chain_muxer.rs","consensus.rs","lib.rs","metrics.rs","network_context.rs","sync_state.rs","tipset_syncer.rs","validation.rs"]],\
 "forest_cli":["",[["cli",[],["attach_cmd.rs","auth_cmd.rs","chain_cmd.rs","config_cmd.rs","db_cmd.rs","fetch_params_cmd.rs","mod.rs","mpool_cmd.rs","net_cmd.rs","send_cmd.rs","shutdown_cmd.rs","snapshot_cmd.rs","state_cmd.rs","sync_cmd.rs","wallet_cmd.rs"]]],["humantoken.rs","lib.rs","subcommand.rs"]],\
 "forest_cli_shared":["",[["cli",[],["client.rs","config.rs","mod.rs"]],["logger",[],["mod.rs"]]],["lib.rs","snapshot.rs"]],\
-"forest_daemon":["",[["bundle",[],["mod.rs"]],["cli",[],["mod.rs"]]],["lib.rs"]],\
+"forest_daemon":["",[],["bundle.rs","daemon.rs","lib.rs"]],\
 "forest_db":["",[["rolling",[],["gc.rs","impls.rs","mod.rs"]]],["errors.rs","lib.rs","memory.rs","metrics.rs","parity_db.rs","parity_db_config.rs","rocks_config.rs"]],\
 "forest_deleg_cns":["",[],["composition.rs","consensus.rs","lib.rs","proposer.rs","validation.rs"]],\
 "forest_fil_cns":["",[],["composition.rs","lib.rs","metrics.rs","validation.rs","weight.rs"]],\
