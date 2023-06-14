@@ -8,7 +8,7 @@ var sourcesIndex = JSON.parse('{\
 "forest_chain":["",[["store",[],["base_fee.rs","chain_store.rs","errors.rs","index.rs","mod.rs","tipset_tracker.rs"]]],["lib.rs","weight.rs"]],\
 "forest_chain_sync":["",[],["bad_block_cache.rs","chain_muxer.rs","consensus.rs","lib.rs","metrics.rs","network_context.rs","sync_state.rs","tipset_syncer.rs","validation.rs"]],\
 "forest_cli":["",[["cli",[],["attach_cmd.rs","auth_cmd.rs","chain_cmd.rs","config_cmd.rs","db_cmd.rs","fetch_params_cmd.rs","mod.rs","mpool_cmd.rs","net_cmd.rs","send_cmd.rs","shutdown_cmd.rs","snapshot_cmd.rs","state_cmd.rs","sync_cmd.rs","wallet_cmd.rs"]]],["humantoken.rs","lib.rs","subcommand.rs"]],\
-"forest_cli_shared":["",[["cli",[],["client.rs","config.rs","mod.rs","snapshot_fetch.rs"]],["logger",[],["mod.rs"]]],["lib.rs"]],\
+"forest_cli_shared":["",[["cli",[],["client.rs","config.rs","mod.rs"]],["logger",[],["mod.rs"]]],["lib.rs","snapshot.rs"]],\
 "forest_daemon":["",[["bundle",[],["mod.rs"]],["cli",[],["mod.rs"]]],["lib.rs"]],\
 "forest_db":["",[["rolling",[],["gc.rs","impls.rs","mod.rs"]]],["errors.rs","lib.rs","memory.rs","metrics.rs","parity_db.rs","parity_db_config.rs","rocks_config.rs"]],\
 "forest_deleg_cns":["",[],["composition.rs","consensus.rs","lib.rs","proposer.rs","validation.rs"]],\
@@ -32,7 +32,7 @@ var sourcesIndex = JSON.parse('{\
 "forest_state_migration":["",[["common",[["macros",[],["mod.rs","system.rs","verifier.rs"]]],["migration_job.rs","migrators.rs","mod.rs","state_migration.rs","verifier.rs"]],["nv18",[],["eam.rs","eth_account.rs","init.rs","migration.rs","mod.rs"]],["nv19",[],["migration.rs","miner.rs","mod.rs","power.rs"]],["type_migrations",[["init",[],["mod.rs","state_v9_to_v10.rs"]],["miner",[],["mod.rs","state_v10_to_v11.rs"]]],["mod.rs"]]],["lib.rs"]],\
 "forest_statediff":["",[],["lib.rs","resolve.rs"]],\
 "forest_test_utils":["",[],["chain_structures.rs","lib.rs"]],\
-"forest_utils":["",[["db",[],["file_backed_obj.rs","mod.rs"]],["encoding",[],["mod.rs"]],["io",[],["mod.rs","parser.rs","progress_bar.rs","tempfile.rs","writer_checksum.rs"]],["json",[],["mod.rs"]],["macros",[],["mod.rs"]],["misc",[],["either.rs","logo.rs","mod.rs"]],["monitoring",[],["mem_tracker.rs","mod.rs"]],["net",[],["download.rs","http.rs","mod.rs"]],["proofs_api",[],["mod.rs","paramfetch.rs"]],["version",[],["mod.rs"]]],["lib.rs"]],\
+"forest_utils":["",[["db",[],["file_backed_obj.rs","mod.rs"]],["encoding",[],["mod.rs"]],["io",[],["mod.rs","parser.rs","progress_bar.rs","tempfile.rs","writer_checksum.rs"]],["json",[],["mod.rs"]],["misc",[],["either.rs","logo.rs","mod.rs"]],["monitoring",[],["mem_tracker.rs","mod.rs"]],["net",[],["download.rs","http.rs","mod.rs"]],["proofs_api",[],["mod.rs","paramfetch.rs"]],["version",[],["mod.rs"]]],["lib.rs"]],\
 "serialization_tests":["",[],["lib.rs"]]\
 }');
 createSourceSidebar();

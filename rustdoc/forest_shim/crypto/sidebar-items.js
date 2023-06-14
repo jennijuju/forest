@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SignatureType","SignatureType_v2","SignatureType_v3"],"fn":["verify_bls_aggregate"],"struct":["Signature","Signature_v2","Signature_v3"]};
+window.SIDEBAR_ITEMS = {"constant":["_IMPL_NUM_FromPrimitive_FOR_SignatureType"],"enum":["SignatureType","SignatureType_v2","SignatureType_v3"],"fn":["verify_bls_aggregate"],"struct":["Signature","Signature_v2","Signature_v3","discriminant"]};

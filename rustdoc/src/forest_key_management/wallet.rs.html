@@ -462,6 +462,8 @@
 <a href="#462" id="462">462</a>
 <a href="#463" id="463">463</a>
 <a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -700,7 +702,6 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>anyhow::ensure;
     <span class="kw">use </span>forest_utils::encoding::blake2b_256;
     <span class="kw">use </span>libsecp256k1::{Message <span class="kw">as </span>SecpMessage, SecretKey <span class="kw">as </span>SecpPrivate};
 
@@ -754,7 +755,10 @@
         </span><span class="macro">assert!</span>(!wallet.has_key(<span class="kw-2">&amp;</span>address));
         <span class="comment">// test to make sure that the newly made key cannot be added to the wallet
         // because it is not found in the keystore
-        </span><span class="macro">assert_eq!</span>(wallet.find_key(<span class="kw-2">&amp;</span>address).unwrap_err(), Error::KeyInfo);
+        </span><span class="macro">assert!</span>(<span class="macro">matches!</span>(
+            wallet.find_key(<span class="kw-2">&amp;</span>address).unwrap_err(),
+            Error::KeyInfo
+        ));
         <span class="comment">// sanity check to make sure that the key has not been added to the wallet
         </span><span class="macro">assert!</span>(!wallet.has_key(<span class="kw-2">&amp;</span>address));
     }
@@ -799,7 +803,7 @@
         <span class="kw">let </span>test_addr = Address::new_secp256k1(pub_key.as_slice()).unwrap();
         <span class="kw">let </span>key_info_err = wallet.export(<span class="kw-2">&amp;</span>test_addr).unwrap_err();
         <span class="comment">// test to make sure that an error is raised when an incorrect address is added
-        </span><span class="macro">assert_eq!</span>(key_info_err, Error::KeyInfo);
+        </span><span class="macro">assert!</span>(<span class="macro">matches!</span>(key_info_err, Error::KeyInfo));
 
         <span class="kw">let </span>test_key_info = KeyInfo::new(SignatureType::Secp256k1, new_priv_key);
         <span class="comment">// make sure that key_info has been imported to wallet
@@ -808,7 +812,7 @@
         <span class="kw">let </span>duplicate_error = wallet.import(test_key_info).unwrap_err();
         <span class="comment">// make sure that error is thrown when attempted to re-import a duplicate
         // key_info
-        </span><span class="macro">ensure!</span>(duplicate_error == Error::KeyExists);
+        </span><span class="macro">assert!</span>(<span class="macro">matches!</span>(duplicate_error, Error::KeyExists));
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -868,7 +872,7 @@
         <span class="kw">let </span>key_store = KeyStore::new(KeyStoreConfig::Memory).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>wallet = Wallet::new(key_store);
         <span class="comment">// check to make sure that there is no default
-        </span><span class="macro">assert_eq!</span>(wallet.get_default().unwrap_err(), Error::KeyInfo);
+        </span><span class="macro">assert!</span>(<span class="macro">matches!</span>(wallet.get_default().unwrap_err(), Error::KeyInfo));
 
         <span class="kw">let </span>new_priv_key = generate(SignatureType::Secp256k1).unwrap();
         <span class="kw">let </span>pub_key =

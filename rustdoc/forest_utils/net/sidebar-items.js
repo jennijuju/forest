@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["get_fetch_progress_from_file","get_fetch_progress_from_url","https_client"],"struct":["FetchProgress"],"trait":["HyperBodyExt"]};
+window.SIDEBAR_ITEMS = {"fn":["get_fetch_progress_from_file","get_fetch_progress_from_url","https_client"],"mod":["download","http"],"struct":["FetchProgress"],"trait":["HyperBodyExt"]};

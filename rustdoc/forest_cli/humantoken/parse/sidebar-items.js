@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["bigdecimal","nom2anyhow","parse","parse_big_decimal_and_scale","permit_trailing_ws","si_scale"]};

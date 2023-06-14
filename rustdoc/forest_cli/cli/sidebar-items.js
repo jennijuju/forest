@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Subcommand"],"fn":["cli_error_and_die"],"mod":["send_cmd"],"struct":["Cli"]};
+window.SIDEBAR_ITEMS = {"enum":["Subcommand"],"fn":["cli_error_and_die","format_vec_pretty","handle_rpc_err","print_rpc_res","print_rpc_res_bytes","print_rpc_res_cids","print_rpc_res_pretty","print_stdout","prompt_confirm"],"mod":["attach_cmd","auth_cmd","chain_cmd","config_cmd","db_cmd","fetch_params_cmd","mpool_cmd","net_cmd","send_cmd","shutdown_cmd","snapshot_cmd","state_cmd","sync_cmd","wallet_cmd"],"struct":["Cli","Config"]};

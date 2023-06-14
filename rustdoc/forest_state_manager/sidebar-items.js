@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["is_valid_for_sending"],"mod":["chain_rand"],"struct":["InvocResult","MarketBalance","StateManager"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_TIPSET_CACHE_SIZE","ERROR_MSG"],"enum":["Error","Status","__PrivResult"],"fn":["chain_epoch_root","is_valid_for_sending"],"mod":["chain_rand","errors","metrics","utils","vm_circ_supply"],"static":["CALLSITE"],"struct":["InvocResult","MarketBalance","StateManager","TipsetStateCache","TipsetStateCacheInner"],"type":["CidPair","StateCallResult"]};

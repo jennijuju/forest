@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MIN_GAS_PREMIUM"],"fn":["estimate_fee_cap","estimate_gas_limit","estimate_gas_premium","estimate_message_gas","gas_estimate_fee_cap","gas_estimate_gas_limit","gas_estimate_gas_premium","gas_estimate_message_gas"]};

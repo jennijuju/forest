@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_BLOCKS","MU"],"fn":["bino_pdf","binomial_coefficient","block_probabilities","no_winners_prob_assuming_more_than_one","poiss_pdf"]};

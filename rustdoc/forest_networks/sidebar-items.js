@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["NEWEST_NETWORK_VERSION"],"enum":["Height","NetworkChain"],"fn":["sort_by_epoch"],"mod":["calibnet","mainnet"],"struct":["ActorBundleInfo","ChainConfig","HeightInfo"]};
+window.SIDEBAR_ITEMS = {"constant":["CALIBNET_ETH_CHAIN_ID","DEFAULT_RECENT_STATE_ROOTS","DEFAULT_REQUEST_WINDOW","MAINNET_ETH_CHAIN_ID","NEWEST_NETWORK_VERSION"],"enum":["Height","NetworkChain"],"fn":["default_policy","sort_by_epoch"],"mod":["calibnet","drand","mainnet"],"struct":["ActorBundleInfo","ChainConfig","DrandPoint","HeightInfo"]};

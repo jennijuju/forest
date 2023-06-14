@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["json"],"struct":["BeaconEntry"]};
+window.SIDEBAR_ITEMS = {"mod":["json"],"struct":["BeaconEntry","Inner"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SyncStage"],"mod":["consensus"],"struct":["BadBlockCache","ChainMuxer","SyncConfig","SyncState","TipsetValidator"]};
+window.SIDEBAR_ITEMS = {"enum":["SyncStage"],"mod":["bad_block_cache","chain_muxer","consensus","metrics","network_context","sync_state","tipset_syncer","validation"],"struct":["BadBlockCache","ChainMuxer","SyncConfig","SyncState","TipsetValidator"]};

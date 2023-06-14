@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"static":["DRAND_INCENTINET","DRAND_MAINNET"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BUFFER_CAPCITY_BYTES"],"fn":["gc_trigger_factor"],"struct":["DbGarbageCollector"]};

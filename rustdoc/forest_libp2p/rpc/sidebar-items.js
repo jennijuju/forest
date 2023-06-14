@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["RequestResponseError"],"struct":["CborRequestResponse"]};
+window.SIDEBAR_ITEMS = {"enum":["RequestResponseError"],"fn":["encode_and_write","read_request_and_decode"],"mod":["decoder"],"struct":["CborRequestResponse"]};

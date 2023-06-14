@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["GOSSIPSUB_MESSAGE_KIND"]};
