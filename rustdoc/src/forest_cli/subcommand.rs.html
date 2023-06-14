@@ -79,7 +79,7 @@
         Subcommand::Wallet(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
         Subcommand::Sync(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
         Subcommand::Mpool(cmd) =&gt; cmd.run(config),
-        Subcommand::State(cmd) =&gt; cmd.run(config),
+        Subcommand::State(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
         Subcommand::Config(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>std::io::stdout()),
         Subcommand::Send(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
         Subcommand::DB(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config).<span class="kw">await</span>,
