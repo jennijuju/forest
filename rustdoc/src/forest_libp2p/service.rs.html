@@ -885,11 +885,11 @@
     request_manager::BitswapRequestManager, BitswapStoreRead, BitswapStoreReadWrite,
 };
 <span class="kw">use </span>forest_message::SignedMessage;
+<span class="kw">use </span>forest_shim::clock::ChainEpoch;
 <span class="kw">use </span>forest_utils::io::read_file_to_vec;
 <span class="kw">use </span>futures::{channel::oneshot::Sender <span class="kw">as </span>OneShotSender, select};
 <span class="kw">use </span>futures_util::stream::StreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">pub use </span>libp2p::gossipsub::{IdentTopic, Topic};
 <span class="comment">// https://github.com/ChainSafe/forest/issues/2762
 </span><span class="attr">#[allow(deprecated)]

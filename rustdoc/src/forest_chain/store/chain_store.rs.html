@@ -1016,6 +1016,7 @@
 <span class="kw">use </span>forest_message::{ChainMessage, Message <span class="kw">as </span>MessageTrait, SignedMessage};
 <span class="kw">use </span>forest_metrics::metrics;
 <span class="kw">use </span>forest_networks::{ChainConfig, NetworkChain};
+<span class="kw">use </span>forest_shim::clock::ChainEpoch;
 <span class="kw">use </span>forest_shim::{
     address::Address,
     crypto::{Signature, SignatureType},
@@ -1037,7 +1038,6 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
 <span class="kw">use </span>fvm_ipld_encoding::{Cbor, CborStore};
-<span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>log::{debug, info, trace, warn};
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;

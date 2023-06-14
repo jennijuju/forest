@@ -238,10 +238,10 @@
 <span class="kw">use </span>forest_blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span>forest_chain::ChainStore;
 <span class="kw">use </span>forest_networks::ChainConfig;
+<span class="kw">use </span>forest_shim::clock::ChainEpoch;
 <span class="kw">use </span>forest_shim::externs::Rand;
 <span class="kw">use </span>forest_utils::encoding::blake2b_256;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 
 <span class="doccomment">/// Allows for deriving the randomness from a particular tipset.
 </span><span class="kw">pub struct </span>ChainRand&lt;DB&gt; {

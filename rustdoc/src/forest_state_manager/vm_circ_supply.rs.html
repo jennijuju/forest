@@ -262,7 +262,6 @@
 <a href="#262" id="262">262</a>
 <a href="#263" id="263">263</a>
 <a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -273,12 +272,11 @@
 <span class="kw">use </span>forest_networks::{ChainConfig, Height};
 <span class="kw">use </span>forest_shim::{
     address::Address,
-    clock::EPOCHS_IN_DAY,
+    clock::{ChainEpoch, EPOCHS_IN_DAY},
     econ::TokenAmount,
     state_tree::{ActorState, StateTree},
 };
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>num_traits::Zero;
 
 <span class="kw">const </span>EPOCHS_IN_YEAR: ChainEpoch = <span class="number">365 </span>* EPOCHS_IN_DAY;

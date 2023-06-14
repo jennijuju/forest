@@ -5,7 +5,7 @@
     Genesis,
     Head,
     TipsetHash {
-        epoch: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;ChainEpoch&gt;,
+        epoch: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../../../forest_shim/clock/type.ChainEpoch.html" title="type forest_shim::clock::ChainEpoch">ChainEpoch</a>&gt;,
     },
     ValidateTipsetCheckpoints,
     Message {
@@ -22,7 +22,7 @@
 }</code></pre><h2 id="variants" class="variants small-section-header">Variants<a href="#variants" class="anchor">§</a></h2><div class="variants"><section id="variant.Block" class="variant"><a href="#variant.Block" class="anchor">§</a><h3 class="code-header">Block</h3></section><div class="sub-variant" id="variant.Block.fields"><h4>Fields</h4><div class="sub-variant-field"><span id="variant.Block.field.cid" class="small-section-header"><a href="#variant.Block.field.cid" class="anchor field">§</a><code>cid: Cid</code></span></div></div><div class="docblock"><p>Retrieves and prints out the block specified by the given CID</p>
 </div><section id="variant.Genesis" class="variant"><a href="#variant.Genesis" class="anchor">§</a><h3 class="code-header">Genesis</h3></section><div class="docblock"><p>Prints out the genesis tipset</p>
 </div><section id="variant.Head" class="variant"><a href="#variant.Head" class="anchor">§</a><h3 class="code-header">Head</h3></section><div class="docblock"><p>Prints out the canonical head of the chain</p>
-</div><section id="variant.TipsetHash" class="variant"><a href="#variant.TipsetHash" class="anchor">§</a><h3 class="code-header">TipsetHash</h3></section><div class="sub-variant" id="variant.TipsetHash.fields"><h4>Fields</h4><div class="sub-variant-field"><span id="variant.TipsetHash.field.epoch" class="small-section-header"><a href="#variant.TipsetHash.field.epoch" class="anchor field">§</a><code>epoch: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;ChainEpoch&gt;</code></span></div></div><div class="docblock"><p>Prints the checksum hash for a given epoch. This is used internally to
+</div><section id="variant.TipsetHash" class="variant"><a href="#variant.TipsetHash" class="anchor">§</a><h3 class="code-header">TipsetHash</h3></section><div class="sub-variant" id="variant.TipsetHash.fields"><h4>Fields</h4><div class="sub-variant-field"><span id="variant.TipsetHash.field.epoch" class="small-section-header"><a href="#variant.TipsetHash.field.epoch" class="anchor field">§</a><code>epoch: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="type" href="../../../forest_shim/clock/type.ChainEpoch.html" title="type forest_shim::clock::ChainEpoch">ChainEpoch</a>&gt;</code></span></div></div><div class="docblock"><p>Prints the checksum hash for a given epoch. This is used internally to
 improve performance when loading a snapshot.</p>
 </div><section id="variant.ValidateTipsetCheckpoints" class="variant"><a href="#variant.ValidateTipsetCheckpoints" class="anchor">§</a><h3 class="code-header">ValidateTipsetCheckpoints</h3></section><div class="docblock"><p>Runs through all epochs back to 0 and validates the tipset checkpoint
 hashes</p>

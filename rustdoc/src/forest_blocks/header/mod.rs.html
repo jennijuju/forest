@@ -528,6 +528,7 @@
 };
 <span class="kw">use </span>derive_builder::Builder;
 <span class="kw">use </span>forest_beacon::{<span class="self">self</span>, Beacon, BeaconEntry, BeaconSchedule};
+<span class="kw">use </span>forest_shim::clock::ChainEpoch;
 <span class="kw">use </span>forest_shim::{
     address::Address,
     bigint::{BigIntDe, BigIntSer},
@@ -538,7 +539,6 @@
 };
 <span class="kw">use </span>forest_utils::encoding::blake2b_256;
 <span class="kw">use </span>fvm_ipld_encoding::{Cbor, Error <span class="kw">as </span>EncodingError, DAG_CBOR};
-<span class="kw">use </span>fvm_shared::clock::ChainEpoch;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
