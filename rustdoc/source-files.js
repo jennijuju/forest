@@ -32,7 +32,6 @@ var sourcesIndex = JSON.parse('{\
 "forest_state_migration":["",[["common",[["macros",[],["mod.rs","system.rs","verifier.rs"]]],["migration_job.rs","migrators.rs","mod.rs","state_migration.rs","verifier.rs"]],["nv18",[],["eam.rs","eth_account.rs","init.rs","migration.rs","mod.rs"]],["nv19",[],["migration.rs","miner.rs","mod.rs","power.rs"]],["type_migrations",[["init",[],["mod.rs","state_v9_to_v10.rs"]],["miner",[],["mod.rs","state_v10_to_v11.rs"]]],["mod.rs"]]],["lib.rs"]],\
 "forest_statediff":["",[],["lib.rs","resolve.rs"]],\
 "forest_test_utils":["",[],["chain_structures.rs","lib.rs"]],\
-"forest_utils":["",[["db",[],["file_backed_obj.rs","mod.rs"]],["encoding",[],["mod.rs"]],["io",[],["mod.rs","parser.rs","progress_bar.rs","tempfile.rs","writer_checksum.rs"]],["json",[],["mod.rs"]],["misc",[],["either.rs","logo.rs","mod.rs"]],["monitoring",[],["mem_tracker.rs","mod.rs"]],["net",[],["download.rs","http.rs","mod.rs"]],["proofs_api",[],["mod.rs","paramfetch.rs"]],["version",[],["mod.rs"]]],["lib.rs"]],\
-"serialization_tests":["",[],["lib.rs"]]\
+"forest_utils":["",[["db",[],["file_backed_obj.rs","mod.rs"]],["encoding",[],["mod.rs"]],["io",[],["mod.rs","parser.rs","progress_bar.rs","tempfile.rs","writer_checksum.rs"]],["json",[],["mod.rs"]],["misc",[],["either.rs","logo.rs","mod.rs"]],["monitoring",[],["mem_tracker.rs","mod.rs"]],["net",[],["download.rs","http.rs","mod.rs"]],["proofs_api",[],["mod.rs","paramfetch.rs"]],["version",[],["mod.rs"]]],["lib.rs"]]\
 }');
 createSourceSidebar();
