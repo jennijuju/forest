@@ -10,9 +10,8 @@ publish = false
 anyhow = "1.0.71"
 clap = { version = "4.3.4", features = ["derive"] }
 globset = "0.4.10"
-prettyplease = "0.2.6"
+ignore = "0.4.20"
+indoc = "2.0.1"
+owo-colors = { version = "3.5.0", features = ["supports-colors"] }
 proc-macro2 = { version = "1.0.60", features = ["span-locations"], default-features = false }
 syn = { version = "2.0.18", features = ["visit", "full"] }
-tracing = "0.1.37"
-tracing-subscriber = { version = "0.3.17", features = ["fmt", "env-filter"] }
-walkdir = "2.3.3"

@@ -1,53 +1,67 @@
-//! This should be a custom linter/compiler plugin, as it's full of bugs right now.
+//! This should be a custom linter/compiler plugin, as it's pretty trivial to fool right now
 //! - Imports can hide in macros, which won't be traversed here.
 //! - We're never sure of the actual _full_ path of the use.
+//! - You can just assign e.g a function to a variable, and call it later.
+//! - etc...
+//!
+//! (But should be good enough for the most part).
+
+use std::{fmt::Display, iter::repeat};
 
 use anyhow::{bail, Context as _};
 use clap::Parser as _;
 use globset::{Glob, GlobSetBuilder};
-use proc_macro2::LineColumn;
+use ignore::Walk;
+use indoc::indoc;
+use owo_colors::Stream::Stderr;
+use proc_macro2::{LineColumn, Span};
 use syn::{
-    spanned::Spanned, visit::Visit, ExprPath, ItemUse, PathArguments, PathSegment, TypePath,
-    UseGroup, UseName, UsePath, UseRename, UseTree,
+    spanned::Spanned, visit::Visit, Expr, ExprCall, ExprPath, ExprStruct, ItemUse, UseGroup,
+    UseName, UsePath, UseRename, UseTree,
 };
-use tracing::{debug, error};
-use tracing_subscriber::{filter::LevelFilter, EnvFilter};
-use walkdir::WalkDir;
 
 #[derive(Debug, clap::Parser)]
+#[command(
+    about = indoc! {
+        "Traverse files for use of CRATE in rust source code.
+        Returns an error if it finds any."
+    },
+    long_about = indoc! {"
+    Interprets the given files as rust source, raising errors if any of the following are found:
+
+    - import statements like `use CRATE;`.
+    - function calls like `CRATE::foo()`.
+    - struct construction like `CRATE::Foo { .. }`.
+
+    This performs a best-guess, but it's pretty trivial to introduce false positives and negatives."
+    }
+)]
 struct Args {
-    /// The crate to disallow
+    /// The crate to disallow.
     #[arg(name = "crate")]
     krate: String,
-    /// The files to check.
-    ///
-    /// May be specified multiple times.
-    #[arg(short, long)]
+    /// The file(s) to check.
+    #[arg(num_args(1..), required = true)]
     glob: Vec<Glob>,
 }
 
-struct DisallowCrateVisitor<'a> {
+/// Traverses the rust AST, collecting the occurences we want to lint for
+struct Visitor<'a> {
     disallowed_crate: &'a str,
-    use_violations: Vec<ItemUse>,
-    path_violations: Vec<TypePath>,
-    expr_violations: Vec<ExprPath>,
+    violations: Vec<Span>,
 }
 
-impl<'a> DisallowCrateVisitor<'a> {
+impl<'a> Visitor<'a> {
     fn new(disallowed_crate: &'a str) -> Self {
-        let r = std::mem::take;
-        r(&mut ());
         Self {
             disallowed_crate,
-            use_violations: vec![],
-            path_violations: vec![],
-            expr_violations: vec![],
+            violations: vec![],
         }
     }
 }
 
-impl Visit<'_> for DisallowCrateVisitor<'_> {
-    /// Examine all `use` statements
+impl Visit<'_> for Visitor<'_> {
+    /// Catch `use foo;`
     fn visit_item_use(&mut self, i: &'_ ItemUse) {
         match &i.tree {
             UseTree::Path(UsePath { ident, .. })
@@ -55,7 +69,7 @@ impl Visit<'_> for DisallowCrateVisitor<'_> {
             | UseTree::Rename(UseRename { ident, .. })
                 if ident == self.disallowed_crate =>
             {
-                self.use_violations.push(i.clone())
+                self.violations.push(ident.span())
             }
             // `use {fvm, fvm3}; is legal rust, but shouldn't be allowed by rustfmt, so don't handle for now
             UseTree::Group(UseGroup { items: _, .. }) => todo!("handle unconventional grouping"),
@@ -63,55 +77,41 @@ impl Visit<'_> for DisallowCrateVisitor<'_> {
         };
         syn::visit::visit_item_use(self, i)
     }
-    fn visit_type_path(&mut self, i: &'_ TypePath) {
-        // We only know for sure unless the path is absolute.
-        // We've got no good way of handling for now, so don't use this information.
-        // let _is_absolute = i.path.leading_colon.is_some();
-        match i.path.segments.first().expect("empty type path is illegal") {
-            PathSegment {
-                ident,
-                arguments: PathArguments::None,
-            } if ident == self.disallowed_crate => self.path_violations.push(i.clone()),
-            _ => {}
-        }
-        syn::visit::visit_type_path(self, i)
-    }
-    fn visit_expr_path(&mut self, i: &'_ ExprPath) {
-        match i.path.segments.first().expect("empty expr_path is illegal") {
-            PathSegment { ident, .. } if ident == self.disallowed_crate => {
-                self.expr_violations.push(i.clone())
+    /// Catch `foo::bar();`
+    fn visit_expr_call(&mut self, i: &'_ ExprCall) {
+        match &*i.func {
+            Expr::Path(ExprPath { path, .. })
+                if path
+                    .segments
+                    .first()
+                    .is_some_and(|it| it.ident == self.disallowed_crate) =>
+            {
+                self.violations.push(path.span())
             }
             _ => {}
         }
-        syn::visit::visit_expr_path(self, i);
+        syn::visit::visit_expr_call(self, i)
+    }
+    /// Catch `foo::Bar { .. }`
+    fn visit_expr_struct(&mut self, i: &'_ ExprStruct) {
+        if i.path
+            .segments
+            .first()
+            .is_some_and(|it| it.ident == self.disallowed_crate)
+        {
+            self.violations.push(i.span())
+        }
+        syn::visit::visit_expr_struct(self, i)
     }
 }
 
-fn lint_file(
-    disallowed_crate: &str,
-    file: syn::File,
-) -> (Vec<ItemUse>, Vec<TypePath>, Vec<ExprPath>) {
-    let mut visitor = DisallowCrateVisitor::new(disallowed_crate);
+fn lint_file(disallowed_crate: &str, file: syn::File) -> Vec<Span> {
+    let mut visitor = Visitor::new(disallowed_crate);
     visitor.visit_file(&file);
-    (
-        visitor.use_violations,
-        visitor.path_violations,
-        visitor.expr_violations,
-    )
+    visitor.violations
 }
 
 fn main() -> anyhow::Result<()> {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            EnvFilter::builder()
-                .with_default_directive(LevelFilter::INFO.into())
-                .from_env_lossy(),
-        )
-        .with_target(false)
-        .without_time()
-        .with_writer(std::io::stderr)
-        .init();
-
     let args = Args::parse();
     let mut globset = GlobSetBuilder::new();
     for glob in args.glob {
@@ -120,27 +120,41 @@ fn main() -> anyhow::Result<()> {
     let globset = globset.build().context("couldn't build globset")?;
     let mut num_errors = 0;
     let mut num_files = 0;
-    for maybe_entry in WalkDir::new(".") {
+    for maybe_entry in Walk::new(".") {
         let entry = maybe_entry.context("couldn't walk directory")?;
-        if entry.file_type().is_file() && globset.is_match(entry.path()) {
+        if entry.file_type().expect("this isn't STDIN").is_file() && globset.is_match(entry.path())
+        {
             num_files += 1;
             let path = entry.path().display();
-            debug!(%path, "matched file");
-            let file = syn::parse_file(
-                &std::fs::read_to_string(entry.path())
-                    .context(format!("couldn't read file {path}"))?,
-            )
-            .context(format!("couldn't parse file {path}"))?;
-            let (use_violations, path_violations, expr_violations) = lint_file(&args.krate, file);
-            num_errors += use_violations.len() + path_violations.len() + expr_violations.len();
-            for (LineColumn { line, column }, source) in use_violations
-                .into_iter()
-                .map(line_column_and_source_text)
-                .chain(path_violations.into_iter().map(line_column_and_source_text))
-                .chain(expr_violations.into_iter().map(line_column_and_source_text))
-            {
-                error!("use in {path}:{line}:{column}");
-                error!("{source}")
+            let file = std::fs::read_to_string(entry.path())
+                .context(format!("couldn't read file {path}"))?;
+            let ast = syn::parse_file(&file).context(format!("couldn't parse file {path}"))?;
+            let violations = lint_file(&args.krate, ast);
+            num_errors += violations.len();
+            let lines = file.lines().collect::<Vec<_>>();
+            for LineColumn { line, column } in violations.into_iter().map(|it| it.start()) {
+                let line = line - 1; // LineColumn is 1-index, we're 0-indexed;
+                eprintln!("{}", format!("Error in {path}:{line}:{column}").red());
+
+                if let Some(before) = line.checked_sub(1).and_then(|ix| lines.get(ix)) {
+                    if !before.is_empty() {
+                        eprintln!("{}", before.dimmed())
+                    }
+                }
+                let actual = lines[line];
+                eprintln!("{actual}");
+                let diag = repeat(" ")
+                    .take(column)
+                    .chain(["^^^ disallowed crate"])
+                    .collect::<String>();
+                eprintln!("{}", diag.blue());
+
+                if let Some(after) = lines.get(line + 1) {
+                    if !after.is_empty() {
+                        eprintln!("{}", after.dimmed());
+                    }
+                }
+                println!()
             }
         }
     }
@@ -153,36 +167,36 @@ fn main() -> anyhow::Result<()> {
     }
 }
 
-fn line_column_and_source_text(s: impl Spanned) -> (LineColumn, String) {
-    let span = s.span();
-    (
-        span.start(),
-        span.source_text()
-            .expect("proc-macro2 built with span-locations"),
-    )
+/// Conditional colored printing to stderr
+trait ColorHelper: owo_colors::OwoColorize + Display {
+    fn red(&self) -> Box<dyn Display + '_> {
+        Box::new(self.if_supports_color(Stderr, owo_colors::OwoColorize::red))
+    }
+    fn dimmed(&self) -> Box<dyn Display + '_> {
+        Box::new(self.if_supports_color(Stderr, owo_colors::OwoColorize::dimmed))
+    }
+    fn blue(&self) -> Box<dyn Display + '_> {
+        Box::new(self.if_supports_color(Stderr, owo_colors::OwoColorize::blue))
+    }
 }
+
+impl<T> ColorHelper for T where T: owo_colors::OwoColorize + Display {}
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    fn test_counts(
-        code: &str,
-        disallowed_crate: &str,
-        expected_use_violations: usize,
-        expected_path_violations: usize,
-        expected_expr_violations: usize,
-    ) {
+    #[track_caller]
+    fn test_counts(code: &str, krate: &str, n: usize) {
         let file = syn::parse_file(code).unwrap();
-        let (use_violations, path_violations, expr_violations) = lint_file(disallowed_crate, file);
-        assert_eq!(expected_use_violations, use_violations.len());
-        assert_eq!(expected_path_violations, path_violations.len());
-        assert_eq!(expected_expr_violations, expr_violations.len());
+        let violations = lint_file(krate, file);
+        assert_eq!(n, violations.len());
     }
 
     #[test]
     fn test() {
-        test_counts("use fvm;", "fvm", 1, 0, 0);
-        test_counts("fn foo(_: fvm::Foo) {}", "fvm", 0, 1, 0);
-        test_counts("fn foo() { fvm::bar() }", "fvm", 0, 0, 1);
+        test_counts("use fvm;", "fvm", 1);
+        test_counts("fn foo(_: fvm::Bar) { }", "fvm", 0);
+        test_counts("fn foo() { fvm::bar() }", "fvm", 1);
+        test_counts("const _: fvm::Foo = fvm::Foo { };", "fvm", 1);
     }
 }
