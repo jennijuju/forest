@@ -153,6 +153,10 @@
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -164,6 +168,7 @@
 <span class="kw">mod </span>gas_api;
 <span class="kw">mod </span>mpool_api;
 <span class="kw">mod </span>net_api;
+<span class="kw">mod </span>node_api;
 <span class="kw">mod </span>progress_api;
 <span class="kw">mod </span>rpc_http_handler;
 <span class="kw">mod </span>rpc_util;
@@ -179,8 +184,8 @@
 <span class="kw">use </span>forest_chain::Scale;
 <span class="kw">use </span>forest_rpc_api::{
     auth_api::<span class="kw-2">*</span>, beacon_api::<span class="kw-2">*</span>, chain_api::<span class="kw-2">*</span>, common_api::<span class="kw-2">*</span>, data_types::RPCState, db_api::<span class="kw-2">*</span>,
-    gas_api::<span class="kw-2">*</span>, mpool_api::<span class="kw-2">*</span>, net_api::<span class="kw-2">*</span>, progress_api::GET_PROGRESS, state_api::<span class="kw-2">*</span>, sync_api::<span class="kw-2">*</span>,
-    wallet_api::<span class="kw-2">*</span>,
+    gas_api::<span class="kw-2">*</span>, mpool_api::<span class="kw-2">*</span>, net_api::<span class="kw-2">*</span>, node_api::NODE_STATUS, progress_api::GET_PROGRESS,
+    state_api::<span class="kw-2">*</span>, sync_api::<span class="kw-2">*</span>, wallet_api::<span class="kw-2">*</span>,
 };
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JSONRPCError, Params, Server};
@@ -189,7 +194,7 @@
 
 <span class="kw">use crate</span>::{
     beacon_api::beacon_get_entry,
-    common_api::{shutdown, version},
+    common_api::{shutdown, start_time, version},
     rpc_http_handler::rpc_http_handler,
     rpc_ws_handler::rpc_ws_handler,
     state_api::<span class="kw-2">*</span>,
@@ -283,6 +288,7 @@
             <span class="comment">// Common API
             </span>.with_method(VERSION, <span class="kw">move </span>|| version(block_delay, forest_version))
             .with_method(SHUTDOWN, <span class="kw">move </span>|| shutdown(shutdown_send.clone()))
+            .with_method(START_TIME, start_time::&lt;DB, B&gt;)
             <span class="comment">// Net API
             </span>.with_method(NET_ADDRS_LISTEN, net_api::net_addrs_listen::&lt;DB, B&gt;)
             .with_method(NET_PEERS, net_api::net_peers::&lt;DB, B&gt;)
@@ -292,6 +298,8 @@
             </span>.with_method(DB_GC, db_api::db_gc::&lt;DB, B&gt;)
             <span class="comment">// Progress API
             </span>.with_method(GET_PROGRESS, progress_api::get_progress)
+            <span class="comment">// Node API
+            </span>.with_method(NODE_STATUS, node_api::node_status::&lt;DB, B&gt;)
             .finish_unwrapped(),
     );
 

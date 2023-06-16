@@ -7,7 +7,7 @@ var sourcesIndex = JSON.parse('{\
 "forest_blocks":["",[["header",[],["json.rs","mod.rs"]]],["block.rs","election_proof.rs","errors.rs","gossip_block.rs","lib.rs","persistence.rs","ticket.rs","tipset.rs"]],\
 "forest_chain":["",[["store",[],["base_fee.rs","chain_store.rs","errors.rs","index.rs","mod.rs","tipset_tracker.rs"]]],["lib.rs","weight.rs"]],\
 "forest_chain_sync":["",[],["bad_block_cache.rs","chain_muxer.rs","consensus.rs","lib.rs","metrics.rs","network_context.rs","sync_state.rs","tipset_syncer.rs","validation.rs"]],\
-"forest_cli":["",[["cli",[],["attach_cmd.rs","auth_cmd.rs","chain_cmd.rs","config_cmd.rs","db_cmd.rs","fetch_params_cmd.rs","mod.rs","mpool_cmd.rs","net_cmd.rs","send_cmd.rs","shutdown_cmd.rs","snapshot_cmd.rs","state_cmd.rs","sync_cmd.rs","wallet_cmd.rs"]]],["humantoken.rs","lib.rs","subcommand.rs"]],\
+"forest_cli":["",[["cli",[],["attach_cmd.rs","auth_cmd.rs","chain_cmd.rs","config_cmd.rs","db_cmd.rs","fetch_params_cmd.rs","info_cmd.rs","mod.rs","mpool_cmd.rs","net_cmd.rs","send_cmd.rs","shutdown_cmd.rs","snapshot_cmd.rs","state_cmd.rs","sync_cmd.rs","wallet_cmd.rs"]]],["humantoken.rs","lib.rs","subcommand.rs"]],\
 "forest_cli_shared":["",[["cli",[],["client.rs","config.rs","mod.rs"]],["logger",[],["mod.rs"]]],["lib.rs","snapshot.rs"]],\
 "forest_daemon":["",[],["bundle.rs","daemon.rs","lib.rs"]],\
 "forest_db":["",[["rolling",[],["gc.rs","impls.rs","mod.rs"]]],["errors.rs","lib.rs","memory.rs","metrics.rs","parity_db.rs","parity_db_config.rs","rocks_config.rs"]],\
@@ -24,9 +24,9 @@ var sourcesIndex = JSON.parse('{\
 "forest_message_pool":["",[["msgpool",[],["metrics.rs","mod.rs","msg_pool.rs","provider.rs","selection.rs","test_provider.rs","utils.rs"]]],["block_prob.rs","config.rs","errors.rs","lib.rs","msg_chain.rs"]],\
 "forest_metrics":["",[],["db.rs","lib.rs","metrics.rs"]],\
 "forest_networks":["",[["calibnet",[],["mod.rs"]],["mainnet",[],["mod.rs"]]],["drand.rs","lib.rs"]],\
-"forest_rpc":["",[],["auth_api.rs","beacon_api.rs","chain_api.rs","common_api.rs","db_api.rs","gas_api.rs","lib.rs","mpool_api.rs","net_api.rs","progress_api.rs","rpc_http_handler.rs","rpc_util.rs","rpc_ws_handler.rs","state_api.rs","sync_api.rs","wallet_api.rs"]],\
+"forest_rpc":["",[],["auth_api.rs","beacon_api.rs","chain_api.rs","common_api.rs","db_api.rs","gas_api.rs","lib.rs","mpool_api.rs","net_api.rs","node_api.rs","progress_api.rs","rpc_http_handler.rs","rpc_util.rs","rpc_ws_handler.rs","state_api.rs","sync_api.rs","wallet_api.rs"]],\
 "forest_rpc_api":["",[],["data_types.rs","lib.rs"]],\
-"forest_rpc_client":["",[],["auth_ops.rs","chain_ops.rs","common_ops.rs","db_ops.rs","lib.rs","mpool_ops.rs","net_ops.rs","progress_ops.rs","state_ops.rs","sync_ops.rs","wallet_ops.rs"]],\
+"forest_rpc_client":["",[],["auth_ops.rs","chain_ops.rs","common_ops.rs","db_ops.rs","lib.rs","mpool_ops.rs","net_ops.rs","node_ops.rs","progress_ops.rs","state_ops.rs","sync_ops.rs","wallet_ops.rs"]],\
 "forest_shim":["",[["machine",[],["manifest_v3.rs","mod.rs"]]],["address.rs","bigint.rs","clock.rs","crypto.rs","econ.rs","error.rs","executor.rs","externs.rs","gas.rs","lib.rs","message.rs","randomness.rs","sector.rs","state_tree.rs","version.rs"]],\
 "forest_state_manager":["",[],["chain_rand.rs","errors.rs","lib.rs","metrics.rs","utils.rs","vm_circ_supply.rs"]],\
 "forest_state_migration":["",[["common",[["macros",[],["mod.rs","system.rs","verifier.rs"]]],["migration_job.rs","migrators.rs","mod.rs","state_migration.rs","verifier.rs"]],["nv18",[],["eam.rs","eth_account.rs","init.rs","migration.rs","mod.rs"]],["nv19",[],["migration.rs","miner.rs","mod.rs","power.rs"]],["type_migrations",[["init",[],["mod.rs","state_v9_to_v10.rs"]],["miner",[],["mod.rs","state_v10_to_v11.rs"]]],["mod.rs"]]],["lib.rs"]],\

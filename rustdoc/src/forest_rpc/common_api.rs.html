@@ -29,15 +29,26 @@
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
-</span><span class="kw">use </span>forest_rpc_api::{
+</span><span class="kw">use </span>forest_beacon::Beacon;
+<span class="kw">use </span>forest_rpc_api::{
     common_api::<span class="kw-2">*</span>,
-    data_types::{APIVersion, Version},
+    data_types::{APIVersion, RPCState, Version},
 };
-<span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
+<span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError};
 <span class="kw">use </span>semver::Version <span class="kw">as </span>SemVer;
 <span class="kw">use </span>tokio::sync::mpsc::Sender;
 
@@ -59,5 +70,12 @@
         <span class="kw">return </span><span class="prelude-val">Err</span>(JsonRpcError::from(err));
     }
     <span class="prelude-val">Ok</span>(())
+}
+
+<span class="doccomment">/// gets start time from network
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>start_time&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>, B: Beacon&gt;(
+    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;StartTimeResult, JsonRpcError&gt; {
+    <span class="prelude-val">Ok</span>(data.start_time)
 }
 </code></pre></div></section></main></body></html>
