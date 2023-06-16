@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["state_call","state_fetch_root","state_get_network_version","state_get_receipt","state_market_balance","state_market_deals","state_network_name","state_replay","state_wait_msg"]};
+window.SIDEBAR_ITEMS = {"fn":["lock_pop","state_call","state_fetch_root","state_get_network_version","state_get_receipt","state_market_balance","state_market_deals","state_network_name","state_replay","state_wait_msg"]};

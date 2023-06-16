@@ -278,16 +278,61 @@
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
 <a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
-</span><span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
+</span><span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::market;
 <span class="kw">use </span>forest_beacon::Beacon;
 <span class="kw">use </span>forest_blocks::tipset_keys_json::TipsetKeysJson;
 <span class="kw">use </span>forest_ipld::json::IpldJson;
+<span class="kw">use </span>forest_ipld::CidHashSet;
 <span class="kw">use </span>forest_json::cid::CidJson;
 <span class="kw">use </span>forest_libp2p::NetworkMessage;
 <span class="kw">use </span>forest_rpc_api::{
@@ -300,8 +345,9 @@
 <span class="kw">use </span>fvm_ipld_encoding::{CborStore, DAG_CBOR};
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>libipld_core::ipld::Ipld;
+<span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>std::{sync::Arc, time::Duration};
-<span class="kw">use </span>tokio::{sync::Semaphore, task::JoinSet, time::timeout};
+<span class="kw">use </span>tokio::task::JoinSet;
 
 <span class="comment">// TODO handle using configurable verification implementation in RPC (all
 // defaulting to Full).
@@ -489,73 +535,115 @@
     data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
     Params((CidJson(root_cid),)): Params&lt;StateFetchRootParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateFetchRootResult, JsonRpcError&gt; {
-    <span class="kw">const </span>MAX_CONCURRENT_REQUESTS: usize = <span class="number">16</span>;
+    <span class="kw">let </span>network_send = data.network_send.clone();
+    <span class="kw">let </span>db = data.chain_store.db.clone();
+    drop(data);
+
+    <span class="kw">const </span>MAX_CONCURRENT_REQUESTS: usize = <span class="number">64</span>;
     <span class="kw">const </span>REQUEST_TIMEOUT: Duration = Duration::from_secs(<span class="number">10</span>);
 
-    <span class="kw">let </span>sem = Arc::new(Semaphore::new(MAX_CONCURRENT_REQUESTS));
-    <span class="kw">let </span><span class="kw-2">mut </span>seen: HashSet&lt;Cid&gt; = HashSet::new();
+    <span class="kw">let </span><span class="kw-2">mut </span>seen: CidHashSet = CidHashSet::default();
     <span class="kw">let </span><span class="kw-2">mut </span>counter: usize = <span class="number">0</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>fetched: usize = <span class="number">0</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>failures: usize = <span class="number">0</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>task_set = JoinSet::new();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>get_ipld_link = |ipld: <span class="kw-2">&amp;</span>Ipld| <span class="kw">match </span>ipld {
-        Ipld::Link(cid) <span class="kw">if </span>cid.codec() == DAG_CBOR &amp;&amp; seen.insert(<span class="kw-2">*</span>cid) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>cid),
-        <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-    };
-
-    task_set.spawn(<span class="kw">async move </span>{ <span class="prelude-val">Ok</span>(Ipld::Link(root_cid)) });
-
-    <span class="comment">// Iterate until there are no more ipld nodes to traverse
-    </span><span class="kw">while let </span><span class="prelude-val">Some</span>(result) = task_set.join_next().<span class="kw">await </span>{
-        <span class="kw">match </span>result<span class="question-mark">? </span>{
-            <span class="prelude-val">Ok</span>(ipld) =&gt; {
-                <span class="kw">for </span>new_cid <span class="kw">in </span>ipld.iter().filter_map(<span class="kw-2">&amp;mut </span>get_ipld_link) {
-                    counter += <span class="number">1</span>;
-                    <span class="kw">if </span>counter % <span class="number">1_000 </span>== <span class="number">0 </span>{
-                        <span class="comment">// set RUST_LOG=forest_rpc::state_api=debug to enable these printouts.
-                        </span><span class="macro">log::debug!</span>(
-                            <span class="string">&quot;Still downloading. Fetched: {counter}, Failures: {failures}, Concurrent: {}&quot;</span>,
-                            MAX_CONCURRENT_REQUESTS - sem.available_permits()
-                        );
-                    }
-                    task_set.spawn({
-                        <span class="kw">let </span>network_send = data.network_send.clone();
-                        <span class="kw">let </span>db = data.chain_store.db.clone();
-                        <span class="kw">let </span>sem = sem.clone();
-                        <span class="kw">async move </span>{
-                            <span class="kw">if </span>!db.has(<span class="kw-2">&amp;</span>new_cid)<span class="question-mark">? </span>{
-                                <span class="comment">// If a CID isn&#39;t in our database, request it via bitswap (limited
-                                // by MAX_CONCURRENT_REQUESTS)
-                                </span><span class="kw">let </span>permit = sem.acquire_owned().<span class="kw">await</span><span class="question-mark">?</span>;
-                                <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">1</span>);
-                                network_send
-                                    .send_async(NetworkMessage::BitswapRequest {
-                                        epoch: <span class="number">0</span>,
-                                        cid: new_cid,
-                                        response_channel: tx,
-                                    })
-                                    .<span class="kw">await</span><span class="question-mark">?</span>;
-                                <span class="comment">// Bitswap requests do not fail. They are just ignored if no-one has
-                                // the requested data. Here we arbitrary decide to only wait for
-                                // REQUEST_TIMEOUT before deciding that the data is unavailable.
-                                </span><span class="kw">let </span>_ignore = timeout(REQUEST_TIMEOUT, rx.recv_async()).<span class="kw">await</span>;
-                                drop(permit);
-                            }
-
-                            db.get_cbor::&lt;Ipld&gt;(<span class="kw-2">&amp;</span>new_cid)<span class="question-mark">?
-                                </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Request failed: {new_cid}&quot;</span>))
-                        }
-                    });
-                }
-            }
+    <span class="kw">fn </span>handle_worker(fetched: <span class="kw-2">&amp;mut </span>usize, failures: <span class="kw-2">&amp;mut </span>usize, ret: anyhow::Result&lt;()&gt;) {
+        <span class="kw">match </span>ret {
+            <span class="prelude-val">Ok</span>(()) =&gt; <span class="kw-2">*</span>fetched += <span class="number">1</span>,
             <span class="prelude-val">Err</span>(msg) =&gt; {
-                failures += <span class="number">1</span>;
+                <span class="kw-2">*</span>failures += <span class="number">1</span>;
                 <span class="macro">log::debug!</span>(<span class="string">&quot;Request failed: {msg}&quot;</span>);
             }
         }
     }
+
+    <span class="comment">// When walking an Ipld graph, we&#39;re only interested in the DAG_CBOR encoded nodes.
+    </span><span class="kw">let </span><span class="kw-2">mut </span>get_ipld_link = |ipld: <span class="kw-2">&amp;</span>Ipld| <span class="kw">match </span>ipld {
+        Ipld::Link(cid) <span class="kw">if </span>cid.codec() == DAG_CBOR &amp;&amp; seen.insert(cid, <span class="kw-2">&amp;</span>|<span class="kw">_</span>| {}) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>cid),
+        <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+    };
+
+    <span class="comment">// Do a depth-first-search of the IPLD graph (DAG). Nodes that are _not_ present in our database
+    // are fetched in background tasks. If the number of tasks reaches MAX_CONCURRENT_REQUESTS, the
+    // depth-first-search pauses until one of the work tasks returns. The memory usage of this
+    // algorithm is dominated by the set of seen CIDs and the &#39;dfs&#39; stack is not expected to grow to
+    // more than 1000 elements (even when walking tens of millions of nodes).
+    </span><span class="kw">let </span>dfs = Arc::new(Mutex::new(<span class="macro">vec!</span>[Ipld::Link(root_cid)]));
+    <span class="kw">let </span><span class="kw-2">mut </span>to_be_fetched = <span class="macro">vec!</span>[];
+    <span class="comment">// Loop until: No more items in `dfs` AND no running worker tasks.
+    </span><span class="kw">loop </span>{
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(ipld) = lock_pop(<span class="kw-2">&amp;</span>dfs) {
+            {
+                <span class="kw">let </span><span class="kw-2">mut </span>dfs_guard = dfs.lock();
+                <span class="comment">// Scan for unseen CIDs. Available IPLD nodes are pushed to the depth-first-search
+                // stack, unavailable nodes will be requested in worker tasks.
+                </span><span class="kw">for </span>new_cid <span class="kw">in </span>ipld.iter().filter_map(<span class="kw-2">&amp;mut </span>get_ipld_link) {
+                    counter += <span class="number">1</span>;
+                    <span class="kw">if </span>counter % <span class="number">1_000 </span>== <span class="number">0 </span>{
+                        <span class="comment">// set RUST_LOG=forest_rpc::state_api=debug to enable these printouts.
+                        </span><span class="macro">log::debug!</span>(
+                                <span class="string">&quot;Graph walk: CIDs: {counter}, Fetched: {fetched}, Failures: {failures}, dfs: {}, Concurrent: {}&quot;</span>,
+                                dfs_guard.len(), task_set.len()
+                            );
+                    }
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(next_ipld) = db.get_cbor(<span class="kw-2">&amp;</span>new_cid)<span class="question-mark">? </span>{
+                        dfs_guard.push(next_ipld);
+                    } <span class="kw">else </span>{
+                        to_be_fetched.push(new_cid);
+                    }
+                }
+            }
+
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(cid) = to_be_fetched.pop() {
+                <span class="kw">if </span>task_set.len() == MAX_CONCURRENT_REQUESTS {
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(ret) = task_set.join_next().<span class="kw">await </span>{
+                        handle_worker(<span class="kw-2">&amp;mut </span>fetched, <span class="kw-2">&amp;mut </span>failures, ret<span class="question-mark">?</span>)
+                    }
+                }
+                task_set.spawn_blocking({
+                    <span class="kw">let </span>network_send = network_send.clone();
+                    <span class="kw">let </span>db = db.clone();
+                    <span class="kw">let </span>dfs_vec = Arc::clone(<span class="kw-2">&amp;</span>dfs);
+                    <span class="kw">move </span>|| {
+                        <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">1</span>);
+                        network_send.send(NetworkMessage::BitswapRequest {
+                            epoch: <span class="number">0</span>,
+                            cid,
+                            response_channel: tx,
+                        })<span class="question-mark">?</span>;
+                        <span class="comment">// Bitswap requests do not fail. They are just ignored if no-one has
+                        // the requested data. Here we arbitrary decide to only wait for
+                        // REQUEST_TIMEOUT before judging that the data is unavailable.
+                        </span><span class="kw">let </span>_ignore = rx.recv_timeout(REQUEST_TIMEOUT);
+
+                        <span class="kw">let </span>new_ipld = db
+                            .get_cbor::&lt;Ipld&gt;(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?
+                            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Request failed: {cid}&quot;</span>))<span class="question-mark">?</span>;
+                        dfs_vec.lock().push(new_ipld);
+                        <span class="prelude-val">Ok</span>(())
+                    }
+                });
+            }
+            tokio::task::yield_now().<span class="kw">await</span>;
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(ret) = task_set.join_next().<span class="kw">await </span>{
+            handle_worker(<span class="kw-2">&amp;mut </span>fetched, <span class="kw-2">&amp;mut </span>failures, ret<span class="question-mark">?</span>)
+        } <span class="kw">else </span>{
+            <span class="comment">// We are out of work items (dfs) and all worker threads have finished, this means
+            // the entire graph has been walked and fetched.
+            </span><span class="kw">break</span>;
+        }
+    }
+
     <span class="prelude-val">Ok</span>(<span class="macro">format!</span>(
-        <span class="string">&quot;IPLD graph traversed! CIDs: {counter}, failures: {failures}.&quot;
+        <span class="string">&quot;IPLD graph traversed! CIDs: {counter}, fetched: {fetched}, failures: {failures}.&quot;
     </span>))
+}
+
+<span class="comment">// Convenience function for locking and popping a value out of a vector. If this function is
+// inlined, the mutex guard isn&#39;t dropped early enough.
+</span><span class="kw">fn </span>lock_pop&lt;T&gt;(mutex: <span class="kw-2">&amp;</span>Mutex&lt;Vec&lt;T&gt;&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;T&gt; {
+    mutex.lock().pop()
 }
 </code></pre></div></section></main></body></html>
