@@ -151,25 +151,6 @@
 the size of these files lets RocksDB use less memory but runs the risk of
 hitting the open-files limit. If you do hit this limit, either increase the file
 size or use <code>ulimit</code> to increase the open-files limit.</p>
-<h4 id="jemalloc-issues-on-apple-silicon-macs"><a class="header" href="#jemalloc-issues-on-apple-silicon-macs">Jemalloc issues on Apple Silicon macs</a></h4>
-<p>Forest is compiled with <code>jemalloc</code> as a default allocator. If you are having
-problems running or compiling Forest, use this checklist:</p>
-<ol>
-<li>Make sure you are using an arm64 version of homebrew; this could be a problem
-one inherits when migrating from an Intel Mac to Apple Silicon:
-<a href="https://stackoverflow.com/a/68443301">Stackoverflow example</a>.</li>
-<li>Make sure your default host is set to <code>aarch64-apple-darwin</code> via
-<code>rustup set default-host aarch64-apple-darwin</code>.</li>
-<li>This could result in various errors related to the fact that you still have
-some of the libraries symlinked to <code>/usr/local/lib</code> from an intel Homebrew
-installation. The easiest fix for this is:
-<ul>
-<li>Remove the libraries in question from <code>/usr/local/lib</code>.</li>
-<li>Add <code>export LIBRARY_PATH=/opt/homebrew/lib</code> to your bash profile.</li>
-<li>Source the new bash profile.</li>
-</ul>
-</li>
-</ol>
 
                     </main>
 
