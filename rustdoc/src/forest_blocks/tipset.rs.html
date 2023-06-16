@@ -623,6 +623,16 @@
 <a href="#623" id="623">623</a>
 <a href="#624" id="624">624</a>
 <a href="#625" id="625">625</a>
+<a href="#626" id="626">626</a>
+<a href="#627" id="627">627</a>
+<a href="#628" id="628">628</a>
+<a href="#629" id="629">629</a>
+<a href="#630" id="630">630</a>
+<a href="#631" id="631">631</a>
+<a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -658,6 +668,16 @@
     <span class="doccomment">/// Returns tipset header `cids`
     </span><span class="kw">pub fn </span>cids(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[Cid] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.cids
+    }
+
+    <span class="comment">// Special encoding to match Lotus.
+    </span><span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Cid&gt; {
+        <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
+        <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
+        <span class="kw">for </span>cid <span class="kw">in </span><span class="self">self</span>.cids() {
+            bytes.append(<span class="kw-2">&amp;mut </span>cid.to_bytes())
+        }
+        <span class="prelude-val">Ok</span>(RawBytes::new(bytes).cid()<span class="question-mark">?</span>)
     }
 }
 

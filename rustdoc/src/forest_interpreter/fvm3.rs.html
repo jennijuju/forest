@@ -344,6 +344,9 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -375,6 +378,7 @@
     epoch: ChainEpoch,
     root: Cid,
     lookback: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
+    get_tsk: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;forest_blocks::TipsetKeys&gt;&gt;,
     db: DB,
     chain_config: Arc&lt;ChainConfig&gt;,
 }
@@ -385,6 +389,7 @@
         epoch: ChainEpoch,
         root: Cid,
         lookback: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
+        get_tsk: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;forest_blocks::TipsetKeys&gt;&gt;,
         db: DB,
         chain_config: Arc&lt;ChainConfig&gt;,
     ) -&gt; <span class="self">Self </span>{
@@ -393,6 +398,7 @@
             epoch,
             root,
             lookback,
+            get_tsk,
             db,
             chain_config,
         }
@@ -448,7 +454,7 @@
 
 <span class="kw">impl</span>&lt;DB&gt; Chain <span class="kw">for </span>ForestExterns&lt;DB&gt; {
     <span class="kw">fn </span>get_tipset_cid(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt; {
-        (<span class="self">self</span>.lookback)(epoch)
+        (<span class="self">self</span>.get_tsk)(epoch)<span class="question-mark">?</span>.cid()
     }
 }
 

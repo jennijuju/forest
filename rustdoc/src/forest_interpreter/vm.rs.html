@@ -480,6 +480,8 @@
 <a href="#480" id="480">480</a>
 <a href="#481" id="481">481</a>
 <a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -591,6 +593,7 @@
         circ_supply: TokenAmount,
         reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
         lb_fn: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
+        epoch_tsk: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;forest_blocks::TipsetKeys&gt;&gt;,
         multi_engine: <span class="kw-2">&amp;</span>MultiEngine,
         chain_config: Arc&lt;ChainConfig&gt;,
         timestamp: u64,
@@ -614,6 +617,7 @@
                         epoch,
                         root,
                         lb_fn,
+                        epoch_tsk,
                         store,
                         chain_config,
                     ),
