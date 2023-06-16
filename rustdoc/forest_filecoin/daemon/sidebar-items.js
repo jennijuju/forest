@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize","ipc_shmem_conf"],"mod":["bundle","daemon","main"],"struct":["IPC_PATH"]};

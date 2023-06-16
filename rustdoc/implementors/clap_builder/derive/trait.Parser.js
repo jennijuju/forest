@@ -1,5 +1,3 @@
 (function() {var implementors = {
-"forest":[["impl Parser for <a class=\"struct\" href=\"forest/struct.Cli.html\" title=\"struct forest::Cli\">Cli</a>"]],
-"forest_cli":[["impl Parser for <a class=\"struct\" href=\"forest_cli/cli/struct.Cli.html\" title=\"struct forest_cli::cli::Cli\">Cli</a>"]],
-"forest_cli_shared":[["impl Parser for <a class=\"struct\" href=\"forest_cli_shared/cli/struct.CliOpts.html\" title=\"struct forest_cli_shared::cli::CliOpts\">CliOpts</a>"]]
+"forest_filecoin":[["impl Parser for <a class=\"struct\" href=\"forest_filecoin/cli_shared/cli/struct.CliOpts.html\" title=\"struct forest_filecoin::cli_shared::cli::CliOpts\">CliOpts</a>"],["impl Parser for <a class=\"struct\" href=\"forest_filecoin/cli/cli/struct.Cli.html\" title=\"struct forest_filecoin::cli::cli::Cli\">Cli</a>"],["impl Parser for <a class=\"struct\" href=\"forest_filecoin/daemon/main/struct.Cli.html\" title=\"struct forest_filecoin::daemon::main::Cli\">Cli</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

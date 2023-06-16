@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["handle_swarm_event","main"],"struct":["MemoryStoreInner"],"type":["MemoryStore"]};

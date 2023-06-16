@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["cli","humantoken","subcommand"]};
+window.SIDEBAR_ITEMS = {"fn":["main"]};
