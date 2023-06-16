@@ -242,6 +242,14 @@
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
 <a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -323,7 +331,7 @@
     <span class="kw">if </span>data_dir.is_empty() {
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Proof parameter data dir is not set&quot;</span>);
     }
-    get_params_default(Path::new(<span class="kw-2">&amp;</span>data_dir), SectorSizeOpt::Keys).<span class="kw">await</span><span class="question-mark">?</span>;
+    get_params_default(Path::new(<span class="kw-2">&amp;</span>data_dir), SectorSizeOpt::Keys, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }
@@ -334,7 +342,14 @@
     data_dir: <span class="kw-2">&amp;</span>Path,
     param_json: <span class="kw-2">&amp;</span>str,
     storage_size: SectorSizeOpt,
+    dry_run: bool,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
+    <span class="comment">// Just print out the parameters download directory path and exit.
+    </span><span class="kw">if </span>dry_run {
+        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, param_dir(data_dir).to_string_lossy());
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+    }
+
     fs::create_dir_all(param_dir(data_dir)).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>params: ParameterMap = serde_json::from_str(param_json)<span class="question-mark">?</span>;
@@ -388,8 +403,9 @@
 </span><span class="kw">pub async fn </span>get_params_default(
     data_dir: <span class="kw-2">&amp;</span>Path,
     storage_size: SectorSizeOpt,
+    dry_run: bool,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-    get_params(data_dir, DEFAULT_PARAMETERS, storage_size).<span class="kw">await
+    get_params(data_dir, DEFAULT_PARAMETERS, storage_size, dry_run).<span class="kw">await
 </span>}
 
 <span class="kw">async fn </span>fetch_verify_params(

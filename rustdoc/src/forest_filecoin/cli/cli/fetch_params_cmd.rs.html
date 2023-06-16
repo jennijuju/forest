@@ -80,6 +80,9 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -98,6 +101,9 @@
     <span class="doccomment">/// Download only verification keys
     </span><span class="attr">#[arg(short, long)]
     </span>keys: bool,
+    <span class="doccomment">/// Print out download location instead of downloading files
+    </span><span class="attr">#[arg(short, long)]
+    </span>dry_run: bool,
     <span class="doccomment">/// Size in bytes
     </span>params_size: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
@@ -118,7 +124,7 @@
             );
         };
 
-        get_params_default(<span class="kw-2">&amp;</span>config.client.data_dir, sizes).<span class="kw">await
+        get_params_default(<span class="kw-2">&amp;</span>config.client.data_dir, sizes, <span class="self">self</span>.dry_run).<span class="kw">await
     </span>}
 }
 
