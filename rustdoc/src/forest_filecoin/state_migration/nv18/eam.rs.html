@@ -37,7 +37,7 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
-    machine::ManifestV3,
+    machine::{Manifest, EAM_ACTOR_NAME},
     state_tree::{ActorState, StateTree},
 };
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -59,9 +59,9 @@
             .get_cbor(<span class="kw-2">&amp;</span>sys_actor.state)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Couldn&#39;t get statev10&quot;</span>))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>manifest = ManifestV3::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>sys_state.builtin_actors, <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>manifest = Manifest::load_with_actors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>sys_state.builtin_actors, <span class="number">1</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>eam_actor = ActorState::new_empty(<span class="kw-2">*</span>manifest.get_eam_code(), <span class="prelude-val">None</span>);
+        <span class="kw">let </span>eam_actor = ActorState::new_empty(<span class="kw-2">*</span>manifest.code_by_name(EAM_ACTOR_NAME)<span class="question-mark">?</span>, <span class="prelude-val">None</span>);
         actors_out.set_actor(<span class="kw-2">&amp;</span>Address::ETHEREUM_ACCOUNT_MANAGER_ACTOR, eam_actor)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }

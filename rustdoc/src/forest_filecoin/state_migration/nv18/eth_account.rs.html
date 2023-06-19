@@ -60,7 +60,7 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
-    machine::ManifestV3,
+    machine::{Manifest, ETH_ACCOUNT_ACTOR_NAME},
     state_tree::{ActorState, StateTree},
 };
 <span class="kw">use </span>anyhow::anyhow;
@@ -97,11 +97,11 @@
             .get_cbor::&lt;SystemStateNew&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;failed to get system actor state&quot;</span>))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>manifest_data = system_actor_state.builtin_actors;
-        <span class="kw">let </span>new_manifest = ManifestV3::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_manifest =
+            Manifest::load_with_actors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors, <span class="number">1</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>eth_account_actor = ActorState::new(
-            <span class="kw-2">*</span>new_manifest.get_ethaccount_code(),
+            <span class="kw-2">*</span>new_manifest.code_by_name(ETH_ACCOUNT_ACTOR_NAME)<span class="question-mark">?</span>,
             fil_actors_shared::v10::runtime::EMPTY_ARR_CID,
             Default::default(),
             <span class="number">0</span>,

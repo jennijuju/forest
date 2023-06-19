@@ -82,16 +82,16 @@
 
             <span class="kw">use </span>cid::Cid;
             <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+            <span class="kw">use </span><span class="macro-nonterminal">$crate::shim::machine::Manifest</span>;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::state_migration::common</span>::<span class="kw-2">*</span>;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::utils::db::CborStoreExt</span>;
 
             <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>system_migrator&lt;BS: Blockstore + Clone + Send + Sync&gt;(
-                new_builtin_actors_cid: Cid,
-                new_code_cid: Cid,
+                new_manifest: <span class="kw-2">&amp;</span>Manifest,
             ) -&gt; Arc&lt;<span class="kw">dyn </span>ActorMigration&lt;BS&gt; + Send + Sync&gt; {
                 Arc::new(SystemMigrator {
-                    new_builtin_actors_cid,
-                    new_code_cid,
+                    new_builtin_actors_cid: new_manifest.actors_cid(),
+                    new_code_cid: <span class="kw-2">*</span>new_manifest.system_code(),
                 })
             }
 

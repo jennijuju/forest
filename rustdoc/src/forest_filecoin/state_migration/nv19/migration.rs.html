@@ -102,8 +102,6 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -113,6 +111,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
     clock::ChainEpoch,
+    machine::{Manifest, MINER_ACTOR_NAME, POWER_ACTOR_NAME},
     state_tree::{StateTree, StateTreeVersion},
 };
 <span class="kw">use </span>anyhow::anyhow;
@@ -120,7 +119,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
-<span class="kw">use super</span>::{miner, power, system, verifier::Verifier, ManifestNew, ManifestOld, SystemStateOld};
+<span class="kw">use super</span>::{miner, power, system, verifier::Verifier, SystemStateOld};
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::common::{migrators::nil_migrator, StateMigration};
 
 <span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; StateMigration&lt;BS&gt; {
@@ -138,33 +137,30 @@
         <span class="kw">let </span>system_actor_state = store
             .get_cbor::&lt;SystemStateOld&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;system actor state not found&quot;</span>))<span class="question-mark">?</span>;
-        <span class="kw">let </span>current_manifest_data = system_actor_state.builtin_actors;
-        <span class="kw">let </span>current_manifest = ManifestOld::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>current_manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>(version, new_manifest_data): (u32, Cid) = store
-            .get_cbor(new_manifest)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;new manifest not found&quot;</span>))<span class="question-mark">?</span>;
-        <span class="kw">let </span>new_manifest = ManifestNew::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>new_manifest_data, version)<span class="question-mark">?</span>;
+        <span class="kw">let </span>current_manifest =
+            Manifest::load_with_actors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors, <span class="number">1</span>)<span class="question-mark">?</span>;
 
-        current_manifest.builtin_actor_codes().for_each(|code| {
-            <span class="kw">let </span>id = current_manifest.id_by_code(code);
-            <span class="kw">let </span>new_code = new_manifest.code_by_id(id).unwrap();
+        <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>store, new_manifest)<span class="question-mark">?</span>;
+
+        current_manifest.builtin_actors().for_each(|(name, code)| {
+            <span class="kw">let </span>new_code = new_manifest.code_by_name(name).unwrap();
             <span class="self">self</span>.add_migrator(<span class="kw-2">*</span>code, nil_migrator(<span class="kw-2">*</span>new_code));
         });
 
         <span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>current_manifest.get_miner_code(),
-            miner::miner_migrator(<span class="kw-2">*</span>new_manifest.get_miner_code()),
+            <span class="kw-2">*</span>current_manifest.code_by_name(MINER_ACTOR_NAME)<span class="question-mark">?</span>,
+            miner::miner_migrator(<span class="kw-2">*</span>new_manifest.code_by_name(MINER_ACTOR_NAME)<span class="question-mark">?</span>),
         );
 
         <span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>current_manifest.get_power_code(),
-            power::power_migrator(<span class="kw-2">*</span>new_manifest.get_power_code()),
+            <span class="kw-2">*</span>current_manifest.code_by_name(POWER_ACTOR_NAME)<span class="question-mark">?</span>,
+            power::power_migrator(<span class="kw-2">*</span>new_manifest.code_by_name(POWER_ACTOR_NAME)<span class="question-mark">?</span>),
         );
 
         <span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>current_manifest.get_system_code(),
-            system::system_migrator(new_manifest_data, <span class="kw-2">*</span>new_manifest.get_system_code()),
+            <span class="kw-2">*</span>current_manifest.system_code(),
+            system::system_migrator(<span class="kw-2">&amp;</span>new_manifest),
         );
 
         <span class="prelude-val">Ok</span>(())
