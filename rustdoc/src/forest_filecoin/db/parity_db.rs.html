@@ -205,6 +205,14 @@
 <a href="#205" id="205">205</a>
 <a href="#206" id="206">206</a>
 <a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -248,6 +256,14 @@
             salt: <span class="prelude-val">None</span>,
             columns: (<span class="number">0</span>..COLUMNS)
                 .map(|<span class="kw">_</span>| parity_db::ColumnOptions {
+                    <span class="comment">// The `preimage` flag tells ParityDB that a given value always has the same
+                    // key. With this flag enabled, ParityDB can short-circuit insertions when the
+                    // keys already exist in the database (as opposed to updating the value).
+                    // Forest is exclusively storing IPLD data where the key is the hash of the
+                    // value. While we try not to insert the same data multiple times, it does
+                    // happen on occasion, and this flag improves the DB performance in those
+                    // scenarios.
+                    </span>preimage: <span class="bool-val">true</span>,
                     compression,
                     <span class="comment">// btree_index: true,
                     </span>..Default::default()
