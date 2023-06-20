@@ -997,6 +997,10 @@
 <a href="#997" id="997">997</a>
 <a href="#998" id="998">998</a>
 <a href="#999" id="999">999</a>
+<a href="#1000" id="1000">1000</a>
+<a href="#1001" id="1001">1001</a>
+<a href="#1002" id="1002">1002</a>
+<a href="#1003" id="1003">1003</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1028,12 +1032,13 @@
     misc::Either,
 };
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
-<span class="kw">use </span>anyhow::Result;
+<span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>async_compression::futures::write::ZstdEncoder;
 <span class="kw">use </span>bls_signatures::Serialize <span class="kw">as </span>SerializeBls;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>digest::Digest;
 <span class="kw">use </span>futures::{io::BufWriter, AsyncWrite};
+<span class="kw">use </span>futures_util::AsyncWriteExt;
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
@@ -1623,6 +1628,9 @@
         );
 
         <span class="kw">let </span><span class="kw-2">mut </span>writer = writer.lock().<span class="kw">await</span>;
+        writer.flush().<span class="kw">await</span>.context(<span class="string">&quot;failed to flush&quot;</span>)<span class="question-mark">?</span>;
+        writer.close().<span class="kw">await</span>.context(<span class="string">&quot;failed to close&quot;</span>)<span class="question-mark">?</span>;
+
         <span class="kw">let </span>digest = <span class="kw">match </span><span class="kw-2">&amp;mut *</span>writer {
             Either::Left(left) =&gt; left.get_mut().finalize().<span class="kw">await</span>,
             Either::Right(right) =&gt; right.finalize().<span class="kw">await</span>,
