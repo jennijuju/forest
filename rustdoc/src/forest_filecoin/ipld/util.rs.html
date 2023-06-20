@@ -193,6 +193,10 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -238,19 +242,21 @@
                 traverse_ipld_links_hash(walked, load_block, v, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
-        Ipld::Link(cid) =&gt; {
+        <span class="kw-2">&amp;</span>Ipld::Link(cid) =&gt; {
             <span class="comment">// WASM blocks are stored as IPLD_RAW. They should be loaded but not traversed.
             </span><span class="kw">if </span>cid.codec() == fvm_shared::IPLD_RAW {
-                <span class="kw">if </span>!walked.insert(cid, on_inserted) {
+                <span class="kw">if </span>!walked.insert(cid) {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
-                <span class="kw">let _ </span>= load_block(<span class="kw-2">*</span>cid).<span class="kw">await</span><span class="question-mark">?</span>;
+                on_inserted(walked.len());
+                <span class="kw">let _ </span>= load_block(cid).<span class="kw">await</span><span class="question-mark">?</span>;
             }
             <span class="kw">if </span>cid.codec() == fvm_ipld_encoding::DAG_CBOR {
-                <span class="kw">if </span>!walked.insert(cid, on_inserted) {
+                <span class="kw">if </span>!walked.insert(cid) {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
-                <span class="kw">let </span>bytes = load_block(<span class="kw-2">*</span>cid).<span class="kw">await</span><span class="question-mark">?</span>;
+                on_inserted(walked.len());
+                <span class="kw">let </span>bytes = load_block(cid).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="kw">let </span>ipld = from_slice(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
                 traverse_ipld_links_hash(walked, load_block, <span class="kw-2">&amp;</span>ipld, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
             }
@@ -271,10 +277,11 @@
     </span>F: FnMut(Cid) -&gt; T + Send,
     T: Future&lt;Output = <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, anyhow::Error&gt;&gt; + Send,
 {
-    <span class="kw">if </span>!walked.insert(<span class="kw-2">&amp;</span>root, on_inserted) {
+    <span class="kw">if </span>!walked.insert(root) {
         <span class="comment">// Cid has already been traversed
         </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
+    on_inserted(walked.len());
     <span class="kw">if </span>root.codec() != fvm_ipld_encoding::DAG_CBOR {
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
@@ -337,9 +344,10 @@
     };
 
     <span class="kw">while let </span><span class="prelude-val">Some</span>(next) = blocks_to_walk.pop_front() {
-        <span class="kw">if </span>!seen.insert(<span class="kw-2">&amp;</span>next, <span class="kw-2">&amp;</span>on_inserted) {
+        <span class="kw">if </span>!seen.insert(next) {
             <span class="kw">continue</span>;
         };
+        on_inserted(seen.len());
 
         <span class="kw">if </span>!should_save_block_to_snapshot(<span class="kw-2">&amp;</span>next) {
             <span class="kw">continue</span>;

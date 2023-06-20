@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"trait":["CidCborExt"]};
+window.SIDEBAR_ITEMS = {"constant":["BLAKE2B256","BLAKE2B256_SIZE"],"enum":["CidVariant"],"trait":["CidCborExt"]};

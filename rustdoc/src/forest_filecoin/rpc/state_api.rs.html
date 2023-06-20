@@ -590,7 +590,7 @@
 
     <span class="comment">// When walking an Ipld graph, we&#39;re only interested in the DAG_CBOR encoded nodes.
     </span><span class="kw">let </span><span class="kw-2">mut </span>get_ipld_link = |ipld: <span class="kw-2">&amp;</span>Ipld| <span class="kw">match </span>ipld {
-        Ipld::Link(cid) <span class="kw">if </span>cid.codec() == DAG_CBOR &amp;&amp; seen.insert(cid, <span class="kw-2">&amp;</span>|<span class="kw">_</span>| {}) =&gt; <span class="prelude-val">Some</span>(<span class="kw-2">*</span>cid),
+        <span class="kw-2">&amp;</span>Ipld::Link(cid) <span class="kw">if </span>cid.codec() == DAG_CBOR &amp;&amp; seen.insert(cid) =&gt; <span class="prelude-val">Some</span>(cid),
         <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
     };
 
@@ -611,7 +611,7 @@
                 </span><span class="kw">for </span>new_cid <span class="kw">in </span>ipld.iter().filter_map(<span class="kw-2">&amp;mut </span>get_ipld_link) {
                     counter += <span class="number">1</span>;
                     <span class="kw">if </span>counter % <span class="number">1_000 </span>== <span class="number">0 </span>{
-                        <span class="comment">// set RUST_LOG=crate::rpc::state_api=debug to enable these printouts.
+                        <span class="comment">// set RUST_LOG=forest_filecoin::rpc::state_api=debug to enable these printouts.
                         </span><span class="macro">log::debug!</span>(
                                 <span class="string">&quot;Graph walk: CIDs: {counter}, Fetched: {fetched}, Failures: {failures}, dfs: {}, Concurrent: {}&quot;</span>,
                                 dfs_guard.len(), task_set.len()
