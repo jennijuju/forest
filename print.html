@@ -864,6 +864,8 @@ working on a patch release, make sure that there are no breaking changes.
 Cherry-picking of patches may be necessary.</li>
 <li>Run the manual tests steps outlined in the TEST_PLAN.md. Caveat: Right now
 there are no manual test steps so this step can be skipped.</li>
+<li>Make sure to run <code>cargo publish --dry-run</code> and include the <code>Cargo.lock</code> crate
+version change in the release.</li>
 <li>Once the changes in step 1 and step 2 have been merged, tag the commit with
 the new version number. The version tag should start with a lowercase 'v'.
 Example: v0.4.1</li>
@@ -879,7 +881,6 @@ hour).</li>
 <li>Verify that the new release is available in the Github Container Registry.
 Use <code>docker pull ghcr.io/chainsafe/forest:&lt;version&gt;</code> and ensure that it is
 present in the <a href="https://github.com/ChainSafe/forest/pkgs/container/forest">packages</a></li>
-<li>Make sure the <code>Cargo.lock</code> change is included in the pull request.</li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="running-smoke-tests-for-forests-rpc-api"><a class="header" href="#running-smoke-tests-for-forests-rpc-api">Running Smoke Tests for Forest's RPC API</a></h1>
 <h2 id="prerequisites-2"><a class="header" href="#prerequisites-2">Prerequisites</a></h2>
