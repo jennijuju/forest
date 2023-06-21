@@ -341,6 +341,7 @@
 <a href="#341" id="341">341</a>
 <a href="#342" id="342">342</a>
 <a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
@@ -550,6 +551,7 @@
 ///
 /// # Examples
 /// ```
+/// # use forest_filecoin::doctest_private::ActorState;
 /// use cid::Cid;
 ///
 /// // Create FVM2 ActorState normally
@@ -561,7 +563,7 @@
 /// fvm_shared3::econ::TokenAmount::from_atto(42), 0, None);
 ///
 /// // Create a shim out of fvm2 state, ensure conversions are correct
-/// let state_shim = forest_filecoin::shim::state_tree::ActorState::from(fvm2_actor_state.clone());
+/// let state_shim = ActorState::from(fvm2_actor_state.clone());
 /// assert_eq!(fvm3_actor_state, *state_shim);
 /// assert_eq!(fvm2_actor_state, state_shim.into());
 /// ```

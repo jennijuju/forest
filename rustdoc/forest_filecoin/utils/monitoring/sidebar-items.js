@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["mem_tracker"],"struct":["MemStatsTracker"]};
+window.SIDEBAR_ITEMS = {"mod":["mem_tracker"]};

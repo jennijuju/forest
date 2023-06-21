@@ -73,6 +73,7 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
@@ -87,11 +88,12 @@
 ///
 /// # Examples
 /// ```
+/// # use forest_filecoin::doctest_private::ExitCode;
 /// let fvm2_success = fvm_shared::error::ExitCode::new(0);
 /// let fvm3_success = fvm_shared3::error::ExitCode::new(0);
 ///
-/// let shim_from_v2 = forest_filecoin::shim::error::ExitCode::from(fvm2_success);
-/// let shim_from_v3 = forest_filecoin::shim::error::ExitCode::from(fvm3_success);
+/// let shim_from_v2 = ExitCode::from(fvm2_success);
+/// let shim_from_v3 = ExitCode::from(fvm3_success);
 ///
 /// assert_eq!(shim_from_v2, shim_from_v3);
 /// assert_eq!(shim_from_v2, fvm2_success.into());

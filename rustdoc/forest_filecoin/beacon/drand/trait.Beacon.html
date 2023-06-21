@@ -15,7 +15,7 @@
 <span class="item-spacer"></span>    fn <a href="#tymethod.max_beacon_round_for_epoch" class="fn">max_beacon_round_for_epoch</a>(
         &amp;self,
         network_version: <a class="struct" href="../../shim/version/struct.NetworkVersion.html" title="struct forest_filecoin::shim::version::NetworkVersion">NetworkVersion</a>,
-        fil_epoch: <a class="type" href="../../shim/clock/type.ChainEpoch.html" title="type forest_filecoin::shim::clock::ChainEpoch">ChainEpoch</a>
+        fil_epoch: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>
     ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>;
 }</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Trait used as the interface to be able to retrieve bytes from a randomness
 beacon.</p>
@@ -34,6 +34,6 @@ In the future, we will cache values, and support streaming.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="tymethod.max_beacon_round_for_epoch" class="method"><a class="srclink rightside" href="../../../src/forest_filecoin/beacon/drand.rs.html#150-154">source</a><h4 class="code-header">fn <a href="#tymethod.max_beacon_round_for_epoch" class="fn">max_beacon_round_for_epoch</a>(
     &amp;self,
     network_version: <a class="struct" href="../../shim/version/struct.NetworkVersion.html" title="struct forest_filecoin::shim::version::NetworkVersion">NetworkVersion</a>,
-    fil_epoch: <a class="type" href="../../shim/clock/type.ChainEpoch.html" title="type forest_filecoin::shim::clock::ChainEpoch">ChainEpoch</a>
+    fil_epoch: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>
 ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a></h4></section></summary><div class="docblock"><p>Returns the most recent beacon round for the given Filecoin chain epoch.</p>
 </div></details></div><h2 id="implementors" class="small-section-header">Implementors<a href="#implementors" class="anchor">§</a></h2><div id="implementors-list"><section id="impl-Beacon-for-MockBeacon" class="impl"><a class="srclink rightside" href="../../../src/forest_filecoin/beacon/mock_beacon.rs.html#34-47">source</a><a href="#impl-Beacon-for-MockBeacon" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.Beacon.html" title="trait forest_filecoin::beacon::drand::Beacon">Beacon</a> for <a class="struct" href="../mock_beacon/struct.MockBeacon.html" title="struct forest_filecoin::beacon::mock_beacon::MockBeacon">MockBeacon</a></h3></section><section id="impl-Beacon-for-DrandBeacon" class="impl"><a class="srclink rightside" href="../../../src/forest_filecoin/beacon/drand.rs.html#245-311">source</a><a href="#impl-Beacon-for-DrandBeacon" class="anchor">§</a><h3 class="code-header">impl <a class="trait" href="trait.Beacon.html" title="trait forest_filecoin::beacon::drand::Beacon">Beacon</a> for <a class="struct" href="struct.DrandBeacon.html" title="struct forest_filecoin::beacon::drand::DrandBeacon">DrandBeacon</a></h3></section></div><script src="../../../implementors/forest_filecoin/beacon/drand/trait.Beacon.js" async></script></section></div></main></body></html>

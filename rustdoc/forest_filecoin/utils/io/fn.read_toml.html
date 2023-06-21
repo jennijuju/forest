@@ -2,7 +2,7 @@
     for&lt;'de&gt; S: <a class="trait" href="../encoding/de/trait.Deserialize.html" title="trait forest_filecoin::utils::encoding::de::Deserialize">Deserialize</a>&lt;'de&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Converts a TOML file represented as a string to <code>S</code></p>
 <h2 id="example"><a href="#example">Example</a></h2>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>serde::Deserialize;
-<span class="kw">use </span>forest_filecoin::utils::io::read_toml;
+<span class="kw">use </span>forest_filecoin::doctest_private::read_toml;
 
 <span class="attr">#[derive(Deserialize)]
 </span><span class="kw">struct </span>Config {

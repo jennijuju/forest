@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DelegatedConsensusError"],"mod":["composition","consensus","proposer","validation"],"struct":["DelegatedConsensus","DelegatedProposer"]};
+window.SIDEBAR_ITEMS = {"mod":["composition","consensus","proposer","validation"]};

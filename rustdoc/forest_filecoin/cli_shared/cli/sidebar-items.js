@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ConfigPath"],"fn":["chain_path","check_for_unknown_keys","cli_error_and_die","find_config_path","find_unknown_keys","to_size_string"],"mod":["client","config"],"static":["HELP_MESSAGE"],"struct":["CliOpts","Client","Config","DaemonConfig","LogConfig","LogValue","TokioConfig"]};
+window.SIDEBAR_ITEMS = {"enum":["ConfigPath"],"fn":["chain_path","check_for_unknown_keys","cli_error_and_die","find_config_path","find_unknown_keys","to_size_string"],"mod":["client","config"],"static":["HELP_MESSAGE"],"struct":["CliOpts"]};

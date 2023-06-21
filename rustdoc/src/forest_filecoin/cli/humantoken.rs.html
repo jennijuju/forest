@@ -650,6 +650,7 @@
 <a href="#650" id="650">650</a>
 <a href="#651" id="651">651</a>
 <a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! This module defines a [parser](parse()) and
@@ -773,9 +774,10 @@
 
     <span class="doccomment">/// Parse token amounts as floats with SI prefixed-units.
     /// ```
+    /// # use forest_filecoin::doctest_private::{TokenAmount, parse};
     /// fn assert_attos(input: &amp;str, attos: u64) {
-    ///     let expected = forest_filecoin::shim::econ::TokenAmount::from_atto(attos);
-    ///     let actual = forest_filecoin::cli::humantoken::parse(input).unwrap();
+    ///     let expected = TokenAmount::from_atto(attos);
+    ///     let actual = parse(input).unwrap();
     ///     assert_eq!(expected, actual);
     /// }
     /// assert_attos(&quot;1a&quot;, 1);
@@ -1059,9 +1061,9 @@
         /// - `{:.#4}`: both
         ///
         /// ```
-        /// use forest_filecoin::cli::humantoken::TokenAmountPretty as _;
+        /// # use forest_filecoin::doctest_private::{TokenAmountPretty as _, TokenAmount};
         ///
-        /// let amount = forest_filecoin::shim::econ::TokenAmount::from_nano(1500);
+        /// let amount = TokenAmount::from_nano(1500);
         ///
         /// // Defaults to precise, with SI prefix
         /// assert_eq!(&quot;1500 nanoFIL&quot;, format!(&quot;{}&quot;, amount.pretty()));

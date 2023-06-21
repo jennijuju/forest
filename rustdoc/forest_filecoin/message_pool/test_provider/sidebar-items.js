@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["create_header","mock_block","mock_block_with_epoch","mock_block_with_parents"],"struct":["TestApi","TestApiInner"]};

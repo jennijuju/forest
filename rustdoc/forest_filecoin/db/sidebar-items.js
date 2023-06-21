@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error"],"mod":["db_engine","errors","memory","metrics","parity_db","parity_db_config","rocks_config","rolling"],"struct":["MemoryDB"],"trait":["DBStatistics","Store"]};
+window.SIDEBAR_ITEMS = {"mod":["db_engine","errors","memory","metrics","parity_db","parity_db_config","rocks_config","rolling"],"trait":["DBStatistics","Store"]};

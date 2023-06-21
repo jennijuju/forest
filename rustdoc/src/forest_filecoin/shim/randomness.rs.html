@@ -70,6 +70,7 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -84,6 +85,7 @@
 ///
 /// # Examples
 /// ```
+/// # use forest_filecoin::doctest_private::Randomness;
 ///
 /// // Create FVM2 Randomness normally
 /// let fvm2_rand = fvm_shared::randomness::Randomness(vec![]);
@@ -92,7 +94,7 @@
 /// let fvm3_rand = fvm_shared3::randomness::Randomness(vec![]);
 ///
 /// // Create a shim Randomness, ensure conversions are correct
-/// let rand_shim = forest_filecoin::shim::randomness::Randomness::new(vec![]);
+/// let rand_shim = Randomness::new(vec![]);
 /// assert_eq!(fvm3_rand, *rand_shim);
 /// assert_eq!(fvm2_rand, rand_shim.into());
 /// ```

@@ -39,7 +39,7 @@ messages) If <code>peer_id</code> is <code>None</code>, requests will be sent to
 shuffled peers.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.bitswap_get" class="method"><a class="srclink rightside" href="../../../src/forest_filecoin/chain_sync/network_context.rs.html#179-216">source</a><h4 class="code-header">pub async fn <a href="#method.bitswap_get" class="fn">bitswap_get</a>&lt;TMessage: <a class="trait" href="../../utils/encoding/de/trait.DeserializeOwned.html" title="trait forest_filecoin::utils::encoding::de::DeserializeOwned">DeserializeOwned</a>&gt;(
     &amp;self,
-    epoch: <a class="type" href="../../shim/clock/type.ChainEpoch.html" title="type forest_filecoin::shim::clock::ChainEpoch">ChainEpoch</a>,
+    epoch: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.i64.html">i64</a>,
     content: Cid
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;TMessage, <a class="struct" href="https://doc.rust-lang.org/nightly/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;</h4></section></summary><div class="docblock"><p>Requests that some content with a particular <code>Cid</code> get fetched over
 <code>Bitswap</code> if it doesn’t exist in the <code>BlockStore</code>.</p>
