@@ -190,6 +190,7 @@ termios = "0.3"
 [dev-dependencies]
 assert_cmd = "2"
 cs_serde_bytes = "0.12.2"
+cs_serde_cbor = "0.12"
 libp2p = { version = "=0.51.1", features = ['tcp', 'noise', 'yamux', 'request-response', 'tokio'] }
 multiaddr = "0.17.1"
 num-bigint = { version = "0.4", features = ['quickcheck'] }
@@ -236,3 +237,8 @@ mimalloc = ["dep:mimalloc"]
 # Consensus
 fil_cns = []
 deleg_cns = []
+
+[[example]]
+name = "broken"
+test = true
+crate-type = ["staticlib"]

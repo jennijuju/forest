@@ -1637,6 +1637,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cs_serde_cbor"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cb7b77425566bdb3932243a292a4b072e1e34fb93aba95926f8d4a3b6ce542c5"
+dependencies = [
+ "half",
+ "serde",
+]
+
+[[package]]
 name = "ctor"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2792,6 +2802,7 @@ dependencies = [
  "crossbeam",
  "crossbeam-channel",
  "cs_serde_bytes",
+ "cs_serde_cbor",
  "daemonize-me",
  "data-encoding",
  "derive_builder 0.12.0",
@@ -3650,6 +3661,12 @@ dependencies = [
  "tokio-util",
  "tracing",
 ]
+
+[[package]]
+name = "half"
+version = "1.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eabb4a44450da02c90444cf74558da904edde8fb4e9035a9a6a4e15445af0bd7"
 
 [[package]]
 name = "hashbrown"
