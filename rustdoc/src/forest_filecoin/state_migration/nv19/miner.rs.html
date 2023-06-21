@@ -75,7 +75,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         store: BS,
         input: ActorMigrationInput,
-    ) -&gt; anyhow::Result&lt;ActorMigrationOutput&gt; {
+    ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt; {
         <span class="kw">let </span>in_state: MinerStateOld = store
             .get_cbor(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Miner actor: could not read v10 state&quot;</span>))<span class="question-mark">?</span>;
@@ -84,10 +84,10 @@
 
         <span class="kw">let </span>new_head = store.put_cbor_default(<span class="kw-2">&amp;</span>out_state)<span class="question-mark">?</span>;
 
-        <span class="prelude-val">Ok</span>(ActorMigrationOutput {
+        <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ActorMigrationOutput {
             new_code_cid: <span class="self">self</span>.<span class="number">0</span>,
             new_head,
-        })
+        }))
     }
 }
 </code></pre></div></section></main></body></html>

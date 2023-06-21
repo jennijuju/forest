@@ -105,16 +105,16 @@
                     <span class="kw-2">&amp;</span><span class="self">self</span>,
                     store: BS,
                     _input: ActorMigrationInput,
-                ) -&gt; anyhow::Result&lt;ActorMigrationOutput&gt; {
+                ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt; {
                     <span class="kw">let </span>state = <span class="kw">super</span>::SystemStateNew {
                         builtin_actors: <span class="self">self</span>.new_builtin_actors_cid,
                     };
                     <span class="kw">let </span>new_head = store.put_cbor_default(<span class="kw-2">&amp;</span>state)<span class="question-mark">?</span>;
 
-                    <span class="prelude-val">Ok</span>(ActorMigrationOutput {
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ActorMigrationOutput {
                         new_code_cid: <span class="self">self</span>.new_code_cid,
                         new_head,
-                    })
+                    }))
                 }
             }
         }
