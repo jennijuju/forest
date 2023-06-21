@@ -860,12 +860,6 @@
 <a href="#860" id="860">860</a>
 <a href="#861" id="861">861</a>
 <a href="#862" id="862">862</a>
-<a href="#863" id="863">863</a>
-<a href="#864" id="864">864</a>
-<a href="#865" id="865">865</a>
-<a href="#866" id="866">866</a>
-<a href="#867" id="867">867</a>
-<a href="#868" id="868">868</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -902,8 +896,7 @@
     noise, ping,
     request_response::{<span class="self">self</span>, RequestId, ResponseChannel},
     swarm::{SwarmBuilder, SwarmEvent},
-    yamux::YamuxConfig,
-    PeerId, Swarm, Transport,
+    yamux, PeerId, Swarm, Transport,
 };
 <span class="kw">use </span>log::{debug, error, info, trace, warn};
 <span class="kw">use </span>tokio_stream::wrappers::IntervalStream;
@@ -1698,17 +1691,12 @@
     <span class="kw">let </span>transport =
         libp2p::websocket::WsConfig::new(build_dns_tcp()<span class="question-mark">?</span>).or_transport(build_dns_tcp()<span class="question-mark">?</span>);
 
-    <span class="kw">let </span>auth_config = {
-        <span class="kw">let </span>dh_keys = noise::Keypair::&lt;noise::X25519Spec&gt;::new()
-            .into_authentic(<span class="kw-2">&amp;</span>local_key)
-            .context(<span class="string">&quot;Noise key generation failed&quot;</span>)<span class="question-mark">?</span>;
-        noise::NoiseConfig::xx(dh_keys).into_authenticated()
-    };
+    <span class="kw">let </span>auth_config = noise::Config::new(<span class="kw-2">&amp;</span>local_key).context(<span class="string">&quot;Noise key generation failed&quot;</span>)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(transport
         .upgrade(core::upgrade::Version::V1)
         .authenticate(auth_config)
-        .multiplex(YamuxConfig::default())
+        .multiplex(yamux::Config::default())
         .timeout(Duration::from_secs(<span class="number">20</span>))
         .boxed())
 }

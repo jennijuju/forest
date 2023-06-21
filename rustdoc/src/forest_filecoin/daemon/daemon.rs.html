@@ -926,9 +926,9 @@
             </span><span class="kw">let </span>file = write_to_file(
                 <span class="kw-2">&amp;</span>gen_keypair
                     .clone()
-                    .into_ed25519()
-                    .ok_or(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;couldn&#39;t convert keypair to ed25519&quot;</span>))<span class="question-mark">?
-                    </span>.encode(),
+                    .try_into_ed25519()
+                    .context(<span class="string">&quot;couldn&#39;t convert keypair to ed25519&quot;</span>)<span class="question-mark">?
+                    </span>.to_bytes(),
                 <span class="kw-2">&amp;</span>path,
                 <span class="string">&quot;keypair&quot;</span>,
             )<span class="question-mark">?</span>;
