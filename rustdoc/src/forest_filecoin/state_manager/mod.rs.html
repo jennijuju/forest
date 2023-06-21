@@ -1304,10 +1304,6 @@
 <a href="#1304" id="1304">1304</a>
 <a href="#1305" id="1305">1305</a>
 <a href="#1306" id="1306">1306</a>
-<a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1432,8 +1428,8 @@
         });
         <span class="kw">match </span>status {
             Status::Done(x) =&gt; {
-                <span class="kw">crate</span>::metrics::metrics::LRU_CACHE_HIT
-                    .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::metrics::values::STATE_MANAGER_TIPSET])
+                <span class="kw">crate</span>::metrics::LRU_CACHE_HIT
+                    .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::values::STATE_MANAGER_TIPSET])
                     .inc();
                 <span class="prelude-val">Ok</span>(x)
             }
@@ -1442,20 +1438,16 @@
                 <span class="kw">match </span><span class="self">self</span>.get(key) {
                     <span class="prelude-val">Some</span>(v) =&gt; {
                         <span class="comment">// While locking someone else computed the pending task
-                        </span><span class="kw">crate</span>::metrics::metrics::LRU_CACHE_HIT
-                            .with_label_values(<span class="kw-2">&amp;</span>[
-                                <span class="kw">crate</span>::metrics::metrics::values::STATE_MANAGER_TIPSET,
-                            ])
+                        </span><span class="kw">crate</span>::metrics::LRU_CACHE_HIT
+                            .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::values::STATE_MANAGER_TIPSET])
                             .inc();
 
                         <span class="prelude-val">Ok</span>(v)
                     }
                     <span class="prelude-val">None </span>=&gt; {
                         <span class="comment">// Entry does not have state computed yet, compute value and fill the cache
-                        </span><span class="kw">crate</span>::metrics::metrics::LRU_CACHE_MISS
-                            .with_label_values(<span class="kw-2">&amp;</span>[
-                                <span class="kw">crate</span>::metrics::metrics::values::STATE_MANAGER_TIPSET,
-                            ])
+                        </span><span class="kw">crate</span>::metrics::LRU_CACHE_MISS
+                            .with_label_values(<span class="kw-2">&amp;</span>[<span class="kw">crate</span>::metrics::values::STATE_MANAGER_TIPSET])
                             .inc();
 
                         <span class="kw">let </span>cid_pair = compute().<span class="kw">await</span><span class="question-mark">?</span>;

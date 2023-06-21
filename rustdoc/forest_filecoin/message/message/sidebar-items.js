@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["valid_for_block_inclusion"]};

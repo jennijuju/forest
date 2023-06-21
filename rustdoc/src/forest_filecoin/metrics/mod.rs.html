@@ -90,19 +90,61 @@
 <a href="#90" id="90">90</a>
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">pub mod </span>db;
-<span class="kw">pub mod </span>metrics;
-
-<span class="kw">use </span>std::{net::TcpListener, path::PathBuf};
 
 <span class="kw">use </span><span class="kw">crate</span>::db::DBStatistics;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>axum::{http::StatusCode, response::IntoResponse, routing::get, Router};
+<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>log::warn;
+<span class="kw">use </span>prometheus::core::{AtomicU64, GenericCounterVec, Opts};
 <span class="kw">use </span>prometheus::{Encoder, TextEncoder};
+<span class="kw">use </span>std::{net::TcpListener, path::PathBuf};
 <span class="kw">use </span>tokio::sync::RwLock;
 
 <span class="macro">lazy_static::lazy_static! </span>{
@@ -181,5 +223,47 @@
         [(<span class="string">&quot;content-type&quot;</span>, <span class="string">&quot;text/plain; charset=utf-8&quot;</span>)],
         metrics,
     )
+}
+
+<span class="macro">lazy_static! </span>{
+    <span class="kw">pub static </span><span class="kw-2">ref </span>LRU_CACHE_HIT: Box&lt;GenericCounterVec&lt;AtomicU64&gt;&gt; = {
+        <span class="kw">let </span>lru_cache_hit = Box::new(
+            GenericCounterVec::&lt;AtomicU64&gt;::new(
+                Opts::new(<span class="string">&quot;lru_cache_hit&quot;</span>, <span class="string">&quot;Stats of lru cache hit&quot;</span>),
+                <span class="kw-2">&amp;</span>[labels::KIND],
+            )
+            .expect(<span class="string">&quot;Defining the lru_cache_hit metric must succeed&quot;</span>),
+        );
+        prometheus::default_registry()
+            .register(lru_cache_hit.clone())
+            .expect(<span class="string">&quot;Registering the lru_cache_hit metric with the metrics registry must succeed&quot;</span>);
+        lru_cache_hit
+    };
+    <span class="kw">pub static </span><span class="kw-2">ref </span>LRU_CACHE_MISS: Box&lt;GenericCounterVec&lt;AtomicU64&gt;&gt; = {
+        <span class="kw">let </span>lru_cache_miss = Box::new(
+            GenericCounterVec::&lt;AtomicU64&gt;::new(
+                Opts::new(<span class="string">&quot;lru_cache_miss&quot;</span>, <span class="string">&quot;Stats of lru cache miss&quot;</span>),
+                <span class="kw-2">&amp;</span>[labels::KIND],
+            )
+            .expect(<span class="string">&quot;Defining the lru_cache_miss metric must succeed&quot;</span>),
+        );
+        prometheus::default_registry()
+            .register(lru_cache_miss.clone())
+            .expect(<span class="string">&quot;Registering the lru_cache_miss metric with the metrics registry must succeed&quot;</span>);
+        lru_cache_miss
+    };
+}
+
+<span class="kw">pub mod </span>labels {
+    <span class="kw">pub const </span>KIND: <span class="kw-2">&amp;</span>str = <span class="string">&quot;kind&quot;</span>;
+}
+
+<span class="kw">pub mod </span>values {
+    <span class="doccomment">/// `TipsetCache`.
+    </span><span class="kw">pub const </span>TIPSET: <span class="kw-2">&amp;</span>str = <span class="string">&quot;tipset&quot;</span>;
+    <span class="doccomment">/// Cache of look-back entries to speed up lookup in `ChainIndex`.
+    </span><span class="kw">pub const </span>SKIP: <span class="kw-2">&amp;</span>str = <span class="string">&quot;skip&quot;</span>;
+    <span class="doccomment">/// tipset cache in state manager
+    </span><span class="kw">pub const </span>STATE_MANAGER_TIPSET: <span class="kw-2">&amp;</span>str = <span class="string">&quot;sm_tipset&quot;</span>;
 }
 </code></pre></div></section></main></body></html>

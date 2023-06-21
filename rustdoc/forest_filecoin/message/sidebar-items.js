@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["chain_message","message","signed_message"],"trait":["Message"]};
+window.SIDEBAR_ITEMS = {"fn":["valid_for_block_inclusion"],"mod":["chain_message","signed_message"],"trait":["Message"]};
