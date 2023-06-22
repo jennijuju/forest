@@ -35,8 +35,6 @@
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
 <a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -49,8 +47,7 @@
     </span>InvalidBulkLen,
     <span class="attr">#[error(<span class="string">&quot;Cannot use unopened database&quot;</span>)]
     </span>Unopened,
-    <span class="attr">#[cfg(any(feature = <span class="string">&quot;rocksdb&quot;</span>, feature = <span class="string">&quot;paritydb&quot;</span>))]
-    #[error(transparent)]
+    <span class="attr">#[error(transparent)]
     </span>Database(<span class="attr">#[from] </span><span class="kw">crate</span>::db::db_engine::DbError),
     <span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
     </span>Other(String),
@@ -63,8 +60,7 @@
         <span class="kw">match </span>(<span class="self">self</span>, other) {
             (<span class="kw-2">&amp;</span>InvalidBulkLen, <span class="kw-2">&amp;</span>InvalidBulkLen) =&gt; <span class="bool-val">true</span>,
             (<span class="kw-2">&amp;</span>Unopened, <span class="kw-2">&amp;</span>Unopened) =&gt; <span class="bool-val">true</span>,
-            <span class="attr">#[cfg(any(feature = <span class="string">&quot;rocksdb&quot;</span>, feature = <span class="string">&quot;paritydb&quot;</span>))]
-            </span>(<span class="kw-2">&amp;</span>Database(<span class="kw">_</span>), <span class="kw-2">&amp;</span>Database(<span class="kw">_</span>)) =&gt; <span class="bool-val">true</span>,
+            (<span class="kw-2">&amp;</span>Database(<span class="kw">_</span>), <span class="kw-2">&amp;</span>Database(<span class="kw">_</span>)) =&gt; <span class="bool-val">true</span>,
             (Other(a), Other(b)) =&gt; a == b,
             <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
         }

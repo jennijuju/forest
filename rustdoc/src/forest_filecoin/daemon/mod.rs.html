@@ -812,12 +812,6 @@
 <a href="#812" id="812">812</a>
 <a href="#813" id="813">813</a>
 <a href="#814" id="814">814</a>
-<a href="#815" id="815">815</a>
-<a href="#816" id="816">816</a>
-<a href="#817" id="817">817</a>
-<a href="#818" id="818">818</a>
-<a href="#819" id="819">819</a>
-<a href="#820" id="820">820</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1260,12 +1254,6 @@
             validate_chain(<span class="kw-2">&amp;</span>state_manager, validate_height).<span class="kw">await</span><span class="question-mark">?</span>;
         }
     }
-
-    <span class="comment">// For convenience, flush the database after we&#39;ve potentially loaded a new
-    // snapshot. This ensures the snapshot won&#39;t have to be re-imported if
-    // Forest is interrupted. As of writing, flushing only affects RocksDB and
-    // is a no-op with ParityDB.
-    </span>state_manager.blockstore().flush()<span class="question-mark">?</span>;
 
     <span class="comment">// Halt
     </span><span class="kw">if </span>opts.halt_after_import {
