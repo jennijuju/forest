@@ -812,6 +812,10 @@
 <a href="#812" id="812">812</a>
 <a href="#813" id="813">813</a>
 <a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -842,7 +846,11 @@
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, MpoolConfig, MpoolRpcProvider};
 <span class="kw">use </span><span class="kw">crate</span>::rpc::start_rpc;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::RPCState;
-<span class="kw">use </span><span class="kw">crate</span>::shim::{clock::ChainEpoch, version::NetworkVersion};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{
+    address::{CurrentNetwork, Network},
+    clock::ChainEpoch,
+    version::NetworkVersion,
+};
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
     io::write_to_file, monitoring::MemStatsTracker,
@@ -949,7 +957,7 @@
     shutdown_send: mpsc::Sender&lt;()&gt;,
 ) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">if </span>config.chain.is_testnet() {
-        <span class="kw">crate</span>::shim::address::set_current_network(<span class="kw">crate</span>::shim::address::Network::Testnet);
+        CurrentNetwork::set_global(Network::Testnet);
     }
 
     <span class="macro">info!</span>(

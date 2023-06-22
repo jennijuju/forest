@@ -72,6 +72,7 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -79,9 +80,10 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::json::message::json::MessageJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{mpool_push_message, wallet_default_address};
+<span class="kw">use </span><span class="kw">crate</span>::shim::address::{Address, StrictAddress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
-<span class="kw">use </span>fvm_shared::{address::Address, message::Message, METHOD_SEND};
+<span class="kw">use </span>fvm_shared3::{message::Message, METHOD_SEND};
 <span class="kw">use </span>num::Zero <span class="kw">as _</span>;
 
 <span class="kw">use super</span>::{handle_rpc_err, Config};
@@ -92,8 +94,8 @@
     <span class="doccomment">/// optionally specify the account to send funds from (otherwise the default
     /// one will be used)
     </span><span class="attr">#[arg(long)]
-    </span>from: <span class="prelude-ty">Option</span>&lt;Address&gt;,
-    target_address: Address,
+    </span>from: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    target_address: String,
     <span class="attr">#[arg(value_parser = humantoken::parse)]
     </span>amount: TokenAmount,
     <span class="attr">#[arg(long, value_parser = humantoken::parse, default_value_t = TokenAmount::zero())]
@@ -107,8 +109,8 @@
 
 <span class="kw">impl </span>SendCommand {
     <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>from: Address = <span class="kw">if let </span><span class="prelude-val">Some</span>(from) = <span class="self">self</span>.from {
-            from
+        <span class="kw">let </span>from: Address = <span class="kw">if let </span><span class="prelude-val">Some</span>(from) = <span class="kw-2">&amp;</span><span class="self">self</span>.from {
+            StrictAddress::from_str(from)<span class="question-mark">?</span>.into()
         } <span class="kw">else </span>{
             Address::from_str(
                 <span class="kw-2">&amp;</span>wallet_default_address((), <span class="kw-2">&amp;</span>config.client.rpc_token)
@@ -123,11 +125,11 @@
         </span>};
 
         <span class="kw">let </span>message = Message {
-            from,
-            to: <span class="self">self</span>.target_address,
+            from: from.into(),
+            to: StrictAddress::from_str(<span class="kw-2">&amp;</span><span class="self">self</span>.target_address)<span class="question-mark">?</span>.into(),
             value: <span class="self">self</span>.amount.clone().into(),
             method_num: METHOD_SEND,
-            gas_limit: <span class="self">self</span>.gas_limit,
+            gas_limit: <span class="self">self</span>.gas_limit <span class="kw">as </span>u64,
             gas_fee_cap: <span class="self">self</span>.gas_feecap.clone().into(),
             gas_premium: <span class="self">self</span>.gas_premium.clone().into(),
             <span class="comment">// JANK(aatifsyed): Why are we using a testing build of fvm_shared?

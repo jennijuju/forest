@@ -292,7 +292,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::key_management::json::KeyInfoJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::wallet_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
-    address::{Address, Protocol},
+    address::{Address, Protocol, StrictAddress},
     crypto::{Signature, SignatureType},
     econ::TokenAmount,
 };
@@ -502,8 +502,8 @@
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::SetDefault { key } =&gt; {
-                <span class="kw">let </span>key =
-                    Address::from_str(key).with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Invalid address: {key}&quot;</span>))<span class="question-mark">?</span>;
+                <span class="kw">let </span>StrictAddress(key) = StrictAddress::from_str(key)
+                    .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Invalid address: {key}&quot;</span>))<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>key_json = AddressJson(key);
                 wallet_set_default((key_json,), <span class="kw-2">&amp;</span>config.client.rpc_token)
@@ -512,7 +512,7 @@
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Sign { address, message } =&gt; {
-                <span class="kw">let </span>address = Address::from_str(address)
+                <span class="kw">let </span>StrictAddress(address) = StrictAddress::from_str(address)
                     .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Invalid address: {address}&quot;</span>))<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>message = hex::decode(message).context(<span class="string">&quot;Message has to be a hex string&quot;</span>)<span class="question-mark">?</span>;
@@ -534,7 +534,7 @@
             } =&gt; {
                 <span class="kw">let </span>sig_bytes =
                     hex::decode(signature).context(<span class="string">&quot;Signature has to be a hex string&quot;</span>)<span class="question-mark">?</span>;
-                <span class="kw">let </span>address = Address::from_str(address)
+                <span class="kw">let </span>StrictAddress(address) = StrictAddress::from_str(address)
                     .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Invalid address: {address}&quot;</span>))<span class="question-mark">?</span>;
                 <span class="kw">let </span>signature = <span class="kw">match </span>address.protocol() {
                     Protocol::Secp256k1 =&gt; Signature::new_secp256k1(sig_bytes),
