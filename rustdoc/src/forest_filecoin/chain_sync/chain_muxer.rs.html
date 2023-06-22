@@ -983,6 +983,8 @@
 <a href="#983" id="983">983</a>
 <a href="#984" id="984">984</a>
 <a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1002,7 +1004,7 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, Provider};
-<span class="kw">use </span><span class="kw">crate</span>::shim::{clock::EPOCHS_IN_DAY, message::Message};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{clock::SECONDS_IN_DAY, message::Message};
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::{
@@ -1457,7 +1459,9 @@
             }
         };
 
-        <span class="kw">if </span>tipset.epoch() + EPOCHS_IN_DAY &lt; chain_store.heaviest_tipset().epoch() {
+        <span class="kw">if </span>tipset.epoch() + (SECONDS_IN_DAY / block_delay <span class="kw">as </span>i64)
+            &lt; chain_store.heaviest_tipset().epoch()
+        {
             <span class="macro">debug!</span>(
                 <span class="string">&quot;Skip processing tipset at epoch {} from {source} that is too old&quot;</span>,
                 tipset.epoch()

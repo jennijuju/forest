@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_BOOTSTRAP","DEFAULT_GENESIS","GENESIS_CID","LIGHTNING_ROLLOVER_PERIOD","SMOKE_HEIGHT"],"fn":["__stability","__static_ref_initialize"],"static":["DRAND_SCHEDULE"],"struct":["HEIGHT_INFOS"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_BOOTSTRAP","DEFAULT_GENESIS","ETH_CHAIN_ID","GENESIS_CID","LIGHTNING_ROLLOVER_PERIOD","SMOKE_HEIGHT"],"fn":["__stability","__static_ref_initialize"],"static":["DRAND_SCHEDULE"],"struct":["HEIGHT_INFOS"]};

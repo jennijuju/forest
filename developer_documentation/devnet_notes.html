@@ -153,6 +153,7 @@ export LOTUS_MINER_PATH=~/.lotus-miner-local-net
 export LOTUS_SKIP_GENESIS_CHECK=_yes_
 export CGO_CFLAGS_ALLOW=&quot;-D__BLST_PORTABLE__&quot;
 export CGO_CFLAGS=&quot;-D__BLST_PORTABLE__&quot;
+# For MacOS: LIBRARY_PATH=/opt/homebrew/Cellar/hwloc/2.9.1/lib
 make 2k
 ./lotus fetch-params 2048
 ./lotus-seed pre-seal --sector-size 2KiB --num-sectors 2

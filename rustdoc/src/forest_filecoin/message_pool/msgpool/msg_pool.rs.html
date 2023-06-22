@@ -726,7 +726,7 @@
     head_change, metrics,
     msgpool::{
         recover_sig, republish_pending_messages, select_messages_for_block,
-        BASE_FEE_LOWER_BOUND_FACTOR_CONSERVATIVE, PROPAGATION_DELAY_SECS, RBF_DENOM, RBF_NUM,
+        BASE_FEE_LOWER_BOUND_FACTOR_CONSERVATIVE, RBF_DENOM, RBF_NUM,
     },
     provider::Provider,
     utils::get_base_fee_lower_bound,
@@ -952,7 +952,7 @@
         <span class="kw">let </span>local_addrs = mp.local_addrs.clone();
         <span class="kw">let </span>network_sender = Arc::new(mp.network_sender.clone());
         <span class="kw">let </span>network_name = mp.network_name.clone();
-        <span class="kw">let </span>republish_interval = <span class="number">10 </span>* block_delay + PROPAGATION_DELAY_SECS;
+        <span class="kw">let </span>republish_interval = <span class="number">10 </span>* block_delay + chain_config.propagation_delay_secs;
         <span class="comment">// Reacts to republishing requests
         </span>services.spawn(<span class="kw">async move </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>repub_trigger_rx = repub_trigger_rx.stream();

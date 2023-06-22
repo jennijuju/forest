@@ -1304,6 +1304,15 @@
 <a href="#1304" id="1304">1304</a>
 <a href="#1305" id="1305">1305</a>
 <a href="#1306" id="1306">1306</a>
+<a href="#1307" id="1307">1307</a>
+<a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
+<a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1567,22 +1576,18 @@
     <span class="comment">// This function used to do this: Returns the network name from the init actor
     // state.
     </span><span class="doccomment">/// Returns the internal, protocol-level network name.
+    </span><span class="comment">// TODO: Once we are able to query the init actor state to obtain the network name from the
+    // genesis file, this should be removed. It is work in progress here:
+    // https://github.com/ChainSafe/forest/pull/2913
     </span><span class="kw">pub fn </span>get_network_name(<span class="kw-2">&amp;</span><span class="self">self</span>, _st: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
         <span class="kw">let </span>name = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.chain_config.network {
             <span class="kw">crate</span>::networks::NetworkChain::Mainnet =&gt; <span class="string">&quot;testnetnet&quot;</span>,
             <span class="kw">crate</span>::networks::NetworkChain::Calibnet =&gt; <span class="string">&quot;calibrationnet&quot;</span>,
             <span class="kw">crate</span>::networks::NetworkChain::Devnet(name) =&gt; name,
         }
-        .to_owned();
-
+        .to_string();
         <span class="prelude-val">Ok</span>(name)
-        <span class="comment">// let init_act = self
-        //     .get_actor(actor::init::ADDRESS, *st)?
-        //     .ok_or_else(|| Error::State(&quot;Init actor address could not be
-        // resolved&quot;.to_string()))?; let state =
-        // init::State::load(self.blockstore(), &amp;init_act)?;
-        // Ok(state.into_network_name())
-    </span>}
+    }
 
     <span class="doccomment">/// Returns true if miner has been slashed or is considered invalid.
     </span><span class="kw">pub fn </span>is_miner_slashed(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address, state_cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;bool, Error&gt; {
@@ -1951,10 +1956,9 @@
 
         <span class="comment">// More null blocks than lookback
         </span><span class="kw">if </span>lbr &gt;= tipset.epoch() {
-            <span class="comment">// This is not allowed to happen after network V3.
-            </span><span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(
-                <span class="string">&quot;Failed to find look-back tipset: Unexpected number of null blocks.&quot;</span>.to_string(),
-            ));
+            <span class="kw">let </span>no_func = <span class="prelude-val">None</span>::&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;&gt;;
+            <span class="kw">let </span>(state, <span class="kw">_</span>) = <span class="self">self</span>.compute_tipset_state_blocking(tipset.clone(), no_func)<span class="question-mark">?</span>;
+            <span class="kw">return </span><span class="prelude-val">Ok</span>((tipset, state));
         }
 
         <span class="kw">let </span>next_ts = <span class="self">self
@@ -2073,6 +2077,20 @@
     <span class="kw">where
         </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
     {
+        <span class="comment">// special case for genesis block
+        </span><span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
+            <span class="comment">// NB: This is here because the process that executes blocks requires that the
+            // block miner reference a valid miner in the state tree. Unless we create some
+            // magical genesis miner, this won&#39;t work properly, so we short circuit here
+            // This avoids the question of &#39;who gets paid the genesis block reward&#39;
+            </span><span class="kw">let </span>message_receipts = tipset
+                .blocks()
+                .first()
+                .ok_or_else(|| Error::Other(<span class="string">&quot;Could not get message receipts&quot;</span>.to_string()))<span class="question-mark">?</span>;
+
+            <span class="kw">return </span><span class="prelude-val">Ok</span>((<span class="kw-2">*</span>tipset.parent_state(), <span class="kw-2">*</span>message_receipts.message_receipts()));
+        }
+
         <span class="kw">let </span>block_headers = tipset.blocks();
         <span class="kw">let </span>first_block = block_headers
             .first()

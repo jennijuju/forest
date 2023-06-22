@@ -62,6 +62,8 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -95,6 +97,8 @@
                 <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
                     <span class="kw">if </span>name == <span class="string">&quot;calibnet&quot; </span>{
                         config.chain = Arc::new(ChainConfig::calibnet());
+                    } <span class="kw">else if </span>name == <span class="string">&quot;devnet&quot; </span>{
+                        config.chain = Arc::new(ChainConfig::devnet());
                     }
                 }
             }

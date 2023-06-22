@@ -221,6 +221,7 @@
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
 <a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -364,7 +365,8 @@
     <span class="kw">if </span>!skip_load {
         <span class="kw">let </span>gb = sm.chain_store().tipset_by_height(<span class="number">0</span>, ts.clone(), <span class="bool-val">true</span>)<span class="question-mark">?</span>;
         sm.chain_store().set_genesis(<span class="kw-2">&amp;</span>gb.blocks()[<span class="number">0</span>])<span class="question-mark">?</span>;
-        <span class="kw">if </span>!<span class="macro">matches!</span>(<span class="kw-2">&amp;</span>sm.chain_config().genesis_cid, <span class="prelude-val">Some</span>(expected_cid) <span class="kw">if </span>expected_cid ==  <span class="kw-2">&amp;</span>gb.blocks()[<span class="number">0</span>].cid().to_string())
+        <span class="kw">if </span>sm.chain_config().genesis_cid.is_some()
+            &amp;&amp; !<span class="macro">matches!</span>(<span class="kw-2">&amp;</span>sm.chain_config().genesis_cid, <span class="prelude-val">Some</span>(expected_cid) <span class="kw">if </span>expected_cid ==  <span class="kw-2">&amp;</span>gb.blocks()[<span class="number">0</span>].cid().to_string())
         {
             <span class="macro">bail!</span>(
                 <span class="string">&quot;Snapshot incompatible with {}. Consider specifying the network with `--chain` flag or \
