@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Local GH Actions</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../basic_usage.html"><strong aria-hidden="true">1.1.</strong> Basic Usage</a></li><li class="chapter-item expanded "><a href="../cli.html"><strong aria-hidden="true">1.2.</strong> Command-line interface</a></li><li class="chapter-item expanded "><a href="../configuration.html"><strong aria-hidden="true">1.3.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../docker.html"><strong aria-hidden="true">1.4.</strong> Docker</a></li><li class="chapter-item expanded "><a href="../js_console.html"><strong aria-hidden="true">1.5.</strong> JavaScript Console</a></li><li class="chapter-item expanded "><a href="../trouble_shooting.html"><strong aria-hidden="true">1.6.</strong> Troubleshooting</a></li><li class="chapter-item expanded "><a href="../glossary.html"><strong aria-hidden="true">1.7.</strong> Glossary</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Developer documentation</li><li class="chapter-item expanded "><a href="../developer_documentation/introduction.html"><strong aria-hidden="true">2.</strong> Developer documentation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../developer_documentation/application_architecture.html"><strong aria-hidden="true">2.1.</strong> Application architecture</a></li><li class="chapter-item expanded "><a href="../developer_documentation/contributing.html"><strong aria-hidden="true">2.2.</strong> Contributing</a></li><li class="chapter-item expanded "><a href="../developer_documentation/local_actions.html" class="active"><strong aria-hidden="true">2.3.</strong> Local GH Actions</a></li><li class="chapter-item expanded "><a href="../developer_documentation/mainnet_compatibility.html"><strong aria-hidden="true">2.4.</strong> Mainnet compatibility</a></li><li class="chapter-item expanded "><a href="../developer_documentation/memory-analysis.html"><strong aria-hidden="true">2.5.</strong> Memory analysis</a></li><li class="chapter-item expanded "><a href="../developer_documentation/release_checklist.html"><strong aria-hidden="true">2.6.</strong> Release checklist</a></li><li class="chapter-item expanded "><a href="../developer_documentation/smoke_testing.html"><strong aria-hidden="true">2.7.</strong> Smoke testing</a></li><li class="chapter-item expanded "><a href="../developer_documentation/state_migration.html"><strong aria-hidden="true">2.8.</strong> State migration</a></li><li class="chapter-item expanded "><a href="../developer_documentation/state_migration_guide.html"><strong aria-hidden="true">2.9.</strong> State migration guide</a></li><li class="chapter-item expanded "><a href="../developer_documentation/state_migration_spike.html"><strong aria-hidden="true">2.10.</strong> State migration spike NV17-NV18</a></li><li class="chapter-item expanded "><a href="../developer_documentation/test_plan.html"><strong aria-hidden="true">2.11.</strong> Test plan</a></li><li class="chapter-item expanded "><a href="../developer_documentation/devnet_notes.html"><strong aria-hidden="true">2.12.</strong> Devnet Notes</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title"></h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p>There are often cases where the jobs fail at the CI and not locally, which tends
+to be cumbersome to debug. Also, when developing an integration test, it is
+useful to get immediate feedback instead of relying on Github Actions (which, on
+a side note, are sometimes down).</p>
+<p>There is a <a href="https://github.com/nektos/act">tool called Act</a> that allows you to
+run Github Actions locally. Given the complexity of Forest's CI, it is difficult
+to run the whole CI locally, but it is feasible to run a single or set of jobs.
+This is useful to debug a failing job, or to run an integration test locally.
+Note that while Github Actions are run in fully virtualized environments, Act
+runs them in Docker containers. This means that the environment is not exactly
+the same, but it is close enough to be useful. In practice, we need some
+<em>tricks</em> to make it work.</p>
+<h1 id="installation"><a class="header" href="#installation">Installation</a></h1>
+<p>To install Act, follow the instructions specific to your OS in the
+<a href="https://github.com/nektos/act#installation-through-package-managers">Act repository</a>.</p>
+<p>On the first run, <code>act</code> will ask you to pick the image size. Either choose the
+biggest one (it's ~60GiB unzipped) or the medium one. The large one should have
+fewer issues with the missing software, but it will take longer to download and
+is based on an older Ubuntu base. You can always edit this later in
+<code>$HOME/.actrc</code>.</p>
+<h1 id="challenges"><a class="header" href="#challenges">Challenges</a></h1>
+<p>Let's consider running an integration test. At the time of writing, the usual
+workflow looks like this:</p>
+<ol>
+<li>Build Forest daemon and CLI in one job.</li>
+<li>Upload the artifacts to GH.</li>
+<li>In another job, download the artifacts to the test runner.</li>
+<li>Run the integration test.</li>
+</ol>
+<p>There are some hurdles to overcome.</p>
+<h2 id="sccache"><a class="header" href="#sccache">sccache</a></h2>
+<h3 id="disabling-sccache"><a class="header" href="#disabling-sccache">Disabling sccache</a></h3>
+<p>We have it everywhere where compilation is involved. It is not installed in the
+Act container, so we need to comment all such jobs out. It's not really
+mandatory if the <code>continue-on-error</code> is set to <code>true</code> but it does unclutter the
+logs.</p>
+<pre><code class="language-yaml">- name: Setup sccache
+  uses: mozilla-actions/sccache-action@v0.0.3
+  timeout-minutes: ${{ fromJSON(env.CACHE_TIMEOUT_MINUTES) }}
+  continue-on-error: true
+</code></pre>
+<p>A mandatory step is to disable the <code>sccache</code> in the compiler variables. Comments
+those overrides out.</p>
+<pre><code class="language-yaml">RUSTC_WRAPPER: &quot;sccache&quot;
+CC: &quot;sccache clang&quot;
+CXX: &quot;sccache clang++&quot;
+</code></pre>
+<h3 id="installing-sccache"><a class="header" href="#installing-sccache">Installing sccache</a></h3>
+<p>Alternatively, if debugging <code>sccache</code> itself you can set it up yourself. Create
+your own Space in Digital Ocean. Create a <code>.env</code> file and add the following
+variables there:</p>
+<pre><code>SCCACHE_BUCKET=&lt;my-personal-bucket&gt; SCCACHE_REGION=auto
+SCCACHE_ENDPOINT=&lt;my-personal-endpoint&gt;
+</code></pre>
+<p>Grab your Digital Ocean access token and add it to a secrets file. Make sure you
+don't commit it to the project!</p>
+<pre><code>AWS_ACCESS_KEY_ID=&lt;my-personal-access-key-id&gt;
+AWS_SECRET_ACCESS_KEY=&lt;my-personal-secret-access-key&gt;
+</code></pre>
+<p>You will be able to use those files with the <code>--env-file</code> and <code>--secret-file</code>
+flags.</p>
+<p>On top of that, you will need to manually install <code>sccache</code> in the container.
+Grab the URL of the latest release from the
+<a href="https://github.com/mozilla/sccache/releases">sccache repository</a> and put it as
+a step in the job that needs it.</p>
+<pre><code class="language-shell">wget https://github.com/mozilla/sccache/releases/download/v0.5.3/sccache-v0.5.3-x86_64-unknown-linux-musl.tar.gz
+tar -zxf sccache-v0.5.3-x86_64-unknown-linux-musl.tar.gz
+sudo mv sccache-v0.5.3-x86_64-unknown-linux-musl/sccache /usr/bin/ &amp;&amp; sudo chmod +x /usr/bin/sccache
+</code></pre>
+<h2 id="uploadingdownloading-artifacts"><a class="header" href="#uploadingdownloading-artifacts">Uploading/downloading artifacts</a></h2>
+<p>If your job uses one of those actions, you can support it with the
+<code>--artifact-server-path &lt;temporary-path</code>. Make sure the directory is created
+before running the job.</p>
+<h2 id="missing-commands"><a class="header" href="#missing-commands">Missing commands</a></h2>
+<p>Some commands are not available in the Act container. You can either install
+them manually or disable such steps. For example, the <code>lscpu</code> command is not
+available.</p>
+<h2 id="missing-certificates"><a class="header" href="#missing-certificates">Missing certificates</a></h2>
+<p>It may happen for some downloads. You can disable the step or install the
+certificates manually. For example, the <code>rustup</code> command fails because of that.
+You can install the certificates with the following command:</p>
+<pre><code class="language-shell">apt-get install -y ca-certificates
+</code></pre>
+<p>If this does not work, you can try to install the certificates manually, for
+example, if there are issues with
+<a href="https://letsencrypt.org/certificates/">LetsEncrypt</a>, you try downloading a new
+root certificate.</p>
+<pre><code class="language-shell">wget https://letsencrypt.org/certs/isrgrootx1.pem
+mv isrgrootx1.pem /usr/local/share/ca-certificates/isrgrootx1.crt update-ca-certificates --fresh
+</code></pre>
+<h2 id="cargo-not-in-path"><a class="header" href="#cargo-not-in-path"><code>cargo</code> not in PATH</a></h2>
+<p>Add it to the PATH manually before running the command that requires it:</p>
+<pre><code class="language-yaml">run: |
+  export PATH=&quot;${HOME}/.cargo/bin:${PATH}&quot;
+  make install
+</code></pre>
+<h2 id="rebuilding-forest-from-scratch"><a class="header" href="#rebuilding-forest-from-scratch">Rebuilding Forest from scratch</a></h2>
+<p>You can avoid re-building the entire project all the time either by re-using the
+container with <code>--reuse</code> or by modifying the job to not depend on it and just
+download the artifacts.</p>
+<h1 id="example-run"><a class="header" href="#example-run">Example run</a></h1>
+<p>After all the remarks above are addressed, you can run the job locally. For
+example, to run the integration test for the CLI:</p>
+<pre><code class="language-shell">act --secret-file act-secrets.env --env-file act.env -W .github/workflows/forest.yml -j forest-cli-check --artifact-server-path /tmp/artifacts/  --reuse
+</code></pre>
+<p>Assuming you don't want to use <code>sccache</code> and have disabled it, you can run:</p>
+<pre><code class="language-shell">act -W .github/workflows/forest.yml -j forest-cli-check --artifact-server-path /tmp/artifacts/  --reuse
+</code></pre>
+<p>Shortened output:</p>
+<pre><code>❯ act --secret-file ../forest/act-secrets.env --env-file ../forest/act.env -W .github/workflows/forest.yml -j forest-cli-check --artifact-server-path /tmp/artifacts/  --reuse -q
+INFO[0000] Start server on http://192.168.1.10:34567
+[Integration tests/Build Ubuntu] 🚀  Start image=catthehacker/ubuntu:act-latest
+[Integration tests/Build Ubuntu]   🐳  docker pull image=catthehacker/ubuntu:act-latest platform= username= forcePull=false
+[Integration tests/Build Ubuntu]   🐳  docker create image=catthehacker/ubuntu:act-latest platform= entrypoint=[&quot;/usr/bin/tail&quot; &quot;-f&quot; &quot;/dev/null&quot;] cmd=[]
+[Integration tests/Build Ubuntu]   🐳  docker run image=catthehacker/ubuntu:act-latest platform= entrypoint=[&quot;/usr/bin/tail&quot; &quot;-f&quot; &quot;/dev/null&quot;] cmd=[]
+[Integration tests/Build Ubuntu]   ☁  git clone 'https://github.com/actions/upload-artifact' # ref=v3
+[Integration tests/Build Ubuntu] ⭐ Run Main Show IP
+[Integration tests/Build Ubuntu]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/0] user= workdir=
+[Integration tests/Build Ubuntu]   ✅  Success - Main Show IP
+[Integration tests/Build Ubuntu] ⭐ Run Main Checkout Sources
+[Integration tests/Build Ubuntu]   🐳  docker cp src=/home/rumcajs/prj/forest/. dst=/home/rumcajs/prj/forest
+[Integration tests/Build Ubuntu]   ✅  Success - Main Checkout Sources
+[Integration tests/Build Ubuntu] ⭐ Run Main Install Apt Dependencies
+[Integration tests/Build Ubuntu]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/2] user= workdir=
+[Integration tests/Build Ubuntu]   ✅  Success - Main Install Apt Dependencies
+[Integration tests/Build Ubuntu] ⭐ Run Main Cargo Install
+[Integration tests/Build Ubuntu]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/3] user= workdir=
+[Integration tests/Build Ubuntu]   ✅  Success - Main Cargo Install
+[Integration tests/Build Ubuntu] ⭐ Run Main actions/upload-artifact@v3
+[Integration tests/Build Ubuntu]   🐳  docker cp src=/home/rumcajs/.cache/act/actions-upload-artifact@v3/ dst=/var/run/act/actions/actions-upload-artifact@v3/
+[Integration tests/Build Ubuntu]   🐳  docker exec cmd=[node /var/run/act/actions/actions-upload-artifact@v3/dist/index.js] user= workdir=
+[Integration tests/Build Ubuntu]   ✅  Success - Main actions/upload-artifact@v3
+[Integration tests/Build Ubuntu] 🏁  Job succeeded
+[Integration tests/Forest CLI checks] 🚀  Start image=catthehacker/ubuntu:act-latest
+[Integration tests/Forest CLI checks]   🐳  docker pull image=catthehacker/ubuntu:act-latest platform= username= forcePull=false
+[Integration tests/Forest CLI checks]   🐳  docker create image=catthehacker/ubuntu:act-latest platform= entrypoint=[&quot;/usr/bin/tail&quot; &quot;-f&quot; &quot;/dev/null&quot;] cmd=[]
+[Integration tests/Forest CLI checks]   🐳  docker run image=catthehacker/ubuntu:act-latest platform= entrypoint=[&quot;/usr/bin/tail&quot; &quot;-f&quot; &quot;/dev/null&quot;] cmd=[]
+[Integration tests/Forest CLI checks]   ☁  git clone 'https://github.com/actions/download-artifact' # ref=v3
+[Integration tests/Forest CLI checks] ⭐ Run Main Checkout Sources
+[Integration tests/Forest CLI checks]   🐳  docker cp src=/home/rumcajs/prj/forest/. dst=/home/rumcajs/prj/forest
+[Integration tests/Forest CLI checks]   ✅  Success - Main Checkout Sources
+[Integration tests/Forest CLI checks] ⭐ Run Main actions/download-artifact@v3
+[Integration tests/Forest CLI checks]   🐳  docker cp src=/home/rumcajs/.cache/act/actions-download-artifact@v3/ dst=/var/run/act/actions/actions-download-artifact@v3/
+[Integration tests/Forest CLI checks]   🐳  docker exec cmd=[node /var/run/act/actions/actions-download-artifact@v3/dist/index.js] user= workdir=
+[Integration tests/Forest CLI checks]   ✅  Success - Main actions/download-artifact@v3
+[Integration tests/Forest CLI checks]   ⚙  ::set-output:: download-path=/root/.cargo/bin
+[Integration tests/Forest CLI checks] ⭐ Run Main Set permissions
+[Integration tests/Forest CLI checks]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/2] user= workdir=
+[Integration tests/Forest CLI checks]   ✅  Success - Main Set permissions
+[Integration tests/Forest CLI checks] ⭐ Run Main install CA certificates
+[Integration tests/Forest CLI checks]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/3] user= workdir=
+[Integration tests/Forest CLI checks]   ✅  Success - Main install CA certificates
+[Integration tests/Forest CLI checks] ⭐ Run Main Make sure everything is in PATH
+[Integration tests/Forest CLI checks]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/4] user= workdir=/root/.cargo/bin/
+[Integration tests/Forest CLI checks]   ✅  Success - Main Make sure everything is in PATH
+[Integration tests/Forest CLI checks] ⭐ Run Main forest-cli check
+[Integration tests/Forest CLI checks]   🐳  docker exec cmd=[bash --noprofile --norc -e -o pipefail /var/run/act/workflow/5] user= workdir=
+[Integration tests/Forest CLI checks]   ✅  Success - Main forest-cli check
+[Integration tests/Forest CLI checks] 🏁  Job succeeded
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../developer_documentation/contributing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../developer_documentation/mainnet_compatibility.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../developer_documentation/contributing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../developer_documentation/mainnet_compatibility.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+
+
+    </div>
+    </body>
+</html>
