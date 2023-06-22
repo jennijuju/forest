@@ -64,10 +64,22 @@
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::sync::Arc;
+</span><span class="kw">use </span>std::ffi::OsString;
+<span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{cli::LogConfig, logger};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
@@ -80,54 +92,64 @@
 
 <span class="kw">use </span><span class="kw">super</span>::subcommands::Subcommand;
 
-<span class="attr">#[tokio::main]
-</span><span class="kw">pub async fn </span>main() -&gt; anyhow::Result&lt;()&gt; {
+<span class="kw">pub fn </span>main&lt;ArgT&gt;(args: <span class="kw">impl </span>IntoIterator&lt;Item = ArgT&gt;) -&gt; anyhow::Result&lt;()&gt;
+<span class="kw">where
+    </span>ArgT: Into&lt;OsString&gt; + Clone,
+{
     <span class="comment">// Capture Cli inputs
-    </span><span class="kw">let </span>Cli { opts, cmd } = Cli::parse();
+    </span><span class="kw">let </span>Cli { opts, cmd } = Cli::parse_from(args);
 
-    <span class="kw">match </span>opts.to_config() {
-        <span class="prelude-val">Ok</span>((<span class="kw-2">mut </span>config, <span class="kw">_</span>)) =&gt; {
-            logger::setup_logger(<span class="kw-2">&amp;</span>config.log, <span class="kw-2">&amp;</span>opts);
-            ProgressBar::set_progress_bars_visibility(config.client.show_progress_bars);
-            <span class="kw">if </span>opts.dry_run {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(());
-            }
-            <span class="kw">let </span>opts = <span class="kw-2">&amp;</span>opts;
-            <span class="kw">if </span>opts.chain.is_none() {
-                <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
-                    <span class="kw">if </span>name == <span class="string">&quot;calibnet&quot; </span>{
-                        config.chain = Arc::new(ChainConfig::calibnet());
-                    } <span class="kw">else if </span>name == <span class="string">&quot;devnet&quot; </span>{
-                        config.chain = Arc::new(ChainConfig::devnet());
+    tokio::runtime::Builder::new_multi_thread()
+        .enable_all()
+        .build()
+        .unwrap()
+        .block_on(<span class="kw">async </span>{
+            <span class="kw">match </span>opts.to_config() {
+                <span class="prelude-val">Ok</span>((<span class="kw-2">mut </span>config, <span class="kw">_</span>)) =&gt; {
+                    logger::setup_logger(<span class="kw-2">&amp;</span>config.log, <span class="kw-2">&amp;</span>opts);
+                    ProgressBar::set_progress_bars_visibility(config.client.show_progress_bars);
+                    <span class="kw">if </span>opts.dry_run {
+                        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+                    }
+                    <span class="kw">let </span>opts = <span class="kw-2">&amp;</span>opts;
+                    <span class="kw">if </span>opts.chain.is_none() {
+                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
+                            <span class="kw">if </span>name == <span class="string">&quot;calibnet&quot; </span>{
+                                config.chain = Arc::new(ChainConfig::calibnet());
+                            } <span class="kw">else if </span>name == <span class="string">&quot;devnet&quot; </span>{
+                                config.chain = Arc::new(ChainConfig::devnet());
+                            }
+                        }
+                    }
+                    <span class="kw">if </span>config.chain.is_testnet() {
+                        <span class="kw">crate</span>::shim::address::set_current_network(
+                            <span class="kw">crate</span>::shim::address::Network::Testnet,
+                        );
+                    }
+                    <span class="comment">// Run command
+                    </span><span class="kw">match </span>cmd {
+                        Subcommand::Fetch(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Chain(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Auth(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Net(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Wallet(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Sync(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Mpool(cmd) =&gt; cmd.run(config),
+                        Subcommand::State(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Config(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>std::io::stdout()),
+                        Subcommand::Send(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Info(cmd) =&gt; cmd.run(config, opts).<span class="kw">await</span>,
+                        Subcommand::DB(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config).<span class="kw">await</span>,
+                        Subcommand::Snapshot(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Attach(cmd) =&gt; cmd.run(config),
+                        Subcommand::Shutdown(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                     }
                 }
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    logger::setup_logger(<span class="kw-2">&amp;</span>LogConfig::default(), <span class="kw-2">&amp;</span>opts);
+                    cli_error_and_die(<span class="macro">format!</span>(<span class="string">&quot;Error parsing config: {e}&quot;</span>), <span class="number">1</span>);
+                }
             }
-            <span class="kw">if </span>config.chain.is_testnet() {
-                <span class="kw">crate</span>::shim::address::set_current_network(<span class="kw">crate</span>::shim::address::Network::Testnet);
-            }
-            <span class="comment">// Run command
-            </span><span class="kw">match </span>cmd {
-                Subcommand::Fetch(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Chain(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Auth(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Net(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Wallet(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Sync(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Mpool(cmd) =&gt; cmd.run(config),
-                Subcommand::State(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Config(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>std::io::stdout()),
-                Subcommand::Send(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Info(cmd) =&gt; cmd.run(config, opts).<span class="kw">await</span>,
-                Subcommand::DB(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config).<span class="kw">await</span>,
-                Subcommand::Snapshot(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Attach(cmd) =&gt; cmd.run(config),
-                Subcommand::Shutdown(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-            }
-        }
-        <span class="prelude-val">Err</span>(e) =&gt; {
-            logger::setup_logger(<span class="kw-2">&amp;</span>LogConfig::default(), <span class="kw-2">&amp;</span>opts);
-            cli_error_and_die(<span class="macro">format!</span>(<span class="string">&quot;Error parsing config: {e}&quot;</span>), <span class="number">1</span>);
-        }
-    }
+        })
 }
 </code></pre></div></section></main></body></html>
