@@ -79,6 +79,12 @@
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -151,6 +157,12 @@
         utils::{encoding::blake2b_256, io::read_toml},
     };
 }
+
+<span class="doccomment">/// These items are semver-exempt, and exist for forest author use only
+</span><span class="comment">// Allow benchmarks of forest internals
+</span><span class="attr">#[cfg(feature = <span class="string">&quot;benchmark-private&quot;</span>)]
+#[doc(hidden)]
+</span><span class="kw">pub mod </span>benchmark_private {}
 
 <span class="comment">// These should be made private in https://github.com/ChainSafe/forest/issues/3013
 </span><span class="kw">pub use </span>auth::{verify_token, JWT_IDENTIFIER};
