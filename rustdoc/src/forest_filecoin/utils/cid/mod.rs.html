@@ -122,18 +122,11 @@
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>cid::{
-    multihash::{Code::Blake2b256, MultihashDigest},
+    multihash::{Code, MultihashDigest},
     Cid, Version,
 };
 <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
@@ -150,14 +143,13 @@
         <span class="kw">let </span>bytes = fvm_ipld_encoding3::to_vec(obj)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Cid::new_v1(
             fvm_ipld_encoding3::DAG_CBOR,
-            Blake2b256.digest(<span class="kw-2">&amp;</span>bytes),
+            Code::Blake2b256.digest(<span class="kw-2">&amp;</span>bytes),
         ))
     }
 }
 
 <span class="kw">impl </span>CidCborExt <span class="kw">for </span>Cid {}
 
-<span class="kw">const </span>BLAKE2B256: u64 = <span class="number">0xb220</span>;
 <span class="kw">pub const </span>BLAKE2B256_SIZE: usize = <span class="number">32</span>;
 
 <span class="comment">// `CidVariant` is an enumeration of known CID types that are used in the Filecoin blockchain. CIDs
@@ -178,7 +170,7 @@
         <span class="kw">if </span>cid.version() == Version::V1 &amp;&amp; cid.codec() == DAG_CBOR {
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(small_hash) = cid.hash().resize() {
                 <span class="kw">let </span>(code, bytes, size) = small_hash.into_inner();
-                <span class="kw">if </span>code == BLAKE2B256 &amp;&amp; size <span class="kw">as </span>usize == BLAKE2B256_SIZE {
+                <span class="kw">if </span>code == u64::from(Code::Blake2b256) &amp;&amp; size <span class="kw">as </span>usize == BLAKE2B256_SIZE {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(CidVariant::V1DagCborBlake2b(bytes));
                 }
             }
@@ -218,12 +210,6 @@
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>cid_size_assumption() {
         <span class="macro">assert_eq!</span>(size_of::&lt;Cid&gt;(), <span class="number">96</span>);
-    }
-
-    <span class="comment">// If this stops being true, please update the BLAKE2B256 constant.
-    </span><span class="attr">#[test]
-    </span><span class="kw">fn </span>blake_code_assumption() {
-        <span class="macro">assert_eq!</span>(Code::Blake2b256.digest(<span class="kw-2">&amp;</span>[]).code(), <span class="kw">super</span>::BLAKE2B256);
     }
 
     <span class="comment">// If this stops being true, please update the BLAKE2B256_SIZE constant.
