@@ -93,7 +93,7 @@ pub mod db_engine {
         chain_data_root.join(DIR_NAME)
     }
 
-    pub(in crate::db) fn open_db(path: &Path, config: &DbConfig) -> anyhow::Result<Db> {
+    pub fn open_db(path: &Path, config: &DbConfig) -> anyhow::Result<Db> {
         Db::open(path, config).map_err(Into::into)
     }
 

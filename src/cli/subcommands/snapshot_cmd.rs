@@ -178,7 +178,8 @@ async fn validate(
                 .join(config.chain.network.to_string())
                 .as_path(),
         );
-        let db = open_proxy_db(db_path, config.db_config().clone())?;
+        // let db = open_proxy_db(db_path, config.db_config().clone())?;
+        let db = crate::db::db_engine::open_db(&db_path, config.db_config())?;
 
         let genesis = read_genesis_header(
             config.client.genesis_file.as_ref(),
@@ -187,17 +188,28 @@ async fn validate(
         )
         .await?;
 
+        let (cids, _n_records) = {
+            let reader = get_fetch_progress_from_file(&snapshot).await?;
+            forest_load_car(db.clone(), reader).await?
+        };
+        let now = std::time::Instant::now();
+
+        let mut counter: usize = 0;
+        db.db.iter_column_while(0, |_st| {
+            counter += 1;
+            true
+        });
+        println!("Counter: {counter}");
+        println!("Walked in {:?}", now.elapsed());
+
+        return Ok(());
+
         let chain_store = Arc::new(ChainStore::new(
             db,
             config.chain.clone(),
             &genesis,
             tmp_chain_data_path.path(),
         )?);
-
-        let (cids, _n_records) = {
-            let reader = get_fetch_progress_from_file(&snapshot).await?;
-            forest_load_car(chain_store.blockstore().clone(), reader).await?
-        };
 
         let ts = chain_store.tipset_from_keys(&TipsetKeys::new(cids))?;
 
