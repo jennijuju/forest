@@ -80,11 +80,25 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>tracing_subscriber::{
-    filter::{EnvFilter, LevelFilter},
+</span><span class="kw">use </span>tracing_chrome::{ChromeLayerBuilder, FlushGuard, TraceStyle};
+<span class="kw">use </span>tracing_subscriber::{
+    filter::{<span class="self">self</span>, EnvFilter, LevelFilter},
     prelude::<span class="kw-2">*</span>,
 };
 
@@ -93,7 +107,7 @@
 <span class="kw">pub fn </span>setup_logger(
     log_config: <span class="kw-2">&amp;</span>LogConfig,
     opts: <span class="kw-2">&amp;</span>CliOpts,
-) -&gt; (<span class="prelude-ty">Option</span>&lt;tracing_loki::BackgroundTask&gt;,) {
+) -&gt; (<span class="prelude-ty">Option</span>&lt;tracing_loki::BackgroundTask&gt;, <span class="prelude-ty">Option</span>&lt;FlushGuard&gt;) {
     <span class="kw">let </span><span class="kw-2">mut </span>loki_task = <span class="prelude-val">None</span>;
     <span class="kw">let </span>tracing_tokio_console = <span class="kw">if </span>opts.tokio_console {
         <span class="prelude-val">Some</span>(
@@ -139,17 +153,29 @@
         <span class="prelude-val">None
     </span>};
 
+    <span class="comment">// Go to &lt;https://ui.perfetto.dev&gt; to browse trace files.
+    // You may want to call ChromeLayerBuilder::trace_style as appropriate
+    </span><span class="kw">let </span>(chrome_layer, flush_guard) =
+        <span class="kw">match </span>std::env::var_os(<span class="string">&quot;CHROME_TRACE_FILE&quot;</span>).map(|path| <span class="kw">match </span>path.is_empty() {
+            <span class="bool-val">true </span>=&gt; ChromeLayerBuilder::new().build(),
+            <span class="bool-val">false </span>=&gt; ChromeLayerBuilder::new().file(path).build(),
+        }) {
+            <span class="prelude-val">Some</span>((a, b)) =&gt; (<span class="prelude-val">Some</span>(a), <span class="prelude-val">Some</span>(b)),
+            <span class="prelude-val">None </span>=&gt; (<span class="prelude-val">None</span>, <span class="prelude-val">None</span>),
+        };
+
     tracing_subscriber::registry()
         .with(tracing_tokio_console)
         .with(tracing_loki)
         .with(tracing_rolling_file)
+        .with(chrome_layer)
         .with(
             tracing_subscriber::fmt::Layer::new()
                 .with_ansi(opts.color.coloring_enabled())
                 .with_filter(build_env_filter(log_config)),
         )
         .init();
-    (loki_task,)
+    (loki_task, flush_guard)
 }
 
 <span class="kw">fn </span>build_env_filter(log_config: <span class="kw-2">&amp;</span>LogConfig) -&gt; EnvFilter {

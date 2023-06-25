@@ -816,6 +816,10 @@
 <a href="#816" id="816">816</a>
 <a href="#817" id="817">817</a>
 <a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -836,9 +840,7 @@
     rolling::DbGarbageCollector,
     Store,
 };
-<span class="kw">use </span><span class="kw">crate</span>::genesis::{
-    get_network_name_from_genesis, import_chain, read_genesis_header, validate_chain,
-};
+<span class="kw">use </span><span class="kw">crate</span>::genesis::{get_network_name_from_genesis, import_chain, read_genesis_header};
 <span class="kw">use </span><span class="kw">crate</span>::key_management::{
     KeyStore, KeyStoreConfig, ENCRYPTED_KEYSTORE_NAME, FOREST_KEYSTORE_PHRASE_ENV,
 };
@@ -861,6 +863,7 @@
 <span class="kw">use </span>bundle::load_bundles;
 <span class="kw">use </span>dialoguer::{console::Term, theme::ColorfulTheme};
 <span class="kw">use </span>futures::{select, Future, FutureExt};
+<span class="kw">use </span>futures_util::future::try_join_all;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>log::{debug, info, warn};
 <span class="kw">use </span>raw_sync::events::{Event, EventInit <span class="kw">as _</span>, EventState};
@@ -1256,10 +1259,15 @@
         <span class="macro">info!</span>(<span class="string">&quot;Imported snapshot in: {}s&quot;</span>, stopwatch.elapsed().as_secs());
     }
 
-    <span class="kw">if </span>config.client.snapshot {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(validate_height) = config.client.snapshot_height {
-            ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
-            validate_chain(<span class="kw-2">&amp;</span>state_manager, validate_height).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">if let </span>(<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(validate_from)) = (config.client.snapshot, config.client.snapshot_height) {
+        <span class="doccomment">/// We&#39;ve been provided a snapshot and asked to validate it
+        </span>ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>current_height = state_manager.chain_store().heaviest_tipset().epoch();
+        <span class="macro">assert!</span>(current_height.is_positive());
+        <span class="kw">match </span>validate_from.is_negative() {
+            <span class="comment">// allow --height=-1000 to scroll back from the current head
+            </span><span class="bool-val">true </span>=&gt; state_manager.validate((current_height + validate_from)..=current_height)<span class="question-mark">?</span>,
+            <span class="bool-val">false </span>=&gt; state_manager.validate(validate_from..=current_height)<span class="question-mark">?</span>,
         }
     }
 

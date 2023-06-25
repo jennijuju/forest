@@ -1313,6 +1313,52 @@
 <a href="#1313" id="1313">1313</a>
 <a href="#1314" id="1314">1314</a>
 <a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
+<a href="#1317" id="1317">1317</a>
+<a href="#1318" id="1318">1318</a>
+<a href="#1319" id="1319">1319</a>
+<a href="#1320" id="1320">1320</a>
+<a href="#1321" id="1321">1321</a>
+<a href="#1322" id="1322">1322</a>
+<a href="#1323" id="1323">1323</a>
+<a href="#1324" id="1324">1324</a>
+<a href="#1325" id="1325">1325</a>
+<a href="#1326" id="1326">1326</a>
+<a href="#1327" id="1327">1327</a>
+<a href="#1328" id="1328">1328</a>
+<a href="#1329" id="1329">1329</a>
+<a href="#1330" id="1330">1330</a>
+<a href="#1331" id="1331">1331</a>
+<a href="#1332" id="1332">1332</a>
+<a href="#1333" id="1333">1333</a>
+<a href="#1334" id="1334">1334</a>
+<a href="#1335" id="1335">1335</a>
+<a href="#1336" id="1336">1336</a>
+<a href="#1337" id="1337">1337</a>
+<a href="#1338" id="1338">1338</a>
+<a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
+<a href="#1361" id="1361">1361</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1321,12 +1367,11 @@
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::run_state_migrations;
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
+<span class="kw">use </span>rayon::prelude::ParallelBridge;
 <span class="kw">pub use </span>utils::is_valid_for_sending;
-
 <span class="kw">mod </span>vm_circ_supply;
-
-<span class="kw">use </span>std::{num::NonZeroUsize, sync::Arc};
-
+<span class="kw">pub use </span><span class="self">self</span>::errors::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconSchedule, DrandBeacon};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::{ChainStore, HeadChange};
@@ -1354,6 +1399,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
+<span class="kw">use </span>itertools::Itertools <span class="kw">as _</span>;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>num::BigInt;
@@ -1361,11 +1407,12 @@
 <span class="kw">use </span>once_cell::unsync::Lazy;
 <span class="kw">use </span>parking_lot::Mutex <span class="kw">as </span>SyncMutex;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>std::fmt::Debug;
+<span class="kw">use </span>std::ops::RangeInclusive;
+<span class="kw">use </span>std::{num::NonZeroUsize, sync::Arc};
 <span class="kw">use </span>tokio::sync::{broadcast::error::RecvError, Mutex <span class="kw">as </span>TokioMutex, RwLock};
 <span class="kw">use </span>tracing::{debug, error, info, instrument, trace, warn};
 <span class="kw">use </span>vm_circ_supply::GenesisInfo;
-
-<span class="kw">pub use </span><span class="self">self</span>::errors::<span class="kw-2">*</span>;
 
 <span class="kw">const </span>DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">1024usize</span>);
 
@@ -1520,6 +1567,9 @@
     engine: <span class="kw">crate</span>::shim::machine::MultiEngine,
     reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
 }
+
+<span class="attr">#[allow(clippy::type_complexity)]
+</span><span class="kw">const </span>NO_CALLBACK: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; anyhow::Result&lt;()&gt;&gt; = <span class="prelude-val">None</span>;
 
 <span class="kw">impl</span>&lt;DB&gt; StateManager&lt;DB&gt;
 <span class="kw">where
@@ -1759,11 +1809,8 @@
 
                     (<span class="kw-2">*</span>tipset.parent_state(), <span class="kw-2">*</span>message_receipts.message_receipts())
                 } <span class="kw">else </span>{
-                    <span class="comment">// generic constants are not implemented yet this is a lowcost method for now
-                    </span><span class="kw">let </span>no_func =
-                        <span class="prelude-val">None</span>::&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;&gt;;
                     <span class="kw">let </span>ts_state = <span class="self">self
-                        </span>.compute_tipset_state(Arc::clone(tipset), no_func)
+                        </span>.compute_tipset_state(Arc::clone(tipset), NO_CALLBACK)
                         .<span class="kw">await</span><span class="question-mark">?</span>;
                     <span class="macro">debug!</span>(<span class="string">&quot;Completed tipset state calculation {:?}&quot;</span>, tipset.cids());
                     ts_state
@@ -2067,8 +2114,29 @@
             .<span class="kw">await</span><span class="question-mark">?
     </span>}
 
-    <span class="doccomment">/// Performs a state transition, and returns the state and receipt root of
-    /// the transition.
+    <span class="doccomment">/// Conceptually, a [`Tipset`] consists of _blocks_ which share an _epoch_.
+    /// Each _block_ contains _messages_, which are executed by the _Filecoin Virtual Machine_
+    /// in a _transaction_.
+    ///
+    /// VM transaction execution essentially looks like this:
+    /// ```text
+    /// state[N-1800..N] * transaction = state[N+1]
+    /// ```
+    ///
+    /// The `state`s above are stored in the `IPLD Blockstore`, and can be referred to by
+    /// a [`Cid`] - the _state root_.
+    /// The previous 1800 states can be queried in a transaction, so a store needs at least that many.
+    /// (a snapshot typically contains 2000, for example).
+    ///
+    /// Each transaction costs FIL to execute - this is _gas_.
+    /// After execution, the transaction has a _receipt_, showing how much gas was spent.
+    /// This is similarly a [`Cid`] into the block store.
+    ///
+    /// Each [`Tipset`] knows its previous state, so computing tipset state consists of:
+    /// - fetching the previous state, and its 1799 ancestors.
+    /// - executing a transaction using all messages in the tipset.
+    /// - returning the _new state root_ and the _receipt root_ of the transaction.
+    </span><span class="attr">#[tracing::instrument(skip_all)]
     </span><span class="kw">pub fn </span>compute_tipset_state_blocking&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
         tipset: Arc&lt;Tipset&gt;,
@@ -2545,53 +2613,77 @@
         ps.miner_nominal_power_meets_consensus_minimum(policy, <span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>addr.into())
     }
 
-    <span class="kw">pub async fn </span>validate_chain(
-        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
-        <span class="kw-2">mut </span>ts: Arc&lt;Tipset&gt;,
-        height: i64,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-        <span class="kw">if </span>height &gt; ts.epoch() {
-            <span class="macro">anyhow::bail!</span>(
-                <span class="string">&quot;height {height} cannot be greater than tipset epoch {}&quot;</span>,
-                ts.epoch()
-            );
-        }
-        <span class="kw">let </span><span class="kw-2">mut </span>ts_chain = Vec::&lt;Arc&lt;Tipset&gt;&gt;::new();
-        <span class="kw">while </span>ts.epoch() != height {
-            <span class="kw">let </span>next = <span class="self">self</span>.cs.tipset_from_keys(ts.parents())<span class="question-mark">?</span>;
-            ts_chain.push(std::mem::replace(<span class="kw-2">&amp;mut </span>ts, next));
-        }
-        ts_chain.push(ts);
+    <span class="doccomment">/// Validates all tipsets at epoch `start..=end` behind the heaviest tipset.
+    ///
+    /// This spawns [`rayon::current_num_threads`] threads to do the compute-heavy work
+    /// of tipset validation.
+    ///
+    /// # What is validation?
+    /// Every state transition returns a new _state root_, which is typically retained in, e.g., snapshots.
+    /// For &quot;full&quot; snapshots, all state roots are retained.
+    /// For standard snapshots, the last 2000 or so state roots are retained.
+    ///
+    /// _receipts_ meanwhile, are typically ephemeral, but each tipset knows the _receipt root_
+    /// (hash) of the previous tipset.
+    ///
+    /// This function takes advantage of that fact to validate tipsets:
+    /// - `tipset[N]` claims that `receipt_root[N-1]` should be `0xDEADBEEF`
+    /// - find `tipset[N-1]`, and perform its state transition to get the actual `receipt_root`
+    /// - assert that they match
+    ///
+    /// See [`Self::compute_tipset_state_blocking`] for an explanation of state transitions.
+    ///
+    /// # Known issues
+    /// This function is blocking, but we do observe threads waiting and synchronizing.
+    /// This is suspected to be due something in the VM or its `WASM` runtime.
+    </span><span class="attr">#[tracing::instrument(skip(<span class="self">self</span>))]
+    </span><span class="kw">pub fn </span>validate(<span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;, epochs: RangeInclusive&lt;i64&gt;) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="kw">use </span>rayon::iter::ParallelIterator <span class="kw">as _</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>last_state = <span class="kw-2">*</span>ts_chain.last().unwrap().parent_state();
-        <span class="kw">let </span><span class="kw-2">mut </span>last_receipt = <span class="kw-2">*</span>ts_chain.last().unwrap().blocks()[<span class="number">0</span>].message_receipts();
-        <span class="kw">for </span>ts <span class="kw">in </span>ts_chain.iter().rev() {
-            <span class="kw">if </span>ts.parent_state() != <span class="kw-2">&amp;</span>last_state {
-                <span class="macro">anyhow::bail!</span>(
-                    <span class="string">&quot;Tipset chain has state mismatch at height: {}, {} != {}, \
-                        receipts mismatched: {}&quot;</span>,
-                    ts.epoch(),
-                    ts.parent_state(),
-                    last_state,
-                    ts.blocks()[<span class="number">0</span>].message_receipts() != <span class="kw-2">&amp;</span>last_receipt
-                );
-            }
-            <span class="kw">if </span>ts.blocks()[<span class="number">0</span>].message_receipts() != <span class="kw-2">&amp;</span>last_receipt {
-                <span class="macro">anyhow::bail!</span>(
-                    <span class="string">&quot;Tipset message receipts has a mismatch at height: {}&quot;</span>,
-                    ts.epoch(),
-                );
-            }
-            <span class="macro">info!</span>(
-                <span class="string">&quot;Computing state (height: {}, ts={:?})&quot;</span>,
-                ts.epoch(),
-                ts.cids()
-            );
-            <span class="kw">let </span>(st, msg_root) = <span class="self">self</span>.tipset_state(ts).<span class="kw">await</span><span class="question-mark">?</span>;
-            last_state = st;
-            last_receipt = msg_root;
-        }
-        <span class="prelude-val">Ok</span>(())
+        <span class="kw">let </span>heaviest = <span class="self">self</span>.cs.heaviest_tipset();
+        <span class="kw">let </span>heaviest_epoch = heaviest.epoch();
+        <span class="kw">let </span>end = <span class="self">self
+            </span>.cs
+            .tipset_by_height(<span class="kw-2">*</span>epochs.end(), heaviest, <span class="bool-val">false</span>)
+            .context(<span class="macro">format!</span>(
+            <span class="string">&quot;couldn&#39;t get a tipset at height {} behind heaviest tipset at height {heaviest_epoch}&quot;</span>,
+            <span class="kw-2">*</span>epochs.end(),
+        ))<span class="question-mark">?</span>;
+
+        <span class="comment">// lookup tipset parents as we go along, iterating DOWN from `end`
+        </span><span class="kw">let </span>tipsets = itertools::unfold(<span class="prelude-val">Some</span>(end), |tipset| {
+            <span class="kw">let </span>child = tipset.take()<span class="question-mark">?</span>;
+            <span class="comment">// if this has parents, unfold them in the next iteration
+            </span><span class="kw-2">*</span>tipset = <span class="self">self</span>.cs.tipset_from_keys(child.parents()).ok();
+            <span class="prelude-val">Some</span>(child)
+        });
+
+        tipsets
+            .take_while(|tipset| tipset.epoch() &gt;= <span class="kw-2">*</span>epochs.start())
+            .tuple_windows()
+            .par_bridge()
+            .try_for_each(|(child, parent)| {
+                <span class="macro">info!</span>(height = parent.epoch(), <span class="string">&quot;compute parent state&quot;</span>);
+                <span class="kw">let </span>(actual_state, actual_receipt) = <span class="self">self
+                    </span>.compute_tipset_state_blocking(parent, NO_CALLBACK)
+                    .context(<span class="string">&quot;couldn&#39;t compute tipset state&quot;</span>)<span class="question-mark">?</span>;
+                <span class="kw">let </span>expected_receipt = child.min_ticket_block().message_receipts();
+                <span class="kw">let </span>expected_state = child.parent_state();
+                <span class="kw">match </span>(expected_state, expected_receipt) == (<span class="kw-2">&amp;</span>actual_state, <span class="kw-2">&amp;</span>actual_receipt) {
+                    <span class="bool-val">true </span>=&gt; <span class="prelude-val">Ok</span>(()),
+                    <span class="bool-val">false </span>=&gt; {
+                        <span class="macro">error!</span>(
+                            height = child.epoch(),
+                            <span class="question-mark">?</span>expected_state,
+                            <span class="question-mark">?</span>expected_receipt,
+                            <span class="question-mark">?</span>actual_state,
+                            <span class="question-mark">?</span>actual_receipt,
+                            <span class="string">&quot;state mismatch&quot;
+                        </span>);
+                        <span class="macro">bail!</span>(<span class="string">&quot;state mismatch&quot;</span>);
+                    }
+                }
+            })
     }
 
     <span class="kw">fn </span>chain_rand(<span class="kw-2">&amp;</span><span class="self">self</span>, blocks: TipsetKeys) -&gt; ChainRand&lt;DB&gt; {
