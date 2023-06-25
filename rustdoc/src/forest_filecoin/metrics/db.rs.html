@@ -74,10 +74,10 @@
     <span class="kw">pub fn </span>new(db_directory: PathBuf) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>descs: Vec&lt;Desc&gt; = <span class="macro">vec!</span>[];
         <span class="kw">let </span>db_size = Gauge::with_opts(Opts::new(
-            <span class="string">&quot;crate::db_size&quot;</span>,
+            <span class="string">&quot;forest_db_size&quot;</span>,
             <span class="string">&quot;Size of Forest database in bytes&quot;</span>,
         ))
-        .expect(<span class="string">&quot;Creating crate::db_size gauge must succeed&quot;</span>);
+        .expect(<span class="string">&quot;Creating forest_db_size gauge must succeed&quot;</span>);
         descs.extend(db_size.desc().into_iter().cloned());
         <span class="self">Self </span>{
             db_directory,
