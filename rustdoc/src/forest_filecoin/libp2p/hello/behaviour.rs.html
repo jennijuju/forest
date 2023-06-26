@@ -153,10 +153,6 @@
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -189,10 +185,6 @@
         <span class="self">self</span>.response_channels.insert(request_id, response_channel);
         <span class="self">self</span>.track_metrics();
         request_id
-    }
-
-    <span class="kw">pub fn </span>complete_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: RequestId) {
-        <span class="self">self</span>.response_channels.remove(<span class="kw-2">&amp;</span>request_id);
     }
 
     <span class="kw">pub fn </span>send_response(

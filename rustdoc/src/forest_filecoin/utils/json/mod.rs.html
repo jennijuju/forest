@@ -173,21 +173,6 @@
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -253,41 +238,12 @@
     }
 }
 
-<span class="kw">pub mod </span>go_vec_visitor {
-    <span class="kw">use </span>serde::{
-        de::{Deserialize, Deserializer},
-        ser::{Serialize, SerializeSeq, Serializer},
-    };
-
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-    <span class="kw">pub fn </span>serialize&lt;S, T&gt;(m: <span class="kw-2">&amp;</span>[T], serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
-    <span class="kw">where
-        </span>S: Serializer,
-        T: Serialize,
-    {
-        <span class="kw">let </span><span class="kw-2">mut </span>seq = serializer.serialize_seq(<span class="prelude-val">Some</span>(m.len()))<span class="question-mark">?</span>;
-        <span class="kw">for </span>e <span class="kw">in </span>m {
-            seq.serialize_element(<span class="kw-2">&amp;</span>e)<span class="question-mark">?</span>;
-        }
-        seq.end()
-    }
-
-    <span class="kw">pub fn </span>deserialize&lt;<span class="lifetime">&#39;de</span>, D, T&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;T&gt;, D::Error&gt;
-    <span class="kw">where
-        </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
-        T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;,
-    {
-        deserializer.deserialize_any(GoVecVisitor::&lt;T&gt;::new())
-    }
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>serde::{Deserialize, Deserializer};
     <span class="kw">use </span>serde_json::from_str;
 
-    <span class="kw">use super</span>::{go_vec_visitor, <span class="kw-2">*</span>};
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_json_basic() {
@@ -358,6 +314,20 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>standard_vec() {
+        <span class="kw">mod </span>go_vec_visitor {
+            <span class="kw">use </span>serde::de::{Deserialize, Deserializer};
+
+            <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+            <span class="kw">pub fn </span>deserialize&lt;<span class="lifetime">&#39;de</span>, D, T&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;T&gt;, D::Error&gt;
+            <span class="kw">where
+                </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+                T: Deserialize&lt;<span class="lifetime">&#39;de</span>&gt;,
+            {
+                deserializer.deserialize_any(GoVecVisitor::&lt;T&gt;::new())
+            }
+        }
+
         <span class="attr">#[derive(Deserialize)]
         #[serde(transparent)]
         </span><span class="kw">struct </span>BasicJson {

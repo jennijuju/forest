@@ -88,7 +88,6 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="attr">#![recursion_limit = <span class="string">&quot;1024&quot;</span>]
-#![allow(unused, clippy::upper_case_acronyms, clippy::enum_variant_names)] </span><span class="comment">// # 2991
 
 </span><span class="macro">cfg_if::cfg_if! </span>{
     <span class="kw">if </span><span class="attr">#[cfg(feature = <span class="string">&quot;rustalloc&quot;</span>)] </span>{
@@ -131,7 +130,8 @@
 <span class="kw">mod </span>state_manager;
 <span class="kw">mod </span>state_migration;
 <span class="kw">mod </span>statediff;
-<span class="kw">mod </span>test_utils;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>test_utils;
 <span class="kw">mod </span>utils;
 
 <span class="doccomment">/// These items are semver-exempt, and exist for forest author use only

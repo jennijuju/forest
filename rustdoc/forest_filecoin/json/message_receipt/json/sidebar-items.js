@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["deserialize","serialize"],"mod":["opt","vec"],"struct":["JsonHelper","ReceiptJson","ReceiptJsonRef"]};
+window.SIDEBAR_ITEMS = {"fn":["deserialize","serialize"],"mod":["opt"],"struct":["JsonHelper","ReceiptJson","ReceiptJsonRef"]};

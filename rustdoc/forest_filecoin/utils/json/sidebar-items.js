@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["go_vec_visitor"],"struct":["GoVecVisitor"]};
+window.SIDEBAR_ITEMS = {"struct":["GoVecVisitor"]};

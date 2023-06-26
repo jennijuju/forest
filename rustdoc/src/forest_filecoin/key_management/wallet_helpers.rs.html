@@ -115,7 +115,7 @@
 <span class="doccomment">/// Return the public key for a given private key and `SignatureType`
 </span><span class="kw">pub fn </span>to_public(sig_type: SignatureType, private_key: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, Error&gt; {
     <span class="kw">match </span>sig_type {
-        SignatureType::BLS =&gt; <span class="prelude-val">Ok</span>(BlsPrivate::from_bytes(private_key)
+        SignatureType::Bls =&gt; <span class="prelude-val">Ok</span>(BlsPrivate::from_bytes(private_key)
             .map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?
             </span>.public_key()
             .as_bytes()),
@@ -135,7 +135,7 @@
 /// supplied public key
 </span><span class="kw">pub fn </span>new_address(sig_type: SignatureType, public_key: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Address, Error&gt; {
     <span class="kw">match </span>sig_type {
-        SignatureType::BLS =&gt; {
+        SignatureType::Bls =&gt; {
             <span class="kw">let </span>addr = Address::new_bls(public_key).map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
             <span class="prelude-val">Ok</span>(addr)
         }
@@ -154,7 +154,7 @@
 /// for that message
 </span><span class="kw">pub fn </span>sign(sig_type: SignatureType, private_key: <span class="kw-2">&amp;</span>[u8], msg: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Signature, Error&gt; {
     <span class="kw">match </span>sig_type {
-        SignatureType::BLS =&gt; {
+        SignatureType::Bls =&gt; {
             <span class="kw">let </span>priv_key =
                 BlsPrivate::from_bytes(private_key).map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
             <span class="comment">// this returns a signature from bls-signatures, so we need to convert this to a
@@ -185,7 +185,7 @@
 </span><span class="kw">pub fn </span>generate(sig_type: SignatureType) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, Error&gt; {
     <span class="kw">let </span>rng = <span class="kw-2">&amp;mut </span>OsRng::default();
     <span class="kw">match </span>sig_type {
-        SignatureType::BLS =&gt; {
+        SignatureType::Bls =&gt; {
             <span class="kw">let </span>key = BlsPrivate::generate(rng);
             <span class="prelude-val">Ok</span>(key.as_bytes())
         }

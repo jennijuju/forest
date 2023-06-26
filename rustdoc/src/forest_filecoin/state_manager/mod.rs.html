@@ -1337,28 +1337,6 @@
 <a href="#1337" id="1337">1337</a>
 <a href="#1338" id="1338">1338</a>
 <a href="#1339" id="1339">1339</a>
-<a href="#1340" id="1340">1340</a>
-<a href="#1341" id="1341">1341</a>
-<a href="#1342" id="1342">1342</a>
-<a href="#1343" id="1343">1343</a>
-<a href="#1344" id="1344">1344</a>
-<a href="#1345" id="1345">1345</a>
-<a href="#1346" id="1346">1346</a>
-<a href="#1347" id="1347">1347</a>
-<a href="#1348" id="1348">1348</a>
-<a href="#1349" id="1349">1349</a>
-<a href="#1350" id="1350">1350</a>
-<a href="#1351" id="1351">1351</a>
-<a href="#1352" id="1352">1352</a>
-<a href="#1353" id="1353">1353</a>
-<a href="#1354" id="1354">1354</a>
-<a href="#1355" id="1355">1355</a>
-<a href="#1356" id="1356">1356</a>
-<a href="#1357" id="1357">1357</a>
-<a href="#1358" id="1358">1358</a>
-<a href="#1359" id="1359">1359</a>
-<a href="#1360" id="1360">1360</a>
-<a href="#1361" id="1361">1361</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1407,7 +1385,6 @@
 <span class="kw">use </span>once_cell::unsync::Lazy;
 <span class="kw">use </span>parking_lot::Mutex <span class="kw">as </span>SyncMutex;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>std::fmt::Debug;
 <span class="kw">use </span>std::ops::RangeInclusive;
 <span class="kw">use </span>std::{num::NonZeroUsize, sync::Arc};
 <span class="kw">use </span>tokio::sync::{broadcast::error::RecvError, Mutex <span class="kw">as </span>TokioMutex, RwLock};
@@ -2400,12 +2377,6 @@
             <span class="kw">loop </span>{
                 <span class="kw">match </span>subscriber.recv().<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(subscriber) =&gt; <span class="kw">match </span>subscriber {
-                        HeadChange::Revert(_tipset) =&gt; {
-                            <span class="kw">if </span>candidate_tipset.is_some() {
-                                candidate_tipset = <span class="prelude-val">None</span>;
-                                candidate_receipt = <span class="prelude-val">None</span>;
-                            }
-                        }
                         HeadChange::Apply(tipset) =&gt; {
                             <span class="kw">if </span>candidate_tipset
                                 .as_ref()
@@ -2433,7 +2404,6 @@
                                 candidate_receipt = <span class="prelude-val">Some</span>(receipt)
                             }
                         }
-                        <span class="kw">_ </span>=&gt; (),
                     },
                     <span class="prelude-val">Err</span>(RecvError::Lagged(i)) =&gt; {
                         <span class="macro">warn!</span>(
@@ -2504,20 +2474,6 @@
                 <span class="string">&quot;Address must be BLS address to load bls public key&quot;</span>.to_owned(),
             )),
         }
-    }
-
-    <span class="doccomment">/// Return the heaviest tipset&#39;s balance from self.db for a given address
-    </span><span class="kw">pub fn </span>get_heaviest_balance(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, Error&gt; {
-        <span class="kw">let </span>cid = <span class="kw-2">*</span><span class="self">self</span>.cs.heaviest_tipset().parent_state();
-        <span class="self">self</span>.get_balance(addr, cid)
-    }
-
-    <span class="doccomment">/// Return the balance of a given address and `state_cid`
-    </span><span class="kw">pub fn </span>get_balance(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, Error&gt; {
-        <span class="kw">let </span>act = <span class="self">self</span>.get_actor(addr, cid)<span class="question-mark">?</span>;
-        <span class="kw">let </span>actor = act.ok_or_else(|| <span class="string">&quot;could not find actor&quot;</span>.to_owned())<span class="question-mark">?</span>;
-        <span class="kw">let </span>balance = TokenAmount::from(<span class="kw-2">&amp;</span>actor.balance);
-        <span class="prelude-val">Ok</span>(balance)
     }
 
     <span class="doccomment">/// Looks up ID [Address] from the state at the given [Tipset].

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["beacon_entries","drand","mock_beacon"]};
+window.SIDEBAR_ITEMS = {"mod":["beacon_entries","drand"]};

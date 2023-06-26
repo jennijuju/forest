@@ -949,14 +949,17 @@
 <a href="#949" id="949">949</a>
 <a href="#950" id="950">950</a>
 <a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">mod </span>metrics;
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">mod </span>msg_pool;
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">mod </span>provider;
-<span class="kw">mod </span>selection;
-<span class="kw">pub mod </span>test_provider;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>selection;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">pub mod </span>test_provider;
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">mod </span>utils;
 
 <span class="kw">use </span>std::{borrow::BorrowMut, cmp::Ordering, sync::Arc};
@@ -972,7 +975,6 @@
 <span class="kw">use </span>log::error;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock <span class="kw">as </span>SyncRwLock};
-<span class="kw">use </span>tokio::sync::broadcast::{Receiver <span class="kw">as </span>Subscriber, Sender <span class="kw">as </span>Publisher};
 <span class="kw">use </span>utils::{get_base_fee_lower_bound, recover_sig};
 
 <span class="kw">use </span><span class="kw">super</span>::errors::Error;
@@ -1415,7 +1417,7 @@
         <span class="kw">let </span>tipset = Tipset::from(<span class="kw-2">&amp;</span>a);
         <span class="kw">let </span>b = mock_block_with_parents(<span class="kw-2">&amp;</span>tipset, <span class="number">1</span>, <span class="number">1</span>);
 
-        <span class="kw">let </span>sender = wallet.generate_addr(SignatureType::BLS).unwrap();
+        <span class="kw">let </span>sender = wallet.generate_addr(SignatureType::Bls).unwrap();
         <span class="kw">let </span>target = Address::new_id(<span class="number">1001</span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>smsg_vec = Vec::new();

@@ -68,9 +68,6 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -89,9 +86,6 @@
     <span class="doccomment">/// Key was not found
     </span><span class="attr">#[error(<span class="string">&quot;Invalid tipset: {0}&quot;</span>)]
     </span>UndefinedKey(String),
-    <span class="doccomment">/// Tipset contains no blocks
-    </span><span class="attr">#[error(<span class="string">&quot;No blocks for tipset&quot;</span>)]
-    </span>NoBlocks,
     <span class="doccomment">/// Key not found in database
     </span><span class="attr">#[error(<span class="string">&quot;{0} not found&quot;</span>)]
     </span>NotFound(String),

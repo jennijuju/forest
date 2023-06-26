@@ -637,54 +637,6 @@
 <a href="#637" id="637">637</a>
 <a href="#638" id="638">638</a>
 <a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
-<a href="#645" id="645">645</a>
-<a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
-<a href="#651" id="651">651</a>
-<a href="#652" id="652">652</a>
-<a href="#653" id="653">653</a>
-<a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
-<a href="#671" id="671">671</a>
-<a href="#672" id="672">672</a>
-<a href="#673" id="673">673</a>
-<a href="#674" id="674">674</a>
-<a href="#675" id="675">675</a>
-<a href="#676" id="676">676</a>
-<a href="#677" id="677">677</a>
-<a href="#678" id="678">678</a>
-<a href="#679" id="679">679</a>
-<a href="#680" id="680">680</a>
-<a href="#681" id="681">681</a>
-<a href="#682" id="682">682</a>
-<a href="#683" id="683">683</a>
-<a href="#684" id="684">684</a>
-<a href="#685" id="685">685</a>
-<a href="#686" id="686">686</a>
-<a href="#687" id="687">687</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -695,9 +647,10 @@
 
 </span><span class="kw">use </span>std::{num::NonZeroUsize, sync::Arc, time::Duration};
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
 <span class="kw">use </span><span class="kw">crate</span>::chain::{HeadChange, MINIMUM_BASE_FEE};
-<span class="kw">use </span><span class="kw">crate</span>::db::Store;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">use </span><span class="kw">crate</span>::db::Store;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{NetworkMessage, Topic, PUBSUB_MSG_STR};
 <span class="kw">use </span><span class="kw">crate</span>::message::{valid_for_block_inclusion, ChainMessage, Message, SignedMessage};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NEWEST_NETWORK_VERSION};
@@ -910,12 +863,6 @@
                 <span class="kw">match </span>subscriber.recv().<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(ts) =&gt; {
                         <span class="kw">let </span>(cur, rev, app) = <span class="kw">match </span>ts {
-                            HeadChange::Current(_tipset) =&gt; <span class="kw">continue</span>,
-                            HeadChange::Revert(tipset) =&gt; (
-                                cur_tipset.clone(),
-                                <span class="macro">vec!</span>[tipset.as_ref().clone()],
-                                Vec::new(),
-                            ),
                             HeadChange::Apply(tipset) =&gt; (
                                 cur_tipset.clone(),
                                 Vec::new(),
@@ -1133,11 +1080,6 @@
         <span class="prelude-val">Ok</span>(TokenAmount::from(<span class="kw-2">&amp;</span>actor.balance))
     }
 
-    <span class="doccomment">/// Remove a message given a sequence and address from the message pool.
-    </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, from: <span class="kw-2">&amp;</span>Address, sequence: u64, applied: bool) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        remove(from, <span class="self">self</span>.pending.as_ref(), sequence, applied)
-    }
-
     <span class="doccomment">/// Return a tuple that contains a vector of all signed messages and the
     /// current tipset for self.
     </span><span class="kw">pub fn </span>pending(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;SignedMessage&gt;, Arc&lt;Tipset&gt;), Error&gt; {
@@ -1190,24 +1132,6 @@
         <span class="prelude-val">Ok</span>(msg_vec)
     }
 
-    <span class="doccomment">/// Return gas price estimate this has been translated from lotus, a more
-    /// smart implementation will most likely need to be implemented.
-    </span><span class="comment">// TODO: UPDATE https://github.com/ChainSafe/forest/issues/901
-    </span><span class="kw">pub fn </span>estimate_gas_premium(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        nblocksincl: u64,
-        _sender: Address,
-        _gas_limit: u64,
-        _tsk: TipsetKeys,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;BigInt, Error&gt; {
-        <span class="kw">let </span>min_gas_price = <span class="number">0</span>;
-        <span class="kw">match </span>nblocksincl {
-            <span class="number">0 </span>=&gt; <span class="prelude-val">Ok</span>(BigInt::from(min_gas_price + <span class="number">2</span>)),
-            <span class="number">1 </span>=&gt; <span class="prelude-val">Ok</span>(BigInt::from(min_gas_price + <span class="number">1</span>)),
-            <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(BigInt::from(min_gas_price)),
-        }
-    }
-
     <span class="doccomment">/// Loads local messages to the message pool to be applied.
     </span><span class="kw">pub fn </span>load_local(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>local_msgs = <span class="self">self</span>.local_msgs.write();
@@ -1222,34 +1146,14 @@
 
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="doccomment">/// If `local = true`, the local messages will be removed as well as pending
-    /// messages. If `local = false`, pending messages will be removed while
-    /// retaining local messages.
-    </span><span class="kw">pub fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>, local: bool) {
-        <span class="kw">if </span>local {
-            <span class="kw">for </span>a <span class="kw">in </span><span class="self">self</span>.local_addrs.read().iter() {
-                <span class="kw">let </span>pending = <span class="self">self</span>.pending.read().get(a).cloned();
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(mset) = pending {
-                    <span class="kw">for </span>m <span class="kw">in </span>mset.msgs.values() {
-                        <span class="kw">if </span>!<span class="self">self</span>.local_msgs.write().remove(m) {
-                            <span class="macro">warn!</span>(<span class="string">&quot;error deleting local message&quot;</span>);
-                        }
-                    }
-                }
-            }
-            <span class="self">self</span>.pending.write().clear();
-            <span class="self">self</span>.republished.write().clear();
-        } <span class="kw">else </span>{
-            <span class="kw">let </span>local_addrs = <span class="self">self</span>.local_addrs.read();
-            <span class="kw">let </span><span class="kw-2">mut </span>pending = <span class="self">self</span>.pending.write();
-            pending.retain(|a, <span class="kw">_</span>| local_addrs.contains(a));
-        }
-    }
 
-    <span class="kw">pub fn </span>get_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>MpoolConfig {
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">pub fn </span>get_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>MpoolConfig {
         <span class="kw-2">&amp;</span><span class="self">self</span>.config
     }
-    <span class="kw">pub fn </span>set_config&lt;DB: Store&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, db: <span class="kw-2">&amp;</span>DB, cfg: MpoolConfig) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">pub fn </span>set_config&lt;DB: Store&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, db: <span class="kw-2">&amp;</span>DB, cfg: MpoolConfig) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         cfg.save_config(db)
             .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
         <span class="self">self</span>.config = cfg;
@@ -1294,7 +1198,7 @@
 <span class="kw">where
     </span>T: Provider,
 {
-    <span class="kw">if </span>msg.signature().signature_type() == SignatureType::BLS {
+    <span class="kw">if </span>msg.signature().signature_type() == SignatureType::Bls {
         bls_sig_cache
             .lock()
             .put(msg.cid()<span class="question-mark">?</span>, msg.signature().clone());

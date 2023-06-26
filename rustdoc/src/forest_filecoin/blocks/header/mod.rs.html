@@ -520,7 +520,7 @@
 
 </span><span class="kw">use </span>std::fmt;
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::{<span class="self">self</span>, Beacon, BeaconEntry, BeaconSchedule};
+<span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconEntry, BeaconSchedule};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
@@ -973,9 +973,9 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::{sync::Arc, time::Duration};
+    <span class="kw">use </span>std::sync::Arc;
 
-    <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconEntry, BeaconPoint, BeaconSchedule, MockBeacon};
+    <span class="kw">use </span><span class="kw">crate</span>::beacon::{mock_beacon::MockBeacon, BeaconEntry, BeaconPoint, BeaconSchedule};
     <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, version::NetworkVersion};
     <span class="kw">use </span>fvm_ipld_encoding::Cbor;
 
@@ -1009,7 +1009,7 @@
             .unwrap();
         <span class="kw">let </span>beacon_schedule = Arc::new(BeaconSchedule(<span class="macro">vec!</span>[BeaconPoint {
             height: <span class="number">0</span>,
-            beacon: Arc::new(MockBeacon::new(Duration::from_secs(<span class="number">1</span>))),
+            beacon: Arc::new(MockBeacon::default()),
         }]));
         <span class="kw">let </span>chain_epoch = <span class="number">0</span>;
         <span class="kw">let </span>beacon_entry = BeaconEntry::new(<span class="number">1</span>, <span class="macro">vec!</span>[]);

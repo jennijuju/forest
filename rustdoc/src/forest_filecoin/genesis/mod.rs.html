@@ -187,27 +187,12 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{sync::Arc, time};
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
     db::BlockstoreBufferedWriteExt,
@@ -268,21 +253,6 @@
         .get_network_name(genesis_header.state_root())
         .map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Failed to retrieve network name from genesis: {}&quot;</span>, e))<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(network_name)
-}
-
-<span class="kw">pub async fn </span>initialize_genesis&lt;BS&gt;(
-    genesis_fp: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>String&gt;,
-    state_manager: <span class="kw-2">&amp;</span>StateManager&lt;BS&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;(Tipset, String), anyhow::Error&gt;
-<span class="kw">where
-    </span>BS: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">let </span>genesis_bytes = state_manager.chain_config().genesis_bytes();
-    <span class="kw">let </span>genesis =
-        read_genesis_header(genesis_fp, genesis_bytes, state_manager.blockstore()).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>ts = Tipset::from(<span class="kw-2">&amp;</span>genesis);
-    <span class="kw">let </span>network_name = get_network_name_from_genesis(<span class="kw-2">&amp;</span>genesis, state_manager)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>((ts, network_name))
 }
 
 <span class="kw">async fn </span>process_car&lt;R, BS&gt;(reader: R, db: <span class="kw-2">&amp;</span>BS) -&gt; <span class="prelude-ty">Result</span>&lt;BlockHeader, anyhow::Error&gt;

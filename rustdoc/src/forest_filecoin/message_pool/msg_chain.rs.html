@@ -561,6 +561,12 @@
 <a href="#561" id="561">561</a>
 <a href="#562" id="562">562</a>
 <a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -607,6 +613,63 @@
     <span class="kw">pub </span>key_vec: Vec&lt;NodeKey&gt;,
 }
 
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>Chains {
+    <span class="comment">// Sort by effective perf with cmp_effective
+    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>sort_effective(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="kw">let </span><span class="kw-2">mut </span>chains = mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec);
+        chains.sort_by(|a, b| {
+            <span class="kw">let </span>a = <span class="self">self</span>.map.get(<span class="kw-2">*</span>a).unwrap();
+            <span class="kw">let </span>b = <span class="self">self</span>.map.get(<span class="kw-2">*</span>b).unwrap();
+            a.cmp_effective(b)
+        });
+        <span class="kw">let _ </span>= mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec, chains);
+    }
+
+    <span class="comment">// Sort by effective `perf` on a range
+    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>sort_range_effective(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        range: std::ops::RangeFrom&lt;usize&gt;,
+    ) {
+        <span class="kw">let </span><span class="kw-2">mut </span>chains = mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec);
+        chains[range].sort_by(|a, b| {
+            <span class="self">self</span>.map
+                .get(<span class="kw-2">*</span>a)
+                .unwrap()
+                .cmp_effective(<span class="self">self</span>.map.get(<span class="kw-2">*</span>b).unwrap())
+        });
+        <span class="kw">let _ </span>= mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec, chains);
+    }
+
+    <span class="doccomment">/// Retrieves the `msg` chain node by the given `NodeKey` along with the
+    /// data required from previous chain (if exists) to set effective
+    /// performance of this node.
+    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>get_mut_with_prev_eff(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        k: NodeKey,
+    ) -&gt; (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>MsgChainNode&gt;, <span class="prelude-ty">Option</span>&lt;(f64, u64)&gt;) {
+        <span class="kw">let </span>node = <span class="self">self</span>.map.get(k);
+        <span class="kw">let </span>prev = <span class="kw">if let </span><span class="prelude-val">Some</span>(node) = node {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(prev_key) = node.prev {
+                <span class="kw">let </span>prev_node = <span class="self">self</span>.map.get(prev_key).unwrap();
+                <span class="prelude-val">Some</span>((prev_node.eff_perf, prev_node.gas_limit))
+            } <span class="kw">else </span>{
+                <span class="prelude-val">None
+            </span>}
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>};
+
+        <span class="kw">let </span>node = <span class="self">self</span>.map.get_mut(k);
+        (node, prev)
+    }
+
+    <span class="doccomment">/// Retrieves the `msg` chain node by the given `NodeKey`
+    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: NodeKey) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>MsgChainNode&gt; {
+        <span class="self">self</span>.map.get(k)
+    }
+}
+
 <span class="kw">impl </span>Chains {
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>new() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
@@ -643,63 +706,9 @@
         <span class="kw">let _ </span>= mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec, chains);
     }
 
-    <span class="comment">// Sort by effective perf with cmp_effective
-    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>sort_effective(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">let </span><span class="kw-2">mut </span>chains = mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec);
-        chains.sort_by(|a, b| {
-            <span class="kw">let </span>a = <span class="self">self</span>.map.get(<span class="kw-2">*</span>a).unwrap();
-            <span class="kw">let </span>b = <span class="self">self</span>.map.get(<span class="kw-2">*</span>b).unwrap();
-            a.cmp_effective(b)
-        });
-        <span class="kw">let _ </span>= mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec, chains);
-    }
-
-    <span class="comment">// Sort by effective `perf` on a range
-    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>sort_range_effective(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        range: std::ops::RangeFrom&lt;usize&gt;,
-    ) {
-        <span class="kw">let </span><span class="kw-2">mut </span>chains = mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec);
-        chains[range].sort_by(|a, b| {
-            <span class="self">self</span>.map
-                .get(<span class="kw-2">*</span>a)
-                .unwrap()
-                .cmp_effective(<span class="self">self</span>.map.get(<span class="kw-2">*</span>b).unwrap())
-        });
-        <span class="kw">let _ </span>= mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.key_vec, chains);
-    }
-
     <span class="doccomment">/// Retrieves the `msg` chain node by the given `NodeKey`
     </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: NodeKey) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>MsgChainNode&gt; {
         <span class="self">self</span>.map.get_mut(k)
-    }
-
-    <span class="doccomment">/// Retrieves the `msg` chain node by the given `NodeKey` along with the
-    /// data required from previous chain (if exists) to set effective
-    /// performance of this node.
-    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>get_mut_with_prev_eff(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        k: NodeKey,
-    ) -&gt; (<span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;mut </span>MsgChainNode&gt;, <span class="prelude-ty">Option</span>&lt;(f64, u64)&gt;) {
-        <span class="kw">let </span>node = <span class="self">self</span>.map.get(k);
-        <span class="kw">let </span>prev = <span class="kw">if let </span><span class="prelude-val">Some</span>(node) = node {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(prev_key) = node.prev {
-                <span class="kw">let </span>prev_node = <span class="self">self</span>.map.get(prev_key).unwrap();
-                <span class="prelude-val">Some</span>((prev_node.eff_perf, prev_node.gas_limit))
-            } <span class="kw">else </span>{
-                <span class="prelude-val">None
-            </span>}
-        } <span class="kw">else </span>{
-            <span class="prelude-val">None
-        </span>};
-
-        <span class="kw">let </span>node = <span class="self">self</span>.map.get_mut(k);
-        (node, prev)
-    }
-
-    <span class="doccomment">/// Retrieves the `msg` chain node by the given `NodeKey`
-    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: NodeKey) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>MsgChainNode&gt; {
-        <span class="self">self</span>.map.get(k)
     }
 
     <span class="doccomment">/// Retrieves the `msg` chain node at the given index
@@ -862,6 +871,25 @@
         Ordering::Less
     }
 
+    <span class="kw">pub fn </span>set_eff_perf(<span class="kw-2">&amp;mut </span><span class="self">self</span>, prev: <span class="prelude-ty">Option</span>&lt;(f64, u64)&gt;) {
+        <span class="kw">let </span><span class="kw-2">mut </span>eff_perf = <span class="self">self</span>.gas_perf * <span class="self">self</span>.bp;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(prev) = prev {
+            <span class="kw">if </span>eff_perf &gt; <span class="number">0.0 </span>{
+                <span class="kw">let </span>prev_eff_perf = prev.<span class="number">0</span>;
+                <span class="kw">let </span>prev_gas_limit = prev.<span class="number">1</span>;
+                <span class="kw">let </span>eff_perf_with_parent = (eff_perf * <span class="self">self</span>.gas_limit <span class="kw">as </span>f64
+                    + prev_eff_perf * prev_gas_limit <span class="kw">as </span>f64)
+                    / (<span class="self">self</span>.gas_limit + prev_gas_limit) <span class="kw">as </span>f64;
+                <span class="self">self</span>.parent_offset = eff_perf - eff_perf_with_parent;
+                eff_perf = eff_perf_with_parent;
+            }
+        }
+        <span class="self">self</span>.eff_perf = eff_perf;
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>MsgChainNode {
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>cmp_effective(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Ordering {
         <span class="kw">if </span><span class="self">self</span>.merged &amp;&amp; !other.merged
             || <span class="self">self</span>.gas_perf &gt;= <span class="number">0.0 </span>&amp;&amp; other.gas_perf &lt; <span class="number">0.0
@@ -884,22 +912,6 @@
         } <span class="kw">else </span>{
             <span class="self">self</span>.eff_perf = <span class="number">0.0</span>;
         }
-    }
-
-    <span class="kw">pub fn </span>set_eff_perf(<span class="kw-2">&amp;mut </span><span class="self">self</span>, prev: <span class="prelude-ty">Option</span>&lt;(f64, u64)&gt;) {
-        <span class="kw">let </span><span class="kw-2">mut </span>eff_perf = <span class="self">self</span>.gas_perf * <span class="self">self</span>.bp;
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(prev) = prev {
-            <span class="kw">if </span>eff_perf &gt; <span class="number">0.0 </span>{
-                <span class="kw">let </span>prev_eff_perf = prev.<span class="number">0</span>;
-                <span class="kw">let </span>prev_gas_limit = prev.<span class="number">1</span>;
-                <span class="kw">let </span>eff_perf_with_parent = (eff_perf * <span class="self">self</span>.gas_limit <span class="kw">as </span>f64
-                    + prev_eff_perf * prev_gas_limit <span class="kw">as </span>f64)
-                    / (<span class="self">self</span>.gas_limit + prev_gas_limit) <span class="kw">as </span>f64;
-                <span class="self">self</span>.parent_offset = eff_perf - eff_perf_with_parent;
-                eff_perf = eff_perf_with_parent;
-            }
-        }
-        <span class="self">self</span>.eff_perf = eff_perf;
     }
 }
 

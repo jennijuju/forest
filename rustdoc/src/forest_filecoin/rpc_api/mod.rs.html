@@ -621,10 +621,6 @@
     }
 }
 
-<span class="doccomment">/// JSON-RPC API defaults
-</span><span class="kw">pub const </span>DEFAULT_MULTIADDRESS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/ip4/127.0.0.1/tcp/1234/http&quot;</span>;
-<span class="kw">pub const </span>API_INFO_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;FULLNODE_API_INFO&quot;</span>;
-
 <span class="doccomment">/// JSON-RPC API definitions
 
 /// Authorization API
@@ -707,11 +703,13 @@
     <span class="kw">pub type </span>ChainGetTipsetByHeightResult = TipsetJson;
 
     <span class="kw">pub const </span>CHAIN_GET_GENESIS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetGenesis&quot;</span>;
-    <span class="kw">pub type </span>ChainGetGenesisParams = ();
+    <span class="attr">#[allow(unused)] </span><span class="comment">// https://github.com/ChainSafe/forest/issues/3029
+    </span><span class="kw">pub type </span>ChainGetGenesisParams = ();
     <span class="kw">pub type </span>ChainGetGenesisResult = <span class="prelude-ty">Option</span>&lt;TipsetJson&gt;;
 
     <span class="kw">pub const </span>CHAIN_HEAD: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainHead&quot;</span>;
-    <span class="kw">pub type </span>ChainHeadParams = ();
+    <span class="attr">#[allow(unused)] </span><span class="comment">// https://github.com/ChainSafe/forest/issues/3029
+    </span><span class="kw">pub type </span>ChainHeadParams = ();
     <span class="kw">pub type </span>ChainHeadResult = TipsetJson;
 
     <span class="kw">pub const </span>CHAIN_GET_BLOCK: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetBlock&quot;</span>;
@@ -853,7 +851,8 @@
     <span class="kw">pub type </span>StateReplayResult = InvocResult;
 
     <span class="kw">pub const </span>STATE_NETWORK_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateNetworkName&quot;</span>;
-    <span class="kw">pub type </span>StateNetworkNameParams = ();
+    <span class="attr">#[allow(unused)] </span><span class="comment">// https://github.com/ChainSafe/forest/issues/3029
+    </span><span class="kw">pub type </span>StateNetworkNameParams = ();
     <span class="kw">pub type </span>StateNetworkNameResult = String;
 
     <span class="kw">pub const </span>STATE_NETWORK_VERSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateNetworkVersion&quot;</span>;
@@ -920,7 +919,8 @@
     <span class="kw">pub type </span>ShutdownResult = ();
 
     <span class="kw">pub const </span>START_TIME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StartTime&quot;</span>;
-    <span class="kw">pub type </span>StartTimeParams = ();
+    <span class="attr">#[allow(unused)] </span><span class="comment">// https://github.com/ChainSafe/forest/issues/3029
+    </span><span class="kw">pub type </span>StartTimeParams = ();
     <span class="kw">pub type </span>StartTimeResult = chrono::DateTime&lt;Utc&gt;;
 }
 

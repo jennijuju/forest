@@ -414,6 +414,9 @@
 <a href="#414" id="414">414</a>
 <a href="#415" id="415">415</a>
 <a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -430,9 +433,9 @@
 <span class="kw">use </span>fvm_shared3::address::Address <span class="kw">as </span>Address_v3;
 <span class="kw">pub use </span>fvm_shared3::address::{Error, Network, Payload, Protocol, BLS_PUB_LEN, PAYLOAD_HASH_LEN};
 <span class="kw">use </span>lazy_static::lazy_static;
-<span class="kw">use </span>num_traits::{FromPrimitive, ToPrimitive};
+<span class="kw">use </span>num_traits::FromPrimitive;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
+<span class="kw">use </span>std::sync::atomic::{AtomicU8, Ordering};
 
 <span class="comment">// XXX: Copied from ref-fvm due to a bug in their definition.
 </span><span class="macro">lazy_static! </span>{
@@ -474,21 +477,24 @@
         CurrentNetwork::set(network);
     }
 
-    <span class="kw">pub fn </span>with&lt;X&gt;(network: Network, cb: <span class="kw">impl </span>FnOnce() -&gt; X) -&gt; X {
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">pub fn </span>with&lt;X&gt;(network: Network, cb: <span class="kw">impl </span>FnOnce() -&gt; X) -&gt; X {
         <span class="kw">let </span>guard = NetworkGuard::new(network);
         <span class="kw">let </span>result = cb();
         drop(guard);
         result
     }
 
-    <span class="kw">fn </span>get_global() -&gt; Network {
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">fn </span>get_global() -&gt; Network {
         FromPrimitive::from_u8(GLOBAL_NETWORK.load(Ordering::Relaxed)).unwrap_or(Network::Mainnet)
     }
 }
 
 <span class="kw">struct </span>NetworkGuard(Network);
 <span class="kw">impl </span>NetworkGuard {
-    <span class="kw">fn </span>new(new_network: Network) -&gt; <span class="self">Self </span>{
+    <span class="attr">#[cfg(test)]
+    </span><span class="kw">fn </span>new(new_network: Network) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>previous_network = CurrentNetwork::get();
         CurrentNetwork::set(new_network);
         NetworkGuard(previous_network)

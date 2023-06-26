@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["block_prob","config","errors","msg_chain","msgpool"]};
+window.SIDEBAR_ITEMS = {"mod":["config","errors","msg_chain","msgpool"]};

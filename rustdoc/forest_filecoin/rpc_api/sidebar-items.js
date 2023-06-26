@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["API_INFO_KEY","DEFAULT_MULTIADDRESS"],"enum":["Access"],"fn":["check_access"],"mod":["auth_api","beacon_api","chain_api","common_api","data_types","db_api","gas_api","mpool_api","net_api","node_api","progress_api","state_api","sync_api","wallet_api"],"static":["ACCESS_MAP"]};
+window.SIDEBAR_ITEMS = {"enum":["Access"],"fn":["check_access"],"mod":["auth_api","beacon_api","chain_api","common_api","data_types","db_api","gas_api","mpool_api","net_api","node_api","progress_api","state_api","sync_api","wallet_api"],"static":["ACCESS_MAP"]};

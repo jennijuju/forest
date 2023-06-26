@@ -457,24 +457,17 @@
 <a href="#457" id="457">457</a>
 <a href="#458" id="458">458</a>
 <a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{convert::TryFrom, str::FromStr};
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::{
-    address::Address,
-    crypto::{Signature, SignatureType},
-};
-<span class="kw">use </span>ahash::{HashMap, HashMapExt};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, crypto::SignatureType};
+<span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">use </span>{<span class="kw">crate</span>::shim::crypto::Signature, ahash::HashMapExt <span class="kw">as _</span>};
 
 <span class="kw">use super</span>::{errors::Error, wallet_helpers, KeyInfo, KeyStore};
 
@@ -512,7 +505,8 @@
     keystore: KeyStore,
 }
 
-<span class="kw">impl </span>Wallet {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>Wallet {
     <span class="doccomment">/// Return a new wallet with a given `KeyStore`
     </span><span class="kw">pub fn </span>new(keystore: KeyStore) -&gt; <span class="self">Self </span>{
         Wallet {
@@ -692,14 +686,6 @@
     Key::try_from(key_info)
 }
 
-<span class="doccomment">/// Import `KeyInfo` into `KeyStore`
-</span><span class="kw">pub fn </span>import(key_info: KeyInfo, keystore: <span class="kw-2">&amp;mut </span>KeyStore) -&gt; anyhow::Result&lt;Address&gt; {
-    <span class="kw">let </span>k = Key::try_from(key_info)<span class="question-mark">?</span>;
-    <span class="kw">let </span>addr = <span class="macro">format!</span>(<span class="string">&quot;wallet-{}&quot;</span>, k.address);
-    keystore.put(addr, k.key_info)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(k.address)
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::blake2b_256;
@@ -717,8 +703,8 @@
             <span class="kw">let </span>secp_key = Key::try_from(secp_key_info).unwrap();
             secp_keys.push(secp_key);
 
-            <span class="kw">let </span>bls_priv_key = generate(SignatureType::BLS).unwrap();
-            <span class="kw">let </span>bls_key_info = KeyInfo::new(SignatureType::BLS, bls_priv_key);
+            <span class="kw">let </span>bls_priv_key = generate(SignatureType::Bls).unwrap();
+            <span class="kw">let </span>bls_key_info = KeyInfo::new(SignatureType::Bls, bls_priv_key);
             <span class="kw">let </span>bls_key = Key::try_from(bls_key_info).unwrap();
             bls_keys.push(bls_key);
         }
@@ -746,9 +732,9 @@
         <span class="comment">// make sure that has_key returns true as well
         </span><span class="macro">assert!</span>(wallet.has_key(<span class="kw-2">&amp;</span>addr));
 
-        <span class="kw">let </span>new_priv_key = generate(SignatureType::BLS).unwrap();
+        <span class="kw">let </span>new_priv_key = generate(SignatureType::Bls).unwrap();
         <span class="kw">let </span>pub_key =
-            wallet_helpers::to_public(SignatureType::BLS, new_priv_key.as_slice()).unwrap();
+            wallet_helpers::to_public(SignatureType::Bls, new_priv_key.as_slice()).unwrap();
         <span class="kw">let </span>address = Address::new_bls(pub_key.as_slice()).unwrap();
 
         <span class="comment">// test to see if the new key has been created and added to the wallet
@@ -850,11 +836,11 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>generate_new_key() {
         <span class="kw">let </span><span class="kw-2">mut </span>wallet = generate_wallet();
-        <span class="kw">let </span>addr = wallet.generate_addr(SignatureType::BLS).unwrap();
+        <span class="kw">let </span>addr = wallet.generate_addr(SignatureType::Bls).unwrap();
         <span class="kw">let </span>key = wallet.keystore.get(<span class="string">&quot;default&quot;</span>).unwrap();
         <span class="comment">// make sure that the newly generated key is the default key - checking by key
         // type
-        </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>SignatureType::BLS, key.key_type());
+        </span><span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>SignatureType::Bls, key.key_type());
 
         <span class="kw">let </span>address = <span class="macro">format!</span>(<span class="string">&quot;wallet-{addr}&quot;</span>);
 
@@ -863,7 +849,7 @@
 
         <span class="comment">// these assertions will make sure that the key has actually been added to the
         // wallet
-        </span><span class="macro">assert_eq!</span>(key_info.key_type(), <span class="kw-2">&amp;</span>SignatureType::BLS);
+        </span><span class="macro">assert_eq!</span>(key_info.key_type(), <span class="kw-2">&amp;</span>SignatureType::Bls);
         <span class="macro">assert_eq!</span>(key.address, addr);
     }
 
@@ -913,8 +899,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>bls_verify_test() {
-        <span class="kw">let </span>bls_priv_key = generate(SignatureType::BLS).unwrap();
-        <span class="kw">let </span>bls_key_info = KeyInfo::new(SignatureType::BLS, bls_priv_key);
+        <span class="kw">let </span>bls_priv_key = generate(SignatureType::Bls).unwrap();
+        <span class="kw">let </span>bls_key_info = KeyInfo::new(SignatureType::Bls, bls_priv_key);
         <span class="kw">let </span>bls_key = Key::try_from(bls_key_info).unwrap();
         <span class="kw">let </span>addr = bls_key.address;
         <span class="kw">let </span>key_store = KeyStore::new(KeyStoreConfig::Memory).unwrap();
@@ -926,7 +912,7 @@
         sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>addr).unwrap();
 
         <span class="comment">// invalid verify check
-        </span><span class="kw">let </span>invalid_addr = wallet.generate_addr(SignatureType::BLS).unwrap();
+        </span><span class="kw">let </span>invalid_addr = wallet.generate_addr(SignatureType::Bls).unwrap();
         <span class="macro">assert!</span>(sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>invalid_addr).is_err())
     }
 }

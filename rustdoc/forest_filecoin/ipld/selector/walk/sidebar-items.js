@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["VisitReason"],"struct":["LastBlockInfo","Progress"],"trait":["LinkResolver"]};
+window.SIDEBAR_ITEMS = {"enum":["VisitReason"],"struct":["LastBlockInfo"],"trait":["LinkResolver"]};

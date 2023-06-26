@@ -127,7 +127,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetAddrsListenResult, JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
     <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
-        method: NetRPCMethods::NetAddrsListen(tx),
+        method: NetRPCMethods::AddrsListen(tx),
     };
 
     data.network_send.send_async(req).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -144,7 +144,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetPeersResult, JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
     <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
-        method: NetRPCMethods::NetPeers(tx),
+        method: NetRPCMethods::Peers(tx),
     };
 
     data.network_send.send_async(req).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -174,7 +174,7 @@
 
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
     <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
-        method: NetRPCMethods::NetConnect(tx, peer_id, addrs),
+        method: NetRPCMethods::Connect(tx, peer_id, addrs),
     };
 
     data.network_send.send_async(req).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -200,7 +200,7 @@
 
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
     <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
-        method: NetRPCMethods::NetDisconnect(tx, peer_id),
+        method: NetRPCMethods::Disconnect(tx, peer_id),
     };
 
     data.network_send.send_async(req).<span class="kw">await</span><span class="question-mark">?</span>;

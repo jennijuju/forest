@@ -77,26 +77,12 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::key_management::KeyInfo;
 <span class="kw">use </span><span class="kw">crate</span>::shim::crypto::SignatureType;
 <span class="kw">use </span>chrono::{Duration, Utc};
-<span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
 <span class="kw">use </span>jsonwebtoken::{decode, encode, errors::Result <span class="kw">as </span>JWTResult, DecodingKey, EncodingKey, Header};
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>rand::Rng;
@@ -164,22 +150,10 @@
     <span class="prelude-val">Ok</span>(token.claims.allow)
 }
 
-<span class="doccomment">/// Check whether or not header has required permissions
-</span><span class="kw">pub fn </span>has_perms(header_raw: String, required: <span class="kw-2">&amp;</span>str, key: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
-    <span class="kw">if </span>header_raw.starts_with(<span class="string">&quot;Bearer &quot;</span>) {
-        <span class="kw">let </span>token = header_raw.trim_start_matches(<span class="string">&quot;Bearer &quot;</span>);
-        <span class="kw">let </span>perms = verify_token(token, key).map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
-        <span class="kw">if </span>!perms.contains(<span class="kw-2">&amp;</span>required.to_string()) {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(JsonRpcError::from(Error::InvalidPermissions));
-        }
-    }
-    <span class="prelude-val">Ok</span>(())
-}
-
 <span class="kw">pub fn </span>generate_priv_key() -&gt; KeyInfo {
     <span class="kw">let </span>priv_key = rand::thread_rng().gen::&lt;[u8; <span class="number">32</span>]&gt;();
     <span class="comment">// TODO temp use of bls key as placeholder, need to update keyinfo to use string
     // instead of keyinfo for key type
-    </span>KeyInfo::new(SignatureType::BLS, priv_key.to_vec())
+    </span>KeyInfo::new(SignatureType::Bls, priv_key.to_vec())
 }
 </code></pre></div></section></main></body></html>

@@ -278,9 +278,9 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>std::{sync::Arc, time::Duration};
+    <span class="kw">use </span>std::sync::Arc;
 
-    <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconPoint, BeaconSchedule, MockBeacon};
+    <span class="kw">use </span><span class="kw">crate</span>::beacon::{mock_beacon::MockBeacon, BeaconPoint, BeaconSchedule};
     <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
     <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
     <span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncStage;
@@ -306,7 +306,7 @@
     ) {
         <span class="kw">let </span>beacon = Arc::new(BeaconSchedule(<span class="macro">vec!</span>[BeaconPoint {
             height: <span class="number">0</span>,
-            beacon: Arc::new(MockBeacon::new(Duration::from_secs(<span class="number">1</span>))),
+            beacon: Arc::new(MockBeacon::default()),
         }]));
 
         <span class="kw">let </span>(network_send, network_rx) = flume::bounded(<span class="number">5</span>);

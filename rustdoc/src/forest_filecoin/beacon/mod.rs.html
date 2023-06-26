@@ -17,11 +17,11 @@
 
 </span><span class="kw">pub mod </span>beacon_entries;
 <span class="kw">mod </span>drand;
-<span class="kw">mod </span>mock_beacon;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">pub mod </span>mock_beacon;
 
 <span class="kw">pub use </span>beacon_entries::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>drand::<span class="kw-2">*</span>;
-<span class="kw">pub use </span>mock_beacon::<span class="kw-2">*</span>;
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">mod </span>drand;

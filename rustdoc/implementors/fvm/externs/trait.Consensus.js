@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"forest_filecoin":[["impl&lt;DB: Blockstore&gt; Consensus for <a class=\"struct\" href=\"forest_filecoin/interpreter/fvm/struct.ForestExternsV2.html\" title=\"struct forest_filecoin::interpreter::fvm::ForestExternsV2\">ForestExternsV2</a>&lt;DB&gt;"]]
+"forest_filecoin":[["impl&lt;DB: Blockstore&gt; Consensus for <a class=\"struct\" href=\"forest_filecoin/interpreter/fvm3/struct.ForestExterns.html\" title=\"struct forest_filecoin::interpreter::fvm3::ForestExterns\">ForestExterns</a>&lt;DB&gt;"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

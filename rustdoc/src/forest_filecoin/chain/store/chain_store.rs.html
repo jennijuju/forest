@@ -916,90 +916,6 @@
 <a href="#916" id="916">916</a>
 <a href="#917" id="917">917</a>
 <a href="#918" id="918">918</a>
-<a href="#919" id="919">919</a>
-<a href="#920" id="920">920</a>
-<a href="#921" id="921">921</a>
-<a href="#922" id="922">922</a>
-<a href="#923" id="923">923</a>
-<a href="#924" id="924">924</a>
-<a href="#925" id="925">925</a>
-<a href="#926" id="926">926</a>
-<a href="#927" id="927">927</a>
-<a href="#928" id="928">928</a>
-<a href="#929" id="929">929</a>
-<a href="#930" id="930">930</a>
-<a href="#931" id="931">931</a>
-<a href="#932" id="932">932</a>
-<a href="#933" id="933">933</a>
-<a href="#934" id="934">934</a>
-<a href="#935" id="935">935</a>
-<a href="#936" id="936">936</a>
-<a href="#937" id="937">937</a>
-<a href="#938" id="938">938</a>
-<a href="#939" id="939">939</a>
-<a href="#940" id="940">940</a>
-<a href="#941" id="941">941</a>
-<a href="#942" id="942">942</a>
-<a href="#943" id="943">943</a>
-<a href="#944" id="944">944</a>
-<a href="#945" id="945">945</a>
-<a href="#946" id="946">946</a>
-<a href="#947" id="947">947</a>
-<a href="#948" id="948">948</a>
-<a href="#949" id="949">949</a>
-<a href="#950" id="950">950</a>
-<a href="#951" id="951">951</a>
-<a href="#952" id="952">952</a>
-<a href="#953" id="953">953</a>
-<a href="#954" id="954">954</a>
-<a href="#955" id="955">955</a>
-<a href="#956" id="956">956</a>
-<a href="#957" id="957">957</a>
-<a href="#958" id="958">958</a>
-<a href="#959" id="959">959</a>
-<a href="#960" id="960">960</a>
-<a href="#961" id="961">961</a>
-<a href="#962" id="962">962</a>
-<a href="#963" id="963">963</a>
-<a href="#964" id="964">964</a>
-<a href="#965" id="965">965</a>
-<a href="#966" id="966">966</a>
-<a href="#967" id="967">967</a>
-<a href="#968" id="968">968</a>
-<a href="#969" id="969">969</a>
-<a href="#970" id="970">970</a>
-<a href="#971" id="971">971</a>
-<a href="#972" id="972">972</a>
-<a href="#973" id="973">973</a>
-<a href="#974" id="974">974</a>
-<a href="#975" id="975">975</a>
-<a href="#976" id="976">976</a>
-<a href="#977" id="977">977</a>
-<a href="#978" id="978">978</a>
-<a href="#979" id="979">979</a>
-<a href="#980" id="980">980</a>
-<a href="#981" id="981">981</a>
-<a href="#982" id="982">982</a>
-<a href="#983" id="983">983</a>
-<a href="#984" id="984">984</a>
-<a href="#985" id="985">985</a>
-<a href="#986" id="986">986</a>
-<a href="#987" id="987">987</a>
-<a href="#988" id="988">988</a>
-<a href="#989" id="989">989</a>
-<a href="#990" id="990">990</a>
-<a href="#991" id="991">991</a>
-<a href="#992" id="992">992</a>
-<a href="#993" id="993">993</a>
-<a href="#994" id="994">994</a>
-<a href="#995" id="995">995</a>
-<a href="#996" id="996">996</a>
-<a href="#997" id="997">997</a>
-<a href="#998" id="998">998</a>
-<a href="#999" id="999">999</a>
-<a href="#1000" id="1000">1000</a>
-<a href="#1001" id="1001">1001</a>
-<a href="#1002" id="1002">1002</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1015,12 +931,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
-    address::Address,
-    crypto::{Signature, SignatureType},
-    econ::TokenAmount,
-    executor::Receipt,
-    message::Message,
-    state_tree::StateTree,
+    address::Address, econ::TokenAmount, executor::Receipt, message::Message, state_tree::StateTree,
 };
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
     db::{
@@ -1033,7 +944,6 @@
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
 <span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>async_compression::futures::write::ZstdEncoder;
-<span class="kw">use </span>bls_signatures::Serialize <span class="kw">as </span>SerializeBls;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>digest::Digest;
 <span class="kw">use </span>futures::{io::BufWriter, AsyncWrite};
@@ -1068,9 +978,7 @@
 /// contained in message type.
 </span><span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub enum </span>HeadChange {
-    Current(Arc&lt;Tipset&gt;),
     Apply(Arc&lt;Tipset&gt;),
-    Revert(Arc&lt;Tipset&gt;),
 }
 
 <span class="doccomment">/// Stores chain data such as heaviest tipset and cached tipset info at each
@@ -1863,89 +1771,13 @@
         Revert(TipsetJson),
     }
 
-    <span class="kw">pub type </span>SubscriptionHeadChange = (i64, Vec&lt;HeadChangeJson&gt;);
-
     <span class="kw">impl </span>From&lt;HeadChange&gt; <span class="kw">for </span>HeadChangeJson {
         <span class="kw">fn </span>from(wrapper: HeadChange) -&gt; <span class="self">Self </span>{
             <span class="kw">match </span>wrapper {
-                HeadChange::Current(tipset) =&gt; HeadChangeJson::Current(TipsetJson(tipset)),
                 HeadChange::Apply(tipset) =&gt; HeadChangeJson::Apply(TipsetJson(tipset)),
-                HeadChange::Revert(tipset) =&gt; HeadChangeJson::Revert(TipsetJson(tipset)),
             }
         }
     }
-}
-
-<span class="doccomment">/// Result of persisting a vector of `SignedMessage`s that are to be included in
-/// a block.
-///
-/// The fields are public so they can be partially moved, but they should not be
-/// modified.
-</span><span class="kw">pub struct </span>PersistedBlockMessages {
-    <span class="doccomment">/// Overall CID to be included in the `BlockHeader`.
-    </span><span class="kw">pub </span>msg_cid: Cid,
-    <span class="doccomment">/// All CIDs of SECP messages, to be included in `BlockMsg`.
-    </span><span class="kw">pub </span>secp_cids: Vec&lt;Cid&gt;,
-    <span class="doccomment">/// All CIDs of BLS messages, to be included in `BlockMsg`.
-    </span><span class="kw">pub </span>bls_cids: Vec&lt;Cid&gt;,
-    <span class="doccomment">/// Aggregated signature of all BLS messages, to be included in the
-    /// `BlockHeader`.
-    </span><span class="kw">pub </span>bls_agg: Signature,
-}
-
-<span class="doccomment">/// Partition the messages into SECP and BLS variants, store them individually
-/// in the IPLD store, and the corresponding `TxMeta` as well, returning its CID
-/// so that it can be put in a block header. Also return the aggregated BLS
-/// signature of all BLS messages.
-</span><span class="kw">pub fn </span>persist_block_messages&lt;DB: Blockstore&gt;(
-    db: <span class="kw-2">&amp;</span>DB,
-    messages: Vec&lt;<span class="kw-2">&amp;</span>SignedMessage&gt;,
-) -&gt; anyhow::Result&lt;PersistedBlockMessages&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>bls_cids = Vec::new();
-    <span class="kw">let </span><span class="kw-2">mut </span>secp_cids = Vec::new();
-
-    <span class="kw">let </span><span class="kw-2">mut </span>bls_sigs = Vec::new();
-    <span class="kw">for </span>msg <span class="kw">in </span>messages {
-        <span class="kw">if </span>msg.signature().signature_type() == SignatureType::BLS {
-            <span class="kw">let </span>c = db.put_cbor_default(<span class="kw-2">&amp;</span>msg.message)<span class="question-mark">?</span>;
-            bls_cids.push(c);
-            bls_sigs.push(<span class="kw-2">&amp;</span>msg.signature);
-        } <span class="kw">else </span>{
-            <span class="kw">let </span>c = db.put_cbor_default(<span class="kw-2">&amp;</span>msg)<span class="question-mark">?</span>;
-            secp_cids.push(c);
-        }
-    }
-
-    <span class="kw">let </span>bls_msg_root = Amt::new_from_iter(db, bls_cids.iter().copied())<span class="question-mark">?</span>;
-    <span class="kw">let </span>secp_msg_root = Amt::new_from_iter(db, secp_cids.iter().copied())<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>mmcid = db.put_cbor_default(<span class="kw-2">&amp;</span>TxMeta {
-        bls_message_root: bls_msg_root,
-        secp_message_root: secp_msg_root,
-    })<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>bls_agg = <span class="kw">if </span>bls_sigs.is_empty() {
-        Signature::new_bls(<span class="macro">vec!</span>[])
-    } <span class="kw">else </span>{
-        Signature::new_bls(
-            bls_signatures::aggregate(
-                <span class="kw-2">&amp;</span>bls_sigs
-                    .iter()
-                    .map(|s| s.bytes())
-                    .map(bls_signatures::Signature::from_bytes)
-                    .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>,
-            )
-            .unwrap()
-            .as_bytes(),
-        )
-    };
-
-    <span class="prelude-val">Ok</span>(PersistedBlockMessages {
-        msg_cid: mmcid,
-        secp_cids,
-        bls_cids,
-        bls_agg,
-    })
 }
 
 <span class="attr">#[cfg(test)]

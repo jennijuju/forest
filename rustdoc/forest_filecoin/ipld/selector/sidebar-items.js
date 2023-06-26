@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Condition","RecursionLimit","Selector"],"fn":["has_recursive_edge","replace_recursive_edge"],"mod":["empty_map","walk"]};
+window.SIDEBAR_ITEMS = {"enum":["Condition","RecursionLimit","Selector"],"mod":["empty_map","walk"]};

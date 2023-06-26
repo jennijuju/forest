@@ -292,7 +292,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::key_management::json::KeyInfoJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::wallet_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
-    address::{Address, Protocol, StrictAddress},
+    address::{Protocol, StrictAddress},
     crypto::{Signature, SignatureType},
     econ::TokenAmount,
 };
@@ -383,7 +383,7 @@
             <span class="self">Self</span>::New { signature_type } =&gt; {
                 <span class="kw">let </span>signature_type = <span class="kw">match </span>signature_type.to_lowercase().as_str() {
                     <span class="string">&quot;secp256k1&quot; </span>=&gt; SignatureType::Secp256k1,
-                    <span class="kw">_ </span>=&gt; SignatureType::BLS,
+                    <span class="kw">_ </span>=&gt; SignatureType::Bls,
                 };
 
                 <span class="kw">let </span>signature_type_json = SignatureTypeJson(signature_type);

@@ -1034,10 +1034,10 @@
 <span class="doccomment">/// Network RPC API methods used to gather data from libp2p node.
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>NetRPCMethods {
-    NetAddrsListen(OneShotSender&lt;(PeerId, HashSet&lt;Multiaddr&gt;)&gt;),
-    NetPeers(OneShotSender&lt;HashMap&lt;PeerId, HashSet&lt;Multiaddr&gt;&gt;&gt;),
-    NetConnect(OneShotSender&lt;bool&gt;, PeerId, HashSet&lt;Multiaddr&gt;),
-    NetDisconnect(OneShotSender&lt;()&gt;, PeerId),
+    AddrsListen(OneShotSender&lt;(PeerId, HashSet&lt;Multiaddr&gt;)&gt;),
+    Peers(OneShotSender&lt;HashMap&lt;PeerId, HashSet&lt;Multiaddr&gt;&gt;&gt;),
+    Connect(OneShotSender&lt;bool&gt;, PeerId, HashSet&lt;Multiaddr&gt;),
+    Disconnect(OneShotSender&lt;()&gt;, PeerId),
 }
 
 <span class="doccomment">/// The `Libp2pService` listens to events from the libp2p swarm.
@@ -1290,7 +1290,7 @@
             bitswap_request_manager.get_block(store, cid, BITSWAP_TIMEOUT, <span class="prelude-val">Some</span>(response_channel));
         }
         NetworkMessage::JSONRPCRequest { method } =&gt; <span class="kw">match </span>method {
-            NetRPCMethods::NetAddrsListen(response_channel) =&gt; {
+            NetRPCMethods::AddrsListen(response_channel) =&gt; {
                 <span class="kw">let </span>listeners = Swarm::listeners(swarm).cloned().collect();
                 <span class="kw">let </span>peer_id = Swarm::local_peer_id(swarm);
 
@@ -1298,13 +1298,13 @@
                     <span class="macro">warn!</span>(<span class="string">&quot;Failed to get Libp2p listeners&quot;</span>);
                 }
             }
-            NetRPCMethods::NetPeers(response_channel) =&gt; {
+            NetRPCMethods::Peers(response_channel) =&gt; {
                 <span class="kw">let </span>peer_addresses = swarm.behaviour_mut().peer_addresses();
                 <span class="kw">if </span>response_channel.send(peer_addresses.clone()).is_err() {
                     <span class="macro">warn!</span>(<span class="string">&quot;Failed to get Libp2p peers&quot;</span>);
                 }
             }
-            NetRPCMethods::NetConnect(response_channel, peer_id, addresses) =&gt; {
+            NetRPCMethods::Connect(response_channel, peer_id, addresses) =&gt; {
                 <span class="kw">let </span><span class="kw-2">mut </span>success = <span class="bool-val">false</span>;
 
                 <span class="kw">for </span><span class="kw-2">mut </span>multiaddr <span class="kw">in </span>addresses {
@@ -1320,7 +1320,7 @@
                     <span class="macro">warn!</span>(<span class="string">&quot;Failed to connect to a peer&quot;</span>);
                 }
             }
-            NetRPCMethods::NetDisconnect(response_channel, peer_id) =&gt; {
+            NetRPCMethods::Disconnect(response_channel, peer_id) =&gt; {
                 <span class="kw">let _ </span>= Swarm::disconnect_peer_id(swarm, peer_id);
                 <span class="kw">if </span>response_channel.send(()).is_err() {
                     <span class="macro">warn!</span>(<span class="string">&quot;Failed to disconnect from a peer&quot;</span>);

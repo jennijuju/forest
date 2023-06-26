@@ -281,19 +281,32 @@
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
+</span><span class="attr">#[cfg(test)]
 </span><span class="kw">use </span>async_recursion::async_recursion;
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>cid::Cid;
 
-<span class="kw">use super</span>::{
-    <span class="kw">super</span>::{lookup_segment, Error, Ipld, Path},
+<span class="kw">use </span><span class="kw">super</span>::<span class="kw">super</span>::{Ipld, Path};
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">use super</span>::{
+    <span class="kw">super</span>::{error::Error, lookup_segment},
     Selector,
 };
 
-<span class="kw">impl </span>Selector {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>Selector {
     <span class="doccomment">/// Walks all nodes visited (not just matched nodes) and executes callback
     /// with progress and IPLD node. An optional link loader/resolver is
     /// passed in to be able to traverse links.
@@ -341,6 +354,7 @@
 
 <span class="doccomment">/// Provides reason for callback in traversal for `walk_all`.
 </span><span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[allow(unused)] </span><span class="comment">// https://github.com/ChainSafe/forest/issues/3031
 </span><span class="kw">pub enum </span>VisitReason {
     <span class="doccomment">/// IPLD node visited was a specific match.
     </span>SelectionMatch,
@@ -364,6 +378,7 @@
 <span class="doccomment">/// Contains progress of traversal and last block information from link
 /// traversals.
 </span><span class="attr">#[derive(Debug, Default)]
+#[cfg(test)]
 </span><span class="kw">pub struct </span>Progress&lt;L = ()&gt; {
     resolver: <span class="prelude-ty">Option</span>&lt;L&gt;,
     path: Path,
@@ -378,7 +393,8 @@
     <span class="kw">pub </span>link: Cid,
 }
 
-<span class="kw">impl</span>&lt;L&gt; Progress&lt;L&gt;
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl</span>&lt;L&gt; Progress&lt;L&gt;
 <span class="kw">where
     </span>L: LinkResolver + Sync + Send,
 {

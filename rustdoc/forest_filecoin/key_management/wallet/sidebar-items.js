@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["export_key_info","find_key","generate_key","get_default","import","list_addrs","try_find"],"struct":["Key","Wallet"]};
+window.SIDEBAR_ITEMS = {"fn":["export_key_info","find_key","generate_key","get_default","list_addrs","try_find"],"struct":["Key","Wallet"]};

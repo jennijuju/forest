@@ -225,7 +225,7 @@
             </span>S: Serializer,
         {
             <span class="kw">let </span>json = <span class="kw">match </span><span class="kw-2">*</span>m {
-                SignatureType::BLS =&gt; JsonHelperEnum::Bls,
+                SignatureType::Bls =&gt; JsonHelperEnum::Bls,
                 SignatureType::Secp256k1 =&gt; JsonHelperEnum::Secp256k1,
                 SignatureType::Delegated =&gt; JsonHelperEnum::Delegated,
             };
@@ -239,7 +239,7 @@
             <span class="kw">let </span>json_enum: JsonHelperEnum = Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
 
             <span class="kw">let </span>signature_type = <span class="kw">match </span>json_enum {
-                JsonHelperEnum::Bls =&gt; SignatureType::BLS,
+                JsonHelperEnum::Bls =&gt; SignatureType::Bls,
                 JsonHelperEnum::Secp256k1 =&gt; SignatureType::Secp256k1,
                 JsonHelperEnum::Delegated =&gt; SignatureType::Delegated,
             };
