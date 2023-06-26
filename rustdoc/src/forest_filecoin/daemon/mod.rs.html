@@ -808,18 +808,6 @@
 <a href="#808" id="808">808</a>
 <a href="#809" id="809">809</a>
 <a href="#810" id="810">810</a>
-<a href="#811" id="811">811</a>
-<a href="#812" id="812">812</a>
-<a href="#813" id="813">813</a>
-<a href="#814" id="814">814</a>
-<a href="#815" id="815">815</a>
-<a href="#816" id="816">816</a>
-<a href="#817" id="817">817</a>
-<a href="#818" id="818">818</a>
-<a href="#819" id="819">819</a>
-<a href="#820" id="820">820</a>
-<a href="#821" id="821">821</a>
-<a href="#822" id="822">822</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -905,19 +893,7 @@
         .flink(IPC_PATH.as_os_str())
 }
 
-<span class="comment">// Initialize Consensus
-</span><span class="attr">#[cfg(not(any(feature = <span class="string">&quot;fil_cns&quot;</span>, feature = <span class="string">&quot;deleg_cns&quot;</span>)))]
-</span><span class="macro">compile_error!</span>(<span class="string">&quot;No consensus feature enabled; use e.g. `--feature fil_cns` to pick one.&quot;</span>);
-
-<span class="macro">cfg_if::cfg_if! </span>{
-    <span class="kw">if </span><span class="attr">#[cfg(feature = <span class="string">&quot;deleg_cns&quot;</span>)] </span>{
-        <span class="comment">// Custom consensus.
-        </span><span class="kw">use </span><span class="kw">crate</span>::deleg_cns::composition <span class="kw">as </span>cns;
-    } <span class="kw">else </span>{
-        <span class="comment">// Default consensus
-        </span><span class="kw">use </span><span class="kw">crate</span>::fil_cns::composition <span class="kw">as </span>cns;
-    }
-}
+<span class="kw">use </span><span class="kw">crate</span>::fil_cns::composition <span class="kw">as </span>cns;
 
 <span class="kw">fn </span>unblock_parent_process() -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>shmem = ipc_shmem_conf().open()<span class="question-mark">?</span>;

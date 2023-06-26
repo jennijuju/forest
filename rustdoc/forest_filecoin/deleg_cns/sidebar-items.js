@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["composition","consensus","proposer","validation"]};
