@@ -188,9 +188,18 @@ where
     // 1GB
     const BUFFER_CAPCITY_BYTES: usize = 1024 * 1024 * 1024;
 
-    let (tx, rx) = flume::bounded(100);
+    let buffer_capacity_bytes = std::env::var("BUFFER_CAPACITY")
+        .map_err(anyhow::Error::from)
+        .and_then(|buf| usize::from_str_radix(&buf, 10).map_err(anyhow::Error::from))
+        .unwrap_or(BUFFER_CAPCITY_BYTES);
+    let channel_size = std::env::var("CHANNEL_CAPACITY")
+        .map_err(anyhow::Error::from)
+        .and_then(|buf| usize::from_str_radix(&buf, 10).map_err(anyhow::Error::from))
+        .unwrap_or(100);
+
+    let (tx, rx) = flume::bounded(channel_size);
     let write_task =
-        tokio::spawn(async move { store.buffered_write(rx, BUFFER_CAPCITY_BYTES).await });
+        tokio::spawn(async move { store.buffered_write(rx, buffer_capacity_bytes).await });
     let mut car_reader = CarReader::new(reader).await?;
     let mut n_records = 0;
     while let Some(block) = car_reader.next_block().await? {
