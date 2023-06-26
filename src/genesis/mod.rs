@@ -190,7 +190,11 @@ where
 
     let buffer_capacity_bytes = std::env::var("BUFFER_CAPACITY")
         .map_err(anyhow::Error::from)
-        .and_then(|buf| usize::from_str_radix(&buf, 10).map_err(anyhow::Error::from))
+        .and_then(|buf| {
+            usize::from_str_radix(&buf, 10)
+                .map_err(anyhow::Error::from)
+                .map(|v| v * 1024 * 1024)
+        })
         .unwrap_or(BUFFER_CAPCITY_BYTES);
     let channel_size = std::env::var("CHANNEL_CAPACITY")
         .map_err(anyhow::Error::from)
