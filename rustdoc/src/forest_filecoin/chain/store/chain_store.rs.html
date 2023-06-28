@@ -939,7 +939,6 @@
         BlockstoreExt, CborStoreExt,
     },
     io::{AsyncWriterWithChecksum, Checksum},
-    misc::Either,
 };
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
 <span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
@@ -947,6 +946,7 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>digest::Digest;
 <span class="kw">use </span>futures::{io::BufWriter, AsyncWrite};
+<span class="kw">use </span>futures_util::future::Either;
 <span class="kw">use </span>futures_util::AsyncWriteExt;
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
