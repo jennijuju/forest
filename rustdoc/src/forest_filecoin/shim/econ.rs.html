@@ -247,6 +247,7 @@
 <a href="#247" id="247">247</a>
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -264,7 +265,8 @@
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>TokenAmount(TokenAmount_v3);
 
-<span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TokenAmount {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TokenAmount {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
         <span class="kw">use </span>fvm_shared3::bigint::MAX_BIGINT_SIZE;
         <span class="kw">use </span>num::BigUint;

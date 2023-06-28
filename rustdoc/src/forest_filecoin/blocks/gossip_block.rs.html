@@ -114,6 +114,8 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -121,7 +123,7 @@
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
 <span class="kw">use </span>serde_tuple::{<span class="self">self</span>, Deserialize_tuple, Serialize_tuple};
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{ArbitraryCid, BlockHeader};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
 
 <span class="doccomment">/// Block message used as serialized `gossipsub` messages for blocks topic.
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Serialize_tuple, Deserialize_tuple)]
@@ -131,8 +133,10 @@
     <span class="kw">pub </span>secpk_messages: Vec&lt;Cid&gt;,
 }
 
-<span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>GossipBlock {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>GossipBlock {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
+        <span class="kw">use </span><span class="kw">crate</span>::blocks::ArbitraryCid;
         <span class="kw">let </span>arbitrary_cids: Vec&lt;ArbitraryCid&gt; = Vec::arbitrary(g);
         <span class="kw">let </span>bls_cids: Vec&lt;Cid&gt; = arbitrary_cids.iter().map(|cid| cid.<span class="number">0</span>).collect();
 

@@ -179,6 +179,8 @@
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
 <a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::borrow::Cow;
@@ -330,7 +332,8 @@
     </span>verify_messages(<span class="kw-2">&amp;</span>bls_sig, data, <span class="kw-2">&amp;</span>pks[..])
 }
 
-<span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>Signature {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>Signature {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             bytes: Vec::arbitrary(g),
@@ -350,7 +353,8 @@
     Delegated = <span class="number">3</span>,
 }
 
-<span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>SignatureType {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>SignatureType {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
         <span class="kw-2">*</span>g.choose(<span class="kw-2">&amp;</span>[
             SignatureType::Secp256k1,

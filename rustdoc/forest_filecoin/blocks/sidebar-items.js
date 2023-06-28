@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["block","election_proof","errors","gossip_block","header","persistence","ticket","tipset"],"struct":["ArbitraryCid"]};
+window.SIDEBAR_ITEMS = {"mod":["block","election_proof","errors","gossip_block","header","persistence","ticket","tipset"]};

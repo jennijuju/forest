@@ -117,6 +117,7 @@
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
 <a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
@@ -133,7 +134,8 @@
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>Message(Message_v3);
 
-<span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>Message {
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>Message {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(Message_v3 {
             to: Address::arbitrary(g).into(),
