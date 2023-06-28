@@ -286,6 +286,10 @@
 <a href="#286" id="286">286</a>
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -301,7 +305,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{chain_api::ChainExportParams, progress_api::GetProgressType};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, progress_ops::get_progress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span><span class="kw">crate</span>::utils::{io::ProgressBar, net::get_fetch_progress_from_file};
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
@@ -309,7 +313,9 @@
 <span class="kw">use </span>tempfile::TempDir;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
+<span class="kw">use </span><span class="kw">crate</span>::utils::net::StreamedContentReader;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>SnapshotCommands {
@@ -483,7 +489,9 @@
         )<span class="question-mark">?</span>);
 
         <span class="kw">let </span>(cids, _n_records) = {
-            <span class="kw">let </span>reader = get_fetch_progress_from_file(<span class="kw-2">&amp;</span>snapshot).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>reader =
+                StreamedContentReader::read(snapshot.as_path().display().to_string().as_str())
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
             forest_load_car(chain_store.blockstore().clone(), reader).<span class="kw">await</span><span class="question-mark">?
         </span>};
 

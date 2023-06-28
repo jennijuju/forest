@@ -436,17 +436,6 @@
 <a href="#436" id="436">436</a>
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -458,13 +447,14 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::progress_bar::downloading_style;
 <span class="kw">use </span>anyhow::{anyhow, bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDate;
+<span class="kw">use </span>tokio_util::compat::FuturesAsyncReadCompatExt;
 <span class="kw">use </span>tracing::{info, warn};
 <span class="kw">use </span>url::Url;
 
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::parse::ParsedFilename;
+<span class="kw">use </span><span class="kw">crate</span>::utils::net::StreamedContentReader;
 
 <span class="doccomment">/// Who hosts the snapshot on the web?
 /// See [`stable_url`].
@@ -588,28 +578,16 @@
 
 <span class="doccomment">/// Download the file at `url` with a private HTTP client, returning the path to the downloaded file
 </span><span class="kw">async fn </span>download_http(url: Url, directory: <span class="kw-2">&amp;</span>Path, filename: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;PathBuf&gt; {
-    <span class="kw">use </span>futures::TryStreamExt <span class="kw">as _</span>;
-    <span class="kw">use </span>tap::Pipe <span class="kw">as _</span>;
     <span class="kw">let </span>dst_path = directory.join(filename);
-    <span class="kw">let </span>response = reqwest::get(url)
-        .<span class="kw">await</span><span class="question-mark">?
-        </span>.error_for_status()
-        .context(<span class="string">&quot;server returned an error response&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let </span>url = response.url().clone();
+
     <span class="macro">info!</span>(%url, <span class="string">&quot;downloading snapshot&quot;</span>);
-    <span class="kw">let </span>progress_bar = indicatif::ProgressBar::new(<span class="number">0</span>).with_style(downloading_style());
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(len) = response.content_length() {
-        progress_bar.set_length(len)
-    }
-    <span class="kw">let </span><span class="kw-2">mut </span>src = response
-        .bytes_stream()
-        .map_err(|reqwest_error| std::io::Error::new(std::io::ErrorKind::Other, reqwest_error))
-        .pipe(tokio_util::io::StreamReader::new)
-        .pipe(|reader| progress_bar.wrap_async_read(reader));
+    <span class="kw">let </span>reader = StreamedContentReader::read(url.as_str()).<span class="kw">await</span><span class="question-mark">?</span>;
+
     <span class="kw">let </span><span class="kw-2">mut </span>dst = tokio::fs::File::create(<span class="kw-2">&amp;</span>dst_path)
         .<span class="kw">await
         </span>.context(<span class="string">&quot;couldn&#39;t create destination file&quot;</span>)<span class="question-mark">?</span>;
-    tokio::io::copy(<span class="kw-2">&amp;mut </span>src, <span class="kw-2">&amp;mut </span>dst)
+
+    tokio::io::copy(<span class="kw-2">&amp;mut </span>reader.compat(), <span class="kw-2">&amp;mut </span>dst)
         .<span class="kw">await
         </span>.map(|<span class="kw">_</span>| dst_path)
         .context(<span class="string">&quot;couldn&#39;t download file&quot;</span>)

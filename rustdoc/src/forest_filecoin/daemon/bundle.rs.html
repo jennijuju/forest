@@ -81,7 +81,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::genesis::forest_load_car;
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::FetchProgress;
+<span class="kw">use </span><span class="kw">crate</span>::utils::net::StreamedContentReader;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>tokio::{
@@ -141,7 +141,7 @@
 
     <span class="comment">// Otherwise, download it.
     </span><span class="macro">info!</span>(<span class="string">&quot;Downloading actors bundle...&quot;</span>);
-    <span class="kw">let </span>reader = FetchProgress::fetch_from_url(<span class="kw-2">&amp;</span>bundle_info.url).<span class="kw">await</span><span class="question-mark">?</span>.inner;
+    <span class="kw">let </span>reader = StreamedContentReader::read(bundle_info.url.as_str()).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>file = File::create(<span class="kw-2">&amp;</span>bundle_path).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(file);

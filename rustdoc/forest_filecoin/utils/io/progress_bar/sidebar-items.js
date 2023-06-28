@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ProgressBarVisibility","Units"],"fn":["downloading_style"],"static":["PROGRESS_BAR_VISIBILITY"],"struct":["ProgressBar"]};
+window.SIDEBAR_ITEMS = {"enum":["ProgressBarVisibility","Units"],"static":["PROGRESS_BAR_VISIBILITY"],"struct":["ProgressBar"]};
