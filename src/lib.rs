@@ -20,7 +20,6 @@ mod auth;
 mod beacon;
 mod blocks;
 mod car_backed_blockstore;
-mod car_stream;
 mod chain;
 mod chain_sync;
 mod cli;
