@@ -162,18 +162,16 @@
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
-<a href="#165" id="165">165</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::message::Message;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
+<span class="kw">use </span><span class="kw">crate</span>::shim::econ::{TokenAmount, BLOCK_GAS_LIMIT};
 <span class="kw">use </span>ahash::{HashSet, HashSetExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
-<span class="kw">use </span>fvm_shared3::BLOCK_GAS_LIMIT;
 
 <span class="doccomment">/// Used in calculating the base fee change.
 </span><span class="kw">pub const </span>BLOCK_GAS_TARGET: u64 = BLOCK_GAS_LIMIT / <span class="number">2</span>;

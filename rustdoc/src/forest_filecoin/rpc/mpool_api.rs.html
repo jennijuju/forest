@@ -264,7 +264,7 @@
     <span class="kw">let </span>heaviest_tipset = data.state_manager.chain_store().heaviest_tipset();
     <span class="kw">let </span>key_addr = data
         .state_manager
-        .resolve_to_key_addr(<span class="kw-2">&amp;</span>from.into(), <span class="kw-2">&amp;</span>heaviest_tipset)
+        .resolve_to_key_addr(<span class="kw-2">&amp;</span>from, <span class="kw-2">&amp;</span>heaviest_tipset)
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">if </span>umsg.sequence != <span class="number">0 </span>{
@@ -278,9 +278,9 @@
     }
 
     <span class="kw">if </span>from.protocol() == Protocol::ID {
-        umsg.from = key_addr.into();
+        umsg.from = key_addr;
     }
-    <span class="kw">let </span>nonce = data.mpool.get_sequence(<span class="kw-2">&amp;</span>from.into())<span class="question-mark">?</span>;
+    <span class="kw">let </span>nonce = data.mpool.get_sequence(<span class="kw-2">&amp;</span>from)<span class="question-mark">?</span>;
     umsg.sequence = nonce;
     <span class="kw">let </span>key = <span class="kw">crate</span>::key_management::Key::try_from(<span class="kw">crate</span>::key_management::try_find(
         <span class="kw-2">&amp;</span>key_addr,

@@ -128,14 +128,10 @@
 <a href="#128" id="128">128</a>
 <a href="#129" id="129">129</a>
 <a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::borrow::Borrow;
-
-<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, message::Message};
+</span><span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, message::Message};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_encoding::{Cbor, Error};
 <span class="kw">use </span>fvm_ipld_encoding3::RawBytes;
@@ -167,13 +163,13 @@
     <span class="kw">fn </span>from(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.from(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; Address::from(t.from),
+            <span class="self">Self</span>::Unsigned(t) =&gt; t.from,
         }
     }
     <span class="kw">fn </span>to(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.to(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; Address::from(t.to),
+            <span class="self">Self</span>::Unsigned(t) =&gt; t.to,
         }
     }
     <span class="kw">fn </span>sequence(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
@@ -185,7 +181,7 @@
     <span class="kw">fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.value(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; t.value.borrow().into(),
+            <span class="self">Self</span>::Unsigned(t) =&gt; t.value.clone(),
         }
     }
     <span class="kw">fn </span>method_num(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MethodNum {
@@ -221,19 +217,19 @@
     <span class="kw">fn </span>required_funds(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.required_funds(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; (<span class="kw-2">&amp;</span>t.gas_fee_cap * t.gas_limit + <span class="kw-2">&amp;</span>t.value).into(),
+            <span class="self">Self</span>::Unsigned(t) =&gt; <span class="kw-2">&amp;</span>t.gas_fee_cap * t.gas_limit + <span class="kw-2">&amp;</span>t.value,
         }
     }
     <span class="kw">fn </span>gas_fee_cap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.gas_fee_cap(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; (<span class="kw-2">&amp;</span>t.gas_fee_cap).into(),
+            <span class="self">Self</span>::Unsigned(t) =&gt; t.gas_fee_cap.clone(),
         }
     }
     <span class="kw">fn </span>gas_premium(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.gas_premium(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; (<span class="kw-2">&amp;</span>t.gas_premium).into(),
+            <span class="self">Self</span>::Unsigned(t) =&gt; t.gas_premium.clone(),
         }
     }
 

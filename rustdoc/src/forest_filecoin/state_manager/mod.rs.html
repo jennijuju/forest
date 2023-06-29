@@ -1829,7 +1829,7 @@
         }
 
         <span class="kw">let </span>actor = <span class="self">self
-            </span>.get_actor(<span class="kw-2">&amp;</span>msg.from.into(), <span class="kw-2">*</span>bstate)<span class="question-mark">?
+            </span>.get_actor(<span class="kw-2">&amp;</span>msg.from, <span class="kw-2">*</span>bstate)<span class="question-mark">?
             </span>.ok_or_else(|| Error::Other(<span class="string">&quot;Could not get actor&quot;</span>.to_string()))<span class="question-mark">?</span>;
         msg.sequence = actor.sequence;
         <span class="kw">let </span>apply_ret = vm.apply_implicit_message(msg)<span class="question-mark">?</span>;

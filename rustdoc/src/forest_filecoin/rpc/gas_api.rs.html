@@ -270,9 +270,9 @@
     data_types::{MessageSendSpec, RPCState},
     gas_api::<span class="kw-2">*</span>,
 };
+<span class="kw">use </span><span class="kw">crate</span>::shim::econ::BLOCK_GAS_LIMIT;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{econ::TokenAmount, message::Message};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_shared3::BLOCK_GAS_LIMIT;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>num_traits::{FromPrimitive, Zero};
@@ -449,7 +449,7 @@
     <span class="kw">let </span>curr_ts = data.state_manager.chain_store().heaviest_tipset();
     <span class="kw">let </span>from_a = data
         .state_manager
-        .resolve_to_key_addr(<span class="kw-2">&amp;</span>msg.from.into(), <span class="kw-2">&amp;</span>curr_ts)
+        .resolve_to_key_addr(<span class="kw-2">&amp;</span>msg.from, <span class="kw-2">&amp;</span>curr_ts)
         .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>pending = data.mpool.pending_for(<span class="kw-2">&amp;</span>from_a);

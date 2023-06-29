@@ -418,6 +418,8 @@
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -443,7 +445,7 @@
     <span class="doccomment">/// Zero address used to avoid allowing it to be used for verification.
     /// This is intentionally disallowed because it is an edge case with Filecoin&#39;s BLS
     /// signature verification.
-    </span><span class="kw">pub static </span><span class="kw-2">ref </span>ZERO_ADDRESS: Address_v3 = Network::Mainnet.parse_address(<span class="string">&quot;f3yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaby2smx7a&quot;</span>).unwrap();
+    </span><span class="kw">pub static </span><span class="kw-2">ref </span>ZERO_ADDRESS: Address = Network::Mainnet.parse_address(<span class="string">&quot;f3yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaby2smx7a&quot;</span>).unwrap().into();
 }
 
 <span class="kw">static </span>GLOBAL_NETWORK: AtomicU8 = AtomicU8::new(Network::Mainnet <span class="kw">as </span>u8);
@@ -518,7 +520,9 @@
 /// parse both versions and discard the prefix. See also [`StrictAddress`].
 ///
 /// For more information, see: &lt;https://spec.filecoin.io/appendix/address/&gt;
-</span><span class="attr">#[derive(Copy, Clone, Debug, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+</span><span class="attr">#[derive(
+    Copy, Clone, Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize,
+)]
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>Address(Address_v3);
 

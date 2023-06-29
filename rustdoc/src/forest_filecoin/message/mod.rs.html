@@ -190,16 +190,16 @@
 
 <span class="kw">impl </span>Message <span class="kw">for </span>ShimMessage {
     <span class="kw">fn </span>from(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address {
-        Address::from(<span class="self">self</span>.from)
+        <span class="self">self</span>.from
     }
     <span class="kw">fn </span>to(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Address {
-        Address::from(<span class="self">self</span>.to)
+        <span class="self">self</span>.to
     }
     <span class="kw">fn </span>sequence(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">self</span>.sequence
     }
     <span class="kw">fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
-        TokenAmount::from(<span class="kw-2">&amp;</span><span class="self">self</span>.value)
+        <span class="self">self</span>.value.clone()
     }
     <span class="kw">fn </span>method_num(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; MethodNum {
         <span class="self">self</span>.method_num
@@ -217,21 +217,21 @@
         <span class="self">self</span>.sequence = new_sequence;
     }
     <span class="kw">fn </span>required_funds(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
-        TokenAmount::from(<span class="kw-2">&amp;</span><span class="self">self</span>.gas_fee_cap * <span class="self">self</span>.gas_limit + <span class="kw-2">&amp;</span><span class="self">self</span>.value)
+        <span class="kw-2">&amp;</span><span class="self">self</span>.gas_fee_cap * <span class="self">self</span>.gas_limit + <span class="kw-2">&amp;</span><span class="self">self</span>.value
     }
     <span class="kw">fn </span>gas_fee_cap(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
-        TokenAmount::from(<span class="kw-2">&amp;</span><span class="self">self</span>.gas_fee_cap)
+        <span class="self">self</span>.gas_fee_cap.clone()
     }
     <span class="kw">fn </span>gas_premium(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
-        TokenAmount::from(<span class="kw-2">&amp;</span><span class="self">self</span>.gas_premium)
+        <span class="self">self</span>.gas_premium.clone()
     }
 
     <span class="kw">fn </span>set_gas_fee_cap(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cap: TokenAmount) {
-        <span class="self">self</span>.gas_fee_cap = cap.into();
+        <span class="self">self</span>.gas_fee_cap = cap;
     }
 
     <span class="kw">fn </span>set_gas_premium(<span class="kw-2">&amp;mut </span><span class="self">self</span>, prem: TokenAmount) {
-        <span class="self">self</span>.gas_premium = prem.into();
+        <span class="self">self</span>.gas_premium = prem;
     }
 }
 
@@ -242,7 +242,7 @@
     version: NetworkVersion,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
     <span class="kw">use </span><span class="kw">crate</span>::shim::address::ZERO_ADDRESS;
-    <span class="kw">use </span>fvm_shared3::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN};
+    <span class="kw">use </span><span class="kw">crate</span>::shim::econ::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN};
     <span class="kw">if </span>msg.version != <span class="number">0 </span>{
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Message version: {} not supported&quot;</span>, msg.version);
     }

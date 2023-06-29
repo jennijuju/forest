@@ -995,7 +995,7 @@
             <span class="kw">break</span>;
         }
         gas_limit += m.gas_limit();
-        <span class="kw">if </span>gas_limit &gt; fvm_shared3::BLOCK_GAS_LIMIT {
+        <span class="kw">if </span>gas_limit &gt; <span class="kw">crate</span>::shim::econ::BLOCK_GAS_LIMIT {
             <span class="kw">break</span>;
         }
 

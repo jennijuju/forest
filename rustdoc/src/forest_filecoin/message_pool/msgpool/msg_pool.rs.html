@@ -715,11 +715,11 @@
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(exms) = <span class="self">self</span>.msgs.get(<span class="kw-2">&amp;</span>m.sequence()) {
             <span class="kw">if </span>m.cid()<span class="question-mark">? </span>!= exms.cid()<span class="question-mark">? </span>{
-                <span class="kw">let </span>premium = TokenAmount::from(<span class="kw-2">&amp;</span>exms.message().gas_premium);
+                <span class="kw">let </span>premium = <span class="kw-2">&amp;</span>exms.message().gas_premium;
                 <span class="kw">let </span>min_price = premium.clone()
                     + ((premium * RBF_NUM).div_floor(RBF_DENOM))
                     + TokenAmount::from_atto(<span class="number">1u8</span>);
-                <span class="kw">if </span>m.message().gas_premium &lt;= min_price.into() {
+                <span class="kw">if </span>m.message().gas_premium &lt;= min_price {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(Error::GasPriceTooLow);
                 }
             } <span class="kw">else </span>{

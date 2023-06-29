@@ -945,11 +945,6 @@
 <a href="#945" id="945">945</a>
 <a href="#946" id="946">946</a>
 <a href="#947" id="947">947</a>
-<a href="#948" id="948">948</a>
-<a href="#949" id="949">949</a>
-<a href="#950" id="950">950</a>
-<a href="#951" id="951">951</a>
-<a href="#952" id="952">952</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1101,7 +1096,7 @@
 
     chains.sort(<span class="bool-val">false</span>);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>gas_limit = fvm_shared3::BLOCK_GAS_LIMIT;
+    <span class="kw">let </span><span class="kw-2">mut </span>gas_limit = <span class="kw">crate</span>::shim::econ::BLOCK_GAS_LIMIT;
     <span class="kw">let </span><span class="kw-2">mut </span>i = <span class="number">0</span>;
     <span class="lifetime">&#39;l</span>: <span class="kw">while </span>i &lt; chains.len() {
         <span class="kw">let </span>chain = <span class="kw-2">&amp;mut </span>chains[i];
@@ -1208,12 +1203,7 @@
                 }
             }
             <span class="kw">for </span>msg <span class="kw">in </span>msgs {
-                remove_from_selected_msgs(
-                    <span class="kw-2">&amp;</span>msg.from.into(),
-                    pending,
-                    msg.sequence,
-                    rmsgs.borrow_mut(),
-                )<span class="question-mark">?</span>;
+                remove_from_selected_msgs(<span class="kw-2">&amp;</span>msg.from, pending, msg.sequence, rmsgs.borrow_mut())<span class="question-mark">?</span>;
                 <span class="kw">if </span>!repub &amp;&amp; republished.write().insert(msg.cid()<span class="question-mark">?</span>) {
                     repub = <span class="bool-val">true</span>;
                 }

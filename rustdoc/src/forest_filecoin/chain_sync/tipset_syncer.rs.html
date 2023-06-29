@@ -1663,7 +1663,6 @@
 <a href="#1663" id="1663">1663</a>
 <a href="#1664" id="1664">1664</a>
 <a href="#1665" id="1665">1665</a>
-<a href="#1666" id="1666">1666</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1685,7 +1684,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::message::{valid_for_block_inclusion, Message <span class="kw">as </span>MessageTrait};
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
-    address::Address, clock::ChainEpoch, crypto::verify_bls_aggregate,
+    address::Address, clock::ChainEpoch, crypto::verify_bls_aggregate, econ::BLOCK_GAS_LIMIT,
     gas::price_list_by_network_version, message::Message, state_tree::StateTree,
 };
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::{is_valid_for_sending, Error <span class="kw">as </span>StateManagerError, StateManager};
@@ -1696,7 +1695,6 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::Cbor;
 <span class="kw">use </span>fvm_shared::ALLOWABLE_CLOCK_DRIFT;
-<span class="kw">use </span>fvm_shared3::BLOCK_GAS_LIMIT;
 <span class="kw">use </span>log::{debug, error, info, trace, warn};
 <span class="kw">use </span>nonempty::NonEmpty;
 <span class="kw">use </span>num::BigInt;
@@ -3084,7 +3082,7 @@
     <span class="kw">for </span>m <span class="kw">in </span>block.bls_msgs() {
         <span class="kw">let </span>pk = StateManager::get_bls_public_key(
             state_manager.blockstore(),
-            <span class="kw-2">&amp;</span>m.from.into(),
+            <span class="kw-2">&amp;</span>m.from,
             <span class="kw-2">*</span>base_tipset.parent_state(),
         )<span class="question-mark">?</span>;
         pub_keys.push(pk);
@@ -3135,7 +3133,7 @@
         </span><span class="kw">let </span>sequence: u64 = <span class="kw">match </span>account_sequences.get(<span class="kw-2">&amp;</span>msg.from()) {
             <span class="prelude-val">Some</span>(sequence) =&gt; <span class="kw-2">*</span>sequence,
             <span class="prelude-val">None </span>=&gt; {
-                <span class="kw">let </span>actor = tree.get_actor(<span class="kw-2">&amp;</span>msg.from.into())<span class="question-mark">?</span>.ok_or_else(|| {
+                <span class="kw">let </span>actor = tree.get_actor(<span class="kw-2">&amp;</span>msg.from)<span class="question-mark">?</span>.ok_or_else(|| {
                     <span class="macro">anyhow::anyhow!</span>(
                         <span class="string">&quot;Failed to retrieve nonce for addr: Actor does not exist in state&quot;
                     </span>)
