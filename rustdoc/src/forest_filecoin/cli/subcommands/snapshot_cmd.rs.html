@@ -256,66 +256,28 @@
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{path::PathBuf, sync::Arc};
-
+</span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::car_backed_blockstore::CarBackedBlockstore;
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
+<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
-<span class="kw">use </span><span class="kw">crate</span>::db::db_engine::{db_root, open_proxy_db};
-<span class="kw">use </span><span class="kw">crate</span>::genesis::{forest_load_car, read_genesis_header};
+<span class="kw">use </span><span class="kw">crate</span>::genesis::read_genesis_header;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{recurse_links_hash, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{chain_api::ChainExportParams, progress_api::GetProgressType};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, progress_ops::get_progress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
-<span class="kw">use </span>anyhow::bail;
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
-<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
+<span class="kw">use </span>std::path::PathBuf;
+<span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>tempfile::TempDir;
-<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
-
-<span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>SnapshotCommands {
@@ -347,11 +309,8 @@
         <span class="doccomment">/// Number of block headers to validate from the tip
         </span><span class="attr">#[arg(long, default_value = <span class="string">&quot;2000&quot;</span>)]
         </span>recent_stateroots: i64,
-        <span class="doccomment">/// Path to snapshot file
+        <span class="doccomment">/// Path to an uncompressed snapshot (CAR)
         </span>snapshot: PathBuf,
-        <span class="doccomment">/// Force validation and answers yes to all prompts.
-        </span><span class="attr">#[arg(long)]
-        </span>force: bool,
     },
 }
 
@@ -441,8 +400,7 @@
             <span class="self">Self</span>::Validate {
                 recent_stateroots,
                 snapshot,
-                force,
-            } =&gt; validate(<span class="kw-2">&amp;</span>config, recent_stateroots, snapshot, <span class="kw-2">*</span>force).<span class="kw">await</span>,
+            } =&gt; validate(<span class="kw-2">&amp;</span>config, recent_stateroots, snapshot).<span class="kw">await</span>,
         }
     }
 }
@@ -451,62 +409,36 @@
     config: <span class="kw-2">&amp;</span>Config,
     recent_stateroots: <span class="kw-2">&amp;</span>i64,
     snapshot: <span class="kw-2">&amp;</span>PathBuf,
-    force: bool,
 ) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>confirm = force
-        || atty::is(atty::Stream::Stdin)
-            &amp;&amp; Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
-                .with_prompt(<span class="macro">format!</span>(
-                    <span class="string">&quot;This will result in using approximately {} MB of data. Proceed?&quot;</span>,
-                    std::fs::metadata(snapshot)<span class="question-mark">?</span>.len() / (<span class="number">1024 </span>* <span class="number">1024</span>)
-                ))
-                .default(<span class="bool-val">false</span>)
-                .interact()
-                .unwrap_or_default();
+    <span class="kw">let </span>store = Arc::new(
+        CarBackedBlockstore::new(std::fs::File::open(snapshot)<span class="question-mark">?</span>)
+            .context(<span class="string">&quot;couldn&#39;t read input CAR file - is it compressed?&quot;</span>)<span class="question-mark">?</span>,
+    );
+    <span class="kw">let </span>genesis = read_genesis_header(
+        config.client.genesis_file.as_ref(),
+        config.chain.genesis_bytes(),
+        <span class="kw-2">&amp;</span>store,
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">if </span>confirm {
-        <span class="kw">let </span>tmp_chain_data_path = TempDir::new()<span class="question-mark">?</span>;
-        <span class="kw">let </span>db_path = db_root(
-            tmp_chain_data_path
-                .path()
-                .join(config.chain.network.to_string())
-                .as_path(),
-        );
-        <span class="kw">let </span>db = open_proxy_db(db_path, config.db_config().clone())<span class="question-mark">?</span>;
+    <span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
+        store,
+        config.chain.clone(),
+        <span class="kw-2">&amp;</span>genesis,
+        TempDir::new()<span class="question-mark">?</span>.path(),
+    )<span class="question-mark">?</span>);
 
-        <span class="kw">let </span>genesis = read_genesis_header(
-            config.client.genesis_file.as_ref(),
-            config.chain.genesis_bytes(),
-            <span class="kw-2">&amp;</span>db,
-        )
-        .<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(chain_store.db.roots()))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
-            db,
-            config.chain.clone(),
-            <span class="kw-2">&amp;</span>genesis,
-            tmp_chain_data_path.path(),
-        )<span class="question-mark">?</span>);
-
-        <span class="kw">let </span>(cids, _n_records) = {
-            <span class="kw">let </span>reader =
-                <span class="kw">crate</span>::utils::net::reader(snapshot.as_path().display().to_string().as_str())
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-            forest_load_car(chain_store.blockstore().clone(), reader.compat()).<span class="kw">await</span><span class="question-mark">?
-        </span>};
-
-        <span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(cids))<span class="question-mark">?</span>;
-
-        validate_links_and_genesis_traversal(
-            <span class="kw-2">&amp;</span>chain_store,
-            ts,
-            chain_store.blockstore(),
-            <span class="kw-2">*</span>recent_stateroots,
-            <span class="kw-2">&amp;</span>Tipset::from(genesis),
-            <span class="kw-2">&amp;</span>config.chain.network,
-        )
-        .<span class="kw">await</span><span class="question-mark">?</span>;
-    }
+    validate_links_and_genesis_traversal(
+        <span class="kw-2">&amp;</span>chain_store,
+        ts,
+        chain_store.blockstore(),
+        <span class="kw-2">*</span>recent_stateroots,
+        <span class="kw-2">&amp;</span>Tipset::from(genesis),
+        <span class="kw-2">&amp;</span>config.chain.network,
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }

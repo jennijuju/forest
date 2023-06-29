@@ -9,6 +9,9 @@ when <code>spawn</code> is called, even if you don’t await the returned
 spawned task may execute on the current thread, or it may be sent to a
 different thread to be executed. The specifics depend on the current
 <a href="crate::runtime::Runtime"><code>Runtime</code></a> configuration.</p>
+<p>It is guaranteed that spawn will not synchronously poll the task being spawned.
+This means that calling spawn while holding a lock does not pose a risk of
+deadlocking with the spawned task.</p>
 <p>There is no guarantee that a spawned task will execute to completion.
 When a runtime is shutdown, all outstanding tasks are dropped,
 regardless of the lifecycle of that task.</p>

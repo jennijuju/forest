@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["next_varint_frame","read_block_location_or_eof","read_header","read_u32_or_eof"],"static":["CALLSITE"],"struct":["BlockDataLocation","CarBackedBlockstore","CarBackedBlockstoreInner"]};
