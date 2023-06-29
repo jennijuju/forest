@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["https_client"],"static":["CLIENT"],"trait":["HyperBodyExt"]};

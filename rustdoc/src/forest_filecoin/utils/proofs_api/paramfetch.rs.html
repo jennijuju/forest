@@ -236,20 +236,6 @@
 <a href="#236" id="236">236</a>
 <a href="#237" id="237">237</a>
 <a href="#238" id="238">238</a>
-<a href="#239" id="239">239</a>
-<a href="#240" id="240">240</a>
-<a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -261,19 +247,15 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::sector::SectorSize;
+<span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
 <span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>backoff::{future::retry, ExponentialBackoff};
 <span class="kw">use </span>blake2b_simd::{Hash, State <span class="kw">as </span>Blake2b};
 <span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>log::{debug, error, info, warn};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>tokio::{
-    fs::{<span class="self">self</span>, File},
-    io::BufWriter,
-};
-<span class="kw">use </span>tokio_util::compat::FuturesAsyncReadCompatExt;
-
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::{https_client, hyper};
+<span class="kw">use </span>tap::Pipe <span class="kw">as _</span>;
+<span class="kw">use </span>tokio::fs::{<span class="self">self</span>, File};
 
 <span class="kw">const </span>GATEWAY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://proofs.filecoin.io/ipfs/&quot;</span>;
 <span class="kw">const </span>PARAM_DIR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;filecoin-proof-parameters&quot;</span>;
@@ -446,28 +428,18 @@
 }
 
 <span class="kw">async fn </span>fetch_params_inner(url: <span class="kw">impl </span>AsRef&lt;str&gt;, path: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-    <span class="kw">let </span>client = https_client();
-    <span class="kw">let </span>req = client.get(url.as_ref().try_into()<span class="question-mark">?</span>);
-    <span class="kw">let </span>response = req.<span class="kw">await</span>.map_err(|e| <span class="macro">anyhow::anyhow!</span>(e))<span class="question-mark">?</span>;
-    <span class="macro">anyhow::ensure!</span>(response.status().is_success());
-    <span class="kw">let </span>content_len = response
-        .headers()
-        .get(<span class="string">&quot;content-length&quot;</span>)
-        .and_then(|ct_len| ct_len.to_str().ok())
-        .and_then(|ct_len| ct_len.parse::&lt;u64&gt;().ok())
-        .ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Couldn&#39;t retrieve content length&quot;</span>))<span class="question-mark">?</span>;
-    <span class="kw">let </span>map_err: <span class="kw">fn</span>(hyper::Error) -&gt; futures::io::Error =
-        |e| futures::io::Error::new(futures::io::ErrorKind::Other, e);
-    <span class="kw">let </span><span class="kw-2">mut </span>source = response
-        .into_body()
-        .map_err(map_err)
-        .into_async_read()
-        .compat();
-    <span class="kw">let </span>file = File::create(path).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(file);
-    tokio::io::copy(<span class="kw-2">&amp;mut </span>source, <span class="kw-2">&amp;mut </span>writer).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>file_metadata = std::fs::metadata(path)<span class="question-mark">?</span>;
-    <span class="macro">anyhow::ensure!</span>(file_metadata.len() == content_len);
+    <span class="kw">let </span><span class="kw-2">mut </span>dst = File::create(path).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="kw">let </span><span class="kw-2">mut </span>src = global_http_client()
+        .get(url.as_ref())
+        .send()
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.error_for_status()<span class="question-mark">?
+        </span>.bytes_stream()
+        .map_err(|reqwest_error| std::io::Error::new(ErrorKind::Other, reqwest_error))
+        .pipe(tokio_util::io::StreamReader::new);
+
+    tokio::io::copy(<span class="kw-2">&amp;mut </span>src, <span class="kw-2">&amp;mut </span>dst).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 

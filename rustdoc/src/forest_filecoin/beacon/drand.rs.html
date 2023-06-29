@@ -316,7 +316,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::{https_client, HyperBodyExt};
+<span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
 <span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>async_trait::async_trait;
@@ -522,12 +522,13 @@
             <span class="kw">let </span>remote_chain_info = std::thread::spawn(<span class="kw">move </span>|| {
                 <span class="kw">let </span>rt = tokio::runtime::Runtime::new()<span class="question-mark">?</span>;
                 rt.block_on(<span class="kw">async </span>{
-                    <span class="kw">let </span>client = https_client();
+                    <span class="kw">let </span>client = global_http_client();
                     <span class="kw">let </span>remote_chain_info: ChainInfo = client
-                        .get(<span class="macro">format!</span>(<span class="string">&quot;{server}/info&quot;</span>).try_into()<span class="question-mark">?</span>)
+                        .get(<span class="macro">format!</span>(<span class="string">&quot;{server}/info&quot;</span>))
+                        .send()
                         .<span class="kw">await</span><span class="question-mark">?
-                        </span>.into_body()
-                        .json()
+                        </span>.error_for_status()<span class="question-mark">?
+                        </span>.json()
                         .<span class="kw">await
                         </span>.map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?</span>;
                     <span class="prelude-val">Ok</span>::&lt;ChainInfo, anyhow::Error&gt;(remote_chain_info)
@@ -583,15 +584,14 @@
         <span class="kw">match </span>cached {
             <span class="prelude-val">Some</span>(cached_entry) =&gt; <span class="prelude-val">Ok</span>(cached_entry),
             <span class="prelude-val">None </span>=&gt; {
-                <span class="kw">let </span>url = <span class="macro">format!</span>(<span class="string">&quot;{}/public/{}&quot;</span>, <span class="self">self</span>.url, round);
-                <span class="kw">let </span>client = https_client();
+                <span class="kw">let </span>client = global_http_client();
                 <span class="kw">let </span>resp: BeaconEntryJson = client
-                    .get(url.try_into()<span class="question-mark">?</span>)
+                    .get(<span class="macro">format!</span>(<span class="string">&quot;{}/public/{}&quot;</span>, <span class="self">self</span>.url, round))
+                    .send()
                     .<span class="kw">await</span><span class="question-mark">?
-                    </span>.into_body()
-                    .json()
-                    .<span class="kw">await
-                    </span>.map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{}&quot;</span>, e))<span class="question-mark">?</span>;
+                    </span>.error_for_status()<span class="question-mark">?
+                    </span>.json()
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(BeaconEntry::new(resp.round, hex::decode(resp.signature)<span class="question-mark">?</span>))
             }
         }

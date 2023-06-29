@@ -170,43 +170,9 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
-<a href="#173" id="173">173</a>
-<a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
-<a href="#183" id="183">183</a>
-<a href="#184" id="184">184</a>
-<a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="doccomment">/// Filecoin RPC client interface methods
 </span><span class="kw">pub mod </span>auth_ops;
 <span class="kw">pub mod </span>chain_ops;
 <span class="kw">pub mod </span>common_ops;
@@ -222,10 +188,9 @@
 <span class="kw">use </span>std::env;
 
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::{https_client, hyper, hyper::http::HeaderValue, HyperBodyExt};
-<span class="doccomment">/// Filecoin HTTP JSON-RPC client methods
-</span><span class="kw">use </span>jsonrpc_v2::{Error, Id, RequestObject, V2};
-<span class="kw">use </span>log::{debug, error};
+<span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
+<span class="kw">use </span>jsonrpc_v2::{Error, Id, RequestObject, V2};
+<span class="kw">use </span>log::debug;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>serde::{de::DeserializeOwned, Deserialize, Serialize};
 
@@ -360,44 +325,13 @@
 
     <span class="macro">debug!</span>(<span class="string">&quot;Using JSON-RPC v2 HTTP URL: {}&quot;</span>, api_url);
 
-    <span class="kw">let </span>client = https_client();
-    <span class="comment">// Split the JWT off if present, format multiaddress as URL, then post RPC
-    // request to URL
-    </span><span class="kw">let </span><span class="kw-2">mut </span>request =
-        hyper::Request::post(<span class="kw-2">&amp;</span>api_url).body(serde_json::to_string(<span class="kw-2">&amp;</span>rpc_req)<span class="question-mark">?</span>.into())<span class="question-mark">?</span>;
-    <span class="kw">let </span>headers_mut = request.headers_mut();
-    headers_mut.insert(<span class="string">&quot;content-type&quot;</span>, HeaderValue::from_static(<span class="string">&quot;application/json&quot;</span>));
-    <span class="kw">match </span>API_INFO.token.to_owned() {
-        <span class="prelude-val">Some</span>(jwt) =&gt; {
-            headers_mut.insert(<span class="string">&quot;Authorization&quot;</span>, HeaderValue::from_str(<span class="kw-2">&amp;</span>jwt)<span class="question-mark">?</span>);
-        }
-        <span class="prelude-val">None </span>=&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(jwt) = token {
-                headers_mut.insert(<span class="string">&quot;Authorization&quot;</span>, HeaderValue::from_str(jwt)<span class="question-mark">?</span>);
-            }
-        }
-    }
-    <span class="kw">let </span>response = client.request(request).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>code = response.status();
-    <span class="kw">if </span>!code.is_success() {
-        <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Full {
-            message: <span class="macro">format!</span>(<span class="string">&quot;Error code from HTTP Response: {code}&quot;</span>),
-            code: code.as_u16().into(),
-            data: <span class="prelude-val">None</span>,
-        });
-    }
-
-    <span class="comment">// Return the parsed RPC result
-    </span><span class="kw">let </span>rpc_res: JsonRpcResponse&lt;R&gt; = <span class="kw">match </span>response.into_body().json().<span class="kw">await </span>{
-        <span class="prelude-val">Ok</span>(r) =&gt; r,
-        <span class="prelude-val">Err</span>(e) =&gt; {
-            <span class="kw">let </span>err = <span class="macro">format!</span>(
-                <span class="string">&quot;Parse Error: Response from RPC endpoint could not be parsed. Error was: {e}&quot;
-            </span>);
-            <span class="macro">error!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>err);
-            <span class="kw">return </span><span class="prelude-val">Err</span>(err.into());
-        }
+    <span class="kw">let </span>request = global_http_client().post(api_url).json(<span class="kw-2">&amp;</span>rpc_req);
+    <span class="kw">let </span>request = <span class="kw">match </span>(API_INFO.token.as_ref(), token) {
+        (<span class="prelude-val">Some</span>(token), <span class="kw">_</span>) | (<span class="kw">_</span>, <span class="prelude-val">Some</span>(token)) =&gt; request.header(http::header::AUTHORIZATION, token),
+        <span class="kw">_ </span>=&gt; request,
     };
+
+    <span class="kw">let </span>rpc_res = request.send().<span class="kw">await</span><span class="question-mark">?</span>.error_for_status()<span class="question-mark">?</span>.json().<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">match </span>rpc_res {
         JsonRpcResponse::Result { result, .. } =&gt; <span class="prelude-val">Ok</span>(result),

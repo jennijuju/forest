@@ -311,11 +311,11 @@
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
 <span class="kw">use </span>tempfile::TempDir;
+<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::StreamedContentReader;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>SnapshotCommands {
@@ -490,9 +490,9 @@
 
         <span class="kw">let </span>(cids, _n_records) = {
             <span class="kw">let </span>reader =
-                StreamedContentReader::read(snapshot.as_path().display().to_string().as_str())
+                <span class="kw">crate</span>::utils::net::reader(snapshot.as_path().display().to_string().as_str())
                     .<span class="kw">await</span><span class="question-mark">?</span>;
-            forest_load_car(chain_store.blockstore().clone(), reader).<span class="kw">await</span><span class="question-mark">?
+            forest_load_car(chain_store.blockstore().clone(), reader.compat()).<span class="kw">await</span><span class="question-mark">?
         </span>};
 
         <span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(cids))<span class="question-mark">?</span>;

@@ -177,7 +177,6 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -187,7 +186,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::BlockstoreBufferedWriteExt;
 
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::StreamedContentReader;
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::AsyncRead;
@@ -276,10 +274,10 @@
     <span class="macro">info!</span>(<span class="string">&quot;Importing chain from snapshot at: {path}&quot;</span>);
     <span class="comment">// start import
     </span><span class="kw">let </span>stopwatch = time::Instant::now();
-    <span class="kw">let </span>reader = StreamedContentReader::read(path).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>reader = <span class="kw">crate</span>::utils::net::reader(path).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>(cids, n_records) =
-        load_and_retrieve_header(sm.blockstore().clone(), reader, skip_load).<span class="kw">await</span><span class="question-mark">?</span>;
+        load_and_retrieve_header(sm.blockstore().clone(), reader.compat(), skip_load).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="macro">info!</span>(
         <span class="string">&quot;Loaded {} records from .car file in {}s&quot;</span>,
