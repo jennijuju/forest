@@ -22,7 +22,7 @@ pub async fn using_car_reader(
     ),
     fvm_ipld_car::Error,
 > {
-    let mut car_reader = CarReader::new(car).await?;
+    let mut car_reader = CarReader::new_unchecked(car).await?;
     let car_header = std::mem::take(&mut car_reader.header);
     Ok((
         car_header,
