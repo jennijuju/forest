@@ -62,6 +62,8 @@
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -90,6 +92,7 @@
     /// Otherwise, we validate and compute the states.
     </span><span class="kw">pub </span>snapshot: bool,
     <span class="kw">pub </span>snapshot_height: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="kw">pub </span>snapshot_head: <span class="prelude-ty">Option</span>&lt;i64&gt;,
     <span class="kw">pub </span>snapshot_path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
     <span class="doccomment">/// Skips loading import CAR file and assumes it&#39;s already been loaded.
     /// Will use the CIDs in the header of the file to index the chain.
@@ -117,6 +120,7 @@
             snapshot_path: <span class="prelude-val">None</span>,
             snapshot: <span class="bool-val">false</span>,
             snapshot_height: <span class="prelude-val">None</span>,
+            snapshot_head: <span class="prelude-val">None</span>,
             skip_load: <span class="bool-val">false</span>,
             encrypt_keystore: <span class="bool-val">true</span>,
             metrics_address: FromStr::from_str(<span class="string">&quot;0.0.0.0:6116&quot;</span>).unwrap(),

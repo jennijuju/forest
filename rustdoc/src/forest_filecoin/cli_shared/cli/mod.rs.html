@@ -403,6 +403,12 @@
 <a href="#403" id="403">403</a>
 <a href="#404" id="404">404</a>
 <a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -471,9 +477,14 @@ OPTIONS:
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>mdns: <span class="prelude-ty">Option</span>&lt;bool&gt;,
     <span class="doccomment">/// Validate snapshot at given EPOCH, use a negative value -N to validate
-    /// the last N EPOCH(s)
+    /// the last N EPOCH(s) starting at HEAD.
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>height: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    <span class="doccomment">/// Sets the current HEAD epoch to validate to. Useful to specify a
+    /// smaller range in conjunction with `height`, ignored if `height`
+    /// is unspecified.
+    </span><span class="attr">#[arg(long)]
+    </span><span class="kw">pub </span>head: <span class="prelude-ty">Option</span>&lt;u64&gt;,
     <span class="doccomment">/// Import a snapshot from a local CAR file or URL
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>import_snapshot: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -599,6 +610,7 @@ OPTIONS:
             cfg.client.snapshot = <span class="bool-val">false</span>;
         }
         cfg.client.snapshot_height = <span class="self">self</span>.height;
+        cfg.client.snapshot_head = <span class="self">self</span>.head.map(|head| head <span class="kw">as </span>i64);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(skip_load) = <span class="self">self</span>.skip_load {
             cfg.client.skip_load = skip_load;
         }

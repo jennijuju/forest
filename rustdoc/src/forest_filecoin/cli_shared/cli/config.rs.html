@@ -215,6 +215,7 @@
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -383,6 +384,7 @@
                     snapshot: bool::arbitrary(g),
                     snapshot_height: Option::arbitrary(g),
                     snapshot_path: Option::arbitrary(g),
+                    snapshot_head: Option::arbitrary(g),
                     skip_load: bool::arbitrary(g),
                     encrypt_keystore: bool::arbitrary(g),
                     metrics_address: SocketAddr::arbitrary(g),

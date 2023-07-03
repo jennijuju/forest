@@ -802,6 +802,10 @@
 <a href="#802" id="802">802</a>
 <a href="#803" id="803">803</a>
 <a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1226,7 +1230,11 @@
     <span class="kw">if let </span>(<span class="bool-val">true</span>, <span class="prelude-val">Some</span>(validate_from)) = (config.client.snapshot, config.client.snapshot_height) {
         <span class="comment">// We&#39;ve been provided a snapshot and asked to validate it
         </span>ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>current_height = state_manager.chain_store().heaviest_tipset().epoch();
+        <span class="comment">// Use the specified HEAD, otherwise take the current HEAD.
+        </span><span class="kw">let </span>current_height = config
+            .client
+            .snapshot_head
+            .unwrap_or(state_manager.chain_store().heaviest_tipset().epoch());
         <span class="macro">assert!</span>(current_height.is_positive());
         <span class="kw">match </span>validate_from.is_negative() {
             <span class="comment">// allow --height=-1000 to scroll back from the current head
