@@ -73,6 +73,16 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -95,19 +105,29 @@
     <span class="comment">// collect bundles to load into the database.
     </span><span class="kw">let </span><span class="kw-2">mut </span>bundles = Vec::new();
     <span class="kw">for </span>info <span class="kw">in </span><span class="kw-2">&amp;</span>config.chain.height_infos {
-        <span class="kw">if </span>info.bundle.is_some() &amp;&amp; epoch &lt; config.chain.epoch(info.height) {
-            bundles.push(get_actors_bundle(config, info.height).<span class="kw">await</span><span class="question-mark">?</span>);
+        <span class="kw">if </span>epoch &lt; config.chain.epoch(info.height) {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(bundle) = <span class="kw-2">&amp;</span>info.bundle {
+                bundles.push((
+                    bundle.manifest,
+                    get_actors_bundle(config, info.height).<span class="kw">await</span><span class="question-mark">?</span>,
+                ));
+            }
         }
     }
 
-    <span class="kw">for </span>bundle <span class="kw">in </span>bundles {
-        <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(db.clone(), bundle.compat()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">for </span>(manifest_cid, reader) <span class="kw">in </span>bundles {
+        <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(db.clone(), reader.compat()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
             result.len(),
             <span class="number">1</span>,
             <span class="string">&quot;expected one root when loading actors bundle&quot;
         </span>);
         <span class="macro">info!</span>(<span class="string">&quot;Loaded actors bundle with CID: {}&quot;</span>, result[<span class="number">0</span>]);
+        <span class="macro">anyhow::ensure!</span>(
+            manifest_cid == result[<span class="number">0</span>],
+            <span class="string">&quot;manifest cid in config &#39;{manifest_cid}&#39; does not match manifest cid from bundle &#39;{}&#39;&quot;</span>,
+            result[<span class="number">0</span>]
+        );
     }
     <span class="prelude-val">Ok</span>(())
 }
