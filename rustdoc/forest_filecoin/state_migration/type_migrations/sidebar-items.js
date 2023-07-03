@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["init","miner"]};
+window.SIDEBAR_ITEMS = {"mod":["init","market","miner"]};

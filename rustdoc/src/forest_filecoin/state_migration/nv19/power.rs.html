@@ -87,7 +87,6 @@
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -130,8 +129,7 @@
             .get_cbor(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Power actor: could not read v10 state&quot;</span>))<span class="question-mark">?</span>;
 
-        <span class="comment">//
-        </span><span class="kw">let </span>in_claims = make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>in_state.claims, <span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
+        <span class="kw">let </span>in_claims = make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>in_state.claims, <span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>empty_claims = make_empty_map::&lt;<span class="kw">_</span>, ()&gt;(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH).flush()<span class="question-mark">?</span>;
 

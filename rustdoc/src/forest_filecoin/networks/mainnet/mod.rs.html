@@ -171,6 +171,9 @@
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -295,7 +298,10 @@
     HeightInfo {
         height: Height::Shark,
         epoch: <span class="number">2_383_680</span>,
-        bundle: <span class="prelude-val">None</span>,
+        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaceb6j6666h36xnhksu3ww4kxb6e25niayfgkdnifaqi6m6ooc66i6i&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-mainnet.car&quot;</span>).unwrap()
+        })
     },
     HeightInfo {
         height: Height::Hygge,

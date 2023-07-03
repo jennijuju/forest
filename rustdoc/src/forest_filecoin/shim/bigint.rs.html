@@ -29,6 +29,12 @@
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -41,6 +47,12 @@
 <span class="attr">#[derive(Default, Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>BigInt(<span class="attr">#[serde(with = <span class="string">&quot;bigint_ser&quot;</span>)] </span>BigInt_v3);
+
+<span class="kw">impl </span>BigInt {
+    <span class="kw">pub fn </span>inner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>BigInt_v3 {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
+    </span>}
+}
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>BigInt {
     <span class="kw">type </span>Target = BigInt_v3;

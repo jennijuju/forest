@@ -70,6 +70,8 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -85,6 +87,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::state_migration) <span class="kw">mod </span>common;
+<span class="kw">mod </span>nv17;
 <span class="kw">mod </span>nv18;
 <span class="kw">mod </span>nv19;
 <span class="kw">mod </span>type_migrations;
@@ -101,7 +104,8 @@
 <span class="kw">where
     </span>DB: <span class="lifetime">&#39;static </span>+ Blockstore + Clone + Send + Sync,
 {
-    <span class="kw">let </span>mappings: [(<span class="kw">_</span>, RunMigration&lt;DB&gt;); <span class="number">2</span>] = [
+    <span class="kw">let </span>mappings: [(<span class="kw">_</span>, RunMigration&lt;DB&gt;); <span class="number">3</span>] = [
+        (Height::Shark, nv17::run_migration::&lt;DB&gt;),
         (Height::Hygge, nv18::run_migration::&lt;DB&gt;),
         (Height::Lightning, nv19::run_migration::&lt;DB&gt;),
     ];
@@ -113,7 +117,7 @@
         <span class="kw">for </span>info <span class="kw">in </span><span class="kw-2">&amp;</span>chain_config.height_infos {
             <span class="kw">for </span>(height, <span class="kw">_</span>) <span class="kw">in </span><span class="kw-2">&amp;</span>mappings {
                 <span class="kw">if </span>height == <span class="kw-2">&amp;</span>info.height {
-                    <span class="macro">anyhow::ensure!</span>(
+                    <span class="macro">assert!</span>(
                         info.bundle.is_some(),
                         <span class="string">&quot;Actor bundle info for height {height} needs to be defined in `networks/src/lib.rs` to run state migration&quot;
                     </span>);
@@ -131,9 +135,9 @@
             <span class="kw">let </span>elapsed = start_time.elapsed().as_secs_f32();
             <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
                 reveal_five_trees();
-                <span class="macro">log::info!</span>(<span class="string">&quot;State migration at height {height} was successful, took: {elapsed}s&quot;</span>);
+                <span class="macro">log::info!</span>(<span class="string">&quot;State migration at height {height}(epoch {epoch}) was successful, Previous state: {parent_state}, new state: {new_state}. Took: {elapsed}s.&quot;</span>);
             } <span class="kw">else </span>{
-                anyhow:: <span class="macro">bail!</span>(<span class="string">&quot;State post migration at height {height} must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s&quot;</span>);
+                anyhow:: <span class="macro">bail!</span>(<span class="string">&quot;State post migration at height {height} must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s.&quot;</span>);
             }
 
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(new_state));

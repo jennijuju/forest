@@ -145,10 +145,10 @@
 
         <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>store, new_manifest)<span class="question-mark">?</span>;
 
-        current_manifest.builtin_actors().for_each(|(name, code)| {
-            <span class="kw">let </span>new_code = new_manifest.code_by_name(name).unwrap();
+        <span class="kw">for </span>(name, code) <span class="kw">in </span>current_manifest.builtin_actors() {
+            <span class="kw">let </span>new_code = new_manifest.code_by_name(name)<span class="question-mark">?</span>;
             <span class="self">self</span>.add_migrator(<span class="kw-2">*</span>code, nil_migrator(<span class="kw-2">*</span>new_code));
-        });
+        }
 
         <span class="self">self</span>.add_migrator(
             <span class="kw-2">*</span>current_manifest.init_code(),

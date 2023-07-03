@@ -280,11 +280,12 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::ops::Deref;
-
+</span><span class="kw">use </span><span class="kw">crate</span>::shim::{version::NetworkVersion, Inner};
 <span class="kw">use </span>fvm_shared::sector::{
     RegisteredPoStProof <span class="kw">as </span>RegisteredPoStProofV2, RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV2,
     SectorInfo <span class="kw">as </span>SectorInfoV2, SectorSize <span class="kw">as </span>SectorSizeV2,
@@ -294,8 +295,11 @@
     RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV3, SectorInfo <span class="kw">as </span>SectorInfoV3,
     SectorSize <span class="kw">as </span>SectorSizeV3,
 };
+<span class="kw">use </span>std::ops::Deref;
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::{version::NetworkVersion, Inner};
+<span class="kw">pub use </span>fvm_shared3::sector::StoragePower;
+
+<span class="kw">pub type </span>SectorNumber = fvm_shared3::sector::SectorNumber;
 
 <span class="doccomment">/// Represents a shim over `RegisteredSealProof` from `fvm_shared` with
 /// convenience methods to convert to an older version of the type
@@ -370,7 +374,7 @@
 <span class="kw">impl </span>SectorInfo {
     <span class="kw">pub fn </span>new(
         proof: RegisteredSealProofV3,
-        sector_number: fvm_shared3::sector::SectorNumber,
+        sector_number: SectorNumber,
         sealed_cid: cid::Cid,
     ) -&gt; <span class="self">Self </span>{
         SectorInfo(SectorInfoV3 {

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["state_v10_to_v11"]};
+window.SIDEBAR_ITEMS = {"mod":["info_v8_to_v9","power_pair_v8_to_v9","sector_onchain_info_v8_to_v9","sector_precommit_info_v8_to_v9","sector_precommit_onchain_info_v8_to_v9","state_v10_to_v11","state_v8_to_v9"]};

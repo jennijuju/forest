@@ -259,6 +259,12 @@
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
 <a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -337,6 +343,12 @@
 }
 
 <span class="kw">impl </span>TokenAmount {
+    <span class="doccomment">/// The logical number of decimal places of a token unit.
+    </span><span class="kw">pub const </span>DECIMALS: usize = TokenAmount_v3::DECIMALS;
+
+    <span class="doccomment">/// The logical precision of a token unit.
+    </span><span class="kw">pub const </span>PRECISION: u64 = TokenAmount_v3::PRECISION;
+
     <span class="doccomment">/// Returns the quantity of indivisible units.
     </span><span class="kw">pub fn </span>atto(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>BigInt {
         <span class="self">self</span>.<span class="number">0</span>.atto()
