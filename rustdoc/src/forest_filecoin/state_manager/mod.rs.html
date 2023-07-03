@@ -1337,6 +1337,17 @@
 <a href="#1337" id="1337">1337</a>
 <a href="#1338" id="1338">1338</a>
 <a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1345,6 +1356,7 @@
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::run_state_migrations;
+<span class="kw">use </span><span class="kw">crate</span>::statediff::print_state_diff;
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>rayon::prelude::ParallelBridge;
 <span class="kw">pub use </span>utils::is_valid_for_sending;
@@ -2636,6 +2648,16 @@
                             <span class="question-mark">?</span>actual_receipt,
                             <span class="string">&quot;state mismatch&quot;
                         </span>);
+
+                        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = print_state_diff(
+                            <span class="self">self</span>.blockstore(),
+                            <span class="kw-2">&amp;</span>actual_state,
+                            expected_state,
+                            <span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="comment">// To not make the log too verbose
+                        </span>) {
+                            <span class="macro">warn!</span>(<span class="string">&quot;Failed to print state diff: {err}&quot;</span>);
+                        }
+
                         <span class="macro">bail!</span>(<span class="string">&quot;state mismatch&quot;</span>);
                     }
                 }
