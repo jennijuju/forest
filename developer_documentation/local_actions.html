@@ -326,6 +326,18 @@ INFO[0000] Start server on http://192.168.1.10:34567
 [Integration tests/Forest CLI checks]   ✅  Success - Main forest-cli check
 [Integration tests/Forest CLI checks] 🏁  Job succeeded
 </code></pre>
+<h1 id="caveats"><a class="header" href="#caveats">Caveats</a></h1>
+<h2 id="privileges"><a class="header" href="#privileges">Privileges</a></h2>
+<p>By default, <code>act</code> runs jobs as <code>root</code>. Github Actions run under a regular
+account (with <code>sudo</code> privileges). Use <code>sudo</code> for installing dependencies, even
+if locally it works without it.</p>
+<h2 id="docker-buildkit"><a class="header" href="#docker-buildkit">Docker BuildKit</a></h2>
+<p>It is likely that you have the Docker BuildKit enabled on your system by
+default. It is not true for GH Actions. To use some of its features, you will
+need to explicitly put it before other Docker steps:</p>
+<pre><code class="language-yaml">- name: Set up Docker Buildx
+  uses: docker/setup-buildx-action@v2
+</code></pre>
 
                     </main>
 
