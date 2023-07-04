@@ -467,7 +467,7 @@
 <span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>directories::BaseDirs;
 
-<span class="kw">use </span>rustyline::{config::Config <span class="kw">as </span>RustyLineConfig, EditMode, Editor};
+<span class="kw">use </span>rustyline::{config::Config <span class="kw">as </span>RustyLineConfig, history::FileHistory, EditMode, Editor};
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>JsonValue;
 <span class="kw">use </span>tokio::time;
@@ -813,7 +813,7 @@
             .edit_mode(EditMode::Emacs)
             .build();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>editor: Editor&lt;()&gt; = Editor::with_config(config)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>editor: Editor&lt;(), FileHistory&gt; = Editor::with_config(config)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>history_path = <span class="kw">if let </span><span class="prelude-val">Some</span>(dirs) = BaseDirs::new() {
             <span class="kw">let </span>path = dirs.home_dir().join(<span class="string">&quot;.forest_history&quot;</span>);
@@ -843,7 +843,7 @@
                             <span class="kw">break </span><span class="lifetime">&#39;main</span>;
                         }
                         <span class="kw">if </span>input == <span class="string">&quot;:clear&quot; </span>{
-                            editor.clear_history();
+                            editor.clear_history()<span class="question-mark">?</span>;
                             <span class="kw">break</span>;
                         }
                         <span class="kw">if </span>buffer.is_empty() &amp;&amp; input.is_empty() {
@@ -856,7 +856,7 @@
                 }
                 <span class="kw">match </span>context.parse(buffer.trim_end()) {
                     <span class="prelude-val">Ok</span>(_v) =&gt; {
-                        editor.add_history_entry(<span class="kw-2">&amp;</span>buffer);
+                        editor.add_history_entry(<span class="kw-2">&amp;</span>buffer)<span class="question-mark">?</span>;
                         eval(buffer.trim_end(), <span class="kw-2">&amp;mut </span>context);
                         <span class="kw">break</span>;
                     }
