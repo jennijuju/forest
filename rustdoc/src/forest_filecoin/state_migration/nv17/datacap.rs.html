@@ -131,17 +131,17 @@
     <span class="kw">fn </span>post_migrate_state(<span class="kw-2">&amp;</span><span class="self">self</span>, store: <span class="kw-2">&amp;</span>BS, actors_out: <span class="kw-2">&amp;mut </span>StateTree&lt;BS&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">use </span>fil_actors_shared::v9::builtin::HAMT_BIT_WIDTH;
 
-        <span class="kw">let </span>verified_clients = fil_actors_shared::v8::make_map_with_root::&lt;<span class="kw">_</span>, BigInt&gt;(
+        <span class="kw">let </span>verified_clients = fil_actors_shared::v8::make_map_with_root::&lt;BS, BigInt&gt;(
             <span class="kw-2">&amp;</span><span class="self">self</span>.verifreg_state.verified_clients,
-            <span class="kw-2">&amp;</span>store,
+            store,
         )<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>token_supply: num_bigint::BigInt = Zero::zero();
 
         <span class="kw">let </span><span class="kw-2">mut </span>balances_map =
-            fil_actors_shared::v9::make_empty_map::&lt;<span class="kw">_</span>, BigInt&gt;(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH);
+            fil_actors_shared::v9::make_empty_map::&lt;BS, BigInt&gt;(store, HAMT_BIT_WIDTH);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>allowances_map = fil_actors_shared::v9::make_empty_map(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH);
+        <span class="kw">let </span><span class="kw-2">mut </span>allowances_map = fil_actors_shared::v9::make_empty_map(store, HAMT_BIT_WIDTH);
 
         verified_clients.for_each(|addr_key, value| {
             <span class="kw">let </span>key = hamt_addr_key_to_key(addr_key)<span class="question-mark">?</span>;
@@ -150,7 +150,7 @@
             balances_map.set(key.clone(), token_amount.into())<span class="question-mark">?</span>;
 
             <span class="kw">let </span><span class="kw-2">mut </span>allowances_map_entry =
-                fil_actors_shared::v9::make_empty_map::&lt;<span class="kw">_</span>, BigInt&gt;(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH);
+                fil_actors_shared::v9::make_empty_map::&lt;BS, BigInt&gt;(store, HAMT_BIT_WIDTH);
             allowances_map_entry.set(
                 BytesKey(fil_actors_shared::v9::builtin::STORAGE_MARKET_ACTOR_ADDR.payload_bytes()),
                 INFINITE_ALLOWANCE.clone().into(),

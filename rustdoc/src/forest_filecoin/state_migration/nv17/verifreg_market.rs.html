@@ -237,7 +237,7 @@
         </span><span class="kw">let </span>market_proposals = fil_actors_shared::v8::Array::&lt;
             fil_actor_market_state::v8::DealProposal,
             <span class="kw">_</span>,
-        &gt;::load(<span class="kw-2">&amp;</span><span class="self">self</span>.market_state_v8.proposals, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        &gt;::load(<span class="kw-2">&amp;</span><span class="self">self</span>.market_state_v8.proposals, store)<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>next_allocation_id: fil_actor_verifreg_state::v9::AllocationID = <span class="number">1</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>allocations_map_map = HashMap::default();
@@ -299,7 +299,7 @@
             )<span class="question-mark">?</span>;
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>empty_map = fil_actors_shared::v9::make_empty_map::&lt;<span class="kw">_</span>, ()&gt;(store, HAMT_BIT_WIDTH);
+        <span class="kw">let </span><span class="kw-2">mut </span>empty_map = fil_actors_shared::v9::make_empty_map::&lt;BS, ()&gt;(store, HAMT_BIT_WIDTH);
         <span class="kw">let </span>verifreg_state_v9 = fil_actor_verifreg_state::v9::State {
             root_key: <span class="self">self</span>.verifreg_state_v8.root_key,
             verifiers: <span class="self">self</span>.verifreg_state_v8.verifiers,
@@ -313,7 +313,7 @@
 
         <span class="comment">// `migrateMarket`
         </span><span class="kw">let </span><span class="kw-2">mut </span>pending_deal_allocation_id_map =
-            fil_actors_shared::v9::make_empty_map::&lt;<span class="kw">_</span>, i64&gt;(store, HAMT_BIT_WIDTH);
+            fil_actors_shared::v9::make_empty_map::&lt;BS, i64&gt;(store, HAMT_BIT_WIDTH);
         <span class="kw">for </span>(deal_id, allocation_id) <span class="kw">in </span>deal_allocation_tuples {
             pending_deal_allocation_id_map
                 .set(fil_actors_shared::v9::u64_key(deal_id), allocation_id <span class="kw">as _</span>)<span class="question-mark">?</span>;

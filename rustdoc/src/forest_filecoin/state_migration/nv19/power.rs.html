@@ -131,7 +131,7 @@
 
         <span class="kw">let </span>in_claims = make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>in_state.claims, <span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>empty_claims = make_empty_map::&lt;<span class="kw">_</span>, ()&gt;(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH).flush()<span class="question-mark">?</span>;
+        <span class="kw">let </span>empty_claims = make_empty_map::&lt;BS, ()&gt;(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH).flush()<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>out_claims =
             make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>empty_claims, <span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
