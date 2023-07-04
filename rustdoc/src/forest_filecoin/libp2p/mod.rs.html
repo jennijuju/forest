@@ -40,11 +40,11 @@
 <span class="kw">mod </span>service;
 
 <span class="comment">// Re-export some libp2p types
-</span><span class="kw">pub use </span>libp2p::{
+</span><span class="kw">pub use </span>cid::multihash::Multihash;
+<span class="kw">pub use </span>libp2p::{
     identity::{ed25519, Keypair, PeerId},
     multiaddr::{Multiaddr, Protocol},
 };
-<span class="kw">pub use </span>multihash::Multihash;
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::libp2p) <span class="kw">use </span><span class="self">self</span>::behaviour::<span class="kw-2">*</span>;
 <span class="kw">pub use </span><span class="self">self</span>::{config::<span class="kw-2">*</span>, peer_manager::<span class="kw-2">*</span>, service::<span class="kw-2">*</span>};

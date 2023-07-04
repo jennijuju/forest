@@ -282,12 +282,12 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
+    <span class="kw">use </span>cid::multihash::{Multihash, MultihashDigest};
     <span class="kw">use </span>fvm_shared::{
         bigint::Zero,
         commcid::{FIL_COMMITMENT_UNSEALED, SHA2_256_TRUNC254_PADDED},
         piece::PaddedPieceSize,
     };
-    <span class="kw">use </span>multihash::{Multihash, MultihashDigest};
 
     <span class="comment">// Go parity test
     //

@@ -103,6 +103,7 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -114,6 +115,7 @@
     data_types::{AddrInfo, RPCState},
     net_api::<span class="kw-2">*</span>,
 };
+<span class="kw">use </span>cid::multibase;
 <span class="kw">use </span>futures::channel::oneshot;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};

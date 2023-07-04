@@ -114,6 +114,7 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -121,6 +122,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::AddrInfo;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::net_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span>ahash::HashSet;
+<span class="kw">use </span>cid::multibase;
 <span class="kw">use </span>clap::Subcommand;
 
 <span class="kw">use super</span>::{handle_rpc_err, print_stdout, Config};

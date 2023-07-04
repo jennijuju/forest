@@ -310,8 +310,8 @@
 //! to reconsider whether we want to stay compatible with Lotus in the future.
 </span><span class="kw">use </span>std::{collections::BTreeMap, fmt};
 
+<span class="kw">use </span>cid::multibase;
 <span class="kw">use </span>libipld_macro::ipld;
-<span class="kw">use </span>multibase::Base;
 <span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
 <span class="kw">use </span><span class="kw">super</span>::Ipld;
@@ -347,7 +347,7 @@
         ),
         Ipld::String(string) =&gt; serializer.serialize_str(string),
         Ipld::Bytes(bytes) =&gt; serialize(
-            <span class="kw-2">&amp;</span><span class="macro">ipld!</span>({ <span class="string">&quot;/&quot;</span>: { BYTES_JSON_KEY: multibase::encode(Base::Base64, bytes) } }),
+            <span class="kw-2">&amp;</span><span class="macro">ipld!</span>({ <span class="string">&quot;/&quot;</span>: { BYTES_JSON_KEY: multibase::encode(multibase::Base::Base64, bytes) } }),
             serializer,
         ),
         Ipld::List(list) =&gt; {
