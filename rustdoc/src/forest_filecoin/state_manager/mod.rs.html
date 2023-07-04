@@ -1344,10 +1344,6 @@
 <a href="#1344" id="1344">1344</a>
 <a href="#1345" id="1345">1345</a>
 <a href="#1346" id="1346">1346</a>
-<a href="#1347" id="1347">1347</a>
-<a href="#1348" id="1348">1348</a>
-<a href="#1349" id="1349">1349</a>
-<a href="#1350" id="1350">1350</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2017,7 +2013,7 @@
         <span class="prelude-val">Ok</span>((lbts, <span class="kw-2">*</span>next_ts.parent_state()))
     }
 
-    <span class="doccomment">/// Get the [`TipsetKeys`] for a given epoch. The [`TipsetKeys`] may be null.
+    <span class="doccomment">/// Get the [`TipsetKeys`] for a given epoch. The [`TipsetKeys`] may **not** be null.
     </span><span class="kw">pub fn </span>get_epoch_tsk(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
         tipset: Arc&lt;Tipset&gt;,
@@ -2025,12 +2021,8 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetKeys, Error&gt; {
         <span class="kw">let </span>ts = <span class="self">self
             </span>.cs
-            .tipset_by_height(round, tipset, <span class="bool-val">false</span>)
+            .tipset_by_height(round, tipset, <span class="bool-val">true</span>)
             .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
-        <span class="kw">if </span>ts.epoch() != round {
-            <span class="comment">// Null tipset
-            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(TipsetKeys::default());
-        }
         <span class="prelude-val">Ok</span>(ts.key().clone())
     }
 
