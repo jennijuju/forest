@@ -216,6 +216,7 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -250,13 +251,14 @@
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             filters: <span class="macro">vec!</span>[
-                LogValue::new(<span class="string">&quot;libp2p_gossipsub&quot;</span>, LevelFilter::Error),
-                LogValue::new(<span class="string">&quot;filecoin_proofs&quot;</span>, LevelFilter::Warn),
-                LogValue::new(<span class="string">&quot;storage_proofs_core&quot;</span>, LevelFilter::Warn),
-                LogValue::new(<span class="string">&quot;bellperson::groth16::aggregate::verify&quot;</span>, LevelFilter::Warn),
                 LogValue::new(<span class="string">&quot;axum&quot;</span>, LevelFilter::Warn),
+                LogValue::new(<span class="string">&quot;bellperson::groth16::aggregate::verify&quot;</span>, LevelFilter::Warn),
+                LogValue::new(<span class="string">&quot;filecoin_proofs&quot;</span>, LevelFilter::Warn),
                 LogValue::new(<span class="string">&quot;libp2p_bitswap&quot;</span>, LevelFilter::Off),
+                LogValue::new(<span class="string">&quot;libp2p_gossipsub&quot;</span>, LevelFilter::Error),
+                LogValue::new(<span class="string">&quot;libp2p_kad&quot;</span>, LevelFilter::Error),
                 LogValue::new(<span class="string">&quot;rpc&quot;</span>, LevelFilter::Error),
+                LogValue::new(<span class="string">&quot;storage_proofs_core&quot;</span>, LevelFilter::Warn),
                 LogValue::new(<span class="string">&quot;tracing_loki&quot;</span>, LevelFilter::Off),
             ],
         }

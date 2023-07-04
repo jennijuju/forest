@@ -346,7 +346,7 @@
     </span><span class="kw">fn </span>default_boostrap_list_not_empty() {
         <span class="macro">assert!</span>(!DEFAULT_BOOTSTRAP.is_empty());
         DEFAULT_BOOTSTRAP.iter().for_each(|addr| {
-            <span class="macro">assert!</span>(addr.parse::&lt;multiaddr::Multiaddr&gt;().is_ok());
+            <span class="macro">assert!</span>(addr.parse::&lt;libp2p::multiaddr::Multiaddr&gt;().is_ok());
         });
     }
 }
