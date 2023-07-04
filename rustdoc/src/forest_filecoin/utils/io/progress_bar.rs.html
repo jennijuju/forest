@@ -142,12 +142,14 @@
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 // JANK(aatifsyed): I don&#39;t really understand why this module exists, a lot of
 // the code looks wrong
 </span><span class="kw">use </span>std::{io::Stdout, str::FromStr, sync::Arc, time::Duration};
 
+<span class="kw">use </span>is_terminal::IsTerminal;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock};
 <span class="kw">pub use </span>pbr::Units;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -168,7 +170,7 @@
         <span class="macro">matches!</span>(
             <span class="self">self</span>,
             ProgressBarVisibility::Always
-            | ProgressBarVisibility::Auto <span class="kw">if </span>atty::is(atty::Stream::Stdout)
+            | ProgressBarVisibility::Auto <span class="kw">if </span>std::io::stdout().is_terminal()
         )
     }
 }
@@ -263,7 +265,7 @@
     </span><span class="kw">fn </span>should_display() -&gt; bool {
         <span class="kw">match </span><span class="kw-2">*</span>PROGRESS_BAR_VISIBILITY.read() {
             ProgressBarVisibility::Always =&gt; <span class="bool-val">true</span>,
-            ProgressBarVisibility::Auto =&gt; atty::is(atty::Stream::Stdout),
+            ProgressBarVisibility::Auto =&gt; std::io::stdout().is_terminal(),
             ProgressBarVisibility::Never =&gt; <span class="bool-val">false</span>,
         }
     }
