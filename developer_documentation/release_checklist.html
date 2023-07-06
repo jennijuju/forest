@@ -166,43 +166,48 @@
 
                 <div id="content" class="content">
                     <main>
-                        <p>Forest follows a fixed, quarterly release schedule. On the last week of each
-quarter, a new version is always released. This is supplemented with additional
-releases for bug fixes and special features. A &quot;release officer&quot; is appointed
-for each release and they are responsible for either following the checklist or,
-in case of absence, passing the task to a different team member.</p>
-<ol>
+                        <h1 id="release-checklist-"><a class="header" href="#release-checklist-">Release checklist 🛂</a></h1>
+<p>Forest doesn't follow a fixed schedule but releases should be expected at least
+quarterly. A <em>release officer</em> is volunteered for each release, and they are
+responsible for either following the checklist or, in case of absence, passing
+the task to a different team member.</p>
+<h2 id="prepare-the-release"><a class="header" href="#prepare-the-release">Prepare the release</a></h2>
+<p>Make a pull request with the following changes:</p>
+<ul>
 <li>Update the CHANGELOG.md file to reflect all changes and preferably write a
 small summary about the most notable updates. The changelog should follow the
-design philosophy outlined here: https://keepachangelog.com/en/1.0.0/. Go
-through the output of <code>git log</code> and remember that the audience of the
-CHANGELOG does not have intimate knowledge of the Forest code-base. All the
+design philosophy outlined <a href="https://keepachangelog.com/en/1.0.0/">here</a>. Go through the output of
+<code>git log &lt;last-tag&gt;..HEAD</code> and remember that the audience of the CHANGELOG
+does not have intimate knowledge of the Forest code-base. All the
 changed/updated/removed features should be reasonably understandable to an
 end-user.</li>
-<li>Update that version of the crates that are to be released. Forest contains
-many crates so you may need to update many Cargo.toml files. If you're
-working on a patch release, make sure that there are no breaking changes.
-Cherry-picking of patches may be necessary.</li>
+<li>Update the version of the <a href="https://github.com/ChainSafe/forest/blob/main/Cargo.toml">forest crate</a> (and any others, if applicable) to
+be released. Make sure that the updated files do <strong>not</strong> contain a
+<code>[patch.crates-io]</code> section, otherwise you won't be able to make a release on
+<a href="https://crates.io/">crates.io</a>.</li>
 <li>Run the manual tests steps outlined in the TEST_PLAN.md. Caveat: Right now
 there are no manual test steps so this step can be skipped.</li>
 <li>Make sure to run <code>cargo publish --dry-run</code> and include the <code>Cargo.lock</code> crate
 version change in the release.</li>
-<li>Once the changes in step 1 and step 2 have been merged, tag the commit with
-the new version number. The version tag should start with a lowercase 'v'.
-Example: v0.4.1</li>
-<li>Publish the new crate on crates.io according to the
-<a href="https://doc.rust-lang.org/cargo/reference/publishing.html">manual</a>.</li>
-<li>Go to https://github.com/ChainSafe/forest/releases/new and create a new
-release. Use the tag created in step 4, follow the title convention of the
-previous releases, and write a small summary of the release (similar or
-identical to the summary in the CHANGELOG.md file).</li>
-<li>Verify that the new release contains assets for both Linux and MacOS (the
+</ul>
+<h2 id="release-on-cratesio"><a class="header" href="#release-on-cratesio">Release on crates.io</a></h2>
+<ul>
+<li>Publish the new crate on crates.io according to the <a href="https://doc.rust-lang.org/cargo/reference/publishing.html">manual</a>.</li>
+</ul>
+<h2 id="release-on-github"><a class="header" href="#release-on-github">Release on GitHub</a></h2>
+<ul>
+<li>Create a <a href="https://github.com/ChainSafe/forest/releases/new">new release</a>. Click on <code>Choose a tag</code> button and create a new
+one. The tag must start with a lowercase <code>v</code>, e.g., <code>v0.11.0</code>. Follow the
+title convention of the previous releases, and write a small summary of the
+release (similar or identical to the summary in the <a href="https://github.com/ChainSafe/forest/blob/main/CHANGELOG.md">CHANGELOG.md</a> file).
+Add additional, detailed notes with <code>Generate release notes</code> button.</li>
+<li>Verify that the new release contains assets for both Linux and macOS (the
 assets are automatically generated and should show up after 30 minutes to an
 hour).</li>
-<li>Verify that the new release is available in the Github Container Registry.
-Use <code>docker pull ghcr.io/chainsafe/forest:&lt;version&gt;</code> and ensure that it is
-present in the <a href="https://github.com/ChainSafe/forest/pkgs/container/forest">packages</a></li>
-</ol>
+<li>Verify that the new release is available in the GitHub Container Registry. Use
+<code>docker pull ghcr.io/chainsafe/forest:&lt;version&gt;</code> and ensure that it is present
+in the <a href="https://github.com/ChainSafe/forest/pkgs/container/forest">packages</a> list with the <code>latest</code> tag.</li>
+</ul>
 
                     </main>
 
