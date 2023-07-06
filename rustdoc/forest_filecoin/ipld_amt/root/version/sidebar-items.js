@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["V0","V3"],"trait":["Version"]};

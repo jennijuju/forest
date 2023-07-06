@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ChangeType","Either"],"fn":["add_all","diff","diff_leaves","diff_node","get_sub_node","remove_all"],"struct":["Change","NodeContext"]};

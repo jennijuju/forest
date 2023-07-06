@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"forest_filecoin":[["impl&lt;'a, B: <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html\" title=\"trait core::marker::Sized\">Sized</a> + 'a&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/borrow/trait.Borrow.html\" title=\"trait core::borrow::Borrow\">Borrow</a>&lt;B&gt; for <a class=\"enum\" href=\"forest_filecoin/ipld_amt/diff/enum.Either.html\" title=\"enum forest_filecoin::ipld_amt::diff::Either\">Either</a>&lt;'a, B&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
