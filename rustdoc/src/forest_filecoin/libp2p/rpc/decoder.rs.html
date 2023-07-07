@@ -74,6 +74,7 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -111,7 +112,7 @@
 
 <span class="kw">impl</span>&lt;B, T&gt; Future <span class="kw">for </span>DagCborDecodingReader&lt;B, T&gt;
 <span class="kw">where
-    </span>B: AsyncRead + Unpin,
+    </span>B: AsyncRead,
     T: serde::de::DeserializeOwned,
 {
     <span class="kw">type </span>Output = io::Result&lt;T&gt;;
@@ -120,31 +121,32 @@
         <span class="comment">// https://github.com/mxinden/asynchronous-codec/blob/master/src/framed_read.rs#L161
         </span><span class="kw">let </span><span class="kw-2">mut </span>buf = [<span class="number">0u8</span>; <span class="number">8 </span>* <span class="number">1024</span>];
         <span class="kw">loop </span>{
-            <span class="kw">let </span>n = <span class="macro">std::task::ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.io).poll_read(cx, <span class="kw-2">&amp;mut </span>buf))<span class="question-mark">?</span>;
+            <span class="kw">let </span>this = <span class="self">self</span>.as_mut().project();
+            <span class="kw">let </span>n = <span class="macro">std::task::ready!</span>(this.io.poll_read(cx, <span class="kw-2">&amp;mut </span>buf))<span class="question-mark">?</span>;
             <span class="comment">// Terminated
             </span><span class="kw">if </span>n == <span class="number">0 </span>{
                 <span class="kw">let </span>item = serde_ipld_dagcbor::de::from_reader(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes[..])
                     .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()));
                 <span class="kw">return </span>Poll::Ready(item);
             }
-            <span class="self">self</span>.bytes_read += n;
-            <span class="kw">if </span><span class="self">self</span>.max_bytes_allowed &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.bytes_read &gt; <span class="self">self</span>.max_bytes_allowed {
+            <span class="kw-2">*</span>this.bytes_read += n;
+            <span class="kw">if </span><span class="kw-2">*</span>this.max_bytes_allowed &gt; <span class="number">0 </span>&amp;&amp; <span class="kw-2">*</span>this.bytes_read &gt; <span class="kw-2">*</span>this.max_bytes_allowed {
                 <span class="kw">let </span>err = io::Error::new(
                     io::ErrorKind::Other,
                     <span class="macro">format!</span>(
                         <span class="string">&quot;Buffer size exceeds the maximum allowed {}B&quot;</span>,
-                        <span class="self">self</span>.max_bytes_allowed,
+                        <span class="kw-2">*</span>this.max_bytes_allowed,
                     ),
                 );
                 <span class="macro">warn!</span>(<span class="string">&quot;{err}&quot;</span>);
                 <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Err</span>(err));
             }
-            <span class="self">self</span>.bytes.extend_from_slice(<span class="kw-2">&amp;</span>buf[..n.min(buf.len())]);
+            this.bytes.extend_from_slice(<span class="kw-2">&amp;</span>buf[..n.min(buf.len())]);
             <span class="comment">// This is what `FramedRead` does internally
             // Assuming io will be re-used to send new messages.
             //
             // Note: `from_reader` ensures no trailing data left in `bytes`
-            </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(r) = serde_ipld_dagcbor::de::from_reader(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes[..]) {
+            </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(r) = serde_ipld_dagcbor::de::from_reader(<span class="kw-2">&amp;</span>this.bytes[..]) {
                 <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Ok</span>(r));
             }
         }
