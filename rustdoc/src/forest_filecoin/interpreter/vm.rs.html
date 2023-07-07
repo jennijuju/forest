@@ -486,6 +486,19 @@
 <a href="#486" id="486">486</a>
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -506,6 +519,7 @@
     Inner,
 };
 <span class="kw">use </span>ahash::HashSet;
+<span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::{cron, reward, AwardBlockRewardParams};
 <span class="kw">use </span>fvm::{
@@ -834,20 +848,32 @@
         <span class="kw">let </span>unsigned = msg.message().clone();
         <span class="kw">let </span>raw_length = msg.marshal_cbor().expect(<span class="string">&quot;encoding error&quot;</span>).len();
         <span class="kw">let </span>ret: ApplyRet = <span class="kw">match </span><span class="self">self </span>{
-            VM::VM2 { fvm_executor, .. } =&gt; fvm_executor
-                .execute_message(
+            VM::VM2 { fvm_executor, .. } =&gt; {
+                <span class="kw">let </span>ret = fvm_executor.execute_message(
                     unsigned.into(),
                     fvm::executor::ApplyKind::Explicit,
                     raw_length,
-                )<span class="question-mark">?
-                </span>.into(),
-            VM::VM3 { fvm_executor, .. } =&gt; fvm_executor
-                .execute_message(
+                )<span class="question-mark">?</span>;
+
+                <span class="kw">if </span>fvm_executor.externs().bail() {
+                    <span class="macro">bail!</span>(<span class="string">&quot;encountered a database lookup error&quot;</span>);
+                }
+
+                ret.into()
+            }
+            VM::VM3 { fvm_executor, .. } =&gt; {
+                <span class="kw">let </span>ret = fvm_executor.execute_message(
                     unsigned.into(),
                     fvm3::executor::ApplyKind::Explicit,
                     raw_length,
-                )<span class="question-mark">?
-                </span>.into(),
+                )<span class="question-mark">?</span>;
+
+                <span class="kw">if </span>fvm_executor.externs().bail() {
+                    <span class="macro">bail!</span>(<span class="string">&quot;encountered a database lookup error&quot;</span>);
+                }
+
+                ret.into()
+            }
         };
 
         <span class="kw">let </span>exit_code = ret.msg_receipt().exit_code();

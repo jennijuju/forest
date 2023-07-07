@@ -339,12 +339,30 @@
 <a href="#339" id="339">339</a>
 <a href="#340" id="340">340</a>
 <a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{cell::Ref, sync::Arc};
+</span><span class="kw">use </span>std::sync::atomic::{AtomicBool, Ordering};
+<span class="kw">use </span>std::{cell::Ref, sync::Arc};
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::errors::Error;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     gas::{price_list_by_network_version, Gas, GasTracker},
@@ -364,6 +382,7 @@
     clock::ChainEpoch,
     consensus::{ConsensusFault, ConsensusFaultType},
 };
+<span class="kw">use </span>tracing::error;
 
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::resolve_to_key_addr;
 
@@ -374,6 +393,7 @@
     lookback: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
     db: DB,
     chain_config: Arc&lt;ChainConfig&gt;,
+    bail: AtomicBool,
 }
 
 <span class="kw">impl</span>&lt;DB: Blockstore&gt; ForestExternsV2&lt;DB&gt; {
@@ -392,6 +412,7 @@
             lookback,
             db,
             chain_config,
+            bail: AtomicBool::new(<span class="bool-val">false</span>),
         }
     }
 
@@ -431,13 +452,17 @@
         <span class="prelude-val">Ok</span>((addr.into(), gas_used.round_up() <span class="kw">as </span>i64))
     }
 
-    <span class="kw">fn </span>verify_block_signature(<span class="kw-2">&amp;</span><span class="self">self</span>, bh: <span class="kw-2">&amp;</span>BlockHeader) -&gt; anyhow::Result&lt;i64&gt; {
+    <span class="kw">fn </span>verify_block_signature(<span class="kw-2">&amp;</span><span class="self">self</span>, bh: <span class="kw-2">&amp;</span>BlockHeader) -&gt; anyhow::Result&lt;i64, Error&gt; {
         <span class="kw">let </span>(worker_addr, gas_used) =
             <span class="self">self</span>.worker_key_at_lookback(<span class="kw-2">&amp;</span>bh.miner_address().into(), bh.epoch())<span class="question-mark">?</span>;
 
         bh.check_block_signature(<span class="kw-2">&amp;</span>worker_addr.into())<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(gas_used)
+    }
+
+    <span class="kw">pub fn </span>bail(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.bail.load(Ordering::Relaxed)
     }
 }
 
@@ -556,27 +581,34 @@
             <span class="prelude-val">Some</span>(fault_type) =&gt; {
                 <span class="comment">// (4) expensive final checks
 
-                // check blocks are properly signed by their respective miner
+                </span><span class="kw">let </span>bail = |err| {
+                    <span class="comment">// When a lookup error occurs we should just bail terminating all the
+                    // computations.
+                    </span><span class="macro">error!</span>(<span class="string">&quot;database lookup error: {err}&quot;</span>);
+                    <span class="self">self</span>.bail.store(<span class="bool-val">true</span>, Ordering::Relaxed);
+                    <span class="prelude-val">Err</span>(err)
+                };
+
+                <span class="comment">// check blocks are properly signed by their respective miner
                 // note we do not need to check extra&#39;s: it is a parent to block b
                 // which itself is signed, so it was willingly included by the miner
-                </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(gas_used) = <span class="self">self</span>.verify_block_signature(<span class="kw-2">&amp;</span>bh_1) {
-                    total_gas += gas_used;
-                    <span class="kw">if let </span><span class="prelude-val">Ok</span>(gas_used) = <span class="self">self</span>.verify_block_signature(<span class="kw-2">&amp;</span>bh_2) {
-                        total_gas += gas_used;
-                        <span class="kw">let </span>ret = <span class="prelude-val">Some</span>(ConsensusFault {
-                            target: bh_1.miner_address().into(),
-                            epoch: bh_2.epoch(),
-                            fault_type,
-                        });
-                        <span class="prelude-val">Ok</span>((ret, total_gas))
-                    } <span class="kw">else </span>{
-                        <span class="comment">// invalid consensus fault: cannot verify second block header signature
-                        </span><span class="prelude-val">Ok</span>((<span class="prelude-val">None</span>, total_gas))
+                </span><span class="kw">for </span>block_header <span class="kw">in </span>[<span class="kw-2">&amp;</span>bh_1, <span class="kw-2">&amp;</span>bh_2] {
+                    <span class="kw">let </span>res = <span class="self">self</span>.verify_block_signature(block_header);
+                    <span class="kw">match </span>res {
+                        <span class="comment">// invalid consensus fault: cannot verify block header signature
+                        </span><span class="prelude-val">Err</span>(Error::Signature(<span class="kw">_</span>)) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>((<span class="prelude-val">None</span>, total_gas)),
+                        <span class="prelude-val">Err</span>(Error::Lookup(err)) =&gt; <span class="kw">return </span>bail(err),
+                        <span class="prelude-val">Ok</span>(gas_used) =&gt; total_gas += gas_used,
                     }
-                } <span class="kw">else </span>{
-                    <span class="comment">// invalid consensus fault: cannot verify first block header signature
-                    </span><span class="prelude-val">Ok</span>((<span class="prelude-val">None</span>, total_gas))
                 }
+
+                <span class="kw">let </span>ret = <span class="prelude-val">Some</span>(ConsensusFault {
+                    target: bh_1.miner_address().into(),
+                    epoch: bh_2.epoch(),
+                    fault_type,
+                });
+
+                <span class="prelude-val">Ok</span>((ret, total_gas))
             }
         }
     }
