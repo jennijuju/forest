@@ -1693,7 +1693,7 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::{stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
+<span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>fvm_shared::ALLOWABLE_CLOCK_DRIFT;
 <span class="kw">use </span>log::{debug, error, info, trace, warn};
 <span class="kw">use </span>nonempty::NonEmpty;
@@ -3120,7 +3120,7 @@
                          tree: <span class="kw-2">&amp;</span>StateTree&lt;<span class="kw-2">&amp;</span>DB&gt;|
      -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
         <span class="comment">// Phase 1: Syntactic validation
-        </span><span class="kw">let </span>min_gas = price_list.on_chain_message(msg.marshal_cbor().unwrap().len());
+        </span><span class="kw">let </span>min_gas = price_list.on_chain_message(to_vec(msg).unwrap().len());
         valid_for_block_inclusion(msg, min_gas.total(), network_version)
             .map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{}&quot;</span>, e))<span class="question-mark">?</span>;
         sum_gas_limit += msg.gas_limit;

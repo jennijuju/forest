@@ -95,14 +95,18 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">pub mod </span>json {
     <span class="kw">use </span>std::str::FromStr;
 
-    <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
     <span class="kw">use </span><span class="kw">crate</span>::shim::state_tree::ActorState;
+    <span class="kw">use crate</span>::{json::address::json::AddressJson, shim::econ::TokenAmount};
     <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>num_bigint::BigInt;
     <span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
@@ -137,12 +141,14 @@
             <span class="attr">#[serde(rename = <span class="string">&quot;Nonce&quot;</span>)]
             </span><span class="kw">pub </span>sequence: u64,
             <span class="kw">pub </span>balance: String,
+            <span class="kw">pub </span>delegated_address: <span class="prelude-ty">Option</span>&lt;AddressJson&gt;,
         }
         ActorStateSer {
             code: <span class="kw-2">&amp;</span>m.code,
             state: <span class="kw-2">&amp;</span>m.state,
             sequence: m.sequence,
             balance: m.balance.atto().to_str_radix(<span class="number">10</span>),
+            delegated_address: m.delegated_address.map(|addr| AddressJson(addr.into())),
         }
         .serialize(serializer)
     }
@@ -161,19 +167,21 @@
             <span class="attr">#[serde(rename = <span class="string">&quot;Nonce&quot;</span>)]
             </span><span class="kw">pub </span>sequence: u64,
             <span class="kw">pub </span>balance: String,
+            <span class="kw">pub </span>delegated_address: <span class="prelude-ty">Option</span>&lt;AddressJson&gt;,
         }
         <span class="kw">let </span>ActorStateDe {
             code,
             state,
             sequence,
             balance,
+            delegated_address,
         } = Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ActorState::new(
             code,
             state,
             TokenAmount::from_atto(BigInt::from_str(<span class="kw-2">&amp;</span>balance).map_err(de::Error::custom)<span class="question-mark">?</span>),
             sequence,
-            <span class="prelude-val">None</span>,
+            delegated_address.map(|AddressJson(addr)| addr),
         ))
     }
 }

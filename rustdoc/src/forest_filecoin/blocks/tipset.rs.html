@@ -632,8 +632,6 @@
 <a href="#632" id="632">632</a>
 <a href="#633" id="633">633</a>
 <a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -641,9 +639,9 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
+<span class="kw">use </span><span class="kw">crate</span>::utils::cid::CidCborExt;
 <span class="kw">use </span>ahash::{HashSet, HashSetExt};
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>once_cell::sync::OnceCell;
@@ -678,7 +676,7 @@
         <span class="kw">for </span>cid <span class="kw">in </span><span class="self">self</span>.cids() {
             bytes.append(<span class="kw-2">&amp;mut </span>cid.to_bytes())
         }
-        <span class="prelude-val">Ok</span>(RawBytes::new(bytes).cid()<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(Cid::from_cbor_blake2b256(<span class="kw-2">&amp;</span>RawBytes::new(bytes))<span class="question-mark">?</span>)
     }
 }
 
@@ -693,8 +691,6 @@
         <span class="macro">write!</span>(f, <span class="string">&quot;[{}]&quot;</span>, s)
     }
 }
-
-<span class="kw">impl </span>Cbor <span class="kw">for </span>TipsetKeys {}
 
 <span class="doccomment">/// An immutable set of blocks at the same height with the same parent set.
 /// Blocks in a tipset are canonically ordered by ticket size.

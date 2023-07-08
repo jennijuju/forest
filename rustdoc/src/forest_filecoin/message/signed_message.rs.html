@@ -140,6 +140,7 @@
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -149,8 +150,7 @@
     econ::TokenAmount,
     message::Message,
 };
-<span class="kw">use </span>fvm_ipld_encoding::{to_vec, Cbor, Error <span class="kw">as </span>CborError};
-<span class="kw">use </span>fvm_ipld_encoding3::RawBytes;
+<span class="kw">use </span>fvm_ipld_encoding::RawBytes;
 <span class="kw">use </span>fvm_shared::MethodNum;
 <span class="kw">use </span>serde_tuple::{<span class="self">self</span>, Deserialize_tuple, Serialize_tuple};
 
@@ -214,6 +214,18 @@
         <span class="self">self</span>.signature
             .verify(<span class="kw-2">&amp;</span><span class="self">self</span>.message.cid().unwrap().to_bytes(), <span class="kw-2">&amp;</span><span class="self">self</span>.from())
     }
+
+    <span class="comment">// Important note: `msg.cid()` is different from
+    // `Cid::from_cbor_blake2b256(msg)`. The behavior comes from Lotus, and
+    // Lotus, by, definition, is correct.
+    </span><span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;cid::Cid, fvm_ipld_encoding::Error&gt; {
+        <span class="kw">if </span><span class="self">self</span>.is_bls() {
+            <span class="self">self</span>.message.cid()
+        } <span class="kw">else </span>{
+            <span class="kw">use </span><span class="kw">crate</span>::utils::cid::CidCborExt;
+            cid::Cid::from_cbor_blake2b256(<span class="self">self</span>)
+        }
+    }
 }
 
 <span class="attr">#[cfg(test)]
@@ -270,16 +282,6 @@
 
     <span class="kw">fn </span>set_gas_premium(<span class="kw-2">&amp;mut </span><span class="self">self</span>, prem: TokenAmount) {
         <span class="self">self</span>.message.set_gas_premium(prem)
-    }
-}
-
-<span class="kw">impl </span>Cbor <span class="kw">for </span>SignedMessage {
-    <span class="kw">fn </span>marshal_cbor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, CborError&gt; {
-        <span class="kw">if </span><span class="self">self</span>.is_bls() {
-            <span class="self">self</span>.message.marshal_cbor()
-        } <span class="kw">else </span>{
-            <span class="prelude-val">Ok</span>(to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>)<span class="question-mark">?</span>)
-        }
     }
 }
 </code></pre></div></section></main></body></html>

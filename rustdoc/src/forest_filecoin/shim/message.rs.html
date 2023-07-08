@@ -227,14 +227,15 @@
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
 <a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>anyhow::anyhow;
 
 <span class="kw">use </span>fvm_ipld_encoding::de::Deserializer;
 <span class="kw">use </span>fvm_ipld_encoding::ser::Serializer;
-<span class="kw">use </span>fvm_ipld_encoding::{Cbor, RawBytes <span class="kw">as </span>RawBytes_v2};
-<span class="kw">use </span>fvm_ipld_encoding3::RawBytes <span class="kw">as </span>RawBytes_v3;
+<span class="kw">use </span>fvm_ipld_encoding::{Error <span class="kw">as </span>EncError, RawBytes};
 <span class="kw">use </span>fvm_shared::message::Message <span class="kw">as </span>Message_v2;
 <span class="kw">pub use </span>fvm_shared3::message::Message <span class="kw">as </span>Message_v3;
 <span class="kw">use </span>fvm_shared3::{MethodNum, METHOD_SEND};
@@ -250,7 +251,7 @@
     <span class="kw">pub </span>sequence: u64,
     <span class="kw">pub </span>value: TokenAmount,
     <span class="kw">pub </span>method_num: MethodNum,
-    <span class="kw">pub </span>params: RawBytes_v3,
+    <span class="kw">pub </span>params: RawBytes,
     <span class="kw">pub </span>gas_limit: u64,
     <span class="kw">pub </span>gas_fee_cap: TokenAmount,
     <span class="kw">pub </span>gas_premium: TokenAmount,
@@ -266,7 +267,7 @@
             sequence: u64::arbitrary(g),
             value: TokenAmount::arbitrary(g),
             method_num: u64::arbitrary(g),
-            params: fvm_ipld_encoding3::RawBytes::new(Vec::arbitrary(g)),
+            params: fvm_ipld_encoding::RawBytes::new(Vec::arbitrary(g)),
             gas_limit: u64::arbitrary(g),
             gas_fee_cap: TokenAmount::arbitrary(g),
             gas_premium: TokenAmount::arbitrary(g),
@@ -283,7 +284,7 @@
             sequence: other.sequence,
             value: other.value.into(),
             method_num: other.method_num,
-            params: RawBytes_v3::from(other.params.to_vec()),
+            params: other.params,
             gas_limit: other.gas_limit,
             gas_fee_cap: other.gas_fee_cap.into(),
             gas_premium: other.gas_premium.into(),
@@ -300,7 +301,7 @@
             sequence: other.sequence,
             value: other.value.into(),
             method_num: other.method_num,
-            params: RawBytes_v3::from(other.params.to_vec()),
+            params: other.params,
             gas_limit: other.gas_limit,
             gas_fee_cap: other.gas_fee_cap.into(),
             gas_premium: other.gas_premium.into(),
@@ -318,7 +319,7 @@
             sequence: other.sequence,
             value: other.value.into(),
             method_num: other.method_num,
-            params: RawBytes_v3::from(other.params.to_vec()),
+            params: other.params,
             gas_limit: other.gas_limit,
             gas_fee_cap: other.gas_fee_cap.into(),
             gas_premium: other.gas_premium.into(),
@@ -335,7 +336,7 @@
             sequence: other.sequence,
             value: other.value.into(),
             method_num: other.method_num,
-            params: RawBytes_v3::from(other.params.to_vec()),
+            params: other.params,
             gas_limit: other.gas_limit <span class="kw">as </span>u64,
             gas_fee_cap: other.gas_fee_cap.into(),
             gas_premium: other.gas_premium.into(),
@@ -352,7 +353,7 @@
             sequence: other.sequence,
             value: other.value.into(),
             method_num: other.method_num,
-            params: RawBytes_v2::from(other.params.to_vec()),
+            params: other.params,
             gas_limit: other.gas_limit <span class="kw">as </span>i64,
             gas_fee_cap: other.gas_fee_cap.into(),
             gas_premium: other.gas_premium.into(),
@@ -370,15 +371,13 @@
             sequence: other.sequence,
             value: other.value.into(),
             method_num: other.method_num,
-            params: RawBytes_v2::from(other.params.to_vec()),
+            params: other.params,
             gas_limit: other.gas_limit <span class="kw">as </span>i64,
             gas_fee_cap: other.gas_fee_cap.into(),
             gas_premium: other.gas_premium.into(),
         }
     }
 }
-
-<span class="kw">impl </span>Cbor <span class="kw">for </span>Message {}
 
 <span class="kw">impl </span>Message {
     <span class="doccomment">/// Does some basic checks on the Message to see if the fields are valid.
@@ -401,6 +400,11 @@
             method_num: METHOD_SEND,
             ..Default::default()
         }
+    }
+
+    <span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;cid::Cid, EncError&gt; {
+        <span class="kw">use </span><span class="kw">crate</span>::utils::cid::CidCborExt;
+        cid::Cid::from_cbor_blake2b256(<span class="self">self</span>)
     }
 }
 

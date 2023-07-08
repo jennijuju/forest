@@ -142,7 +142,7 @@
 <span class="kw">pub mod </span>json {
     <span class="kw">use </span><span class="kw">crate</span>::shim::error::ExitCode;
     <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
-    <span class="kw">use </span>fvm_ipld_encoding3::RawBytes;
+    <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
     <span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -242,7 +242,7 @@
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>message_receipt = Receipt_v3 {
             exit_code: <span class="kw">crate</span>::shim::error::ExitCode::from(u32::arbitrary(g)).into(),
-            return_data: fvm_ipld_encoding3::RawBytes::new(Vec::arbitrary(g)),
+            return_data: fvm_ipld_encoding::RawBytes::new(Vec::arbitrary(g)),
             gas_used: u64::arbitrary(g),
             events_root: <span class="prelude-val">None</span>,
         };

@@ -160,11 +160,11 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
+<span class="kw">use </span><span class="kw">crate</span>::utils::{cid::CidCborExt, db::CborStoreExt};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_amt::{Amtv0 <span class="kw">as </span>Amt, Error <span class="kw">as </span>IpldAmtError};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::{Cbor, Error <span class="kw">as </span>EncodingError};
+<span class="kw">use </span>fvm_ipld_encoding::Error <span class="kw">as </span>EncodingError;
 <span class="kw">use </span>thiserror::Error;
 
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::bad_block_cache::BadBlockCache;
@@ -277,11 +277,11 @@
         <span class="comment">// Generate message CIDs
         </span><span class="kw">let </span>bls_cids = bls_msgs
             .iter()
-            .map(Cbor::cid)
+            .map(Cid::from_cbor_blake2b256)
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;Cid&gt;, fvm_ipld_encoding::Error&gt;&gt;()<span class="question-mark">?</span>;
         <span class="kw">let </span>secp_cids = secp_msgs
             .iter()
-            .map(Cbor::cid)
+            .map(Cid::from_cbor_blake2b256)
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;Cid&gt;, fvm_ipld_encoding::Error&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="comment">// Generate Amt and batch set message values

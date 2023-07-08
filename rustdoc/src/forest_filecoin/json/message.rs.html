@@ -145,7 +145,6 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -154,8 +153,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, message::Message};
     <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
     <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>fvm_ipld_encoding::Cbor;
-    <span class="kw">use </span>fvm_ipld_encoding3::RawBytes;
+    <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
     <span class="kw">use </span>fvm_shared3::message::Message <span class="kw">as </span>Message_v3;
     <span class="kw">use </span>serde::{de, ser, Deserialize, Deserializer, Serialize, Serializer};
 

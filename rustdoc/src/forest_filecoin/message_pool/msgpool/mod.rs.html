@@ -966,7 +966,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, crypto::Signature};
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
+<span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>log::error;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock <span class="kw">as </span>SyncRwLock};
@@ -1036,7 +1036,7 @@
     <span class="kw">let </span>msgs = select_messages_for_block(api, chain_config, ts.as_ref(), pending_map)<span class="question-mark">?</span>;
 
     <span class="kw">for </span>m <span class="kw">in </span>msgs.iter() {
-        <span class="kw">let </span>mb = m.marshal_cbor()<span class="question-mark">?</span>;
+        <span class="kw">let </span>mb = to_vec(m)<span class="question-mark">?</span>;
         network_sender
             .send_async(NetworkMessage::PubsubMessage {
                 topic: Topic::new(<span class="macro">format!</span>(<span class="string">&quot;{PUBSUB_MSG_STR}/{network_name}&quot;</span>)),

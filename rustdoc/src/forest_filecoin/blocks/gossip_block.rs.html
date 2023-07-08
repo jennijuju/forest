@@ -113,14 +113,10 @@
 <a href="#113" id="113">113</a>
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
 <span class="kw">use </span>serde_tuple::{<span class="self">self</span>, Deserialize_tuple, Serialize_tuple};
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
@@ -150,8 +146,6 @@
         }
     }
 }
-
-<span class="kw">impl </span>Cbor <span class="kw">for </span>GossipBlock {}
 
 <span class="kw">pub mod </span>json {
     <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};

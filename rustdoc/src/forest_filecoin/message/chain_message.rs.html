@@ -122,19 +122,11 @@
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, message::Message};
-<span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm_ipld_encoding::{Cbor, Error};
-<span class="kw">use </span>fvm_ipld_encoding3::RawBytes;
+<span class="kw">use </span>fvm_ipld_encoding::{Error, RawBytes};
 <span class="kw">use </span>fvm_shared::MethodNum;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -155,6 +147,13 @@
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Unsigned(m) =&gt; m,
             <span class="self">Self</span>::Signed(sm) =&gt; sm.message(),
+        }
+    }
+
+    <span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;cid::Cid, Error&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            ChainMessage::Unsigned(msg) =&gt; msg.cid(),
+            ChainMessage::Signed(msg) =&gt; msg.cid(),
         }
     }
 }
@@ -244,17 +243,6 @@
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Signed(t) =&gt; t.set_gas_premium(prem),
             <span class="self">Self</span>::Unsigned(t) =&gt; t.set_gas_premium(prem),
-        }
-    }
-}
-
-<span class="kw">impl </span>Cbor <span class="kw">for </span>ChainMessage {
-    <span class="doccomment">/// Returns the content identifier of the raw block of data
-    /// Default is `Blake2b256` hash
-    </span><span class="kw">fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Cid, Error&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Signed(t) =&gt; t.cid(),
-            <span class="self">Self</span>::Unsigned(t) =&gt; t.cid(),
         }
     }
 }

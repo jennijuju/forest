@@ -129,20 +129,20 @@
     multihash::{Code, MultihashDigest},
     Cid, Version,
 };
-<span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
+<span class="kw">use </span>fvm_ipld_encoding::{Error, DAG_CBOR};
 
 <span class="doccomment">/// Extension methods for constructing `dag-cbor` [Cid]
 </span><span class="kw">pub trait </span>CidCborExt {
     <span class="doccomment">/// Default CID builder for Filecoin
     ///
-    /// - The default codec is [`fvm_ipld_encoding3::DAG_CBOR`]
+    /// - The default codec is [`fvm_ipld_encoding::DAG_CBOR`]
     /// - The default hash function is 256 bit BLAKE2b
     ///
     /// This matches [`abi.CidBuilder`](https://github.com/filecoin-project/go-state-types/blob/master/abi/cid.go#L49) in go
-    </span><span class="kw">fn </span>from_cbor_blake2b256&lt;S: serde::ser::Serialize&gt;(obj: <span class="kw-2">&amp;</span>S) -&gt; anyhow::Result&lt;Cid&gt; {
-        <span class="kw">let </span>bytes = fvm_ipld_encoding3::to_vec(obj)<span class="question-mark">?</span>;
+    </span><span class="kw">fn </span>from_cbor_blake2b256&lt;S: serde::ser::Serialize&gt;(obj: <span class="kw-2">&amp;</span>S) -&gt; <span class="prelude-ty">Result</span>&lt;Cid, Error&gt; {
+        <span class="kw">let </span>bytes = fvm_ipld_encoding::to_vec(obj)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(Cid::new_v1(
-            fvm_ipld_encoding3::DAG_CBOR,
+            fvm_ipld_encoding::DAG_CBOR,
             Code::Blake2b256.digest(<span class="kw-2">&amp;</span>bytes),
         ))
     }

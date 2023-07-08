@@ -585,7 +585,7 @@
     gas::{price_list_by_network_version, Gas},
 };
 <span class="kw">use </span>ahash::HashMap;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
+<span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>log::warn;
 <span class="kw">use </span>num_traits::Zero;
 <span class="kw">use </span>slotmap::{new_key_type, SlotMap};
@@ -988,7 +988,7 @@
         <span class="kw">let </span>network_version = chain_config.network_version(ts.epoch());
 
         <span class="kw">let </span>min_gas = price_list_by_network_version(network_version)
-            .on_chain_message(m.marshal_cbor()<span class="question-mark">?</span>.len())
+            .on_chain_message(to_vec(m)<span class="question-mark">?</span>.len())
             .total();
 
         <span class="kw">if </span>Gas::new(m.gas_limit()) &lt; min_gas {

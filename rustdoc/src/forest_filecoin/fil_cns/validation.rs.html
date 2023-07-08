@@ -491,7 +491,7 @@
 <span class="kw">use </span>filecoin_proofs_api::{post, PublicReplicaInfo, SectorId};
 <span class="kw">use </span>futures::stream::FuturesUnordered;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::{bytes_32, Cbor};
+<span class="kw">use </span>fvm_ipld_encoding::{bytes_32, to_vec};
 <span class="kw">use </span>fvm_shared::{
     commcid::cid_to_replica_commitment_v1, crypto::signature::ops::verify_bls_sig,
     TICKET_RANDOMNESS_LOOKBACK,
@@ -728,7 +728,7 @@
 
     <span class="kw">let </span>beacon = header.beacon_entries().last().unwrap_or(prev_beacon);
     <span class="kw">let </span>miner_address = header.miner_address();
-    <span class="kw">let </span>miner_address_buf = miner_address.marshal_cbor()<span class="question-mark">?</span>;
+    <span class="kw">let </span>miner_address_buf = to_vec(miner_address)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>vrf_base = <span class="kw">crate</span>::state_manager::chain_rand::draw_randomness(
         beacon.data(),
@@ -771,7 +771,7 @@
         .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::VALIDATE_TICKET_ELECTION])
         .start_timer();
 
-    <span class="kw">let </span><span class="kw-2">mut </span>miner_address_buf = header.miner_address().marshal_cbor()<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>miner_address_buf = to_vec(header.miner_address())<span class="question-mark">?</span>;
     <span class="kw">let </span>smoke_height = chain_config.epoch(Height::Smoke);
 
     <span class="kw">if </span>header.epoch() &gt; smoke_height {
@@ -838,7 +838,7 @@
         ));
     }
 
-    <span class="kw">let </span>miner_addr_buf = header.miner_address().marshal_cbor()<span class="question-mark">?</span>;
+    <span class="kw">let </span>miner_addr_buf = to_vec(header.miner_address())<span class="question-mark">?</span>;
     <span class="kw">let </span>rand_base = header
         .beacon_entries()
         .iter()

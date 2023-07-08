@@ -665,7 +665,7 @@
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::StreamExt;
-<span class="kw">use </span>fvm_ipld_encoding::Cbor;
+<span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>log::warn;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
@@ -942,7 +942,7 @@
         <span class="kw">let </span>cid = msg.cid().map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
         <span class="kw">let </span>cur_ts = <span class="self">self</span>.cur_tipset.lock().clone();
         <span class="kw">let </span>publish = <span class="self">self</span>.add_tipset(msg.clone(), <span class="kw-2">&amp;</span>cur_ts, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>msg_ser = msg.marshal_cbor()<span class="question-mark">?</span>;
+        <span class="kw">let </span>msg_ser = to_vec(<span class="kw-2">&amp;</span>msg)<span class="question-mark">?</span>;
         <span class="self">self</span>.add_local(msg)<span class="question-mark">?</span>;
         <span class="kw">if </span>publish {
             <span class="self">self</span>.network_sender
@@ -957,7 +957,7 @@
     }
 
     <span class="kw">fn </span>check_message(<span class="kw-2">&amp;</span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>SignedMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="kw">if </span>msg.marshal_cbor()<span class="question-mark">?</span>.len() &gt; <span class="number">32 </span>* <span class="number">1024 </span>{
+        <span class="kw">if </span>to_vec(msg)<span class="question-mark">?</span>.len() &gt; <span class="number">32 </span>* <span class="number">1024 </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::MessageTooBig);
         }
         valid_for_block_inclusion(msg.message(), Gas::new(<span class="number">0</span>), NEWEST_NETWORK_VERSION)<span class="question-mark">?</span>;
@@ -1236,7 +1236,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt; {
     <span class="kw">let </span>epoch = cur_ts.epoch();
     <span class="kw">let </span>min_gas = price_list_by_network_version(chain_config.network_version(epoch))
-        .on_chain_message(m.marshal_cbor()<span class="question-mark">?</span>.len());
+        .on_chain_message(to_vec(m)<span class="question-mark">?</span>.len());
     valid_for_block_inclusion(m.message(), min_gas.total(), NEWEST_NETWORK_VERSION)<span class="question-mark">?</span>;
     <span class="kw">if </span>!cur_ts.blocks().is_empty() {
         <span class="kw">let </span>base_fee = cur_ts.blocks()[<span class="number">0</span>].parent_base_fee();

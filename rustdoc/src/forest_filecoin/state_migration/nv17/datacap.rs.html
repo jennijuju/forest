@@ -168,7 +168,7 @@
         )<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>token =
-            frc46_token::token::state::TokenState::new_with_bit_width(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
+            fil_actors_shared::frc46_token::TokenState::new_with_bit_width(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
         token.supply = TokenAmount::from_atto(token_supply).into();
         token.balances = balances_map.flush()<span class="question-mark">?</span>;
         token.allowances = allowances_map.flush()<span class="question-mark">?</span>;

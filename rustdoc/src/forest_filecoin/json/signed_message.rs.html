@@ -212,14 +212,12 @@
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">pub mod </span>json {
     <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
     <span class="kw">use </span><span class="kw">crate</span>::shim::{crypto::Signature, message::Message};
     <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>fvm_ipld_encoding::Cbor;
     <span class="kw">use </span>serde::{ser, Deserialize, Deserializer, Serialize, Serializer};
 
     <span class="kw">use </span><span class="kw">crate</span>::json::{message, signature};

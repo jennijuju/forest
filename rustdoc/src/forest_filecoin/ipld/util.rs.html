@@ -213,7 +213,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::{progress_bar, ProgressBar};
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm_ipld_encoding::{from_slice, Cbor};
+<span class="kw">use </span>fvm_ipld_encoding::from_slice;
 <span class="kw">use </span>lazy_static::lazy_static;
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{CidHashSet, Ipld};
@@ -354,7 +354,7 @@
         }
 
         <span class="kw">let </span>data = load_block(next).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>h = BlockHeader::unmarshal_cbor(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
+        <span class="kw">let </span>h = from_slice::&lt;BlockHeader&gt;(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
 
         <span class="kw">if </span>current_min_height &gt; h.epoch() {
             current_min_height = h.epoch();
