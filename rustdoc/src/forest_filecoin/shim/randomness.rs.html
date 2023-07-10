@@ -76,7 +76,7 @@
 
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
 
-<span class="kw">use </span>fvm_shared::randomness::Randomness <span class="kw">as </span>Randomness_v2;
+<span class="kw">use </span>fvm_shared2::randomness::Randomness <span class="kw">as </span>Randomness_v2;
 <span class="kw">use </span>fvm_shared3::randomness::Randomness <span class="kw">as </span>Randomness_v3;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -88,7 +88,7 @@
 /// # use forest_filecoin::doctest_private::Randomness;
 ///
 /// // Create FVM2 Randomness normally
-/// let fvm2_rand = fvm_shared::randomness::Randomness(vec![]);
+/// let fvm2_rand = fvm_shared2::randomness::Randomness(vec![]);
 ///
 /// // Create a correspndoning FVM3 Randomness
 /// let fvm3_rand = fvm_shared3::randomness::Randomness(vec![]);

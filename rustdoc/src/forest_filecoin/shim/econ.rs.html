@@ -270,7 +270,7 @@
 
 </span><span class="kw">use </span>std::ops::{Add, AddAssign, Deref, DerefMut, Mul, MulAssign, Sub, SubAssign};
 
-<span class="kw">use </span>fvm_shared::econ::TokenAmount <span class="kw">as </span>TokenAmount_v2;
+<span class="kw">use </span>fvm_shared2::econ::TokenAmount <span class="kw">as </span>TokenAmount_v2;
 <span class="kw">use </span>fvm_shared3::econ::TokenAmount <span class="kw">as </span>TokenAmount_v3;
 <span class="kw">pub use </span>fvm_shared3::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN_BASE};
 <span class="kw">use </span>lazy_static::lazy_static;
@@ -279,8 +279,8 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>static_assertions::const_assert_eq;
 
-<span class="macro">const_assert_eq!</span>(BLOCK_GAS_LIMIT, fvm_shared::BLOCK_GAS_LIMIT <span class="kw">as </span>u64);
-<span class="macro">const_assert_eq!</span>(TOTAL_FILECOIN_BASE, fvm_shared::TOTAL_FILECOIN_BASE);
+<span class="macro">const_assert_eq!</span>(BLOCK_GAS_LIMIT, fvm_shared2::BLOCK_GAS_LIMIT <span class="kw">as </span>u64);
+<span class="macro">const_assert_eq!</span>(TOTAL_FILECOIN_BASE, fvm_shared2::TOTAL_FILECOIN_BASE);
 
 <span class="macro">lazy_static! </span>{
     <span class="doccomment">/// Total Filecoin available to the network.

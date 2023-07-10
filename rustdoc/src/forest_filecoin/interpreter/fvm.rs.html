@@ -371,13 +371,13 @@
 };
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm::externs::{Consensus, Externs, Rand};
+<span class="kw">use </span>fvm2::externs::{Consensus, Externs, Rand};
 <span class="kw">use </span>fvm_ipld_blockstore::{
     tracking::{BSStats, TrackingBlockstore},
     Blockstore,
 };
 <span class="kw">use </span>fvm_ipld_encoding::from_slice;
-<span class="kw">use </span>fvm_shared::{
+<span class="kw">use </span>fvm_shared2::{
     address::Address,
     clock::ChainEpoch,
     consensus::{ConsensusFault, ConsensusFaultType},

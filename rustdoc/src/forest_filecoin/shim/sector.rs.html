@@ -286,7 +286,7 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::{version::NetworkVersion, Inner};
-<span class="kw">use </span>fvm_shared::sector::{
+<span class="kw">use </span>fvm_shared2::sector::{
     RegisteredPoStProof <span class="kw">as </span>RegisteredPoStProofV2, RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV2,
     SectorInfo <span class="kw">as </span>SectorInfoV2, SectorSize <span class="kw">as </span>SectorSizeV2,
 };
@@ -308,7 +308,7 @@
 /// ```
 /// # use forest_filecoin::doctest_private::RegisteredSealProof;
 /// // Create FVM2 RegisteredSealProof normally
-/// let fvm2_proof = fvm_shared::sector::RegisteredSealProof::StackedDRG2KiBV1;
+/// let fvm2_proof = fvm_shared2::sector::RegisteredSealProof::StackedDRG2KiBV1;
 ///
 /// // Create a correspndoning FVM3 RegisteredSealProof
 /// let fvm3_proof = fvm_shared3::sector::RegisteredSealProof::StackedDRG2KiBV1;

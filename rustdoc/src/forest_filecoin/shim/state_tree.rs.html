@@ -345,11 +345,11 @@
 
 <span class="kw">use </span>anyhow::{bail, Context};
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm::state_tree::{ActorState <span class="kw">as </span>ActorStateV2, StateTree <span class="kw">as </span>StateTreeV2};
+<span class="kw">use </span>fvm2::state_tree::{ActorState <span class="kw">as </span>ActorStateV2, StateTree <span class="kw">as </span>StateTreeV2};
 <span class="kw">use </span>fvm3::state_tree::{ActorState <span class="kw">as </span>ActorStateV3, StateTree <span class="kw">as </span>StateTreeV3};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::repr::{Deserialize_repr, Serialize_repr};
-<span class="kw">use </span>fvm_shared::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV2;
+<span class="kw">use </span>fvm_shared2::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV2;
 <span class="kw">use </span>fvm_shared3::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV3;
 <span class="kw">pub use </span>fvm_shared3::ActorID;
 <span class="kw">use </span>num::FromPrimitive;
@@ -505,7 +505,7 @@
     {
         <span class="kw">match </span><span class="self">self </span>{
             StateTree::V2(st) =&gt; {
-                <span class="kw">let </span>inner = |address: fvm_shared::address::Address, actor_state: <span class="kw-2">&amp;</span>ActorStateV2| {
+                <span class="kw">let </span>inner = |address: fvm_shared2::address::Address, actor_state: <span class="kw-2">&amp;</span>ActorStateV2| {
                     f(address.into(), <span class="kw-2">&amp;</span>actor_state.into())
                 };
                 st.for_each(inner)
@@ -552,8 +552,8 @@
 /// use cid::Cid;
 ///
 /// // Create FVM2 ActorState normally
-/// let fvm2_actor_state = fvm::state_tree::ActorState::new(Cid::default(), Cid::default(),
-/// fvm_shared::econ::TokenAmount::from_atto(42), 0);
+/// let fvm2_actor_state = fvm2::state_tree::ActorState::new(Cid::default(), Cid::default(),
+/// fvm_shared2::econ::TokenAmount::from_atto(42), 0);
 ///
 /// // Create a correspndoning FVM3 ActorState
 /// let fvm3_actor_state = fvm3::state_tree::ActorState::new(Cid::default(), Cid::default(),

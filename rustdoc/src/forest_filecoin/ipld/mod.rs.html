@@ -20,22 +20,10 @@
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
-<a href="#23" id="23">23</a>
-<a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
-<a href="#28" id="28">28</a>
-<a href="#29" id="29">29</a>
-<a href="#30" id="30">30</a>
-<a href="#31" id="31">31</a>
-<a href="#32" id="32">32</a>
-<a href="#33" id="33">33</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">mod </span>cid_hashset;
-<span class="kw">mod </span>error;
 <span class="kw">pub mod </span>json;
 <span class="kw">pub mod </span>selector;
 <span class="kw">pub mod </span>util;
@@ -46,15 +34,6 @@
 
 <span class="kw">pub use </span><span class="self">self</span>::cid_hashset::CidHashSet;
 
-<span class="attr">#[cfg(test)]
-</span><span class="kw">fn </span>lookup_segment&lt;<span class="lifetime">&#39;a</span>&gt;(ipld: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Ipld, segment: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Ipld&gt; {
-    <span class="kw">match </span>ipld {
-        Ipld::Map(map) =&gt; map.get(segment),
-        Ipld::List(list) =&gt; list.get(segment.parse::&lt;usize&gt;().ok()<span class="question-mark">?</span>),
-        <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
-    }
-}
-
 <span class="kw">pub use </span>libipld_core::serde::{from_ipld, to_ipld};
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
@@ -62,6 +41,5 @@
     <span class="kw">mod </span>json_tests;
     <span class="kw">mod </span>selector_explore;
     <span class="kw">mod </span>selector_gen_tests;
-    <span class="kw">mod </span>walk_tests;
 }
 </code></pre></div></section></main></body></html>

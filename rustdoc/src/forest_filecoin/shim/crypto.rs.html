@@ -199,6 +199,9 @@
 <a href="#199" id="199">199</a>
 <a href="#200" id="200">200</a>
 <a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::borrow::Cow;
@@ -210,12 +213,11 @@
     repr::{Deserialize_repr, Serialize_repr},
     ser, strict_bytes,
 };
-<span class="kw">use </span>fvm_shared::address::Address;
-<span class="kw">use </span>fvm_shared::commcid::Commitment;
-<span class="kw">pub use </span>fvm_shared::crypto::signature::{
+<span class="kw">use </span>fvm_shared2::commcid::Commitment;
+<span class="kw">pub use </span>fvm_shared2::crypto::signature::{
     Signature <span class="kw">as </span>Signature_v2, SignatureType <span class="kw">as </span>SignatureType_v2,
 };
-<span class="kw">pub use </span>fvm_shared::{IPLD_RAW, TICKET_RANDOMNESS_LOOKBACK};
+<span class="kw">pub use </span>fvm_shared2::{IPLD_RAW, TICKET_RANDOMNESS_LOOKBACK};
 <span class="kw">pub use </span>fvm_shared3::crypto::signature::{
     Signature <span class="kw">as </span>Signature_v3, SignatureType <span class="kw">as </span>SignatureType_v3,
 };
@@ -357,15 +359,19 @@
 }
 
 <span class="doccomment">/// Returns `String` error if a BLS signature is invalid.
-</span><span class="kw">pub fn </span>verify_bls_sig(signature: <span class="kw-2">&amp;</span>[u8], data: <span class="kw-2">&amp;</span>[u8], addr: <span class="kw-2">&amp;</span>Address) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
-    fvm_shared::crypto::signature::ops::verify_bls_sig(signature, data, addr)
+</span><span class="kw">pub fn </span>verify_bls_sig(
+    signature: <span class="kw-2">&amp;</span>[u8],
+    data: <span class="kw-2">&amp;</span>[u8],
+    addr: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::address::Address,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+    fvm_shared3::crypto::signature::ops::verify_bls_sig(signature, data, <span class="kw-2">&amp;</span>addr.into())
 }
 
 <span class="doccomment">/// Extracts the raw replica commitment from a CID
 /// assuming that it has the correct hashing function and
 /// serialization types
 </span><span class="kw">pub fn </span>cid_to_replica_commitment_v1(c: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;Commitment, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; {
-    fvm_shared::commcid::cid_to_replica_commitment_v1(c)
+    fvm_shared2::commcid::cid_to_replica_commitment_v1(c)
 }
 
 <span class="attr">#[cfg(test)]

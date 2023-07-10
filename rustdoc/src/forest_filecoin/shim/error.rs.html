@@ -78,7 +78,7 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
 
-<span class="kw">use </span>fvm_shared::error::ExitCode <span class="kw">as </span>ExitCodeV2;
+<span class="kw">use </span>fvm_shared2::error::ExitCode <span class="kw">as </span>ExitCodeV2;
 <span class="kw">use </span>fvm_shared3::error::ExitCode <span class="kw">as </span>ExitCodeV3;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -89,7 +89,7 @@
 /// # Examples
 /// ```
 /// # use forest_filecoin::doctest_private::ExitCode;
-/// let fvm2_success = fvm_shared::error::ExitCode::new(0);
+/// let fvm2_success = fvm_shared2::error::ExitCode::new(0);
 /// let fvm3_success = fvm_shared3::error::ExitCode::new(0);
 ///
 /// let shim_from_v2 = ExitCode::from(fvm2_success);

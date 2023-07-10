@@ -521,7 +521,7 @@
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::{cron, reward, AwardBlockRewardParams};
-<span class="kw">use </span>fvm::{
+<span class="kw">use </span>fvm2::{
     executor::{DefaultExecutor, Executor},
     machine::{DefaultMachine, Machine, NetworkConfig},
 };
@@ -534,7 +534,7 @@
 };
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::{to_vec, RawBytes};
-<span class="kw">use </span>fvm_shared::{clock::ChainEpoch, BLOCK_GAS_LIMIT, METHOD_SEND};
+<span class="kw">use </span>fvm_shared2::{clock::ChainEpoch, BLOCK_GAS_LIMIT, METHOD_SEND};
 <span class="kw">use </span>num::Zero;
 
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{fvm::ForestExternsV2, fvm3::ForestExterns <span class="kw">as </span>ForestExterns_v3};
@@ -544,7 +544,7 @@
 
 <span class="attr">#[cfg(not(feature = <span class="string">&quot;instrumented_kernel&quot;</span>))]
 </span><span class="kw">type </span>ForestKernel&lt;DB&gt; =
-    fvm::DefaultKernel&lt;fvm::call_manager::DefaultCallManager&lt;ForestMachine&lt;DB&gt;&gt;&gt;;
+    fvm2::DefaultKernel&lt;fvm2::call_manager::DefaultCallManager&lt;ForestMachine&lt;DB&gt;&gt;&gt;;
 
 <span class="kw">type </span>ForestKernelV3&lt;DB&gt; =
     fvm3::DefaultKernel&lt;fvm3::call_manager::DefaultCallManager&lt;ForestMachineV3&lt;DB&gt;&gt;&gt;;
@@ -653,8 +653,8 @@
             <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());
-            <span class="kw">let </span>fvm: fvm::machine::DefaultMachine&lt;DB, ForestExternsV2&lt;DB&gt;&gt; =
-                fvm::machine::DefaultMachine::new(
+            <span class="kw">let </span>fvm: fvm2::machine::DefaultMachine&lt;DB, ForestExternsV2&lt;DB&gt;&gt; =
+                fvm2::machine::DefaultMachine::new(
                     <span class="kw-2">&amp;</span>engine,
                     <span class="kw-2">&amp;</span>context,
                     store.clone(),
@@ -820,7 +820,7 @@
             VM::VM2 { fvm_executor, .. } =&gt; {
                 <span class="kw">let </span>ret = fvm_executor.execute_message(
                     msg.into(),
-                    fvm::executor::ApplyKind::Implicit,
+                    fvm2::executor::ApplyKind::Implicit,
                     raw_length,
                 )<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(ret.into())
@@ -849,7 +849,7 @@
             VM::VM2 { fvm_executor, .. } =&gt; {
                 <span class="kw">let </span>ret = fvm_executor.execute_message(
                     unsigned.into(),
-                    fvm::executor::ApplyKind::Explicit,
+                    fvm2::executor::ApplyKind::Explicit,
                     raw_length,
                 )<span class="question-mark">?</span>;
 
