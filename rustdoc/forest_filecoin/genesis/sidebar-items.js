@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["forest_load_car","get_network_name_from_genesis","import_chain","load_and_retrieve_header","process_car","read_genesis_header"]};
+window.SIDEBAR_ITEMS = {"fn":["car_stream","forest_load_car","get_network_name_from_genesis","import_chain","load_and_retrieve_header","process_car","read_genesis_header"]};

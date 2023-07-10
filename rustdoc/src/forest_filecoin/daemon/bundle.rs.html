@@ -83,10 +83,16 @@
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::Config;
+</span><span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{BufferSize, ChunkSize, Config};
 <span class="kw">use </span><span class="kw">crate</span>::genesis::forest_load_car;
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
@@ -116,7 +122,13 @@
     }
 
     <span class="kw">for </span>(manifest_cid, reader) <span class="kw">in </span>bundles {
-        <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(db.clone(), reader.compat()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(
+            db.clone(),
+            reader.compat(),
+            ChunkSize::default(),
+            BufferSize::default(),
+        )
+        .<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
             result.len(),
             <span class="number">1</span>,

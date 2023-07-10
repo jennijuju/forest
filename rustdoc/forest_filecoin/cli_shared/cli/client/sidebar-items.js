@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Client"]};
+window.SIDEBAR_ITEMS = {"struct":["BufferSize","ChunkSize","Client"]};

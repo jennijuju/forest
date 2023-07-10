@@ -217,6 +217,9 @@
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -341,6 +344,7 @@
         path::PathBuf,
     };
 
+    <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::client::{BufferSize, ChunkSize};
     <span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBarVisibility;
     <span class="kw">use </span>chrono::Duration;
     <span class="kw">use </span>quickcheck::Arbitrary;
@@ -388,6 +392,8 @@
                     snapshot_path: Option::arbitrary(g),
                     snapshot_head: Option::arbitrary(g),
                     skip_load: bool::arbitrary(g),
+                    chunk_size: ChunkSize::arbitrary(g),
+                    buffer_size: BufferSize::arbitrary(g),
                     encrypt_keystore: bool::arbitrary(g),
                     metrics_address: SocketAddr::arbitrary(g),
                     rpc_address: SocketAddr::arbitrary(g),

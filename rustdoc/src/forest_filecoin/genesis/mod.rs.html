@@ -177,18 +177,53 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{sync::Arc, time};
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{BufferSize, ChunkSize};
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::BlockstoreBufferedWriteExt;
-
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>futures::AsyncRead;
+<span class="kw">use </span>futures::{sink::SinkExt, stream, AsyncRead, Stream, StreamExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::{load_car, CarReader};
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
@@ -267,6 +302,8 @@
     sm: <span class="kw-2">&amp;</span>Arc&lt;StateManager&lt;DB&gt;&gt;,
     path: <span class="kw-2">&amp;</span>str,
     skip_load: bool,
+    chunk_size: ChunkSize,
+    buffer_size: BufferSize,
 ) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
@@ -276,8 +313,14 @@
     </span><span class="kw">let </span>stopwatch = time::Instant::now();
     <span class="kw">let </span>reader = <span class="kw">crate</span>::utils::net::reader(path).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(cids, n_records) =
-        load_and_retrieve_header(sm.blockstore().clone(), reader.compat(), skip_load).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>(cids, n_records) = load_and_retrieve_header(
+        sm.blockstore().clone(),
+        reader.compat(),
+        skip_load,
+        chunk_size,
+        buffer_size,
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="macro">info!</span>(
         <span class="string">&quot;Loaded {} records from .car file in {}s&quot;</span>,
@@ -317,43 +360,72 @@
 /// header.
 </span><span class="kw">async fn </span>load_and_retrieve_header&lt;DB, R&gt;(
     store: DB,
-    <span class="kw-2">mut </span>reader: R,
+    reader: R,
     skip_load: bool,
+    chunk_size: ChunkSize,
+    buffer_size: BufferSize,
 ) -&gt; anyhow::Result&lt;(Vec&lt;Cid&gt;, <span class="prelude-ty">Option</span>&lt;usize&gt;)&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + <span class="lifetime">&#39;static</span>,
     R: AsyncRead + Send + Unpin,
 {
     <span class="kw">let </span>result = <span class="kw">if </span>skip_load {
-        (CarReader::new(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>.header.roots, <span class="prelude-val">None</span>)
+        (CarReader::new(reader).<span class="kw">await</span><span class="question-mark">?</span>.header.roots, <span class="prelude-val">None</span>)
     } <span class="kw">else </span>{
-        <span class="kw">let </span>(roots, n_records) = forest_load_car(store, <span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>(roots, n_records) = forest_load_car(store, reader, chunk_size, buffer_size).<span class="kw">await</span><span class="question-mark">?</span>;
         (roots, <span class="prelude-val">Some</span>(n_records))
     };
 
     <span class="prelude-val">Ok</span>(result)
 }
 
-<span class="kw">pub async fn </span>forest_load_car&lt;DB, R&gt;(store: DB, reader: R) -&gt; anyhow::Result&lt;(Vec&lt;Cid&gt;, usize)&gt;
+<span class="kw">fn </span>car_stream&lt;R: futures::AsyncRead + Send + Unpin&gt;(
+    reader: CarReader&lt;R&gt;,
+) -&gt; <span class="kw">impl </span>Stream&lt;Item = anyhow::Result&lt;fvm_ipld_car::Block&gt;&gt; {
+    stream::unfold(reader, |<span class="kw-2">mut </span>reader| <span class="kw">async move </span>{
+        reader
+            .next_block()
+            .<span class="kw">await
+            </span>.map_err(anyhow::Error::from)
+            .transpose()
+            .map(|result| (result, reader))
+    })
+}
+
+<span class="kw">pub async fn </span>forest_load_car&lt;DB, R&gt;(
+    store: DB,
+    reader: R,
+    ChunkSize(chunk_size): ChunkSize,
+    BufferSize(buffer_size): BufferSize,
+) -&gt; anyhow::Result&lt;(Vec&lt;Cid&gt;, usize)&gt;
 <span class="kw">where
     </span>R: futures::AsyncRead + Send + Unpin,
-    DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
+    DB: Blockstore + Send + <span class="lifetime">&#39;static</span>,
 {
-    <span class="comment">// 1GB
-    </span><span class="kw">const </span>BUFFER_CAPCITY_BYTES: usize = <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>;
-
-    <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">100</span>);
-    <span class="kw">let </span>write_task =
-        tokio::spawn(<span class="kw">async move </span>{ store.buffered_write(rx, BUFFER_CAPCITY_BYTES).<span class="kw">await </span>});
     <span class="kw">let </span><span class="kw-2">mut </span>car_reader = CarReader::new(reader).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>header = std::mem::take(<span class="kw-2">&amp;mut </span>car_reader.header);
     <span class="kw">let </span><span class="kw-2">mut </span>n_records = <span class="number">0</span>;
-    <span class="kw">while let </span><span class="prelude-val">Some</span>(block) = car_reader.next_block().<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="macro">debug!</span>(<span class="string">&quot;Importing block: {}&quot;</span>, block.cid);
-        n_records += <span class="number">1</span>;
-        tx.send_async((block.cid, block.data)).<span class="kw">await</span><span class="question-mark">?</span>;
-    }
-    drop(tx);
-    write_task.<span class="kw">await</span><span class="question-mark">??</span>;
-    <span class="prelude-val">Ok</span>((car_reader.header.roots, n_records))
+
+    <span class="kw">let </span>sink = futures::sink::unfold(
+        store,
+        |store, blocks: Vec&lt;fvm_ipld_car::Block&gt;| <span class="kw">async move </span>{
+            tokio::task::spawn_blocking(<span class="kw">move </span>|| {
+                store.put_many_keyed(blocks.into_iter().map(|block| (block.cid, block.data)))<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(store)
+            })
+            .<span class="kw">await</span><span class="question-mark">?
+        </span>},
+    );
+
+    <span class="comment">// Stream key-value pairs from the CAR file and commit them in chunks. Try
+    // to maintain a buffer of a few chunks to avoid read-stalling.
+    </span>car_stream(car_reader)
+        .inspect(|<span class="kw">_</span>| n_records += <span class="number">1</span>)
+        .chunks(chunk_size <span class="kw">as </span>usize)
+        .map(|vec| vec.into_iter().collect::&lt;anyhow::Result&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;())
+        .forward(sink.buffer(buffer_size <span class="kw">as </span>usize))
+        .<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>((header.roots, n_records))
 }
 </code></pre></div></section></main></body></html>
