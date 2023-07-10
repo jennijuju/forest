@@ -64,35 +64,17 @@ impl<DB: Blockstore> ForestExternsV2<DB> {
         miner_addr: &Address,
         height: ChainEpoch,
     ) -> anyhow::Result<(Address, i64)> {
-        if height < self.epoch - self.chain_config.policy.chain_finality {
-            bail!(
-                "cannot get worker key (current epoch: {}, height: {})",
-                self.epoch,
-                height
-            );
-        }
-
-        let prev_root = (self.lookback)(height)?;
-        let lb_state = StateTree::new_from_root(&self.db, &prev_root)?;
-
-        let actor = lb_state
-            .get_actor(&miner_addr.into())?
-            .ok_or_else(|| anyhow::anyhow!("actor not found {:?}", miner_addr))?;
-
-        let tbs = TrackingBlockstore::new(&self.db);
-
-        let ms = fil_actor_interface::miner::State::load(&tbs, actor.code, actor.state)?;
-
-        let worker = ms.info(&tbs)?.worker;
-
-        let state = StateTree::new_from_root(&self.db, &self.root)?;
-
-        let addr = resolve_to_key_addr(&state, &tbs, &worker.into())?;
-
-        let network_version = self.chain_config.network_version(self.epoch);
-        let gas_used = cal_gas_used_from_stats(tbs.stats.borrow(), network_version)?;
-
-        Ok((addr.into(), gas_used.round_up() as i64))
+        let miner_addr = miner_addr.into();
+        let (addr /* gas */,) = super::do_worker_key_at_lookback(
+            &miner_addr,
+            height,
+            self.epoch,
+            self.root,
+            &self.lookback,
+            &self.db,
+            &self.chain_config,
+        )?;
+        Ok((addr.into(), todo!()))
     }
 
     fn verify_block_signature(&self, bh: &BlockHeader) -> anyhow::Result<i64, Error> {
