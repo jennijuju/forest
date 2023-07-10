@@ -961,7 +961,7 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::MessageTooBig);
         }
         valid_for_block_inclusion(msg.message(), Gas::new(<span class="number">0</span>), NEWEST_NETWORK_VERSION)<span class="question-mark">?</span>;
-        <span class="kw">if </span>msg.value() &gt; TokenAmount::from(<span class="kw-2">&amp;*</span>fvm_shared::TOTAL_FILECOIN) {
+        <span class="kw">if </span>msg.value() &gt; <span class="kw-2">*</span><span class="kw">crate</span>::shim::econ::TOTAL_FILECOIN {
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::MessageValueTooHigh);
         }
         <span class="kw">if </span>msg.gas_fee_cap().atto() &lt; <span class="kw-2">&amp;</span>MINIMUM_BASE_FEE.into() {

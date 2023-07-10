@@ -1683,6 +1683,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::chain_exchange::TipsetBundle;
 <span class="kw">use </span><span class="kw">crate</span>::message::{valid_for_block_inclusion, Message <span class="kw">as </span>MessageTrait};
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ALLOWABLE_CLOCK_DRIFT;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address, clock::ChainEpoch, crypto::verify_bls_aggregate, econ::BLOCK_GAS_LIMIT,
     gas::price_list_by_network_version, message::Message, state_tree::StateTree,
@@ -1694,7 +1695,6 @@
 <span class="kw">use </span>futures::{stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
-<span class="kw">use </span>fvm_shared::ALLOWABLE_CLOCK_DRIFT;
 <span class="kw">use </span>log::{debug, error, info, trace, warn};
 <span class="kw">use </span>nonempty::NonEmpty;
 <span class="kw">use </span>num::BigInt;

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Message","Message_v3"]};
+window.SIDEBAR_ITEMS = {"constant":["METHOD_SEND"],"struct":["Message","Message_v3"],"type":["MethodNum"]};

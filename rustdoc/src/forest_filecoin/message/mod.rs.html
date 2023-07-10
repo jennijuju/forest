@@ -148,11 +148,11 @@
 </span><span class="kw">pub mod </span>chain_message;
 <span class="kw">pub mod </span>signed_message;
 
+<span class="kw">use </span><span class="kw">crate</span>::shim::message::MethodNum;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, message::Message <span class="kw">as </span>ShimMessage};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{gas::Gas, version::NetworkVersion};
 <span class="kw">pub use </span>chain_message::ChainMessage;
 <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
-<span class="kw">use </span>fvm_shared::MethodNum;
 <span class="kw">pub use </span>signed_message::SignedMessage;
 
 <span class="doccomment">/// Message interface to interact with Signed and unsigned messages in a generic

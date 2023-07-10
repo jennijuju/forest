@@ -244,7 +244,7 @@
         }
         <span class="kw-2">&amp;</span>Ipld::Link(cid) =&gt; {
             <span class="comment">// WASM blocks are stored as IPLD_RAW. They should be loaded but not traversed.
-            </span><span class="kw">if </span>cid.codec() == fvm_shared::IPLD_RAW {
+            </span><span class="kw">if </span>cid.codec() == <span class="kw">crate</span>::shim::crypto::IPLD_RAW {
                 <span class="kw">if </span>!walked.insert(cid) {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
@@ -392,7 +392,7 @@
     </span>} <span class="kw">else </span>{
         <span class="macro">matches!</span>(
             cid.codec(),
-            fvm_shared::IPLD_RAW | fvm_ipld_encoding::DAG_CBOR
+            <span class="kw">crate</span>::shim::crypto::IPLD_RAW | fvm_ipld_encoding::DAG_CBOR
         )
     }
 }

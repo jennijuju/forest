@@ -229,6 +229,9 @@
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>anyhow::anyhow;
@@ -238,10 +241,13 @@
 <span class="kw">use </span>fvm_ipld_encoding::{Error <span class="kw">as </span>EncError, RawBytes};
 <span class="kw">use </span>fvm_shared::message::Message <span class="kw">as </span>Message_v2;
 <span class="kw">pub use </span>fvm_shared3::message::Message <span class="kw">as </span>Message_v3;
-<span class="kw">use </span>fvm_shared3::{MethodNum, METHOD_SEND};
+<span class="kw">pub use </span>fvm_shared3::METHOD_SEND;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount};
+
+<span class="doccomment">/// Method number indicator for calling actor methods.
+</span><span class="kw">pub type </span>MethodNum = u64;
 
 <span class="attr">#[derive(Clone, Default, PartialEq, Eq, Debug, Hash)]
 </span><span class="kw">pub struct </span>Message {

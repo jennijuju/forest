@@ -181,19 +181,41 @@
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::borrow::Cow;
 
 <span class="kw">use </span>bls_signatures::{verify_messages, PublicKey <span class="kw">as </span>BlsPubKey, Signature <span class="kw">as </span>BlsSignature};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_encoding::{
     de,
     repr::{Deserialize_repr, Serialize_repr},
     ser, strict_bytes,
 };
+<span class="kw">use </span>fvm_shared::address::Address;
+<span class="kw">use </span>fvm_shared::commcid::Commitment;
 <span class="kw">pub use </span>fvm_shared::crypto::signature::{
     Signature <span class="kw">as </span>Signature_v2, SignatureType <span class="kw">as </span>SignatureType_v2,
 };
+<span class="kw">pub use </span>fvm_shared::{IPLD_RAW, TICKET_RANDOMNESS_LOOKBACK};
 <span class="kw">pub use </span>fvm_shared3::crypto::signature::{
     Signature <span class="kw">as </span>Signature_v3, SignatureType <span class="kw">as </span>SignatureType_v3,
 };
@@ -303,7 +325,9 @@
     }
 }
 
-<span class="doccomment">/// Aggregates and verifies BLS signatures collectively.
+<span class="comment">// Forest&#39;s version of the `verify_bls_aggregate` function is semantically different
+// from the version in FVM.
+</span><span class="doccomment">/// Aggregates and verifies BLS signatures collectively.
 </span><span class="kw">pub fn </span>verify_bls_aggregate(data: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[u8]], pub_keys: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>[u8]], sig: <span class="kw-2">&amp;</span>Signature) -&gt; bool {
     <span class="kw">use </span>bls_signatures::Serialize;
 
@@ -330,6 +354,18 @@
 
     <span class="comment">// Does the aggregate verification
     </span>verify_messages(<span class="kw-2">&amp;</span>bls_sig, data, <span class="kw-2">&amp;</span>pks[..])
+}
+
+<span class="doccomment">/// Returns `String` error if a BLS signature is invalid.
+</span><span class="kw">pub fn </span>verify_bls_sig(signature: <span class="kw-2">&amp;</span>[u8], data: <span class="kw-2">&amp;</span>[u8], addr: <span class="kw-2">&amp;</span>Address) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
+    fvm_shared::crypto::signature::ops::verify_bls_sig(signature, data, addr)
+}
+
+<span class="doccomment">/// Extracts the raw replica commitment from a CID
+/// assuming that it has the correct hashing function and
+/// serialization types
+</span><span class="kw">pub fn </span>cid_to_replica_commitment_v1(c: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;Commitment, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; {
+    fvm_shared::commcid::cid_to_replica_commitment_v1(c)
 }
 
 <span class="attr">#[cfg(test)]

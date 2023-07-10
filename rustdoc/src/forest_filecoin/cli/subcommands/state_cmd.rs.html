@@ -76,10 +76,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::state_ops::state_fetch_root;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
+<span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
 <span class="kw">use </span><span class="kw">crate</span>::statediff::print_state_diff;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
-<span class="kw">use </span>fvm_shared::econ::TokenAmount;
 <span class="kw">use </span>serde_tuple::{<span class="self">self</span>, Deserialize_tuple, Serialize_tuple};
 
 <span class="kw">use </span><span class="kw">super</span>::handle_rpc_err;

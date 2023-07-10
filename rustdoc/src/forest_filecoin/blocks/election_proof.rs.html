@@ -281,8 +281,8 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::json::vrf::VRFProof;
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::BLOCKS_PER_EPOCH;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::blake2b_256;
-<span class="kw">use </span>fvm_shared::BLOCKS_PER_EPOCH;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>num::{
     bigint::{ParseBigIntError, Sign},

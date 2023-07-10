@@ -1822,7 +1822,7 @@
         // the max messages
         </span><span class="kw">let </span><span class="kw-2">mut </span>mset = HashMap::new();
         <span class="kw">let </span><span class="kw-2">mut </span>smsg_vec = Vec::new();
-        <span class="kw">let </span>max_messages = fvm_shared::BLOCK_GAS_LIMIT / gas_limit;
+        <span class="kw">let </span>max_messages = <span class="kw">crate</span>::shim::econ::BLOCK_GAS_LIMIT <span class="kw">as </span>i64 / gas_limit;
         <span class="kw">let </span>n_messages = max_messages + <span class="number">1</span>;
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..n_messages {
             <span class="kw">let </span>msg = create_smsg(

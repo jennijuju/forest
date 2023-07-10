@@ -94,7 +94,7 @@
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::message_pool) <span class="kw">fn </span>get_gas_perf(gas_reward: <span class="kw-2">&amp;</span>TokenAmount, gas_limit: u64) -&gt; f64 {
     <span class="kw">let </span>a = BigRational::new(
-        gas_reward.atto() * fvm_shared::BLOCK_GAS_LIMIT,
+        gas_reward.atto() * <span class="kw">crate</span>::shim::econ::BLOCK_GAS_LIMIT,
         gas_limit.into(),
     );
     a.to_f64().unwrap()

@@ -121,10 +121,10 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">pub mod </span>json {
+    <span class="kw">use </span><span class="kw">crate</span>::shim::sector::SectorNumber;
     <span class="kw">use </span><span class="kw">crate</span>::shim::sector::{PoStProof, RegisteredPoStProof, RegisteredSealProof, SectorInfo};
     <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
     <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>fvm_shared::sector::SectorNumber;
     <span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
     <span class="doccomment">/// Wrapper for serializing a `PoStProof` to JSON.

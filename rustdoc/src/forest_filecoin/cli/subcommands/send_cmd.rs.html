@@ -70,8 +70,6 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -81,7 +79,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{mpool_push_message, wallet_default_address};
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{Address, StrictAddress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
-<span class="kw">use </span>fvm_shared3::{message::Message, METHOD_SEND};
+<span class="kw">use </span><span class="kw">crate</span>::shim::message::{Message, METHOD_SEND};
 <span class="kw">use </span>num::Zero <span class="kw">as _</span>;
 
 <span class="kw">use super</span>::{handle_rpc_err, Config};
@@ -123,23 +121,21 @@
         </span>};
 
         <span class="kw">let </span>message = Message {
-            from: from.into(),
+            from,
             to: StrictAddress::from_str(<span class="kw-2">&amp;</span><span class="self">self</span>.target_address)<span class="question-mark">?</span>.into(),
-            value: <span class="self">self</span>.amount.clone().into(),
+            value: <span class="self">self</span>.amount.clone(),
             method_num: METHOD_SEND,
             gas_limit: <span class="self">self</span>.gas_limit <span class="kw">as </span>u64,
-            gas_fee_cap: <span class="self">self</span>.gas_feecap.clone().into(),
-            gas_premium: <span class="self">self</span>.gas_premium.clone().into(),
+            gas_fee_cap: <span class="self">self</span>.gas_feecap.clone(),
+            gas_premium: <span class="self">self</span>.gas_premium.clone(),
             <span class="comment">// JANK(aatifsyed): Why are we using a testing build of fvm_shared?
             </span>..Default::default()
         };
 
-        <span class="kw">let </span>signed_msg_json = mpool_push_message(
-            (MessageJson(message.into()), <span class="prelude-val">None</span>),
-            <span class="kw-2">&amp;</span>config.client.rpc_token,
-        )
-        .<span class="kw">await
-        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+        <span class="kw">let </span>signed_msg_json =
+            mpool_push_message((MessageJson(message), <span class="prelude-val">None</span>), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                .<span class="kw">await
+                </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
         <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, signed_msg_json.<span class="number">0</span>.cid().unwrap());
 
