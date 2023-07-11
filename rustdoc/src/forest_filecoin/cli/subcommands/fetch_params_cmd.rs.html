@@ -86,7 +86,7 @@
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::shim::{sector::SectorSize, Inner};
+</span><span class="kw">use </span><span class="kw">crate</span>::shim::sector::SectorSize;
 <span class="kw">use </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::{get_params_default, SectorSizeOpt};
 
 <span class="kw">use </span><span class="kw">super</span>::cli_error_and_die;
@@ -133,17 +133,17 @@
     <span class="comment">// * there is no library to do this, but if other sector sizes are supported in
     //   future
     // this should probably be changed to parse from string to `SectorSize`
-    </span><span class="kw">let </span><span class="kw-2">mut </span>trimmed = size.trim_end_matches(<span class="string">&#39;B&#39;</span>);
-    trimmed = trimmed.trim_end_matches(<span class="string">&#39;b&#39;</span>);
+    </span><span class="kw">let </span>size = size.to_lowercase();
+    <span class="kw">let </span>trimmed = size.trim_end_matches(<span class="string">&#39;b&#39;</span>);
 
-    <span class="kw">type </span>SectorSize = &lt;<span class="kw">crate</span>::shim::sector::SectorSize <span class="kw">as </span>Inner&gt;::FVM;
+    <span class="kw">type </span>SectorSize = <span class="kw">crate</span>::shim::sector::SectorSize;
 
     <span class="kw">match </span>trimmed {
-        <span class="string">&quot;2048&quot; </span>| <span class="string">&quot;2Ki&quot; </span>| <span class="string">&quot;2ki&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_2KiB.into()),
-        <span class="string">&quot;8388608&quot; </span>| <span class="string">&quot;8Mi&quot; </span>| <span class="string">&quot;8mi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_8MiB.into()),
-        <span class="string">&quot;536870912&quot; </span>| <span class="string">&quot;512Mi&quot; </span>| <span class="string">&quot;512mi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_512MiB.into()),
-        <span class="string">&quot;34359738368&quot; </span>| <span class="string">&quot;32Gi&quot; </span>| <span class="string">&quot;32gi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_32GiB.into()),
-        <span class="string">&quot;68719476736&quot; </span>| <span class="string">&quot;64Gi&quot; </span>| <span class="string">&quot;64gi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_64GiB.into()),
+        <span class="string">&quot;2048&quot; </span>| <span class="string">&quot;2ki&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_2KiB),
+        <span class="string">&quot;8388608&quot; </span>| <span class="string">&quot;8mi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_8MiB),
+        <span class="string">&quot;536870912&quot; </span>| <span class="string">&quot;512mi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_512MiB),
+        <span class="string">&quot;34359738368&quot; </span>| <span class="string">&quot;32gi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_32GiB),
+        <span class="string">&quot;68719476736&quot; </span>| <span class="string">&quot;64gi&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SectorSize::_64GiB),
         <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(anyhow::Error::msg(<span class="macro">format!</span>(
             <span class="string">&quot;Failed to parse: {size}. Must be a valid sector size&quot;
         </span>))),
@@ -154,18 +154,18 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="kw">type </span>SectorSize = &lt;<span class="kw">crate</span>::shim::sector::SectorSize <span class="kw">as </span>Inner&gt;::FVM;
+    <span class="kw">type </span>SectorSize = <span class="kw">crate</span>::shim::sector::SectorSize;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>ram_str_conversions() {
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;2048&quot;</span>).unwrap(), SectorSize::_2KiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;2048B&quot;</span>).unwrap(), SectorSize::_2KiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;2kib&quot;</span>).unwrap(), SectorSize::_2KiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;8Mib&quot;</span>).unwrap(), SectorSize::_8MiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;512MiB&quot;</span>).unwrap(), SectorSize::_512MiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;32Gi&quot;</span>).unwrap(), SectorSize::_32GiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;32GiB&quot;</span>).unwrap(), SectorSize::_32GiB.into());
-        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;64Gib&quot;</span>).unwrap(), SectorSize::_64GiB.into());
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;2048&quot;</span>).unwrap(), SectorSize::_2KiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;2048B&quot;</span>).unwrap(), SectorSize::_2KiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;2kib&quot;</span>).unwrap(), SectorSize::_2KiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;8Mib&quot;</span>).unwrap(), SectorSize::_8MiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;512MiB&quot;</span>).unwrap(), SectorSize::_512MiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;32Gi&quot;</span>).unwrap(), SectorSize::_32GiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;32GiB&quot;</span>).unwrap(), SectorSize::_32GiB);
+        <span class="macro">assert_eq!</span>(ram_to_int(<span class="string">&quot;64Gib&quot;</span>).unwrap(), SectorSize::_64GiB);
     }
 }
 </code></pre></div></section></main></body></html>

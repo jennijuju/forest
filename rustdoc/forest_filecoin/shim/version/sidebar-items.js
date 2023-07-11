@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["NetworkVersion_v2"],"struct":["NetworkVersion","NetworkVersion_v3"]};
+window.SIDEBAR_ITEMS = {"enum":["NetworkVersion_v2"],"struct":["NetworkVersion"]};

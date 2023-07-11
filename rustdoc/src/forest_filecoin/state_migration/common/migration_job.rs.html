@@ -63,13 +63,12 @@
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, clock::ChainEpoch, state_tree::ActorState, Inner};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, clock::ChainEpoch, state_tree::ActorState};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
 <span class="kw">use super</span>::{ActorMigration, ActorMigrationInput};
@@ -116,14 +115,13 @@
         </span>{
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(MigrationJobOutput {
                 address: <span class="self">self</span>.address,
-                actor_state: &lt;ActorState <span class="kw">as </span>Inner&gt;::FVM::new(
+                actor_state: ActorState::new(
                     result.new_code_cid,
                     result.new_head,
-                    <span class="self">self</span>.actor_state.balance.clone(),
+                    <span class="self">self</span>.actor_state.balance.clone().into(),
                     <span class="self">self</span>.actor_state.sequence,
-                    <span class="self">self</span>.actor_state.delegated_address,
-                )
-                .into(),
+                    <span class="self">self</span>.actor_state.delegated_address.map(Address::from),
+                ),
             }))
         } <span class="kw">else </span>{
             <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["convert_window_post_proof_v1_to_v1p1"],"struct":["PoStProof","RegisteredPoStProof","RegisteredSealProof","SectorInfo","SectorSize"],"type":["SectorNumber","StoragePower"]};
+window.SIDEBAR_ITEMS = {"constant":["_IMPL_NUM_FromPrimitive_FOR_SectorSize"],"enum":["RegisteredPoStProofV3","RegisteredSealProofV3","SectorSize"],"fn":["convert_window_post_proof_v1_to_v1p1"],"struct":["PoStProof","RegisteredPoStProof","RegisteredSealProof","SectorInfo","discriminant"],"type":["SectorNumber","StoragePower"]};

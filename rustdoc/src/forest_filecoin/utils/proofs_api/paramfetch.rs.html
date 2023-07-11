@@ -342,7 +342,7 @@
         .filter(|(name, info)| <span class="kw">match </span>storage_size {
             SectorSizeOpt::Keys =&gt; !name.ends_with(<span class="string">&quot;params&quot;</span>),
             SectorSizeOpt::Size(size) =&gt; {
-                (<span class="kw-2">*</span>size) <span class="kw">as </span>u64 == info.sector_size || !name.ends_with(<span class="string">&quot;.params&quot;</span>)
+                size <span class="kw">as </span>u64 == info.sector_size || !name.ends_with(<span class="string">&quot;.params&quot;</span>)
             }
             SectorSizeOpt::All =&gt; <span class="bool-val">true</span>,
         })

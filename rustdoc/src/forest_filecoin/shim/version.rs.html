@@ -89,7 +89,7 @@
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
 
 <span class="kw">pub use </span>fvm_shared2::version::NetworkVersion <span class="kw">as </span>NetworkVersion_v2;
-<span class="kw">pub use </span>fvm_shared3::version::NetworkVersion <span class="kw">as </span>NetworkVersion_v3;
+<span class="kw">use </span>fvm_shared3::version::NetworkVersion <span class="kw">as </span>NetworkVersion_v3;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="doccomment">/// Specifies the network version

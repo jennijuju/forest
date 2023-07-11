@@ -282,19 +282,28 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::shim::{version::NetworkVersion, Inner};
+</span><span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
+<span class="kw">use </span>fvm_ipld_encoding::repr::{Deserialize_repr, Serialize_repr};
 <span class="kw">use </span>fvm_shared2::sector::{
     RegisteredPoStProof <span class="kw">as </span>RegisteredPoStProofV2, RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV2,
     SectorInfo <span class="kw">as </span>SectorInfoV2, SectorSize <span class="kw">as </span>SectorSizeV2,
 };
 <span class="kw">use </span>fvm_shared3::sector::{
-    PoStProof <span class="kw">as </span>PoStProofV3, RegisteredPoStProof <span class="kw">as </span>RegisteredPoStProofV3,
-    RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV3, SectorInfo <span class="kw">as </span>SectorInfoV3,
-    SectorSize <span class="kw">as </span>SectorSizeV3,
+    PoStProof <span class="kw">as </span>PoStProofV3, SectorInfo <span class="kw">as </span>SectorInfoV3, SectorSize <span class="kw">as </span>SectorSizeV3,
 };
+<span class="kw">pub use </span>fvm_shared3::sector::{
+    RegisteredPoStProof <span class="kw">as </span>RegisteredPoStProofV3, RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV3,
+};
+<span class="kw">use </span>num_derive::FromPrimitive;
 <span class="kw">use </span>std::ops::Deref;
 
 <span class="kw">pub use </span>fvm_shared3::sector::StoragePower;
@@ -324,7 +333,7 @@
 <span class="kw">impl </span>RegisteredSealProof {
     <span class="kw">pub fn </span>from_sector_size(size: SectorSize, network_version: NetworkVersion) -&gt; <span class="self">Self </span>{
         RegisteredSealProof(RegisteredSealProofV3::from_sector_size(
-            <span class="kw-2">*</span>size,
+            size.into(),
             network_version.into(),
         ))
     }
@@ -334,10 +343,6 @@
     <span class="kw">fn </span>from(value: RegisteredSealProofV3) -&gt; <span class="self">Self </span>{
         RegisteredSealProof(value)
     }
-}
-
-<span class="kw">impl </span><span class="kw">crate</span>::shim::Inner <span class="kw">for </span>RegisteredSealProof {
-    <span class="kw">type </span>FVM = RegisteredSealProofV3;
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>RegisteredSealProof {
@@ -432,10 +437,6 @@
     }
 }
 
-<span class="kw">impl </span>Inner <span class="kw">for </span>RegisteredPoStProof {
-    <span class="kw">type </span>FVM = RegisteredPoStProofV3;
-}
-
 <span class="kw">impl </span>From&lt;RegisteredPoStProofV2&gt; <span class="kw">for </span>RegisteredPoStProof {
     <span class="kw">fn </span>from(value: RegisteredPoStProofV2) -&gt; RegisteredPoStProof {
         <span class="kw">let </span>num_id: i64 = value.into();
@@ -444,48 +445,60 @@
 }
 
 <span class="doccomment">/// `SectorSize` indicates one of a set of possible sizes in the network.
-</span><span class="attr">#[derive(Clone, Debug, PartialEq, Copy, serde::Serialize, serde::Deserialize)]
-</span><span class="kw">pub struct </span>SectorSize(SectorSizeV3);
+</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Copy, FromPrimitive, Serialize_repr, Deserialize_repr)]
+#[repr(u64)]
+</span><span class="kw">pub enum </span>SectorSize {
+    _2KiB = <span class="number">2 </span>&lt;&lt; <span class="number">10</span>,
+    _8MiB = <span class="number">8 </span>&lt;&lt; <span class="number">20</span>,
+    _512MiB = <span class="number">512 </span>&lt;&lt; <span class="number">20</span>,
+    _32GiB = <span class="number">32 </span>&lt;&lt; <span class="number">30</span>,
+    _64GiB = <span class="number">2 </span>* (<span class="number">32 </span>&lt;&lt; <span class="number">30</span>),
+}
 
 <span class="kw">impl </span>From&lt;SectorSizeV3&gt; <span class="kw">for </span>SectorSize {
     <span class="kw">fn </span>from(value: SectorSizeV3) -&gt; <span class="self">Self </span>{
-        SectorSize(value)
+        <span class="kw">match </span>value {
+            SectorSizeV3::_2KiB =&gt; SectorSize::_2KiB,
+            SectorSizeV3::_8MiB =&gt; SectorSize::_8MiB,
+            SectorSizeV3::_512MiB =&gt; SectorSize::_512MiB,
+            SectorSizeV3::_32GiB =&gt; SectorSize::_32GiB,
+            SectorSizeV3::_64GiB =&gt; SectorSize::_64GiB,
+        }
     }
-}
-
-<span class="kw">impl </span>Deref <span class="kw">for </span>SectorSize {
-    <span class="kw">type </span>Target = SectorSizeV3;
-    <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>Inner <span class="kw">for </span>SectorSize {
-    <span class="kw">type </span>FVM = SectorSizeV3;
 }
 
 <span class="kw">impl </span>From&lt;SectorSizeV2&gt; <span class="kw">for </span>SectorSize {
     <span class="kw">fn </span>from(value: SectorSizeV2) -&gt; SectorSize {
-        <span class="kw">let </span>size = <span class="kw">match </span>value {
-            SectorSizeV2::_2KiB =&gt; SectorSizeV3::_2KiB,
-            SectorSizeV2::_8MiB =&gt; SectorSizeV3::_8MiB,
-            SectorSizeV2::_512MiB =&gt; SectorSizeV3::_512MiB,
-            SectorSizeV2::_32GiB =&gt; SectorSizeV3::_32GiB,
-            SectorSizeV2::_64GiB =&gt; SectorSizeV3::_64GiB,
-        };
-
-        SectorSize(size)
+        <span class="kw">match </span>value {
+            SectorSizeV2::_2KiB =&gt; SectorSize::_2KiB,
+            SectorSizeV2::_8MiB =&gt; SectorSize::_8MiB,
+            SectorSizeV2::_512MiB =&gt; SectorSize::_512MiB,
+            SectorSizeV2::_32GiB =&gt; SectorSize::_32GiB,
+            SectorSizeV2::_64GiB =&gt; SectorSize::_64GiB,
+        }
     }
 }
 
 <span class="kw">impl </span>From&lt;SectorSize&gt; <span class="kw">for </span>SectorSizeV2 {
     <span class="kw">fn </span>from(value: SectorSize) -&gt; SectorSizeV2 {
-        <span class="kw">match </span>value.<span class="number">0 </span>{
-            SectorSizeV3::_2KiB =&gt; SectorSizeV2::_2KiB,
-            SectorSizeV3::_8MiB =&gt; SectorSizeV2::_8MiB,
-            SectorSizeV3::_512MiB =&gt; SectorSizeV2::_512MiB,
-            SectorSizeV3::_32GiB =&gt; SectorSizeV2::_32GiB,
-            SectorSizeV3::_64GiB =&gt; SectorSizeV2::_64GiB,
+        <span class="kw">match </span>value {
+            SectorSize::_2KiB =&gt; SectorSizeV2::_2KiB,
+            SectorSize::_8MiB =&gt; SectorSizeV2::_8MiB,
+            SectorSize::_512MiB =&gt; SectorSizeV2::_512MiB,
+            SectorSize::_32GiB =&gt; SectorSizeV2::_32GiB,
+            SectorSize::_64GiB =&gt; SectorSizeV2::_64GiB,
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;SectorSize&gt; <span class="kw">for </span>SectorSizeV3 {
+    <span class="kw">fn </span>from(value: SectorSize) -&gt; SectorSizeV3 {
+        <span class="kw">match </span>value {
+            SectorSize::_2KiB =&gt; SectorSizeV3::_2KiB,
+            SectorSize::_8MiB =&gt; SectorSizeV3::_8MiB,
+            SectorSize::_512MiB =&gt; SectorSizeV3::_512MiB,
+            SectorSize::_32GiB =&gt; SectorSizeV3::_32GiB,
+            SectorSize::_64GiB =&gt; SectorSizeV3::_64GiB,
         }
     }
 }
@@ -552,8 +565,7 @@
         <span class="kw">let </span>orig_sector_size = fvm_shared3::sector::SectorSize::_2KiB;
         <span class="kw">let </span>orig_json_repr = serde_json::to_string(<span class="kw-2">&amp;</span>orig_sector_size).unwrap();
 
-        <span class="kw">let </span>shimmed_sector_size =
-            <span class="kw">crate</span>::shim::sector::SectorSize(fvm_shared3::sector::SectorSize::_2KiB);
+        <span class="kw">let </span>shimmed_sector_size = <span class="kw">crate</span>::shim::sector::SectorSize::_2KiB;
         <span class="kw">let </span>shimmed_json_repr = serde_json::to_string(<span class="kw-2">&amp;</span>shimmed_sector_size).unwrap();
 
         <span class="macro">assert_eq!</span>(orig_json_repr, shimmed_json_repr);
@@ -563,7 +575,7 @@
         <span class="kw">let </span>orig_deser: fvm_shared3::sector::SectorSize =
             serde_json::from_str(<span class="kw-2">&amp;</span>orig_json_repr).unwrap();
 
-        <span class="macro">assert_eq!</span>(shimmed_deser.<span class="number">0</span>, orig_deser);
+        <span class="macro">assert_eq!</span>(shimmed_deser <span class="kw">as </span>u64, orig_deser <span class="kw">as </span>u64);
     }
 }
 </code></pre></div></section></main></body></html>

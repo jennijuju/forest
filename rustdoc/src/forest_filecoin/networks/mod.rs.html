@@ -315,7 +315,6 @@
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -323,9 +322,8 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconPoint, BeaconSchedule, DrandBeacon, DrandConfig};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCH_DURATION_SECONDS};
-<span class="kw">use </span><span class="kw">crate</span>::shim::sector::{RegisteredPoStProof, RegisteredSealProof};
+<span class="kw">use </span><span class="kw">crate</span>::shim::sector::{RegisteredPoStProofV3, RegisteredSealProofV3};
 <span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
-<span class="kw">use </span><span class="kw">crate</span>::shim::Inner;
 <span class="kw">use </span>anyhow::Error;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actors_shared::v10::runtime::Policy;
@@ -532,14 +530,14 @@
 
         <span class="attr">#[allow(clippy::disallowed_types)]
         </span><span class="kw">let </span>allowed_proof_types = std::collections::HashSet::from_iter(<span class="macro">vec!</span>[
-            &lt;RegisteredSealProof <span class="kw">as </span>Inner&gt;::FVM::StackedDRG2KiBV1,
-            &lt;RegisteredSealProof <span class="kw">as </span>Inner&gt;::FVM::StackedDRG8MiBV1,
+            RegisteredSealProofV3::StackedDRG2KiBV1,
+            RegisteredSealProofV3::StackedDRG8MiBV1,
         ]);
         policy.valid_pre_commit_proof_type = allowed_proof_types;
         <span class="attr">#[allow(clippy::disallowed_types)]
         </span><span class="kw">let </span>allowed_proof_types = std::collections::HashSet::from_iter(<span class="macro">vec!</span>[
-            &lt;RegisteredPoStProof <span class="kw">as </span>Inner&gt;::FVM::StackedDRGWindow2KiBV1,
-            &lt;RegisteredPoStProof <span class="kw">as </span>Inner&gt;::FVM::StackedDRGWindow8MiBV1,
+            RegisteredPoStProofV3::StackedDRGWindow2KiBV1,
+            RegisteredPoStProofV3::StackedDRGWindow8MiBV1,
         ]);
         policy.valid_post_proof_type = allowed_proof_types;
 

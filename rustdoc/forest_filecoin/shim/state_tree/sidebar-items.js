@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["_IMPL_NUM_FromPrimitive_FOR_StateTreeVersion"],"enum":["StateTree","StateTreeVersion"],"struct":["ActorState","discriminant"],"type":["ActorID"]};
+window.SIDEBAR_ITEMS = {"constant":["_IMPL_NUM_FromPrimitive_FOR_StateTreeVersion"],"enum":["StateTree","StateTreeVersion"],"struct":["ActorState","ActorStateV2","ActorStateV3","StateTreeV2","StateTreeV3","discriminant"],"type":["ActorID"]};

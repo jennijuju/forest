@@ -336,17 +336,14 @@
 <a href="#336" id="336">336</a>
 <a href="#337" id="337">337</a>
 <a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
 
 <span class="kw">use </span>anyhow::{bail, Context};
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>fvm2::state_tree::{ActorState <span class="kw">as </span>ActorStateV2, StateTree <span class="kw">as </span>StateTreeV2};
-<span class="kw">use </span>fvm3::state_tree::{ActorState <span class="kw">as </span>ActorStateV3, StateTree <span class="kw">as </span>StateTreeV3};
+<span class="kw">pub use </span>fvm2::state_tree::{ActorState <span class="kw">as </span>ActorStateV2, StateTree <span class="kw">as </span>StateTreeV2};
+<span class="kw">pub use </span>fvm3::state_tree::{ActorState <span class="kw">as </span>ActorStateV3, StateTree <span class="kw">as </span>StateTreeV3};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::repr::{Deserialize_repr, Serialize_repr};
 <span class="kw">use </span>fvm_shared2::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV2;
@@ -356,7 +353,7 @@
 <span class="kw">use </span>num_derive::FromPrimitive;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, Inner};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount};
 
 <span class="attr">#[derive(
     Debug, PartialEq, Eq, Clone, Copy, PartialOrd, Serialize_repr, Deserialize_repr, FromPrimitive,
@@ -591,9 +588,6 @@
             delegated_address.map(Into::into),
         ))
     }
-}
-<span class="kw">impl </span>Inner <span class="kw">for </span>ActorState {
-    <span class="kw">type </span>FVM = ActorStateV3;
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>ActorState {
