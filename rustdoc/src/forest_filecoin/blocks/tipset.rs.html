@@ -630,8 +630,6 @@
 <a href="#630" id="630">630</a>
 <a href="#631" id="631">631</a>
 <a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -734,7 +732,6 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>property_tests {
-    <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>quickcheck_macros::quickcheck;
     <span class="kw">use </span>serde_json;
 
@@ -743,13 +740,12 @@
         tipset_keys_json::TipsetKeysJson,
         Tipset, TipsetKeys,
     };
-    <span class="kw">use </span><span class="kw">crate</span>::blocks::ArbitraryCid;
 
     <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TipsetKeys {
         <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-            <span class="kw">let </span>arbitrary_cids: Vec&lt;ArbitraryCid&gt; = Vec::arbitrary(g);
-            <span class="kw">let </span>cids: Vec&lt;Cid&gt; = arbitrary_cids.iter().map(|cid| cid.<span class="number">0</span>).collect();
-            <span class="self">Self </span>{ cids }
+            <span class="self">Self </span>{
+                cids: Vec::arbitrary(g),
+            }
         }
     }
 

@@ -106,13 +106,6 @@
 <a href="#106" id="106">106</a>
 <a href="#107" id="107">107</a>
 <a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -132,17 +125,10 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>GossipBlock {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        <span class="kw">use </span><span class="kw">crate</span>::blocks::ArbitraryCid;
-        <span class="kw">let </span>arbitrary_cids: Vec&lt;ArbitraryCid&gt; = Vec::arbitrary(g);
-        <span class="kw">let </span>bls_cids: Vec&lt;Cid&gt; = arbitrary_cids.iter().map(|cid| cid.<span class="number">0</span>).collect();
-
-        <span class="kw">let </span>arbitrary_cids: Vec&lt;ArbitraryCid&gt; = Vec::arbitrary(g);
-        <span class="kw">let </span>secp_cids: Vec&lt;Cid&gt; = arbitrary_cids.iter().map(|cid| cid.<span class="number">0</span>).collect();
-
         <span class="self">Self </span>{
             header: BlockHeader::arbitrary(g),
-            bls_messages: bls_cids,
-            secpk_messages: secp_cids,
+            bls_messages: Vec::arbitrary(g),
+            secpk_messages: Vec::arbitrary(g),
         }
     }
 }
