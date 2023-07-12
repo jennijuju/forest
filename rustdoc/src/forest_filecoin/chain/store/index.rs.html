@@ -267,26 +267,6 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -295,7 +275,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::metrics;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>lru::LruCache;
@@ -431,17 +410,10 @@
         <span class="kw">if </span>from.epoch() - to &lt;= SKIP_LENGTH {
             <span class="kw">return </span><span class="self">self</span>.walk_back(from, to);
         }
-        <span class="kw">let </span>total_size = from.epoch() - to;
-        <span class="kw">let </span>pb = ProgressBar::new(total_size <span class="kw">as </span>u64);
-        pb.message(<span class="string">&quot;Scanning blockchain &quot;</span>);
-        pb.set_max_refresh_rate(<span class="prelude-val">Some</span>(std::time::Duration::from_millis(<span class="number">500</span>)));
-
         <span class="kw">let </span>rounded = <span class="self">self</span>.round_down(from)<span class="question-mark">?</span>;
 
         <span class="kw">let </span><span class="kw-2">mut </span>cur = rounded.key().clone();
 
-        <span class="kw">const </span>MAX_COUNT: usize = <span class="number">100</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>counter = <span class="number">0</span>;
         <span class="kw">loop </span>{
             <span class="kw">let </span>entry = <span class="self">self</span>.skip_cache.lock().get(<span class="kw-2">&amp;</span>cur).cloned();
             <span class="kw">let </span>lbe = <span class="kw">if let </span><span class="prelude-val">Some</span>(cached) = entry {
@@ -461,7 +433,6 @@
                     checkpoint_tipsets::genesis_from_checkpoint_tipset(lbe.tipset.key())
                 {
                     <span class="kw">let </span>tipset = tipset_from_keys(<span class="kw-2">&amp;</span><span class="self">self</span>.ts_cache, <span class="kw-2">&amp;</span><span class="self">self</span>.db, <span class="kw-2">&amp;</span>genesis_tipset_keys)<span class="question-mark">?</span>;
-                    pb.set(total_size <span class="kw">as </span>u64);
                     <span class="macro">info!</span>(
                         <span class="string">&quot;Resolving genesis using checkpoint tipset at height: {}&quot;</span>,
                         lbe.tipset.epoch()
@@ -475,19 +446,8 @@
             } <span class="kw">else if </span>to &gt; lbe.target_height {
                 <span class="kw">return </span><span class="self">self</span>.walk_back(lbe.tipset.clone(), to);
             }
-            <span class="kw">let </span>to_be_done = lbe.tipset.epoch() - to;
-            <span class="comment">// Don&#39;t show the progress bar if we&#39;re doing less than 10_000 units of work.
-            </span><span class="kw">if </span>total_size &gt; <span class="number">10_000 </span>{
-                pb.set((total_size - to_be_done) <span class="kw">as </span>u64);
-            }
 
             cur = lbe.target.clone();
-
-            <span class="kw">if </span>counter == MAX_COUNT {
-                counter = <span class="number">0</span>;
-            } <span class="kw">else </span>{
-                counter += <span class="number">1</span>;
-            }
         }
     }
 

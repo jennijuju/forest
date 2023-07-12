@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"forest_filecoin":[["impl&lt;R: AsyncRead&gt; AsyncRead for <a class=\"struct\" href=\"forest_filecoin/utils/io/progress_log/struct.WithProgress.html\" title=\"struct forest_filecoin::utils::io::progress_log::WithProgress\">WithProgress</a>&lt;R&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

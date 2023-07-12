@@ -68,37 +68,13 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
-<a href="#93" id="93">93</a>
-<a href="#94" id="94">94</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
 <span class="kw">use </span>futures::TryStreamExt;
 
-<span class="kw">use </span>indicatif::ProgressStyle;
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::WithProgress;
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>std::io::ErrorKind;
 <span class="kw">use </span>tap::Pipe;
@@ -121,13 +97,12 @@
 ///
 /// This function returns a reader of uncompressed data.
 </span><span class="kw">pub async fn </span>reader(location: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;<span class="kw">impl </span>AsyncRead&gt; {
-    <span class="kw">let </span>read_progress = indicatif::ProgressBar::new_spinner().with_style(spinner_style());
     <span class="comment">// This isn&#39;t the cleanest approach in terms of error-handling, but it works. If the URL is
     // malformed it&#39;ll end up trying to treat it as a local filepath. If that fails - an error
     // is thrown.
     </span><span class="kw">let </span>(stream, content_length) = <span class="kw">match </span>Url::parse(location) {
         <span class="prelude-val">Ok</span>(url) =&gt; {
-            <span class="macro">info!</span>(<span class="string">&quot;downloading file: {}&quot;</span>, url);
+            <span class="macro">info!</span>(<span class="string">&quot;Downloading file: {}&quot;</span>, url);
             <span class="kw">let </span>resp = reqwest::get(url).<span class="kw">await</span><span class="question-mark">?</span>.error_for_status()<span class="question-mark">?</span>;
             <span class="kw">let </span>content_length = resp.content_length().unwrap_or_default();
             <span class="kw">let </span>stream = resp
@@ -138,19 +113,18 @@
             (Left(stream), content_length)
         }
         <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-            <span class="macro">info!</span>(<span class="string">&quot;reading file: {}&quot;</span>, location);
+            <span class="macro">info!</span>(<span class="string">&quot;Reading file: {}&quot;</span>, location);
             <span class="kw">let </span>stream = tokio::fs::File::open(location).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span>content_length = stream.metadata().<span class="kw">await</span><span class="question-mark">?</span>.len();
             (Right(stream), content_length)
         }
     };
 
-    <span class="kw">if </span>content_length &gt; <span class="number">0 </span>{
-        read_progress.set_length(content_length);
-        read_progress.set_style(progress_style())
-    }
-
-    <span class="kw">let </span><span class="kw-2">mut </span>reader = tokio::io::BufReader::new(read_progress.wrap_async_read(stream));
+    <span class="kw">let </span><span class="kw-2">mut </span>reader = tokio::io::BufReader::new(WithProgress::wrap_async_read(
+        <span class="string">&quot;Loading&quot;</span>,
+        stream,
+        content_length,
+    ));
 
     <span class="prelude-val">Ok</span>(<span class="kw">match </span>is_zstd(reader.fill_buf().<span class="kw">await</span><span class="question-mark">?</span>) {
         <span class="bool-val">true </span>=&gt; Left(ZstdDecoder::new(reader)),
@@ -163,27 +137,5 @@
 // https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#zstandard-frames.
 </span><span class="kw">fn </span>is_zstd(buf: <span class="kw-2">&amp;</span>[u8]) -&gt; bool {
     zstd_safe::get_frame_content_size(buf).is_ok()
-}
-
-<span class="kw">fn </span>progress_style() -&gt; ProgressStyle {
-    indicatif::ProgressStyle::with_template(
-        <span class="string">&quot;{msg:.green} [{elapsed_precise}] [{wide_bar:.cyan/blue}] {bytes}/{total_bytes}&quot;</span>,
-    )
-    .expect(<span class="string">&quot;invalid progress template&quot;</span>)
-    .progress_chars(<span class="string">&quot;=&gt;-&quot;</span>)
-}
-
-<span class="kw">fn </span>spinner_style() -&gt; ProgressStyle {
-    ProgressStyle::with_template(<span class="string">&quot;{spinner:.blue} {msg}&quot;</span>)
-        .unwrap()
-        .tick_strings(<span class="kw-2">&amp;</span>[
-            <span class="string">&quot;▹▹▹▹▹&quot;</span>,
-            <span class="string">&quot;▸▹▹▹▹&quot;</span>,
-            <span class="string">&quot;▹▸▹▹▹&quot;</span>,
-            <span class="string">&quot;▹▹▸▹▹&quot;</span>,
-            <span class="string">&quot;▹▹▹▸▹&quot;</span>,
-            <span class="string">&quot;▹▹▹▹▸&quot;</span>,
-            <span class="string">&quot;▪▪▪▪▪&quot;</span>,
-        ])
 }
 </code></pre></div></section></main></body></html>

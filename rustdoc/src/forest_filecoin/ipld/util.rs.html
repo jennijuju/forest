@@ -194,9 +194,6 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -207,11 +204,10 @@
         atomic::{<span class="self">self</span>, AtomicU64},
         Arc,
     },
-    time::Duration,
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::{progress_bar, ProgressBar};
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::progress_log::WithProgressRaw;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_encoding::from_slice;
 <span class="kw">use </span>lazy_static::lazy_static;
@@ -316,10 +312,9 @@
     T: Future&lt;Output = anyhow::Result&lt;Vec&lt;u8&gt;&gt;&gt; + Send,
 {
     <span class="kw">let </span>estimated_total_records = estimated_total_records.unwrap_or_default();
-    <span class="kw">let </span>bar = ProgressBar::new(estimated_total_records);
-    bar.message(progress_bar_message.unwrap_or(<span class="string">&quot;Walking snapshot &quot;</span>));
-    bar.set_units(progress_bar::Units::Default);
-    bar.set_max_refresh_rate(<span class="prelude-val">Some</span>(Duration::from_millis(<span class="number">500</span>)));
+    <span class="kw">let </span>message = progress_bar_message.unwrap_or(<span class="string">&quot;Walking snapshot&quot;</span>);
+    <span class="attr">#[allow(deprecated)] </span><span class="comment">// Tracking issue: https://github.com/ChainSafe/forest/issues/3157
+    </span><span class="kw">let </span>wp = WithProgressRaw::new(message, estimated_total_records);
 
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
     <span class="kw">let </span><span class="kw-2">mut </span>blocks_to_walk: VecDeque&lt;Cid&gt; = tipset.cids().to_vec().into();
@@ -327,13 +322,13 @@
     <span class="kw">let </span>incl_roots_epoch = tipset.epoch() - recent_roots;
 
     <span class="kw">let </span>on_inserted = {
-        <span class="kw">let </span>bar = bar.clone();
+        <span class="kw">let </span>wp = wp.clone();
         <span class="kw">let </span>progress_tracker = progress_tracker.clone();
         <span class="kw">move </span>|len: usize| {
             <span class="kw">let </span>progress = len <span class="kw">as </span>u64;
             <span class="kw">let </span>total = progress.max(estimated_total_records);
-            bar.set(progress);
-            bar.set_total(total);
+            wp.set(progress);
+            wp.set_total(total);
             <span class="kw">if let </span><span class="prelude-val">Some</span>(progress_tracker) = <span class="kw-2">&amp;</span>progress_tracker {
                 progress_tracker
                     .<span class="number">0
@@ -379,7 +374,6 @@
         }
     }
 
-    bar.finish();
     <span class="prelude-val">Ok</span>(seen.len())
 }
 

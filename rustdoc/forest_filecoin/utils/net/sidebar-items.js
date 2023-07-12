@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["global_http_client","is_zstd","progress_style","reader","spinner_style"]};
+window.SIDEBAR_ITEMS = {"fn":["global_http_client","is_zstd","reader"]};
