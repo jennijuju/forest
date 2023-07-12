@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ArchiveCommands"],"struct":["ArchiveInfo"]};
+window.SIDEBAR_ITEMS = {"enum":["ArchiveCommands"],"fn":["build_output_path","do_export"],"static":["CALLSITE"],"struct":["ArchiveInfo"]};

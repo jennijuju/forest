@@ -907,6 +907,10 @@
 <a href="#907" id="907">907</a>
 <a href="#908" id="908">908</a>
 <a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -964,6 +968,10 @@
 </span><span class="kw">const </span>SINK_CAP: usize = <span class="number">200</span>;
 
 <span class="kw">const </span>DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">8192usize</span>);
+
+<span class="doccomment">/// Disambiguate the type to signify that we are expecting a delta and not an actual epoch/height
+/// while maintaining the same type.
+</span><span class="kw">pub type </span>ChainEpochDelta = ChainEpoch;
 
 <span class="doccomment">/// `Enum` for `pubsub` channel that defines message type variant and data
 /// contained in message type.
