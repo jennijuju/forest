@@ -312,7 +312,7 @@
 
 <span class="comment">// This module helps speed up boot times for forest by checkpointing previously
 // seen tipsets from snapshots.
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>checkpoint_tipsets {
+</span><span class="kw">pub mod </span>checkpoint_tipsets {
     <span class="kw">use </span>std::str::FromStr;
 
     <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
@@ -340,7 +340,7 @@
 
     <span class="kw">type </span>GenesisTipsetCids = TipsetKeys;
 
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>genesis_from_checkpoint_tipset(tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Option</span>&lt;GenesisTipsetCids&gt; {
+    <span class="kw">pub fn </span>genesis_from_checkpoint_tipset(tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Option</span>&lt;GenesisTipsetCids&gt; {
         <span class="kw">let </span>key = tipset_hash(tsk);
         <span class="kw">if </span>KNOWN_CHECKPOINTS.mainnet.contains(<span class="kw-2">&amp;</span>key) {
             <span class="kw">return </span><span class="prelude-val">Some</span>(TipsetKeys::new(<span class="macro">vec!</span>[Cid::from_str(

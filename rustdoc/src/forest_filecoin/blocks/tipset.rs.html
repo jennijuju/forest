@@ -630,6 +630,20 @@
 <a href="#630" id="630">630</a>
 <a href="#631" id="631">631</a>
 <a href="#632" id="632">632</a>
+<a href="#633" id="633">633</a>
+<a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -640,6 +654,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::cid::CidCborExt;
 <span class="kw">use </span>ahash::{HashSet, HashSetExt};
 <span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>log::info;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>once_cell::sync::OnceCell;
@@ -798,6 +814,18 @@
             key: OnceCell::new(),
         })
     }
+
+    <span class="doccomment">/// Loads a tipset from memory given the tipset keys.
+    </span><span class="kw">pub fn </span>load(store: <span class="kw">impl </span>Blockstore, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Tipset&gt;&gt; {
+        <span class="prelude-val">Ok</span>(tsk
+            .cids()
+            .iter()
+            .map(|c| store.get_cbor(c))
+            .collect::&lt;anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?
+            </span>.map(Tipset::new)
+            .transpose()<span class="question-mark">?</span>)
+    }
+
     <span class="doccomment">/// Returns epoch of the tipset.
     </span><span class="kw">pub fn </span>epoch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChainEpoch {
         <span class="self">self</span>.min_ticket_block().epoch()

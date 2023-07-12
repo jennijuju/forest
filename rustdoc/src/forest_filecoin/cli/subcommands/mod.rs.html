@@ -201,6 +201,11 @@
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -209,7 +214,8 @@
 // check out the original commit history here:
 // https://github.com/ChainSafe/forest/commits/main/forest/src/cli/mod.rs
 
-</span><span class="kw">mod </span>attach_cmd;
+</span><span class="kw">mod </span>archive_cmd;
+<span class="kw">mod </span>attach_cmd;
 <span class="kw">mod </span>auth_cmd;
 <span class="kw">mod </span>chain_cmd;
 <span class="kw">mod </span>config_cmd;
@@ -238,11 +244,11 @@
 <span class="kw">use </span>serde::Serialize;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">use </span><span class="self">self</span>::{
-    attach_cmd::AttachCommand, auth_cmd::AuthCommands, chain_cmd::ChainCommands,
-    config_cmd::ConfigCommands, db_cmd::DBCommands, fetch_params_cmd::FetchCommands,
-    mpool_cmd::MpoolCommands, net_cmd::NetCommands, send_cmd::SendCommand,
-    shutdown_cmd::ShutdownCommand, snapshot_cmd::SnapshotCommands, state_cmd::StateCommands,
-    sync_cmd::SyncCommands, wallet_cmd::WalletCommands,
+    archive_cmd::ArchiveCommands, attach_cmd::AttachCommand, auth_cmd::AuthCommands,
+    chain_cmd::ChainCommands, config_cmd::ConfigCommands, db_cmd::DBCommands,
+    fetch_params_cmd::FetchCommands, mpool_cmd::MpoolCommands, net_cmd::NetCommands,
+    send_cmd::SendCommand, shutdown_cmd::ShutdownCommand, snapshot_cmd::SnapshotCommands,
+    state_cmd::StateCommands, sync_cmd::SyncCommands, wallet_cmd::WalletCommands,
 };
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::info_cmd::InfoCommand;
 
@@ -299,6 +305,10 @@
     <span class="doccomment">/// Manage snapshots
     </span><span class="attr">#[command(subcommand)]
     </span>Snapshot(SnapshotCommands),
+
+    <span class="doccomment">/// Manage archives
+    </span><span class="attr">#[command(subcommand)]
+    </span>Archive(ArchiveCommands),
 
     <span class="doccomment">/// Send funds between accounts
     </span>Send(SendCommand),
