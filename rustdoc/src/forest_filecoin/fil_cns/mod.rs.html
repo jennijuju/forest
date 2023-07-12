@@ -111,8 +111,6 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{fmt::Debug, sync::Arc};
@@ -168,8 +166,6 @@
     </span>BeaconValidation(String),
     <span class="attr">#[error(<span class="string">&quot;Failed to verify winning PoSt: {0}&quot;</span>)]
     </span>WinningPoStValidation(String),
-    <span class="attr">#[error(<span class="string">&quot;[INSECURE-POST-VALIDATION] {0}&quot;</span>)]
-    </span>InsecurePostValidation(String),
     <span class="attr">#[error(<span class="string">&quot;Chain store error: {0}&quot;</span>)]
     </span>ChainStore(<span class="attr">#[from] </span>ChainStoreError),
     <span class="attr">#[error(<span class="string">&quot;StateManager error: {0}&quot;</span>)]
