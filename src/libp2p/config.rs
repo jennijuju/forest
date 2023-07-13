@@ -29,7 +29,7 @@ impl Default for Libp2pConfig {
             bootstrap_peers: vec![],
             mdns: false,
             kademlia: true,
-            target_peer_count: 75,
+            target_peer_count: u32::MAX,
         }
     }
 }
