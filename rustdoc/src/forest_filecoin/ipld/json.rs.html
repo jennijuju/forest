@@ -275,19 +275,6 @@
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
 <a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -530,52 +517,39 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>quickcheck_macros::quickcheck;
     <span class="kw">use </span>serde_json;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-    <span class="attr">#[derive(Clone, Debug, PartialEq)]
-    </span><span class="kw">struct </span>IpldWrapper {
-        ipld: libipld_macro::Ipld,
-    }
-
-    <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>IpldWrapper {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-            <span class="kw">let </span>bool_item = bool::arbitrary(g);
-            <span class="kw">let </span>int_item = i128::arbitrary(g);
-            <span class="kw">let </span>float_item = f64::arbitrary(g);
-            <span class="kw">let </span>string_item = String::arbitrary(g);
-            <span class="kw">let </span>bytes_item = Vec::arbitrary(g);
-            <span class="kw">let </span>list_item = Vec::new();
-            <span class="kw">let </span>map_item = BTreeMap::new();
-            <span class="kw">let </span>cid = Cid::new_v1(
-                u64::arbitrary(g),
-                cid::multihash::Multihash::wrap(u64::arbitrary(g), <span class="kw-2">&amp;</span>[u8::arbitrary(g)]).unwrap(),
-            );
-            <span class="kw">let </span>binding = [
-                Ipld::Null,
-                Ipld::Bool(bool_item),
-                Ipld::Integer(int_item),
-                <span class="comment">// Filter out problematic NaN values.
-                </span>Ipld::Float(<span class="kw">if </span>float_item.is_nan() { <span class="number">0.0 </span>} <span class="kw">else </span>{ float_item }),
-                Ipld::String(string_item),
-                Ipld::Bytes(bytes_item),
-                Ipld::List(list_item),
-                Ipld::Map(map_item),
-                Ipld::Link(cid),
-            ];
-            <span class="kw">let </span>ipld = g.choose(<span class="kw-2">&amp;</span>binding).unwrap();
-            IpldWrapper { ipld: ipld.clone() }
-        }
-    }
-
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>ipld_roundtrip(ipld: IpldWrapper) {
-        <span class="kw">let </span>serialized: String = serde_json::to_string(<span class="kw-2">&amp;</span>IpldJsonRef(<span class="kw-2">&amp;</span>ipld.ipld)).unwrap();
+    </span><span class="kw">fn </span>ipld_roundtrip(<span class="kw-2">mut </span>ipld: Ipld) {
+        <span class="doccomment">/// `NaN != NaN`, which breaks our round-trip tests.
+        /// Correct this by changing any `NaN`s to zero.
+        </span><span class="kw">fn </span>fixup_floats(ipld: <span class="kw-2">&amp;mut </span>Ipld) {
+            <span class="kw">match </span>ipld {
+                Ipld::Float(v) =&gt; {
+                    <span class="kw">if </span>v.is_nan() {
+                        <span class="kw-2">*</span>ipld = Ipld::Float(<span class="number">0.0</span>);
+                    }
+                }
+                Ipld::List(list) =&gt; {
+                    <span class="kw">for </span>item <span class="kw">in </span>list {
+                        fixup_floats(item);
+                    }
+                }
+                Ipld::Map(map) =&gt; {
+                    <span class="kw">for </span>item <span class="kw">in </span>map.values_mut() {
+                        fixup_floats(item);
+                    }
+                }
+                <span class="kw">_ </span>=&gt; {}
+            }
+        }
+        fixup_floats(<span class="kw-2">&amp;mut </span>ipld);
+        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>IpldJsonRef(<span class="kw-2">&amp;</span>ipld)).unwrap();
         <span class="kw">let </span>parsed: IpldJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
-        <span class="macro">assert_eq!</span>(ipld.ipld, parsed.<span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(ipld, parsed.<span class="number">0</span>);
     }
 }
 </code></pre></div></section></main></body></html>
