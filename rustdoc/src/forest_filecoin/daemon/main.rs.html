@@ -174,7 +174,6 @@
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>daemonize_me::{Daemon, Group, User};
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>raw_sync::{
     events::{Event, EventInit},
     Timeout,
@@ -182,6 +181,7 @@
 <span class="kw">use </span>std::ffi::OsString;
 <span class="kw">use </span>std::{cmp::max, fs::File, process, time::Duration};
 <span class="kw">use </span>tokio::runtime::Builder <span class="kw">as </span>RuntimeBuilder;
+<span class="kw">use </span>tracing::info;
 
 <span class="kw">const </span>EVENT_TIMEOUT: Timeout = Timeout::Val(Duration::from_secs(<span class="number">20</span>));
 

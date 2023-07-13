@@ -136,7 +136,7 @@
 </span><span class="kw">pub fn </span>set_user_perm(file: <span class="kw-2">&amp;</span>File) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">use </span>std::os::unix::fs::PermissionsExt;
 
-    <span class="kw">use </span>log::info;
+    <span class="kw">use </span>tracing::info;
 
     <span class="kw">let </span><span class="kw-2">mut </span>perm = file.metadata()<span class="question-mark">?</span>.permissions();
     <span class="attr">#[allow(clippy::useless_conversion)] </span><span class="comment">// Otherwise it does not build on macos

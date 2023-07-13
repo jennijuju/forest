@@ -666,12 +666,12 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
-<span class="kw">use </span>log::warn;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock <span class="kw">as </span>SyncRwLock};
 <span class="kw">use </span>tokio::{sync::broadcast::error::RecvError, task::JoinSet, time::interval};
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{
     config::MpoolConfig,

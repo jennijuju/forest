@@ -879,8 +879,8 @@
     swarm::{SwarmBuilder, SwarmEvent},
     yamux, PeerId, Swarm, Transport,
 };
-<span class="kw">use </span>log::{debug, error, info, trace, warn};
 <span class="kw">use </span>tokio_stream::wrappers::IntervalStream;
+<span class="kw">use </span>tracing::{debug, error, info, trace, warn};
 
 <span class="kw">use super</span>::{
     chain_exchange::{make_chain_exchange_response, ChainExchangeRequest, ChainExchangeResponse},

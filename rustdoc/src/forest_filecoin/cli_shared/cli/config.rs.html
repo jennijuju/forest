@@ -220,20 +220,76 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>core::time::Duration;
-<span class="kw">use </span>std::{path::PathBuf, sync::Arc};
-
-<span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncConfig;
+</span><span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncConfig;
 <span class="kw">use </span><span class="kw">crate</span>::db::db_engine::DbConfig;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::Libp2pConfig;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
-<span class="kw">use </span>log::LevelFilter;
+<span class="kw">use </span>core::time::Duration;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>std::{path::PathBuf, sync::Arc};
+<span class="kw">use </span>tracing::log::LevelFilter;
 
 <span class="kw">use </span><span class="kw">super</span>::client::Client;
+
+<span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone, Hash)]
+</span><span class="kw">pub enum </span>LogFilter {
+    <span class="doccomment">/// A level lower than all log levels.
+    </span>Off,
+    <span class="doccomment">/// Corresponds to the `Error` log level.
+    </span>Error,
+    <span class="doccomment">/// Corresponds to the `Warn` log level.
+    </span>Warn,
+    <span class="doccomment">/// Corresponds to the `Info` log level.
+    </span>Info,
+    <span class="doccomment">/// Corresponds to the `Debug` log level.
+    </span>Debug,
+    <span class="doccomment">/// Corresponds to the `Trace` log level.
+    </span>Trace,
+}
+
+<span class="kw">impl </span>From&lt;LogFilter&gt; <span class="kw">for </span>LevelFilter {
+    <span class="kw">fn </span>from(value: LogFilter) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>value {
+            LogFilter::Debug =&gt; LevelFilter::Debug,
+            LogFilter::Off =&gt; LevelFilter::Off,
+            LogFilter::Error =&gt; LevelFilter::Error,
+            LogFilter::Warn =&gt; LevelFilter::Warn,
+            LogFilter::Info =&gt; LevelFilter::Info,
+            LogFilter::Trace =&gt; LevelFilter::Trace,
+        }
+    }
+}
 
 <span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Debug, Clone)]
 </span><span class="kw">pub struct </span>LogConfig {
@@ -244,7 +300,7 @@
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::cli_shared) <span class="kw">fn </span>to_filter_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
         <span class="self">self</span>.filters
             .iter()
-            .map(|f| <span class="macro">format!</span>(<span class="string">&quot;{}={}&quot;</span>, f.module, f.level))
+            .map(|f| <span class="macro">format!</span>(<span class="string">&quot;{}={}&quot;</span>, f.module, LevelFilter::from(f.level.clone())))
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
             .join(<span class="string">&quot;,&quot;</span>)
     }
@@ -254,15 +310,15 @@
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             filters: <span class="macro">vec!</span>[
-                LogValue::new(<span class="string">&quot;axum&quot;</span>, LevelFilter::Warn),
-                LogValue::new(<span class="string">&quot;bellperson::groth16::aggregate::verify&quot;</span>, LevelFilter::Warn),
-                LogValue::new(<span class="string">&quot;filecoin_proofs&quot;</span>, LevelFilter::Warn),
-                LogValue::new(<span class="string">&quot;libp2p_bitswap&quot;</span>, LevelFilter::Off),
-                LogValue::new(<span class="string">&quot;libp2p_gossipsub&quot;</span>, LevelFilter::Error),
-                LogValue::new(<span class="string">&quot;libp2p_kad&quot;</span>, LevelFilter::Error),
-                LogValue::new(<span class="string">&quot;rpc&quot;</span>, LevelFilter::Error),
-                LogValue::new(<span class="string">&quot;storage_proofs_core&quot;</span>, LevelFilter::Warn),
-                LogValue::new(<span class="string">&quot;tracing_loki&quot;</span>, LevelFilter::Off),
+                LogValue::new(<span class="string">&quot;axum&quot;</span>, LogFilter::Warn),
+                LogValue::new(<span class="string">&quot;bellperson::groth16::aggregate::verify&quot;</span>, LogFilter::Warn),
+                LogValue::new(<span class="string">&quot;filecoin_proofs&quot;</span>, LogFilter::Warn),
+                LogValue::new(<span class="string">&quot;libp2p_bitswap&quot;</span>, LogFilter::Off),
+                LogValue::new(<span class="string">&quot;libp2p_gossipsub&quot;</span>, LogFilter::Error),
+                LogValue::new(<span class="string">&quot;libp2p_kad&quot;</span>, LogFilter::Error),
+                LogValue::new(<span class="string">&quot;rpc&quot;</span>, LogFilter::Error),
+                LogValue::new(<span class="string">&quot;storage_proofs_core&quot;</span>, LogFilter::Warn),
+                LogValue::new(<span class="string">&quot;tracing_loki&quot;</span>, LogFilter::Off),
             ],
         }
     }
@@ -271,11 +327,11 @@
 <span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Hash, Debug, Clone)]
 </span><span class="kw">pub struct </span>LogValue {
     <span class="kw">pub </span>module: String,
-    <span class="kw">pub </span>level: LevelFilter,
+    <span class="kw">pub </span>level: LogFilter,
 }
 
 <span class="kw">impl </span>LogValue {
-    <span class="kw">pub fn </span>new(module: <span class="kw-2">&amp;</span>str, level: LevelFilter) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(module: <span class="kw-2">&amp;</span>str, level: LogFilter) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             module: module.to_string(),
             level,

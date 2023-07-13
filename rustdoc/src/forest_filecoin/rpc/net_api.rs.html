@@ -119,7 +119,7 @@
 <span class="kw">use </span>futures::channel::oneshot;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
-<span class="kw">use </span>log::error;
+<span class="kw">use </span>tracing::error;
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_addrs_listen&lt;
     DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,

@@ -97,12 +97,12 @@
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>tokio::{
     fs::File,
     io::{BufReader, BufWriter},
 };
 <span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
+<span class="kw">use </span>tracing::info;
 
 <span class="kw">pub async fn </span>load_bundles&lt;DB&gt;(epoch: ChainEpoch, config: <span class="kw-2">&amp;</span>Config, db: DB) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where

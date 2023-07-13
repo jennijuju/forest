@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MSG"],"fn":["verify_blocks"],"mod":["tipset_json","tipset_keys_json"],"struct":["FullTipset","Tipset","TipsetKeys"]};
+window.SIDEBAR_ITEMS = {"constant":["MSG"],"fn":["verify_blocks"],"mod":["tipset_json","tipset_keys_json"],"static":["CALLSITE"],"struct":["FullTipset","Tipset","TipsetKeys"]};

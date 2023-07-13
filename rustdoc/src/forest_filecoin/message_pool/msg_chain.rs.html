@@ -586,9 +586,9 @@
 };
 <span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
-<span class="kw">use </span>log::warn;
 <span class="kw">use </span>num_traits::Zero;
 <span class="kw">use </span>slotmap::{new_key_type, SlotMap};
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use </span><span class="kw">super</span>::errors::Error;
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{

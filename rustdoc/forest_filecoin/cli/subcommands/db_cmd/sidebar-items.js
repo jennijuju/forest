@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DBCommands"]};
+window.SIDEBAR_ITEMS = {"enum":["DBCommands"],"static":["CALLSITE"]};

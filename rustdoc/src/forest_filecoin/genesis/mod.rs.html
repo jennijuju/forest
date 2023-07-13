@@ -228,9 +228,9 @@
 <span class="kw">use </span>fvm_ipld_car::{load_car, CarReader};
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
-<span class="kw">use </span>log::{debug, info};
 <span class="kw">use </span>tokio::{fs::File, io::BufReader};
 <span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
+<span class="kw">use </span>tracing::{debug, info};
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">pub const </span>EXPORT_SR_40: <span class="kw-2">&amp;</span>[u8] = <span class="macro">std::include_bytes!</span>(<span class="string">&quot;export40.car&quot;</span>);

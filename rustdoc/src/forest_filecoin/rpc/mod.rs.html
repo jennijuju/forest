@@ -189,8 +189,8 @@
 <span class="kw">use </span>axum::routing::{get, post};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JSONRPCError, Params, Server};
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>tokio::sync::mpsc::Sender;
+<span class="kw">use </span>tracing::info;
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc::{
     beacon_api::beacon_get_entry,

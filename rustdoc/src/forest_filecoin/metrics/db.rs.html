@@ -58,11 +58,11 @@
 
 </span><span class="kw">use </span>std::path::PathBuf;
 
-<span class="kw">use </span>log::error;
 <span class="kw">use </span>prometheus::{
     core::{Collector, Desc},
     proto, Gauge, Opts,
 };
+<span class="kw">use </span>tracing::error;
 
 <span class="kw">pub struct </span>DBCollector {
     db_directory: PathBuf,

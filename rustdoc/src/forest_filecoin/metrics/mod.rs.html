@@ -141,11 +141,11 @@
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>axum::{http::StatusCode, response::IntoResponse, routing::get, Router};
 <span class="kw">use </span>lazy_static::lazy_static;
-<span class="kw">use </span>log::warn;
 <span class="kw">use </span>prometheus::core::{AtomicU64, GenericCounterVec, Opts};
 <span class="kw">use </span>prometheus::{Encoder, TextEncoder};
 <span class="kw">use </span>std::{net::TcpListener, path::PathBuf};
 <span class="kw">use </span>tokio::sync::RwLock;
+<span class="kw">use </span>tracing::warn;
 
 <span class="macro">lazy_static::lazy_static! </span>{
     <span class="kw">static </span><span class="kw-2">ref </span>REGISTRIES_EXT: RwLock&lt;HashMap&lt;String,prometheus_client::registry::Registry&gt;&gt; = RwLock::new(HashMap::new());

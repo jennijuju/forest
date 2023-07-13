@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ForestBehaviourEvent"],"struct":["ForestBehaviour"]};
+window.SIDEBAR_ITEMS = {"enum":["ForestBehaviourEvent"],"static":["CALLSITE"],"struct":["ForestBehaviour"]};

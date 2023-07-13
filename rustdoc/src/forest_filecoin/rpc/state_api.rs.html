@@ -583,7 +583,7 @@
             <span class="prelude-val">Ok</span>(()) =&gt; <span class="kw-2">*</span>fetched += <span class="number">1</span>,
             <span class="prelude-val">Err</span>(msg) =&gt; {
                 <span class="kw-2">*</span>failures += <span class="number">1</span>;
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Request failed: {msg}&quot;</span>);
+                <span class="macro">tracing::debug!</span>(<span class="string">&quot;Request failed: {msg}&quot;</span>);
             }
         }
     }
@@ -612,7 +612,7 @@
                     counter += <span class="number">1</span>;
                     <span class="kw">if </span>counter % <span class="number">1_000 </span>== <span class="number">0 </span>{
                         <span class="comment">// set RUST_LOG=forest_filecoin::rpc::state_api=debug to enable these printouts.
-                        </span><span class="macro">log::debug!</span>(
+                        </span><span class="macro">tracing::debug!</span>(
                                 <span class="string">&quot;Graph walk: CIDs: {counter}, Fetched: {fetched}, Failures: {failures}, dfs: {}, Concurrent: {}&quot;</span>,
                                 dfs_guard.len(), task_set.len()
                             );

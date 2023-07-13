@@ -123,8 +123,8 @@
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>fvm_ipld_encoding::{to_vec, DAG_CBOR};
 <span class="kw">use </span>human_repr::HumanCount;
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>serde::ser::Serialize;
+<span class="kw">use </span>tracing::info;
 
 <span class="doccomment">/// DB key size in bytes for estimating reachable data size. Use parity-db value
 /// for simplicity. The actual value for other underlying DB might be slightly

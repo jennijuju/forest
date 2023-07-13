@@ -138,8 +138,8 @@
 <span class="kw">use </span>crossbeam::atomic::AtomicCell;
 <span class="kw">use </span>futures::{stream::SplitSink, SinkExt, StreamExt};
 <span class="kw">use </span>http::{HeaderMap, HeaderValue};
-<span class="kw">use </span>log::{debug, error, info, warn};
 <span class="kw">use </span>tokio::sync::RwLock;
+<span class="kw">use </span>tracing::{debug, error, info, warn};
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc::rpc_util::{call_rpc_str, check_permissions, get_auth_header, get_error_str};
 

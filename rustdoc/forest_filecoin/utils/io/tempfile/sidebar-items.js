@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["TempFile"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["TempFile"]};

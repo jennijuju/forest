@@ -497,7 +497,7 @@
         .write_all(checksum_file_content.as_bytes())
         .<span class="kw">await</span><span class="question-mark">?</span>;
     checksum_file.flush().<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="macro">log::info!</span>(
+    <span class="macro">tracing::info!</span>(
         <span class="string">&quot;Snapshot checksum: {encoded_hash} saved to {}&quot;</span>,
         checksum_path.display()
     );

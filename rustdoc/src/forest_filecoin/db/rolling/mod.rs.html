@@ -73,9 +73,9 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::file_backed_obj::FileBacked;
-<span class="kw">use </span>log::{info, warn};
 <span class="kw">use </span>parking_lot::RwLock;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>tracing::{info, warn};
 
 <span class="kw">use </span><span class="kw">crate</span>::db::db_engine::{open_db, Db, DbConfig};
 

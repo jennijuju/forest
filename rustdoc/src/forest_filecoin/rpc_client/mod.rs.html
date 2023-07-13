@@ -190,9 +190,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
 <span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
 <span class="kw">use </span>jsonrpc_v2::{Error, Id, RequestObject, V2};
-<span class="kw">use </span>log::debug;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>serde::{de::DeserializeOwned, Deserialize, Serialize};
+<span class="kw">use </span>tracing::debug;
 
 <span class="kw">pub const </span>API_INFO_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;FULLNODE_API_INFO&quot;</span>;
 <span class="kw">pub const </span>DEFAULT_HOST: <span class="kw-2">&amp;</span>str = <span class="string">&quot;127.0.0.1&quot;</span>;

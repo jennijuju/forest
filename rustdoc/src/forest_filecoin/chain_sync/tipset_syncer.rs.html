@@ -1694,10 +1694,10 @@
 <span class="kw">use </span>futures::{stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
-<span class="kw">use </span>log::{debug, error, info, trace, warn};
 <span class="kw">use </span>nonempty::NonEmpty;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>thiserror::Error;
+<span class="kw">use </span>tracing::{debug, error, info, trace, warn};
 
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{
     bad_block_cache::BadBlockCache,

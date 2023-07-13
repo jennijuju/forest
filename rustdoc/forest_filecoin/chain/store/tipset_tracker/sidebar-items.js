@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["TipsetTracker"]};
+window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["TipsetTracker"]};

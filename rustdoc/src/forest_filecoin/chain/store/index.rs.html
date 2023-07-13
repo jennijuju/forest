@@ -276,10 +276,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::metrics;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>parking_lot::Mutex;
+<span class="kw">use </span>tracing::info;
 
 <span class="kw">use </span><span class="kw">crate</span>::chain::{tipset_from_keys, Error, TipsetCache};
 

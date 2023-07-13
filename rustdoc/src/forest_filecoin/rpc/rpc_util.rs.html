@@ -149,8 +149,8 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::{auth_api::<span class="kw-2">*</span>, check_access, data_types::JsonRpcServerState, ACCESS_MAP};
 <span class="kw">use </span>http::{HeaderMap, HeaderValue, StatusCode};
-<span class="kw">use </span>log::{debug, error};
 <span class="kw">use </span>serde::de::DeserializeOwned;
+<span class="kw">use </span>tracing::{debug, error};
 
 <span class="kw">pub fn </span>get_error_obj(code: i64, message: String) -&gt; jsonrpc_v2::Error {
     <span class="macro">debug!</span>(

@@ -967,9 +967,9 @@
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet, HashSetExt};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
-<span class="kw">use </span>log::error;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock <span class="kw">as </span>SyncRwLock};
+<span class="kw">use </span>tracing::error;
 <span class="kw">use </span>utils::{get_base_fee_lower_bound, recover_sig};
 
 <span class="kw">use </span><span class="kw">super</span>::errors::Error;

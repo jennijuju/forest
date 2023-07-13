@@ -222,8 +222,8 @@
 <span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>log::warn;
 <span class="kw">use </span>parity_db::{CompressionType, Db, Operation, Options};
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">use </span><span class="kw">super</span>::errors::Error;
 <span class="kw">use </span><span class="kw">crate</span>::db::{parity_db_config::ParityDbConfig, DBStatistics, Store};

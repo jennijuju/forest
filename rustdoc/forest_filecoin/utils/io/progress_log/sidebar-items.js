@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["UPDATE_FREQUENCY"],"struct":["Progress","WithProgress","WithProgressRaw"]};
+window.SIDEBAR_ITEMS = {"constant":["UPDATE_FREQUENCY"],"static":["CALLSITE"],"struct":["Progress","WithProgress","WithProgressRaw"]};

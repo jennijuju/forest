@@ -947,7 +947,6 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
-<span class="kw">use </span>log::{debug, info, trace, warn};
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>parking_lot::Mutex;
@@ -956,6 +955,7 @@
     broadcast::{<span class="self">self</span>, Sender <span class="kw">as </span>Publisher},
     Mutex <span class="kw">as </span>TokioMutex,
 };
+<span class="kw">use </span>tracing::{debug, info, trace, warn};
 
 <span class="kw">use super</span>::{
     index::{checkpoint_tipsets, ChainIndex},
@@ -1208,7 +1208,7 @@
     </span><span class="kw">pub fn </span>is_block_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; bool {
         <span class="kw">let </span>validated = <span class="self">self</span>.validated_blocks.lock().contains(cid);
         <span class="kw">if </span>validated {
-            <span class="macro">log::debug!</span>(<span class="string">&quot;Block {cid} was previously validated&quot;</span>);
+            <span class="macro">debug!</span>(<span class="string">&quot;Block {cid} was previously validated&quot;</span>);
         }
         validated
     }

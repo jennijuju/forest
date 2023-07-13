@@ -276,7 +276,7 @@
 
 <span class="kw">use </span>ahash::HashSet;
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>log::warn;
+<span class="kw">use </span>tracing::warn;
 
 <span class="kw">pub struct </span>FileBacked&lt;T: FileBackedObject&gt; {
     inner: T,

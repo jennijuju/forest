@@ -656,10 +656,10 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
+<span class="kw">use </span>tracing::info;
 
 <span class="kw">use super</span>::{Block, BlockHeader, Error, Ticket};
 

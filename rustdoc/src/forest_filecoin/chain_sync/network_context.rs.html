@@ -534,11 +534,11 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
-<span class="kw">use </span>log::{debug, trace, warn};
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>std::future::Future;
 <span class="kw">use </span>tokio::sync::Semaphore;
 <span class="kw">use </span>tokio::task::JoinSet;
+<span class="kw">use </span>tracing::{debug, trace, warn};
 
 <span class="doccomment">/// Timeout for response from an RPC request
 </span><span class="comment">// TODO this value can be tweaked, this is just set pretty low to avoid peers
@@ -811,7 +811,7 @@
                 };
 
                 <span class="kw">let </span>v = batch.get_ok().<span class="kw">await</span>.ok_or_else(make_failure_message)<span class="question-mark">?</span>;
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Succeed: handle_chain_exchange_request&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">&quot;Succeed: handle_chain_exchange_request&quot;</span>);
                 v
             }
         };
@@ -834,7 +834,7 @@
         peer_id: PeerId,
         request: ChainExchangeRequest,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainExchangeResponse, String&gt; {
-        <span class="macro">log::debug!</span>(<span class="string">&quot;Sending ChainExchange Request to {peer_id}&quot;</span>);
+        <span class="macro">debug!</span>(<span class="string">&quot;Sending ChainExchange Request to {peer_id}&quot;</span>);
 
         <span class="kw">let </span>req_pre_time = SystemTime::now();
 
@@ -863,7 +863,7 @@
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(bs_res))) =&gt; {
                 <span class="comment">// Successful response
                 </span>peer_manager.log_success(peer_id, res_duration).<span class="kw">await</span>;
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Succeeded: ChainExchange Request to {peer_id}&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">&quot;Succeeded: ChainExchange Request to {peer_id}&quot;</span>);
                 <span class="prelude-val">Ok</span>(bs_res)
             }
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(e))) =&gt; {
@@ -880,14 +880,14 @@
                         peer_manager.log_failure(peer_id, res_duration).<span class="kw">await</span>;
                     }
                 }
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Failed: ChainExchange Request to {peer_id}&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">&quot;Failed: ChainExchange Request to {peer_id}&quot;</span>);
                 <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Internal libp2p error: {e:?}&quot;</span>))
             }
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(<span class="kw">_</span>)) | <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
                 <span class="comment">// Sender channel internally dropped or timeout, both should log failure which
                 // will negatively score the peer, but not drop yet.
                 </span>peer_manager.log_failure(peer_id, res_duration).<span class="kw">await</span>;
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Timeout: ChainExchange Request to {peer_id}&quot;</span>);
+                <span class="macro">debug!</span>(<span class="string">&quot;Timeout: ChainExchange Request to {peer_id}&quot;</span>);
                 <span class="prelude-val">Err</span>(<span class="macro">format!</span>(<span class="string">&quot;Chain exchange request to {peer_id} timed out&quot;</span>))
             }
         }

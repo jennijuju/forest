@@ -240,8 +240,8 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
-<span class="kw">use </span>log::error;
 <span class="kw">use </span>serde::Serialize;
+<span class="kw">use </span>tracing::error;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">use </span><span class="self">self</span>::{
     archive_cmd::ArchiveCommands, attach_cmd::AttachCommand, auth_cmd::AuthCommands,

@@ -67,19 +67,17 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
+</span><span class="kw">use </span><span class="kw">crate</span>::utils::io::WithProgress;
+<span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
 <span class="kw">use </span>futures::TryStreamExt;
-
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::WithProgress;
-<span class="kw">use </span>log::info;
 <span class="kw">use </span>std::io::ErrorKind;
 <span class="kw">use </span>tap::Pipe;
 <span class="kw">use </span>tokio::io::{AsyncBufReadExt, AsyncRead};
 <span class="kw">use </span>tokio_util::either::Either::{Left, Right};
+<span class="kw">use </span>tracing::info;
 <span class="kw">use </span>url::Url;
 
 <span class="kw">use </span>once_cell::sync::Lazy;

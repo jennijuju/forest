@@ -335,7 +335,7 @@
         <span class="prelude-val">Ok</span>(r) =&gt; r,
         <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
             <span class="kw">let </span>err = io::Error::new(io::ErrorKind::Other, <span class="string">&quot;read_and_decode timeout&quot;</span>);
-            <span class="macro">log::warn!</span>(<span class="string">&quot;{err}&quot;</span>);
+            <span class="macro">tracing::warn!</span>(<span class="string">&quot;{err}&quot;</span>);
             <span class="prelude-val">Err</span>(err)
         }
     }
