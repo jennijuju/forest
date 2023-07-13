@@ -261,10 +261,13 @@ you obtained in the previous step)</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
 t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 </code></pre>
-<p>Fund it using the
-<a href="https://faucet.calibration.fildev.network/funds.html">faucet</a>. You can verify
-it was funded after a few minutes in <a href="https://calibration.filscan.io/">Filscan</a>
-by pasting the Message ID obtained from the faucet. Example from
+<p>You can fund your wallet using this
+<a href="https://faucet.calibration.fildev.network/funds.html">faucet</a>. If this faucet
+is unavailable or does not work, there is an
+<a href="https://faucet.triangleplatform.com/filecoin/calibration">alternative faucet</a>.
+You can verify your wallet was funded after a few minutes in
+<a href="https://calibration.filscan.io/">Filscan</a> by pasting the Message ID obtained
+from the faucet. Example from
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.</p>
 <p>Verify that your account has 100 FIL . The result is in <code>attoFIL</code>.</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i

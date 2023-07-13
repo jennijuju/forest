@@ -277,36 +277,61 @@ admin token can also be set using <code>--token</code> flag:</p>
 <p>For sending Filecoin tokens, the Forest daemon must be running. You can do so by
 running:</p>
 <p><code>forest --chain calibnet</code></p>
+<p>If your wallet is empty, you can fund your wallet using this
+<a href="https://faucet.calibration.fildev.network/funds.html">faucet</a>. If this faucet
+is unavailable or does not work, there is an
+<a href="https://faucet.triangleplatform.com/filecoin/calibration">alternative faucet</a>.
+You can verify your wallet was funded after a few minutes in
+<a href="https://calibration.filscan.io/">Filscan</a> by pasting the Message ID obtained
+from the faucet. Example from
+<a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.</p>
 <p>Next, send Filecoin tokens to a wallet address:</p>
-<p><code>forest-cli --token &lt;admin_token&gt; send &lt;wallet-address&gt; &lt;amount in attoFIL&gt;</code></p>
-<p>where 1 attoFIL = $10^{−18}$ FIL.</p>
+<p><code>forest-cli --token &lt;admin_token&gt; send &lt;wallet-address&gt; &lt;amount&gt;</code></p>
+<p>where <code>&lt;amount&gt;</code> is an amount specified in any SI units; this field is
+case-sensitive and can be specified in either short or long form (e.g., <code>mFIL</code>
+or <code>milliFIL</code>) in the range from <code>quetta</code> to <code>quecto</code>. Note that the default
+unit (if no unit is specified) is <code>FIL</code>.</p>
 <h2 id="wallet"><a class="header" href="#wallet">Wallet</a></h2>
 <p>Filecoin wallets are stored under the Forest data directory (e.g.,
 <code>~/.local/share/forest</code> in the case of Linux) in a <code>keystore</code> file.</p>
 <p>All wallet commands require write permissions and an admin token (<code>--token</code>) to
 interact with the keystore. The admin token can be retrieved from forest startup
-logs or by running it with <code>--save-token &lt;PATH&gt;</code>.</p>
-<p>Balance Retrieve the FIL balance of a given address Usage:
-<code>forest-cli wallet balance &lt;address&gt;</code></p>
-<p>Default Get the default, persisted address from the keystore Usage:
-<code>forest-cli wallet default</code></p>
-<p>Has Check if an address exists in the keystore shows true/false if exists or
-doesn't Usage: <code>forest-cli wallet has &lt;address&gt;</code></p>
-<p>List Display the keys in the keystore Usage: <code>forest-cli wallet list</code></p>
-<p>New Create a new wallet The signature type can either be secp256k1 or bls.
-Defaults to use bls Usage: <code>forest-cli wallet new &lt;bls/secp256k1&gt;</code></p>
-<p>Set-default Set an address to be the default address of the keystore Usage:
-<code>forest-cli wallet set-default &lt;address&gt;</code></p>
-<p>Import Import a private key to the keystore and create a new address. The
-default format for importing keys is hex encoded JSON. Use the <code>export</code> command
-to get formatted keys for importing. Usage:
-<code>forest-cli wallet import &lt;hex encoded json key&gt;</code></p>
-<p>Export Export a key by address. Use a wallet address to export a key. Returns a
+logs or by including the flag <code>--save-token &lt;PATH&gt;</code> during <code>forest</code> invocation.</p>
+<h3 id="balance"><a class="header" href="#balance">Balance:</a></h3>
+<p>Retrieve the FIL balance of a given address. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet balance &lt;address&gt;</code></p>
+<h3 id="default"><a class="header" href="#default">Default:</a></h3>
+<p>Get the default, persisted address from the keystore. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet default</code></p>
+<h3 id="has"><a class="header" href="#has">Has:</a></h3>
+<p>Check if an address exists in the keystore. Outputs <code>true</code> if address exists and
+<code>false</code> if address does not exist. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet has &lt;address&gt;</code></p>
+<h3 id="list"><a class="header" href="#list">List:</a></h3>
+<p>Display the keys in the keystore. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet list</code></p>
+<h3 id="new"><a class="header" href="#new">New:</a></h3>
+<p>Create a new wallet. The signature type can either be secp256k1 or bls. Defaults
+to use secp256k1. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet new [ bls | secp256k1 ]</code></p>
+<h3 id="set-default"><a class="header" href="#set-default">Set-default:</a></h3>
+<p>Set an address to be the default address of the keystore. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet set-default &lt;address&gt;</code></p>
+<h3 id="export"><a class="header" href="#export">Export:</a></h3>
+<p>Export a key by address. Use a wallet address to export a key. Returns a
 formatted key to be used to import on another node, or into a new keystore.
-Usage: forest-cli wallet export <address></p>
-<p>Sign Use an address to sign a vector of bytes Usage:
-<code>forest-cli wallet sign -m &lt;hex message&gt; -a &lt;address&gt;</code></p>
-<p>Verify Verify the message's integrity with an address and signature Usage:
+Usage: <code>forest-cli --token &lt;admin_token&gt; wallet export &lt;address&gt;</code></p>
+<h3 id="import"><a class="header" href="#import">Import:</a></h3>
+<p>Import a file containing a private key to the keystore and create a new address.
+The default format for importing keys is hex encoded JSON. Use the <code>export</code>
+command to get formatted keys for importing. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet import &lt;PATH&gt;</code></p>
+<h3 id="sign"><a class="header" href="#sign">Sign:</a></h3>
+<p>Use an address to sign a vector of bytes. Usage:
+<code>forest-cli --token &lt;admin_token&gt; wallet sign -m &lt;hex message&gt; -a &lt;address&gt;</code></p>
+<h3 id="verify"><a class="header" href="#verify">Verify:</a></h3>
+<p>Verify the message's integrity with an address and signature. Outputs <code>true</code> if
+signature verifies message integrity, otherwise <code>false</code>. Usage:
 <code>forest-cli wallet verify -m &lt;hex message&gt; -a &lt;address&gt; -s &lt;signature&gt;</code></p>
 <h2 id="chain-sync"><a class="header" href="#chain-sync">Chain-Sync</a></h2>
 <p>The chain-sync CLI can mark blocks to never be synced, provide information about
@@ -461,10 +486,13 @@ you obtained in the previous step)</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
 t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 </code></pre>
-<p>Fund it using the
-<a href="https://faucet.calibration.fildev.network/funds.html">faucet</a>. You can verify
-it was funded after a few minutes in <a href="https://calibration.filscan.io/">Filscan</a>
-by pasting the Message ID obtained from the faucet. Example from
+<p>You can fund your wallet using this
+<a href="https://faucet.calibration.fildev.network/funds.html">faucet</a>. If this faucet
+is unavailable or does not work, there is an
+<a href="https://faucet.triangleplatform.com/filecoin/calibration">alternative faucet</a>.
+You can verify your wallet was funded after a few minutes in
+<a href="https://calibration.filscan.io/">Filscan</a> by pasting the Message ID obtained
+from the faucet. Example from
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.</p>
 <p>Verify that your account has 100 FIL . The result is in <code>attoFIL</code>.</p>
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
@@ -524,9 +552,7 @@ for interacting with the Filecoin JSON-RPC API.</p>
 Forest node.</p>
 <p>Like for some other <code>forest-cli</code> subcommands you will need to pass an admin
 <code>--token</code> given what endpoints you will call.</p>
-<p>For a description of different options please refer to the developer
-documentation
-<a href="https://github.com/ChainSafe/forest/blob/main/documentation/developer_documentation/CLI.md#cli">CLI page</a>.</p>
+<p>For a description of different options please refer to the <a href="./cli.html">CLI page</a>.</p>
 <h2 id="interactive-use"><a class="header" href="#interactive-use">Interactive Use</a></h2>
 <p>First start Forest node inside another terminal:</p>
 <pre><code class="language-bash">forest --chain calibnet
