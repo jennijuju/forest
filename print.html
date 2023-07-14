@@ -444,6 +444,8 @@ long running forest node by doing <code>sudo sysctl -w vm.swappiness=[n]</code>.
 # cli
 ❯ docker run --init -it --rm --entrypoint forest-cli ghcr.io/chainsafe/forest:latest --help
 </code></pre>
+<p>Also see the <a href="./cli.html">CLI documentation</a> for more details about commands and
+their usage.</p>
 <h3 id="create-a-forest-node-running-calibration-network-then-list-all-connected-peers"><a class="header" href="#create-a-forest-node-running-calibration-network-then-list-all-connected-peers">Create a Forest node running calibration network. Then list all connected peers.</a></h3>
 <pre><code class="language-shell">❯ docker run --init -it --rm --name forest ghcr.io/chainsafe/forest:latest --chain calibnet --auto-download-snapshot
 </code></pre>
@@ -502,8 +504,9 @@ from the faucet. Example from
 <pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
 t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 </code></pre>
-<p>Send 10 FIL from the original wallet to the new one</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN send --from t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca 10000000000000000000
+<p>Send 10 FIL from the original wallet to the new one (default unit for the amount
+in send command is FIL).</p>
+<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN send --from t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca 10
 </code></pre>
 <p>Verify the balance of the new address.
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebymw25tedmec4xnwmf7fcrt64qvfbbuacbx6lnhyrcbfv3rgkn2a">Sample transaction</a>

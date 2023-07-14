@@ -644,6 +644,40 @@
 <a href="#644" id="644">644</a>
 <a href="#645" id="645">645</a>
 <a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -826,6 +860,31 @@
             .transpose()<span class="question-mark">?</span>)
     }
 
+    <span class="doccomment">/// Constructs and returns a full tipset if messages from storage exists
+    </span><span class="kw">pub fn </span>fill_from_blockstore(<span class="kw-2">&amp;</span><span class="self">self</span>, store: <span class="kw">impl </span>Blockstore) -&gt; <span class="prelude-ty">Option</span>&lt;FullTipset&gt; {
+        <span class="comment">// Find tipset messages. If any are missing, return `None`.
+        </span><span class="kw">let </span>blocks = <span class="self">self
+            </span>.blocks()
+            .iter()
+            .cloned()
+            .map(|header| {
+                <span class="kw">let </span>(bls_messages, secp_messages) =
+                    <span class="kw">crate</span>::chain::store::block_messages(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>header).ok()<span class="question-mark">?</span>;
+                <span class="prelude-val">Some</span>(Block {
+                    header,
+                    bls_messages,
+                    secp_messages,
+                })
+            })
+            .collect::&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
+
+        <span class="comment">// the given tipset has already been verified, so this cannot fail
+        </span><span class="prelude-val">Some</span>(
+            FullTipset::new(blocks)
+                .expect(<span class="string">&quot;block headers have already been verified so this check cannot fail&quot;</span>),
+        )
+    }
+
     <span class="doccomment">/// Returns epoch of the tipset.
     </span><span class="kw">pub fn </span>epoch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChainEpoch {
         <span class="self">self</span>.min_ticket_block().epoch()
@@ -902,6 +961,15 @@
             <span class="macro">info!</span>(<span class="string">&quot;Weight tie left unbroken, default to {}&quot;</span>, other.key());
         }
         broken
+    }
+    <span class="doccomment">/// Returns an iterator of all tipsets
+    </span><span class="kw">pub fn </span>chain(<span class="self">self</span>, store: <span class="kw">impl </span>Blockstore) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Tipset&gt; {
+        itertools::unfold(<span class="prelude-val">Some</span>(<span class="self">self</span>), <span class="kw">move </span>|tipset| {
+            tipset.take().map(|child| {
+                <span class="kw-2">*</span>tipset = Tipset::load(<span class="kw-2">&amp;</span>store, child.parents()).ok().flatten();
+                child
+            })
+        })
     }
 }
 
