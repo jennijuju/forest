@@ -256,12 +256,102 @@
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::car_backed_blockstore::CarBackedBlockstore;
+<span class="kw">use </span><span class="kw">crate</span>::car_backed_blockstore::{
+    <span class="self">self</span>, CompressedCarV1BackedBlockstore, MaxFrameSizeExceeded, UncompressedCarV1BackedBlockstore,
+};
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
@@ -272,12 +362,15 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, progress_ops::get_progress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
-<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
+<span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
+<span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>std::io::BufReader;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>tempfile::TempDir;
+<span class="kw">use </span>tracing::info;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>SnapshotCommands {
@@ -309,8 +402,19 @@
         <span class="doccomment">/// Number of block headers to validate from the tip
         </span><span class="attr">#[arg(long, default_value = <span class="string">&quot;2000&quot;</span>)]
         </span>recent_stateroots: i64,
-        <span class="doccomment">/// Path to an uncompressed snapshot (CAR)
+        <span class="doccomment">/// Path to a snapshot CAR, which may be zstd compressed
         </span>snapshot: PathBuf,
+    },
+    <span class="doccomment">/// Make this snapshot suitable for use as a compressed car-backed blockstore.
+    </span>Compress {
+        <span class="doccomment">/// CAR file. May be a zstd-compressed
+        </span>source: PathBuf,
+        destination: PathBuf,
+        <span class="attr">#[arg(hide = <span class="bool-val">true</span>, long, default_value_t = <span class="number">3</span>)]
+        </span>compression_level: u16,
+        <span class="doccomment">/// End zstd frames after they exceed this length
+        </span><span class="attr">#[arg(hide = <span class="bool-val">true</span>, long, default_value_t = <span class="number">8000usize</span>.next_power_of_two())]
+        </span>frame_size: usize,
     },
 }
 
@@ -400,20 +504,92 @@
             <span class="self">Self</span>::Validate {
                 recent_stateroots,
                 snapshot,
-            } =&gt; validate(<span class="kw-2">&amp;</span>config, recent_stateroots, snapshot).<span class="kw">await</span>,
+            } =&gt; {
+                <span class="comment">// this is all blocking...
+                </span><span class="kw">use </span>std::fs::File;
+                <span class="kw">match </span>CompressedCarV1BackedBlockstore::new(BufReader::new(File::open(snapshot)<span class="question-mark">?</span>)) {
+                    <span class="prelude-val">Ok</span>(store) =&gt; {
+                        validate_with_blockstore(
+                            <span class="kw-2">&amp;</span>config,
+                            store.roots(),
+                            Arc::new(store),
+                            recent_stateroots,
+                        )
+                        .<span class="kw">await
+                    </span>}
+                    <span class="prelude-val">Err</span>(error)
+                        <span class="kw">if </span>error.kind() == std::io::ErrorKind::Other
+                            &amp;&amp; error.get_ref().is_some_and(|inner| {
+                                inner.downcast_ref::&lt;MaxFrameSizeExceeded&gt;().is_some()
+                            }) =&gt;
+                    {
+                        <span class="macro">bail!</span>(<span class="string">&quot;The provided compressed car file cannot be used as a blockstore. Prepare it using `forest snapshot compress ...`&quot;</span>)
+                    }
+                    <span class="prelude-val">Err</span>(error) =&gt; {
+                        <span class="macro">info!</span>(%error, <span class="string">&quot;file may be uncompressed, retrying as a plain CAR...&quot;</span>);
+                        <span class="kw">let </span>store = UncompressedCarV1BackedBlockstore::new(File::open(snapshot)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+                        validate_with_blockstore(
+                            <span class="kw-2">&amp;</span>config,
+                            store.roots(),
+                            Arc::new(store),
+                            recent_stateroots,
+                        )
+                        .<span class="kw">await
+                    </span>}
+                }
+            }
+            <span class="self">Self</span>::Compress {
+                source,
+                destination,
+                compression_level,
+                frame_size,
+            } =&gt; {
+                <span class="comment">// We&#39;ve got a binary blob, and we&#39;re not exactly sure if it&#39;s compressed, and we can&#39;t just peek the header:
+                // For example, the zstsd magic bytes are a valid varint frame prefix:
+                </span><span class="macro">assert_eq!</span>(
+                    unsigned_varint::io::read_usize(<span class="kw-2">&amp;</span>[<span class="number">0xFD</span>, <span class="number">0x2F</span>, <span class="number">0xB5</span>, <span class="number">0x28</span>][..]).unwrap(),
+                    <span class="number">6141</span>,
+                );
+                <span class="comment">// so the best thing to do is to just try compressed and then uncompressed.
+                </span><span class="kw">use </span>car_backed_blockstore::zstd_compress_varint_manyframe;
+                <span class="kw">use </span>tokio::fs::File;
+                <span class="kw">match </span>zstd_compress_varint_manyframe(
+                    async_compression::tokio::bufread::ZstdDecoder::new(tokio::io::BufReader::new(
+                        File::open(source).<span class="kw">await</span><span class="question-mark">?</span>,
+                    )),
+                    File::create(destination).<span class="kw">await</span><span class="question-mark">?</span>,
+                    <span class="kw-2">*</span>frame_size,
+                    <span class="kw-2">*</span>compression_level,
+                )
+                .<span class="kw">await
+                </span>{
+                    <span class="prelude-val">Ok</span>(_num_frames) =&gt; <span class="prelude-val">Ok</span>(()),
+                    <span class="prelude-val">Err</span>(error) =&gt; {
+                        <span class="macro">info!</span>(%error, <span class="string">&quot;file may be uncompressed, retrying as a plain CAR...&quot;</span>);
+                        zstd_compress_varint_manyframe(
+                            File::open(source).<span class="kw">await</span><span class="question-mark">?</span>,
+                            File::create(destination).<span class="kw">await</span><span class="question-mark">?</span>,
+                            <span class="kw-2">*</span>frame_size,
+                            <span class="kw-2">*</span>compression_level,
+                        )
+                        .<span class="kw">await</span><span class="question-mark">?</span>;
+                        <span class="prelude-val">Ok</span>(())
+                    }
+                }
+            }
         }
     }
 }
 
-<span class="kw">async fn </span>validate(
+<span class="kw">async fn </span>validate_with_blockstore&lt;BlockstoreT&gt;(
     config: <span class="kw-2">&amp;</span>Config,
+    roots: Vec&lt;Cid&gt;,
+    store: Arc&lt;BlockstoreT&gt;,
     recent_stateroots: <span class="kw-2">&amp;</span>i64,
-    snapshot: <span class="kw-2">&amp;</span>PathBuf,
-) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>store = Arc::new(
-        CarBackedBlockstore::new(std::fs::File::open(snapshot)<span class="question-mark">?</span>)
-            .context(<span class="string">&quot;couldn&#39;t read input CAR file - is it compressed?&quot;</span>)<span class="question-mark">?</span>,
-    );
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;
+<span class="kw">where
+    </span>BlockstoreT: Blockstore + Send + Sync,
+{
     <span class="kw">let </span>genesis = read_genesis_header(
         config.client.genesis_file.as_ref(),
         config.chain.genesis_bytes(),
@@ -428,7 +604,7 @@
         TempDir::new()<span class="question-mark">?</span>.path(),
     )<span class="question-mark">?</span>);
 
-    <span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(chain_store.db.roots()))<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(roots))<span class="question-mark">?</span>;
 
     validate_links_and_genesis_traversal(
         <span class="kw-2">&amp;</span>chain_store,
@@ -452,7 +628,7 @@
     network: <span class="kw-2">&amp;</span>NetworkChain,
 ) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
-    </span>DB: fvm_ipld_blockstore::Blockstore + Send + Sync,
+    </span>DB: Blockstore + Send + Sync,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
     <span class="kw">let </span>upto = ts.epoch() - recent_stateroots;

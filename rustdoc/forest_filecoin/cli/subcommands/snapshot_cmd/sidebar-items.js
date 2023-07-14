@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SnapshotCommands"],"fn":["validate","validate_links_and_genesis_traversal"],"static":["DEFAULT_VALUE"]};
+window.SIDEBAR_ITEMS = {"enum":["SnapshotCommands"],"fn":["validate_links_and_genesis_traversal","validate_with_blockstore"],"static":["CALLSITE","DEFAULT_VALUE"]};
