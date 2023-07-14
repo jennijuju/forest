@@ -1658,6 +1658,10 @@
 <a href="#1658" id="1658">1658</a>
 <a href="#1659" id="1659">1659</a>
 <a href="#1660" id="1660">1660</a>
+<a href="#1661" id="1661">1661</a>
+<a href="#1662" id="1662">1662</a>
+<a href="#1663" id="1663">1663</a>
+<a href="#1664" id="1664">1664</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1687,8 +1691,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::WithProgressRaw;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>futures::stream::TryStreamExt <span class="kw">as _</span>;
-<span class="kw">use </span>futures::{stream, stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
+<span class="kw">use </span>futures::{stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>nonempty::NonEmpty;
@@ -2674,24 +2677,12 @@
     })
 }
 
-<span class="doccomment">/// Ask peers for the [`Message`]s that these [`Tipset`]s should contain.
-/// Requests covering too many tipsets may be rejected. As of 2023-07-13,
-/// requesting for 8 tipsets works fine but requesting for 64 is flaky.
-</span><span class="kw">async fn </span>fetch_batch&lt;DB: Blockstore, C: Consensus&gt;(
-    batch: Vec&lt;Arc&lt;Tipset&gt;&gt;,
+<span class="kw">async fn </span>fetch_batch&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+    batch: <span class="kw-2">&amp;</span>[Arc&lt;Tipset&gt;],
     network: <span class="kw-2">&amp;</span>SyncNetworkContext&lt;DB&gt;,
-    db: <span class="kw-2">&amp;</span>DB,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;FullTipset&gt;, TipsetRangeSyncerError&lt;C&gt;&gt; {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(cached) = batch
-        .iter()
-        .map(|tipset| tipset.fill_from_blockstore(db))
-        .collect()
-    {
-        <span class="comment">// user has already seeded the database with this information (or we&#39;re
-        // recovering from e.g a crash)
-        </span><span class="kw">return </span><span class="prelude-val">Ok</span>(cached);
-    }
-
+    chainstore: <span class="kw-2">&amp;</span>ChainStore&lt;DB&gt;,
+    s: <span class="kw-2">&amp;</span>flume::Sender&lt;FullTipset&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&lt;C&gt;&gt; {
     <span class="comment">// Tipsets in `batch` are already in chronological order
     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(head) = batch.last() {
         <span class="kw">let </span>epoch = head.epoch();
@@ -2704,34 +2695,30 @@
             .<span class="kw">await
             </span>.map_err(TipsetRangeSyncerError::NetworkMessageQueryFailed)<span class="question-mark">?</span>;
 
-        <span class="comment">// inflate our tipsets with the messages from the wire format
-        </span>compacted_messages
-            .into_iter()
-            .rev()
-            .zip(batch.iter())
-            .map(|(messages, tipset)| {
-                <span class="comment">// Construct full tipset from fetched messages
-                </span><span class="kw">let </span>bundle = TipsetBundle {
-                    blocks: tipset.blocks().to_vec(),
-                    messages: <span class="prelude-val">Some</span>(messages),
-                };
+        <span class="comment">// Since the bundle only has messages, we have to put the headers in them
+        </span><span class="kw">for </span>(messages, tipset) <span class="kw">in </span>compacted_messages.into_iter().rev().zip(batch.iter()) {
+            <span class="comment">// Construct full tipset from fetched messages
+            </span><span class="kw">let </span>bundle = TipsetBundle {
+                blocks: tipset.blocks().to_vec(),
+                messages: <span class="prelude-val">Some</span>(messages),
+            };
 
-                <span class="kw">let </span>full_tipset = FullTipset::try_from(<span class="kw-2">&amp;</span>bundle)
-                    .map_err(TipsetRangeSyncerError::GeneratingTipsetFromTipsetBundle)<span class="question-mark">?</span>;
+            <span class="kw">let </span>full_tipset = FullTipset::try_from(<span class="kw-2">&amp;</span>bundle)
+                .map_err(TipsetRangeSyncerError::GeneratingTipsetFromTipsetBundle)<span class="question-mark">?</span>;
 
-                <span class="comment">// Persist the messages in the store
-                </span><span class="kw">if let </span><span class="prelude-val">Some</span>(m) = bundle.messages {
-                    <span class="kw">crate</span>::chain::persist_objects(db, <span class="kw-2">&amp;</span>m.bls_msgs)<span class="question-mark">?</span>;
-                    <span class="kw">crate</span>::chain::persist_objects(db, <span class="kw-2">&amp;</span>m.secp_msgs)<span class="question-mark">?</span>;
-                } <span class="kw">else </span>{
-                    <span class="macro">warn!</span>(<span class="string">&quot;ChainExchange request for messages returned null messages&quot;</span>);
-                }
-                <span class="prelude-val">Ok</span>(full_tipset)
-            })
-            .collect()
-    } <span class="kw">else </span>{
-        <span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[])
+            <span class="comment">// Persist the messages in the store
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(m) = bundle.messages {
+                <span class="kw">crate</span>::chain::persist_objects(chainstore.blockstore(), <span class="kw-2">&amp;</span>m.bls_msgs)<span class="question-mark">?</span>;
+                <span class="kw">crate</span>::chain::persist_objects(chainstore.blockstore(), <span class="kw-2">&amp;</span>m.secp_msgs)<span class="question-mark">?</span>;
+            } <span class="kw">else </span>{
+                <span class="macro">warn!</span>(<span class="string">&quot;ChainExchange request for messages returned null messages&quot;</span>);
+            }
+
+            s.send_async(full_tipset).<span class="kw">await</span><span class="question-mark">?</span>;
+        }
     }
+
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Going forward along the tipsets, try to load the messages in them from the
@@ -2749,40 +2736,61 @@
     genesis: <span class="kw-2">&amp;</span>Tipset,
     invalid_block_strategy: InvalidBlockStrategy,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&lt;C&gt;&gt; {
+    <span class="kw">let </span>task_chainstore = chainstore.clone();
     <span class="kw">let </span>request_window = state_manager.chain_config().request_window;
-    <span class="kw">let </span>db = chainstore.blockstore();
+    <span class="comment">// Spawn a background task for the chain_exchange message requests
 
-    <span class="comment">// Stream through the tipsets from lowest epoch to highest epoch
-    </span>stream::iter(tipsets.into_iter().rev())
-        <span class="comment">// Chunk tipsets in batches (default batch size is 8)
-        </span>.chunks(request_window)
-        <span class="comment">// Request batches from the p2p network
-        </span>.map(|batch| fetch_batch::&lt;<span class="kw">_</span>, C&gt;(batch, <span class="kw-2">&amp;</span>network, db))
-        <span class="comment">// run 64 batches concurrently
-        </span>.buffered(<span class="number">64</span>)
-        <span class="comment">// validate each full tipset in each batch
-        </span>.try_for_each(|batch| <span class="kw">async </span>{
-            <span class="kw">for </span>full_tipset <span class="kw">in </span>batch {
-                <span class="kw">let </span>current_epoch = full_tipset.epoch();
-                <span class="kw">let </span>timer = metrics::TIPSET_PROCESSING_TIME.start_timer();
-                validate_tipset::&lt;<span class="kw">_</span>, C&gt;(
-                    consensus.clone(),
-                    state_manager.clone(),
-                    <span class="kw-2">&amp;</span>chainstore,
-                    bad_block_cache,
-                    full_tipset.clone(),
-                    genesis,
-                    invalid_block_strategy,
-                )
-                .<span class="kw">await</span><span class="question-mark">?</span>;
-                drop(timer);
-                chainstore.set_heaviest_tipset(Arc::new(full_tipset.into_tipset()))<span class="question-mark">?</span>;
-                tracker.write().set_epoch(current_epoch);
-                metrics::LAST_VALIDATED_TIPSET_EPOCH.set(current_epoch <span class="kw">as </span>u64);
+    </span><span class="kw">let </span>(s, r) = flume::bounded(request_window * <span class="number">4</span>);
+    <span class="kw">let </span>handle = tokio::task::spawn(<span class="kw">async move </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>batch: Vec&lt;Arc&lt;Tipset&gt;&gt; = Vec::with_capacity(request_window);
+
+        <span class="comment">// Visit tipsets in chronological order
+        </span><span class="kw">for </span>tipset <span class="kw">in </span>tipsets.into_iter().rev() {
+            <span class="comment">// If the current tipset batch is empty and we already have the
+            // messages for the current tipset, skip the download and send
+            // it directly to the validator.
+            </span><span class="kw">if </span>batch.is_empty() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(full_tipset) = task_chainstore.fill_tipset(<span class="kw-2">&amp;</span>tipset) {
+                    s.send_async(full_tipset).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">continue</span>;
+                }
             }
-            <span class="prelude-val">Ok</span>(())
-        })
-        .<span class="kw">await
+
+            <span class="comment">// Request tipset messages via chain_exchange
+            </span>batch.push(tipset);
+            <span class="kw">if </span>batch.len() == request_window {
+                fetch_batch(<span class="kw-2">&amp;</span>batch, <span class="kw-2">&amp;</span>network, <span class="kw-2">&amp;</span>task_chainstore, <span class="kw-2">&amp;</span>s).<span class="kw">await</span><span class="question-mark">?</span>;
+                batch.clear();
+            }
+        }
+        <span class="comment">// Fetch last batch
+        </span>fetch_batch(<span class="kw-2">&amp;</span>batch, <span class="kw-2">&amp;</span>network, <span class="kw-2">&amp;</span>task_chainstore, <span class="kw-2">&amp;</span>s).<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(())
+    });
+
+    <span class="comment">// Validation loop
+    </span><span class="kw">while let </span><span class="prelude-val">Ok</span>(full_tipset) = r.recv_async().<span class="kw">await </span>{
+        <span class="kw">let </span>current_epoch = full_tipset.epoch();
+        {
+            <span class="kw">let </span>_timer = metrics::TIPSET_PROCESSING_TIME.start_timer();
+            validate_tipset::&lt;<span class="kw">_</span>, C&gt;(
+                consensus.clone(),
+                state_manager.clone(),
+                <span class="kw-2">&amp;</span>chainstore,
+                bad_block_cache,
+                full_tipset.clone(),
+                genesis,
+                invalid_block_strategy,
+            )
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        }
+        chainstore.set_heaviest_tipset(Arc::new(full_tipset.into_tipset()))<span class="question-mark">?</span>;
+        tracker.write().set_epoch(current_epoch);
+        metrics::LAST_VALIDATED_TIPSET_EPOCH.set(current_epoch <span class="kw">as </span>u64);
+    }
+
+    handle.<span class="kw">await</span><span class="question-mark">?
 </span>}
 
 <span class="doccomment">/// Validates full blocks in the tipset in parallel (since the messages are not
