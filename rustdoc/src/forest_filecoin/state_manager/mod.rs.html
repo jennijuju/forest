@@ -1343,12 +1343,6 @@
 <a href="#1343" id="1343">1343</a>
 <a href="#1344" id="1344">1344</a>
 <a href="#1345" id="1345">1345</a>
-<a href="#1346" id="1346">1346</a>
-<a href="#1347" id="1347">1347</a>
-<a href="#1348" id="1348">1348</a>
-<a href="#1349" id="1349">1349</a>
-<a href="#1350" id="1350">1350</a>
-<a href="#1351" id="1351">1351</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2601,7 +2595,9 @@
     /// This function is blocking, but we do observe threads waiting and synchronizing.
     /// This is suspected to be due something in the VM or its `WASM` runtime.
     </span><span class="attr">#[tracing::instrument(skip(<span class="self">self</span>))]
-    </span><span class="kw">pub fn </span>validate_range(<span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;, epochs: RangeInclusive&lt;i64&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">pub fn </span>validate(<span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;, epochs: RangeInclusive&lt;i64&gt;) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="kw">use </span>rayon::iter::ParallelIterator <span class="kw">as _</span>;
+
         <span class="kw">let </span>heaviest = <span class="self">self</span>.cs.heaviest_tipset();
         <span class="kw">let </span>heaviest_epoch = heaviest.epoch();
         <span class="kw">let </span>end = <span class="self">self
@@ -2618,18 +2614,10 @@
             <span class="comment">// if this has parents, unfold them in the next iteration
             </span><span class="kw-2">*</span>tipset = <span class="self">self</span>.cs.tipset_from_keys(child.parents()).ok();
             <span class="prelude-val">Some</span>(child)
-        })
-        .take_while(|tipset| tipset.epoch() &gt;= <span class="kw-2">*</span>epochs.start());
+        });
 
-        <span class="self">self</span>.validate_tipsets(tipsets)
-    }
-
-    <span class="kw">pub fn </span>validate_tipsets&lt;T&gt;(<span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;, tipsets: T) -&gt; anyhow::Result&lt;()&gt;
-    <span class="kw">where
-        </span>T: Iterator&lt;Item = Arc&lt;Tipset&gt;&gt; + Send,
-    {
-        <span class="kw">use </span>rayon::iter::ParallelIterator <span class="kw">as _</span>;
         tipsets
+            .take_while(|tipset| tipset.epoch() &gt;= <span class="kw-2">*</span>epochs.start())
             .tuple_windows()
             .par_bridge()
             .try_for_each(|(child, parent)| {

@@ -499,8 +499,6 @@
 <a href="#499" id="499">499</a>
 <a href="#500" id="500">500</a>
 <a href="#501" id="501">501</a>
-<a href="#502" id="502">502</a>
-<a href="#503" id="503">503</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">/// In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -833,8 +831,6 @@
 
 <span class="doccomment">/// State API
 </span><span class="kw">pub mod </span>state_api {
-    <span class="kw">use </span>std::path::PathBuf;
-
     <span class="kw">use </span><span class="kw">crate</span>::blocks::tipset_keys_json::TipsetKeysJson;
     <span class="kw">use </span><span class="kw">crate</span>::json::{
         address::json::AddressJson, cid::CidJson, message::json::MessageJson,
@@ -880,7 +876,7 @@
     <span class="kw">pub type </span>StateWaitMsgResult = MessageLookup;
 
     <span class="kw">pub const </span>STATE_FETCH_ROOT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateFetchRoot&quot;</span>;
-    <span class="kw">pub type </span>StateFetchRootParams = (CidJson, <span class="prelude-ty">Option</span>&lt;PathBuf&gt;);
+    <span class="kw">pub type </span>StateFetchRootParams = (CidJson,);
     <span class="kw">pub type </span>StateFetchRootResult = String;
 }
 
