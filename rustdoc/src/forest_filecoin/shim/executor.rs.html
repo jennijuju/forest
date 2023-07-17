@@ -114,12 +114,10 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
-</span><span class="kw">use </span>std::borrow::Borrow;
 
-<span class="kw">use </span>fvm2::executor::ApplyRet <span class="kw">as </span>ApplyRet_v2;
+</span><span class="kw">use </span>fvm2::executor::ApplyRet <span class="kw">as </span>ApplyRet_v2;
 <span class="kw">use </span>fvm3::executor::ApplyRet <span class="kw">as </span>ApplyRet_v3;
 <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
 <span class="kw">use </span>fvm_shared2::receipt::Receipt <span class="kw">as </span>Receipt_v2;
@@ -157,15 +155,15 @@
 
     <span class="kw">pub fn </span>miner_tip(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
         <span class="kw">match </span><span class="self">self </span>{
-            ApplyRet::V2(v2) =&gt; v2.miner_tip.borrow().into(),
-            ApplyRet::V3(v3) =&gt; v3.miner_tip.borrow().into(),
+            ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.miner_tip).into(),
+            ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.miner_tip).into(),
         }
     }
 
     <span class="kw">pub fn </span>penalty(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TokenAmount {
         <span class="kw">match </span><span class="self">self </span>{
-            ApplyRet::V2(v2) =&gt; v2.penalty.borrow().into(),
-            ApplyRet::V3(v3) =&gt; v3.penalty.borrow().into(),
+            ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.penalty).into(),
+            ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.penalty).into(),
         }
     }
 

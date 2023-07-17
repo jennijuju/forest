@@ -431,7 +431,7 @@
             .export::&lt;<span class="kw">_</span>, Sha256&gt;(
                 <span class="kw-2">&amp;</span>start_ts,
                 recent_roots,
-                VoidAsyncWriter::default(),
+                VoidAsyncWriter,
                 <span class="bool-val">true</span>, <span class="comment">// `compressed` is always on
                 </span>skip_checksum,
             )

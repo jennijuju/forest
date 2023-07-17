@@ -200,9 +200,9 @@
 <span class="kw">impl</span>&lt;P, RQ, RS&gt; Default <span class="kw">for </span>CborRequestResponse&lt;P, RQ, RS&gt; {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            protocol: PhantomData::&lt;P&gt;::default(),
-            request: PhantomData::&lt;RQ&gt;::default(),
-            response: PhantomData::&lt;RS&gt;::default(),
+            protocol: PhantomData::&lt;P&gt;,
+            request: PhantomData::&lt;RQ&gt;,
+            response: PhantomData::&lt;RS&gt;,
         }
     }
 }
