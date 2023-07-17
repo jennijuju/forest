@@ -688,6 +688,14 @@
 <a href="#688" id="688">688</a>
 <a href="#689" id="689">689</a>
 <a href="#690" id="690">690</a>
+<a href="#691" id="691">691</a>
+<a href="#692" id="692">692</a>
+<a href="#693" id="693">693</a>
+<a href="#694" id="694">694</a>
+<a href="#695" id="695">695</a>
+<a href="#696" id="696">696</a>
+<a href="#697" id="697">697</a>
+<a href="#698" id="698">698</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -697,6 +705,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::cid::CidCborExt;
 <span class="kw">use </span>ahash::{HashSet, HashSetExt};
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
@@ -790,40 +799,6 @@
     }
 }
 
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>property_tests {
-    <span class="kw">use </span>quickcheck_macros::quickcheck;
-    <span class="kw">use </span>serde_json;
-
-    <span class="kw">use super</span>::{
-        tipset_json::{TipsetJson, TipsetJsonRef},
-        tipset_keys_json::TipsetKeysJson,
-        Tipset, TipsetKeys,
-    };
-
-    <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TipsetKeys {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-            <span class="self">Self </span>{
-                cids: Vec::arbitrary(g),
-            }
-        }
-    }
-
-    <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>tipset_keys_roundtrip(tipset_keys: TipsetKeys) {
-        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>TipsetKeysJson(tipset_keys.clone())).unwrap();
-        <span class="kw">let </span>parsed: TipsetKeysJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
-        <span class="macro">assert_eq!</span>(tipset_keys, parsed.<span class="number">0</span>);
-    }
-
-    <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>tipset_roundtrip(tipset: Tipset) {
-        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>TipsetJsonRef(<span class="kw-2">&amp;</span>tipset)).unwrap();
-        <span class="kw">let </span>parsed: TipsetJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>tipset, parsed.<span class="number">0</span>.as_ref());
-    }
-}
-
 <span class="kw">impl </span>From&lt;FullTipset&gt; <span class="kw">for </span>Tipset {
     <span class="kw">fn </span>from(full_tipset: FullTipset) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>key = full_tipset.key;
@@ -859,7 +834,8 @@
         })
     }
 
-    <span class="doccomment">/// Loads a tipset from memory given the tipset keys.
+    <span class="doccomment">/// Fetch a tipset from the blockstore. This call fails if the tipset
+    /// present but invalid. If the tipset is missing, None is returned.
     </span><span class="kw">pub fn </span>load(store: <span class="kw">impl </span>Blockstore, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Tipset&gt;&gt; {
         <span class="prelude-val">Ok</span>(tsk
             .cids()
@@ -868,6 +844,12 @@
             .collect::&lt;anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?
             </span>.map(Tipset::new)
             .transpose()<span class="question-mark">?</span>)
+    }
+
+    <span class="doccomment">/// Fetch a tipset from the blockstore. This calls fails if the tipset is
+    /// missing or invalid.
+    </span><span class="kw">pub fn </span>load_required(store: <span class="kw">impl </span>Blockstore, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; anyhow::Result&lt;Tipset&gt; {
+        Tipset::load(store, tsk)<span class="question-mark">?</span>.context(<span class="string">&quot;Required tipset missing from database&quot;</span>)
     }
 
     <span class="doccomment">/// Constructs and returns a full tipset if messages from storage exists
@@ -1206,6 +1188,40 @@
         }
         <span class="kw">let </span>TipsetDe { blocks, .. } = Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
         Tipset::new(blocks).map(Arc::new).map_err(de::Error::custom)
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>property_tests {
+    <span class="kw">use </span>quickcheck_macros::quickcheck;
+    <span class="kw">use </span>serde_json;
+
+    <span class="kw">use super</span>::{
+        tipset_json::{TipsetJson, TipsetJsonRef},
+        tipset_keys_json::TipsetKeysJson,
+        Tipset, TipsetKeys,
+    };
+
+    <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TipsetKeys {
+        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
+            <span class="self">Self </span>{
+                cids: Vec::arbitrary(g),
+            }
+        }
+    }
+
+    <span class="attr">#[quickcheck]
+    </span><span class="kw">fn </span>tipset_keys_roundtrip(tipset_keys: TipsetKeys) {
+        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>TipsetKeysJson(tipset_keys.clone())).unwrap();
+        <span class="kw">let </span>parsed: TipsetKeysJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
+        <span class="macro">assert_eq!</span>(tipset_keys, parsed.<span class="number">0</span>);
+    }
+
+    <span class="attr">#[quickcheck]
+    </span><span class="kw">fn </span>tipset_roundtrip(tipset: Tipset) {
+        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>TipsetJsonRef(<span class="kw-2">&amp;</span>tipset)).unwrap();
+        <span class="kw">let </span>parsed: TipsetJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
+        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>tipset, parsed.<span class="number">0</span>.as_ref());
     }
 }
 

@@ -296,7 +296,7 @@
 
         <span class="kw">let </span>(network_send, network_rx) = flume::bounded(<span class="number">5</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();
-        <span class="kw">let </span>db = MemoryDB::default();
+        <span class="kw">let </span>db = Arc::new(MemoryDB::default());
         <span class="kw">let </span>chain_config = Arc::new(ChainConfig::default());
 
         <span class="kw">let </span>genesis_header = BlockHeader::builder()
@@ -342,7 +342,7 @@
                 <span class="string">&quot;test&quot;</span>.to_string(),
                 mpool_network_send,
                 Default::default(),
-                Arc::clone(state_manager_for_thread.chain_config()),
+                state_manager_for_thread.chain_config(),
                 <span class="kw-2">&amp;mut </span>services,
             )
             .unwrap()

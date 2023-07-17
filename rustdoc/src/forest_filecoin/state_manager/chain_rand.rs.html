@@ -216,23 +216,13 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{io::Write, sync::Arc};
 
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconEntry, BeaconSchedule, DrandBeacon};
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
@@ -246,7 +236,7 @@
 <span class="doccomment">/// Allows for deriving the randomness from a particular tipset.
 </span><span class="kw">pub struct </span>ChainRand&lt;DB&gt; {
     chain_config: Arc&lt;ChainConfig&gt;,
-    blks: TipsetKeys,
+    tipset: Arc&lt;Tipset&gt;,
     cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
     beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
 }
@@ -255,7 +245,7 @@
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         ChainRand {
             chain_config: <span class="self">self</span>.chain_config.clone(),
-            blks: <span class="self">self</span>.blks.clone(),
+            tipset: Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.tipset),
             cs: <span class="self">self</span>.cs.clone(),
             beacon: <span class="self">self</span>.beacon.clone(),
         }
@@ -268,13 +258,13 @@
 {
     <span class="kw">pub fn </span>new(
         chain_config: Arc&lt;ChainConfig&gt;,
-        blks: TipsetKeys,
+        tipset: Arc&lt;Tipset&gt;,
         cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             chain_config,
-            blks,
+            tipset,
             cs,
             beacon,
         }
@@ -284,13 +274,12 @@
     /// `DomainSeparationTag`, `ChainEpoch`, Entropy from the ticket chain.
     </span><span class="kw">pub fn </span>get_chain_randomness(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
         pers: i64,
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
         lookback: bool,
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="kw">let </span>ts = <span class="self">self</span>.cs.tipset_from_keys(blocks)<span class="question-mark">?</span>;
+        <span class="kw">let </span>ts = Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.tipset);
 
         <span class="kw">if </span>round &gt; ts.epoch() {
             <span class="macro">bail!</span>(<span class="string">&quot;cannot draw randomness from the future&quot;</span>);
@@ -315,38 +304,35 @@
     <span class="doccomment">/// network version 13 onward
     </span><span class="kw">pub fn </span>get_chain_randomness_v2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
         pers: i64,
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_chain_randomness(blocks, pers, round, entropy, <span class="bool-val">false</span>)
+        <span class="self">self</span>.get_chain_randomness(pers, round, entropy, <span class="bool-val">false</span>)
     }
 
     <span class="doccomment">/// network version 13; without look-back
     </span><span class="kw">pub fn </span>get_beacon_randomness_v2(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
         pers: i64,
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_beacon_randomness(blocks, pers, round, entropy, <span class="bool-val">false</span>)
+        <span class="self">self</span>.get_beacon_randomness(pers, round, entropy, <span class="bool-val">false</span>)
     }
 
     <span class="doccomment">/// network version 14 onward
     </span><span class="kw">pub fn </span>get_beacon_randomness_v3(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
         pers: i64,
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
         <span class="kw">if </span>round &lt; <span class="number">0 </span>{
-            <span class="kw">return </span><span class="self">self</span>.get_beacon_randomness_v2(blocks, pers, round, entropy);
+            <span class="kw">return </span><span class="self">self</span>.get_beacon_randomness_v2(pers, round, entropy);
         }
 
-        <span class="kw">let </span>beacon_entry = <span class="self">self</span>.extract_beacon_entry_for_epoch(blocks, round)<span class="question-mark">?</span>;
+        <span class="kw">let </span>beacon_entry = <span class="self">self</span>.extract_beacon_entry_for_epoch(round)<span class="question-mark">?</span>;
         draw_randomness(beacon_entry.data(), pers, round, entropy)
     }
 
@@ -355,23 +341,18 @@
     /// entry.
     </span><span class="kw">pub fn </span>get_beacon_randomness(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
         pers: i64,
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
         lookback: bool,
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="kw">let </span>rand_ts: Arc&lt;Tipset&gt; = <span class="self">self</span>.get_beacon_randomness_tipset(blocks, round, lookback)<span class="question-mark">?</span>;
+        <span class="kw">let </span>rand_ts: Arc&lt;Tipset&gt; = <span class="self">self</span>.get_beacon_randomness_tipset(round, lookback)<span class="question-mark">?</span>;
         <span class="kw">let </span>be = <span class="self">self</span>.cs.latest_beacon_entry(<span class="kw-2">&amp;</span>rand_ts)<span class="question-mark">?</span>;
         draw_randomness(be.data(), pers, round, entropy)
     }
 
-    <span class="kw">pub fn </span>extract_beacon_entry_for_epoch(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
-        epoch: ChainEpoch,
-    ) -&gt; anyhow::Result&lt;BeaconEntry&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>rand_ts: Arc&lt;Tipset&gt; = <span class="self">self</span>.get_beacon_randomness_tipset(blocks, epoch, <span class="bool-val">false</span>)<span class="question-mark">?</span>;
+    <span class="kw">pub fn </span>extract_beacon_entry_for_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;BeaconEntry&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>rand_ts: Arc&lt;Tipset&gt; = <span class="self">self</span>.get_beacon_randomness_tipset(epoch, <span class="bool-val">false</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>(<span class="kw">_</span>, beacon) = <span class="self">self</span>.beacon.beacon_for_epoch(epoch)<span class="question-mark">?</span>;
         <span class="kw">let </span>round =
             beacon.max_beacon_round_for_epoch(<span class="self">self</span>.chain_config.network_version(epoch), epoch);
@@ -396,11 +377,10 @@
 
     <span class="kw">pub fn </span>get_beacon_randomness_tipset(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        blocks: <span class="kw-2">&amp;</span>TipsetKeys,
         round: ChainEpoch,
         lookback: bool,
     ) -&gt; anyhow::Result&lt;Arc&lt;Tipset&gt;&gt; {
-        <span class="kw">let </span>ts = <span class="self">self</span>.cs.tipset_from_keys(blocks)<span class="question-mark">?</span>;
+        <span class="kw">let </span>ts = Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.tipset);
 
         <span class="kw">if </span>round &gt; ts.epoch() {
             <span class="macro">bail!</span>(<span class="string">&quot;cannot draw randomness from the future&quot;</span>);
@@ -424,7 +404,7 @@
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_chain_randomness_v2(<span class="kw-2">&amp;</span><span class="self">self</span>.blks, pers, round, entropy)
+        <span class="self">self</span>.get_chain_randomness_v2(pers, round, entropy)
     }
 
     <span class="kw">fn </span>get_beacon_randomness(
@@ -433,7 +413,7 @@
         round: ChainEpoch,
         entropy: <span class="kw-2">&amp;</span>[u8],
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_beacon_randomness_v3(<span class="kw-2">&amp;</span><span class="self">self</span>.blks, pers, round, entropy)
+        <span class="self">self</span>.get_beacon_randomness_v3(pers, round, entropy)
     }
 }
 

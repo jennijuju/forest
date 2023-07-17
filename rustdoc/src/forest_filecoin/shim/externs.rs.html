@@ -71,6 +71,25 @@
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -97,6 +116,25 @@
         round: ChainEpoch_v2,
         entropy: <span class="kw-2">&amp;</span>[u8],
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt;;
+}
+
+<span class="kw">impl </span>Rand <span class="kw">for </span>Box&lt;<span class="kw">dyn </span>Rand&gt; {
+    <span class="kw">fn </span>get_chain_randomness(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        pers: i64,
+        round: ChainEpoch_v2,
+        entropy: <span class="kw-2">&amp;</span>[u8],
+    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.as_ref().get_chain_randomness(pers, round, entropy)
+    }
+    <span class="kw">fn </span>get_beacon_randomness(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        pers: i64,
+        round: ChainEpoch_v2,
+        entropy: <span class="kw-2">&amp;</span>[u8],
+    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.as_ref().get_beacon_randomness(pers, round, entropy)
+    }
 }
 
 <span class="kw">impl</span>&lt;T: Rand&gt; Rand_v2 <span class="kw">for </span>RandWrapper&lt;T&gt; {

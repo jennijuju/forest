@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["resolve_to_key_addr"],"mod":["errors","fvm","fvm3","vm"]};
+window.SIDEBAR_ITEMS = {"fn":["resolve_to_key_addr"],"mod":["errors","fvm2","fvm3","vm"]};

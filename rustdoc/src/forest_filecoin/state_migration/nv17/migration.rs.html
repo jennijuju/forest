@@ -319,7 +319,7 @@
     epoch: ChainEpoch,
 ) -&gt; anyhow::Result&lt;Cid&gt;
 <span class="kw">where
-    </span>DB: <span class="lifetime">&#39;static </span>+ Blockstore + Clone + Send + Sync,
+    </span>DB: Blockstore + Clone + Send + Sync,
 {
     <span class="kw">let </span>new_manifest_cid = chain_config
         .height_infos

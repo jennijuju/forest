@@ -490,6 +490,7 @@
 <a href="#490" id="490">490</a>
 <a href="#491" id="491">491</a>
 <a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -723,7 +724,8 @@
     }
 }
 
-<span class="kw">impl </span>BlockHeader {
+<span class="comment">// &lt;https://spec.filecoin.io/#example-blockheader&gt;
+</span><span class="kw">impl </span>BlockHeader {
     <span class="doccomment">/// Generates a `BlockHeader` builder as a constructor
     </span><span class="kw">pub fn </span>builder() -&gt; BlockHeaderBuilder {
         BlockHeaderBuilder::default()
@@ -783,11 +785,11 @@
                 .expect(<span class="string">&quot;internal error - block serialization may not fail&quot;</span>)
         })
     }
-    <span class="doccomment">/// Get `BlockHeader.parent_base_fee`
+    <span class="doccomment">/// Identical for all blocks in same tipset: the base fee after executing parent tipset.
     </span><span class="kw">pub fn </span>parent_base_fee(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TokenAmount {
         <span class="kw-2">&amp;</span><span class="self">self</span>.parent_base_fee
     }
-    <span class="doccomment">/// Get `BlockHeader.fork_signal`
+    <span class="doccomment">/// Currently unused/undefined
     </span><span class="kw">pub fn </span>fork_signal(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">self</span>.fork_signal
     }

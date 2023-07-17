@@ -1289,60 +1289,6 @@
 <a href="#1289" id="1289">1289</a>
 <a href="#1290" id="1290">1290</a>
 <a href="#1291" id="1291">1291</a>
-<a href="#1292" id="1292">1292</a>
-<a href="#1293" id="1293">1293</a>
-<a href="#1294" id="1294">1294</a>
-<a href="#1295" id="1295">1295</a>
-<a href="#1296" id="1296">1296</a>
-<a href="#1297" id="1297">1297</a>
-<a href="#1298" id="1298">1298</a>
-<a href="#1299" id="1299">1299</a>
-<a href="#1300" id="1300">1300</a>
-<a href="#1301" id="1301">1301</a>
-<a href="#1302" id="1302">1302</a>
-<a href="#1303" id="1303">1303</a>
-<a href="#1304" id="1304">1304</a>
-<a href="#1305" id="1305">1305</a>
-<a href="#1306" id="1306">1306</a>
-<a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
-<a href="#1314" id="1314">1314</a>
-<a href="#1315" id="1315">1315</a>
-<a href="#1316" id="1316">1316</a>
-<a href="#1317" id="1317">1317</a>
-<a href="#1318" id="1318">1318</a>
-<a href="#1319" id="1319">1319</a>
-<a href="#1320" id="1320">1320</a>
-<a href="#1321" id="1321">1321</a>
-<a href="#1322" id="1322">1322</a>
-<a href="#1323" id="1323">1323</a>
-<a href="#1324" id="1324">1324</a>
-<a href="#1325" id="1325">1325</a>
-<a href="#1326" id="1326">1326</a>
-<a href="#1327" id="1327">1327</a>
-<a href="#1328" id="1328">1328</a>
-<a href="#1329" id="1329">1329</a>
-<a href="#1330" id="1330">1330</a>
-<a href="#1331" id="1331">1331</a>
-<a href="#1332" id="1332">1332</a>
-<a href="#1333" id="1333">1333</a>
-<a href="#1334" id="1334">1334</a>
-<a href="#1335" id="1335">1335</a>
-<a href="#1336" id="1336">1336</a>
-<a href="#1337" id="1337">1337</a>
-<a href="#1338" id="1338">1338</a>
-<a href="#1339" id="1339">1339</a>
-<a href="#1340" id="1340">1340</a>
-<a href="#1341" id="1341">1341</a>
-<a href="#1342" id="1342">1342</a>
-<a href="#1343" id="1343">1343</a>
-<a href="#1344" id="1344">1344</a>
-<a href="#1345" id="1345">1345</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1358,9 +1304,9 @@
 <span class="kw">mod </span>vm_circ_supply;
 <span class="kw">pub use </span><span class="self">self</span>::errors::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconSchedule, DrandBeacon};
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::{ChainStore, HeadChange};
-<span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, BlockMessages, VM};
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, ExecutionContext, VM};
 <span class="kw">use </span><span class="kw">crate</span>::json::message_receipt;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
@@ -1369,7 +1315,6 @@
     address::{Address, Payload, Protocol, BLS_PUB_LEN},
     econ::TokenAmount,
     executor::{ApplyRet, Receipt},
-    externs::Rand,
     message::Message,
     state_tree::{ActorState, StateTree},
     version::NetworkVersion,
@@ -1382,13 +1327,11 @@
 <span class="kw">use </span>futures::{channel::oneshot, select, FutureExt};
 <span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>itertools::Itertools <span class="kw">as _</span>;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>num_traits::identities::Zero;
-<span class="kw">use </span>once_cell::unsync::Lazy;
 <span class="kw">use </span>parking_lot::Mutex <span class="kw">as </span>SyncMutex;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::ops::RangeInclusive;
@@ -1544,18 +1487,19 @@
 
     <span class="doccomment">/// This is a cache which indexes tipsets to their calculated state.
     </span>cache: TipsetStateCache,
-    genesis_info: GenesisInfo,
-    beacon: Arc&lt;<span class="kw">crate</span>::beacon::BeaconSchedule&lt;DrandBeacon&gt;&gt;,
+    <span class="comment">// Beacon can be cheaply crated from the `chain_config`. The only reason we
+    // store it here is because it has a look-up cache.
+    </span>beacon: Arc&lt;<span class="kw">crate</span>::beacon::BeaconSchedule&lt;DrandBeacon&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     engine: <span class="kw">crate</span>::shim::machine::MultiEngine,
 }
 
 <span class="attr">#[allow(clippy::type_complexity)]
-</span><span class="kw">const </span>NO_CALLBACK: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; anyhow::Result&lt;()&gt;&gt; = <span class="prelude-val">None</span>;
+</span><span class="kw">pub const </span>NO_CALLBACK: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; anyhow::Result&lt;()&gt;&gt; = <span class="prelude-val">None</span>;
 
 <span class="kw">impl</span>&lt;DB&gt; StateManager&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">pub fn </span>new(
         cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
@@ -1567,7 +1511,6 @@
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             cs,
             cache: TipsetStateCache::new(),
-            genesis_info: GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span>chain_config),
             beacon,
             chain_config,
             engine: <span class="kw">crate</span>::shim::machine::MultiEngine::default(),
@@ -1575,7 +1518,7 @@
     }
 
     <span class="kw">pub fn </span>beacon_schedule(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt; {
-        <span class="self">self</span>.beacon.clone()
+        Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.beacon)
     }
 
     <span class="doccomment">/// Returns network version for the given epoch.
@@ -1583,8 +1526,8 @@
         <span class="self">self</span>.chain_config.network_version(epoch)
     }
 
-    <span class="kw">pub fn </span>chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Arc&lt;ChainConfig&gt; {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.chain_config
+    <span class="kw">pub fn </span>chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;ChainConfig&gt; {
+        Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config)
     }
 
     <span class="doccomment">/// Gets actor from given [`Cid`], if it exists.
@@ -1596,6 +1539,10 @@
     <span class="doccomment">/// Returns a reference to the state manager&#39;s [`Blockstore`].
     </span><span class="kw">pub fn </span>blockstore(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>DB {
         <span class="self">self</span>.cs.blockstore()
+    }
+
+    <span class="kw">pub fn </span>blockstore_owned(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;DB&gt; {
+        Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.cs.db)
     }
 
     <span class="doccomment">/// Returns reference to the state manager&#39;s [`ChainStore`].
@@ -1685,90 +1632,6 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
-    <span class="doccomment">/// Performs the state transition for the tipset and applies all unique
-    /// messages in all blocks. This function returns the state root and
-    /// receipt root of the transition.
-    </span><span class="attr">#[allow(clippy::too_many_arguments)]
-    </span><span class="kw">pub fn </span>apply_blocks&lt;R, CB&gt;(
-        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
-        parent_epoch: ChainEpoch,
-        p_state: <span class="kw-2">&amp;</span>Cid,
-        messages: <span class="kw-2">&amp;</span>[BlockMessages],
-        epoch: ChainEpoch,
-        rand: R,
-        base_fee: TokenAmount,
-        <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
-        tipset: Arc&lt;Tipset&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, anyhow::Error&gt;
-    <span class="kw">where
-        </span>R: Rand + Clone + <span class="lifetime">&#39;static</span>,
-        CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;,
-    {
-        <span class="kw">let </span>_timer = metrics::APPLY_BLOCKS_TIME.start_timer();
-
-        <span class="kw">let </span>db = <span class="self">self</span>.blockstore().clone();
-
-        <span class="kw">let </span>create_vm = |state_root, epoch, timestamp| {
-            VM::new(
-                state_root,
-                <span class="self">self</span>.blockstore().clone(),
-                epoch,
-                rand.clone(),
-                base_fee.clone(),
-                <span class="self">self</span>.genesis_info
-                    .get_circulating_supply(epoch, <span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>,
-                chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>tipset)),
-                chain_epoch_tsk(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>tipset)),
-                <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
-                Arc::clone(<span class="self">self</span>.chain_config()),
-                timestamp,
-            )
-        };
-
-        <span class="kw">let </span><span class="kw-2">mut </span>parent_state = <span class="kw-2">*</span>p_state;
-        <span class="kw">let </span>genesis_timestamp = Lazy::new(|| {
-            <span class="self">self</span>.chain_store()
-                .genesis()
-                .expect(<span class="string">&quot;could not find genesis block!&quot;</span>)
-                .timestamp()
-        });
-
-        <span class="kw">for </span>epoch_i <span class="kw">in </span>parent_epoch..epoch {
-            <span class="kw">if </span>epoch_i &gt; parent_epoch {
-                <span class="kw">let </span>timestamp = <span class="kw-2">*</span>genesis_timestamp + ((EPOCH_DURATION_SECONDS * epoch_i) <span class="kw">as </span>u64);
-                <span class="kw">let </span><span class="kw-2">mut </span>vm = create_vm(parent_state, epoch_i, timestamp)<span class="question-mark">?</span>;
-                <span class="comment">// run cron for null rounds if any
-                </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) = vm.run_cron(epoch_i, callback.as_mut()) {
-                    <span class="macro">error!</span>(<span class="string">&quot;Beginning of epoch cron failed to run: {}&quot;</span>, e);
-                }
-
-                parent_state = vm.flush()<span class="question-mark">?</span>;
-            }
-
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(new_state) = run_state_migrations(
-                epoch_i,
-                <span class="self">self</span>.chain_config(),
-                <span class="self">self</span>.blockstore(),
-                <span class="kw-2">&amp;</span>parent_state,
-            )<span class="question-mark">? </span>{
-                parent_state = new_state;
-            }
-        }
-
-        <span class="kw">let </span><span class="kw-2">mut </span>vm = create_vm(parent_state, epoch, tipset.min_timestamp())<span class="question-mark">?</span>;
-
-        <span class="comment">// Apply tipset messages
-        </span><span class="kw">let </span>receipts = vm.apply_block_messages(messages, epoch, callback)<span class="question-mark">?</span>;
-
-        <span class="comment">// Construct receipt root from receipts
-        </span><span class="kw">let </span>receipt_root = Amt::new_from_iter(<span class="self">self</span>.blockstore(), receipts)<span class="question-mark">?</span>;
-
-        <span class="comment">// Flush changes to blockstore
-        </span><span class="kw">let </span>state_root = vm.flush()<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>((state_root, receipt_root))
-    }
-
     <span class="doccomment">/// Returns the pair of (parent state root, message receipt root). This will
     /// either be cached or will be calculated and fill the cache. Tipset
     /// state for a given tipset is guaranteed not to be computed twice.
@@ -1777,25 +1640,11 @@
         <span class="kw">let </span>key = tipset.key();
         <span class="self">self</span>.cache
             .get_or_else(key, || <span class="kw">async move </span>{
-                <span class="kw">let </span>cid_pair = <span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
-                    <span class="comment">// NB: This is here because the process that executes blocks requires that the
-                    // block miner reference a valid miner in the state tree. Unless we create some
-                    // magical genesis miner, this won&#39;t work properly, so we short circuit here
-                    // This avoids the question of &#39;who gets paid the genesis block reward&#39;
-                    </span><span class="kw">let </span>message_receipts = tipset.blocks().first().ok_or_else(|| {
-                        Error::Other(<span class="string">&quot;Could not get message receipts&quot;</span>.to_string())
-                    })<span class="question-mark">?</span>;
-
-                    (<span class="kw-2">*</span>tipset.parent_state(), <span class="kw-2">*</span>message_receipts.message_receipts())
-                } <span class="kw">else </span>{
-                    <span class="kw">let </span>ts_state = <span class="self">self
-                        </span>.compute_tipset_state(Arc::clone(tipset), NO_CALLBACK)
-                        .<span class="kw">await</span><span class="question-mark">?</span>;
-                    <span class="macro">debug!</span>(<span class="string">&quot;Completed tipset state calculation {:?}&quot;</span>, tipset.cids());
-                    ts_state
-                };
-
-                <span class="prelude-val">Ok</span>(cid_pair)
+                <span class="kw">let </span>ts_state = <span class="self">self
+                    </span>.compute_tipset_state(Arc::clone(tipset), NO_CALLBACK)
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="macro">debug!</span>(<span class="string">&quot;Completed tipset state calculation {:?}&quot;</span>, tipset.cids());
+                <span class="prelude-val">Ok</span>(ts_state)
             })
             .<span class="kw">await
     </span>}
@@ -1809,20 +1658,24 @@
     ) -&gt; StateCallResult {
         <span class="kw">let </span>bstate = tipset.parent_state();
         <span class="kw">let </span>bheight = tipset.epoch();
-        <span class="kw">let </span>store = <span class="self">self</span>.blockstore().clone();
+        <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config());
         <span class="kw">let </span><span class="kw-2">mut </span>vm = VM::new(
-            <span class="kw-2">*</span>bstate,
-            store,
-            bheight,
-            rand,
-            TokenAmount::zero(),
-            <span class="self">self</span>.genesis_info
-                .get_circulating_supply(bheight, <span class="self">self</span>.blockstore(), bstate)<span class="question-mark">?</span>,
-            chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(tipset)),
-            chain_epoch_tsk(Arc::clone(<span class="self">self</span>), Arc::clone(tipset)),
+            ExecutionContext {
+                heaviest_tipset: Arc::clone(tipset),
+                state_tree_root: <span class="kw-2">*</span>bstate,
+                epoch: bheight,
+                rand: Box::new(rand),
+                base_fee: TokenAmount::zero(),
+                circ_supply: genesis_info.get_circulating_supply(
+                    bheight,
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.blockstore_owned(),
+                    bstate,
+                )<span class="question-mark">?</span>,
+                chain_config: <span class="self">self</span>.chain_config(),
+                chain_store: Arc::clone(<span class="self">self</span>.chain_store()),
+                timestamp: tipset.min_timestamp(),
+            },
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
-            Arc::clone(<span class="self">self</span>.chain_config()),
-            tipset.min_timestamp(),
         )<span class="question-mark">?</span>;
 
         <span class="kw">if </span>msg.gas_limit == <span class="number">0 </span>{
@@ -1859,7 +1712,7 @@
         tipset: <span class="prelude-ty">Option</span>&lt;Arc&lt;Tipset&gt;&gt;,
     ) -&gt; StateCallResult {
         <span class="kw">let </span>ts = tipset.unwrap_or_else(|| <span class="self">self</span>.cs.heaviest_tipset());
-        <span class="kw">let </span>chain_rand = <span class="self">self</span>.chain_rand(ts.key().to_owned());
+        <span class="kw">let </span>chain_rand = <span class="self">self</span>.chain_rand(Arc::clone(<span class="kw-2">&amp;</span>ts));
         <span class="self">self</span>.call_raw(message, chain_rand, <span class="kw-2">&amp;</span>ts)
     }
 
@@ -1876,25 +1729,29 @@
             </span>.tipset_state(<span class="kw-2">&amp;</span>ts)
             .<span class="kw">await
             </span>.map_err(|<span class="kw">_</span>| Error::Other(<span class="string">&quot;Could not load tipset state&quot;</span>.to_string()))<span class="question-mark">?</span>;
-        <span class="kw">let </span>chain_rand = <span class="self">self</span>.chain_rand(ts.key().to_owned());
+        <span class="kw">let </span>chain_rand = <span class="self">self</span>.chain_rand(Arc::clone(<span class="kw-2">&amp;</span>ts));
 
-        <span class="kw">let </span>store = <span class="self">self</span>.blockstore().clone();
         <span class="comment">// Since we&#39;re simulating a future message, pretend we&#39;re applying it in the
         // &quot;next&quot; tipset
         </span><span class="kw">let </span>epoch = ts.epoch() + <span class="number">1</span>;
+        <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config());
         <span class="kw">let </span><span class="kw-2">mut </span>vm = VM::new(
-            st,
-            store,
-            epoch,
-            chain_rand,
-            ts.blocks()[<span class="number">0</span>].parent_base_fee().clone(),
-            <span class="self">self</span>.genesis_info
-                .get_circulating_supply(epoch, <span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>st)<span class="question-mark">?</span>,
-            chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>ts)),
-            chain_epoch_tsk(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>ts)),
+            ExecutionContext {
+                heaviest_tipset: Arc::clone(<span class="kw-2">&amp;</span>ts),
+                state_tree_root: st,
+                epoch,
+                rand: Box::new(chain_rand),
+                base_fee: ts.blocks()[<span class="number">0</span>].parent_base_fee().clone(),
+                circ_supply: genesis_info.get_circulating_supply(
+                    epoch,
+                    <span class="kw-2">&amp;</span><span class="self">self</span>.blockstore_owned(),
+                    <span class="kw-2">&amp;</span>st,
+                )<span class="question-mark">?</span>,
+                chain_config: <span class="self">self</span>.chain_config(),
+                chain_store: Arc::clone(<span class="self">self</span>.chain_store()),
+                timestamp: ts.min_timestamp(),
+            },
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
-            Arc::clone(<span class="self">self</span>.chain_config()),
-            ts.min_timestamp(),
         )<span class="question-mark">?</span>;
 
         <span class="kw">for </span>msg <span class="kw">in </span>prior_messages {
@@ -1959,65 +1816,6 @@
         <span class="prelude-val">Ok</span>((out_mes, out_ret))
     }
 
-    <span class="doccomment">/// Gets look-back tipset for block validations.
-    ///
-    /// The look-back tipset for a round is the tipset with epoch `round -
-    /// chain_finality`. Chain finality is usually 900. The given is a
-    /// reference point in the blockchain such that the look-back tipset can
-    /// be found by tracing the `parent` pointers.
-    </span><span class="kw">pub fn </span>get_lookback_tipset_for_round(
-        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
-        tipset: Arc&lt;Tipset&gt;,
-        round: ChainEpoch,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Arc&lt;Tipset&gt;, Cid), Error&gt; {
-        <span class="kw">let </span>version = <span class="self">self</span>.get_network_version(round);
-        <span class="kw">let </span>lb = <span class="kw">if </span>version &lt;= NetworkVersion::V3 {
-            ChainEpoch::from(<span class="number">10</span>)
-        } <span class="kw">else </span>{
-            <span class="self">self</span>.chain_config.policy.chain_finality
-        };
-        <span class="kw">let </span>lbr = (round - lb).max(<span class="number">0</span>);
-
-        <span class="comment">// More null blocks than lookback
-        </span><span class="kw">if </span>lbr &gt;= tipset.epoch() {
-            <span class="kw">let </span>no_func = <span class="prelude-val">None</span>::&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;&gt;;
-            <span class="kw">let </span>(state, <span class="kw">_</span>) = <span class="self">self</span>.compute_tipset_state_blocking(tipset.clone(), no_func)<span class="question-mark">?</span>;
-            <span class="kw">return </span><span class="prelude-val">Ok</span>((tipset, state));
-        }
-
-        <span class="kw">let </span>next_ts = <span class="self">self
-            </span>.cs
-            .tipset_by_height(lbr + <span class="number">1</span>, tipset.clone(), <span class="bool-val">false</span>)
-            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
-        <span class="kw">if </span>lbr &gt; next_ts.epoch() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
-                <span class="string">&quot;failed to find non-null tipset {:?} {} which is known to exist, found {:?} {}&quot;</span>,
-                tipset.key(),
-                tipset.epoch(),
-                next_ts.key(),
-                next_ts.epoch()
-            )));
-        }
-        <span class="kw">let </span>lbts = <span class="self">self
-            </span>.cs
-            .tipset_from_keys(next_ts.parents())
-            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset from keys {e:?}&quot;</span>)))<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>((lbts, <span class="kw-2">*</span>next_ts.parent_state()))
-    }
-
-    <span class="doccomment">/// Get the [`TipsetKeys`] for a given epoch. The [`TipsetKeys`] may **not** be null.
-    </span><span class="kw">pub fn </span>get_epoch_tsk(
-        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
-        tipset: Arc&lt;Tipset&gt;,
-        round: ChainEpoch,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetKeys, Error&gt; {
-        <span class="kw">let </span>ts = <span class="self">self
-            </span>.cs
-            .tipset_by_height(round, tipset, <span class="bool-val">true</span>)
-            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(ts.key().clone())
-    }
-
     <span class="doccomment">/// Checks the eligibility of the miner. This is used in the validation that
     /// a block&#39;s miner has the requirements to mine a block.
     </span><span class="kw">pub fn </span>eligible_to_mine(
@@ -2071,8 +1869,27 @@
         <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
     }
 
-    <span class="doccomment">/// Performs a state transition, and returns the state and receipt root of
-    /// the transition.
+    <span class="doccomment">/// Conceptually, a [`Tipset`] consists of _blocks_ which share an _epoch_.
+    /// Each _block_ contains _messages_, which are executed by the _Filecoin Virtual Machine_.
+    ///
+    /// VM message execution essentially looks like this:
+    /// ```text
+    /// state[N-900..N] * message = state[N+1]
+    /// ```
+    ///
+    /// The `state`s above are stored in the `IPLD Blockstore`, and can be referred to by
+    /// a [`Cid`] - the _state root_.
+    /// The previous 900 states (configurable, see
+    /// &lt;https://docs.filecoin.io/reference/general/glossary/#finality&gt;) can be
+    /// queried when executing a message, so a store needs at least that many.
+    /// (a snapshot typically contains 2000, for example).
+    ///
+    /// Each message costs FIL to execute - this is _gas_.
+    /// After execution, the message has a _receipt_, showing how much gas was spent.
+    /// This is similarly a [`Cid`] into the block store.
+    ///
+    /// For details, see the documentation for [`apply_block_messages`].
+    ///
     </span><span class="attr">#[instrument(skip(<span class="self">self</span>, tipset, callback))]
     </span><span class="kw">pub async fn </span>compute_tipset_state&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
@@ -2082,33 +1899,12 @@
     <span class="kw">where
         </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
     {
-        <span class="kw">let </span>sm = Arc::clone(<span class="self">self</span>);
-        tokio::task::spawn_blocking(<span class="kw">move </span>|| sm.compute_tipset_state_blocking(tipset, callback))
+        <span class="kw">let </span>this = Arc::clone(<span class="self">self</span>);
+        tokio::task::spawn_blocking(<span class="kw">move </span>|| this.compute_tipset_state_blocking(tipset, callback))
             .<span class="kw">await</span><span class="question-mark">?
     </span>}
 
-    <span class="doccomment">/// Conceptually, a [`Tipset`] consists of _blocks_ which share an _epoch_.
-    /// Each _block_ contains _messages_, which are executed by the _Filecoin Virtual Machine_
-    /// in a _transaction_.
-    ///
-    /// VM transaction execution essentially looks like this:
-    /// ```text
-    /// state[N-1800..N] * transaction = state[N+1]
-    /// ```
-    ///
-    /// The `state`s above are stored in the `IPLD Blockstore`, and can be referred to by
-    /// a [`Cid`] - the _state root_.
-    /// The previous 1800 states can be queried in a transaction, so a store needs at least that many.
-    /// (a snapshot typically contains 2000, for example).
-    ///
-    /// Each transaction costs FIL to execute - this is _gas_.
-    /// After execution, the transaction has a _receipt_, showing how much gas was spent.
-    /// This is similarly a [`Cid`] into the block store.
-    ///
-    /// Each [`Tipset`] knows its previous state, so computing tipset state consists of:
-    /// - fetching the previous state, and its 1799 ancestors.
-    /// - executing a transaction using all messages in the tipset.
-    /// - returning the _new state root_ and the _receipt root_ of the transaction.
+    <span class="doccomment">/// Blocking version of `compute_tipset_state`
     </span><span class="attr">#[tracing::instrument(skip_all)]
     </span><span class="kw">pub fn </span>compute_tipset_state_blocking&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
@@ -2118,73 +1914,13 @@
     <span class="kw">where
         </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
     {
-        <span class="comment">// special case for genesis block
-        </span><span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
-            <span class="comment">// NB: This is here because the process that executes blocks requires that the
-            // block miner reference a valid miner in the state tree. Unless we create some
-            // magical genesis miner, this won&#39;t work properly, so we short circuit here
-            // This avoids the question of &#39;who gets paid the genesis block reward&#39;
-            </span><span class="kw">let </span>message_receipts = tipset
-                .blocks()
-                .first()
-                .ok_or_else(|| Error::Other(<span class="string">&quot;Could not get message receipts&quot;</span>.to_string()))<span class="question-mark">?</span>;
-
-            <span class="kw">return </span><span class="prelude-val">Ok</span>((<span class="kw-2">*</span>tipset.parent_state(), <span class="kw-2">*</span>message_receipts.message_receipts()));
-        }
-
-        <span class="kw">let </span>block_headers = tipset.blocks();
-        <span class="kw">let </span>first_block = block_headers
-            .first()
-            .ok_or_else(|| Error::Other(<span class="string">&quot;Empty tipset in compute_tipset_state&quot;</span>.to_string()))<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>check_for_duplicates = |s: <span class="kw-2">&amp;</span>BlockHeader| {
-            block_headers
-                .iter()
-                .filter(|val| val.miner_address() == s.miner_address())
-                .take(<span class="number">2</span>)
-                .count()
-        };
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(a) = block_headers.iter().find(|s| check_for_duplicates(s) &gt; <span class="number">1</span>) {
-            <span class="comment">// Duplicate Miner found
-            </span><span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(<span class="string">&quot;duplicate miner in a tipset ({a})&quot;</span>)));
-        }
-
-        <span class="kw">let </span>parent_epoch = <span class="kw">if </span>first_block.epoch() &gt; <span class="number">0 </span>{
-            <span class="kw">let </span>parent_cid = first_block
-                .parents()
-                .cids()
-                .get(<span class="number">0</span>)
-                .ok_or_else(|| Error::Other(<span class="string">&quot;block must have parents&quot;</span>.to_string()))<span class="question-mark">?</span>;
-            <span class="kw">let </span>parent: BlockHeader = <span class="self">self
-                </span>.blockstore()
-                .get_cbor(parent_cid)<span class="question-mark">?
-                </span>.ok_or_else(|| <span class="macro">format!</span>(<span class="string">&quot;Could not find parent block with cid {parent_cid}&quot;</span>))<span class="question-mark">?</span>;
-            parent.epoch()
-        } <span class="kw">else </span>{
-            Default::default()
-        };
-
-        <span class="kw">let </span>tipset_keys = TipsetKeys::new(block_headers.iter().map(|s| s.cid()).cloned().collect());
-        <span class="kw">let </span>chain_rand = <span class="self">self</span>.chain_rand(tipset_keys);
-        <span class="kw">let </span>base_fee = first_block.parent_base_fee().clone();
-
-        <span class="kw">let </span>blocks = <span class="self">self
-            </span>.chain_store()
-            .block_msgs_for_tipset(<span class="kw-2">&amp;</span>tipset)
-            .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>sm = Arc::clone(<span class="self">self</span>);
-        <span class="kw">let </span>sr = <span class="kw-2">*</span>first_block.state_root();
-        <span class="kw">let </span>epoch = first_block.epoch();
-        <span class="prelude-val">Ok</span>(sm.apply_blocks(
-            parent_epoch,
-            <span class="kw-2">&amp;</span>sr,
-            <span class="kw-2">&amp;</span>blocks,
-            epoch,
-            chain_rand,
-            base_fee,
-            callback,
+        <span class="prelude-val">Ok</span>(apply_block_messages(
+            Arc::clone(<span class="self">self</span>.chain_store()),
+            Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config),
+            <span class="self">self</span>.beacon_schedule(),
+            <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
             tipset,
+            callback,
         )<span class="question-mark">?</span>)
     }
 
@@ -2654,38 +2390,194 @@
             })
     }
 
-    <span class="kw">fn </span>chain_rand(<span class="kw-2">&amp;</span><span class="self">self</span>, blocks: TipsetKeys) -&gt; ChainRand&lt;DB&gt; {
+    <span class="kw">fn </span>chain_rand(<span class="kw-2">&amp;</span><span class="self">self</span>, tipset: Arc&lt;Tipset&gt;) -&gt; ChainRand&lt;DB&gt; {
         ChainRand::new(
             <span class="self">self</span>.chain_config.clone(),
-            blocks,
+            tipset,
             <span class="self">self</span>.cs.clone(),
             <span class="self">self</span>.beacon.clone(),
         )
     }
 }
 
-<span class="kw">fn </span>chain_epoch_root&lt;DB&gt;(
-    sm: Arc&lt;StateManager&lt;DB&gt;&gt;,
+<span class="doccomment">/// Messages are transactions that produce new states. The state (usually
+/// referred to as the &#39;state-tree&#39;) is a mapping from actor addresses to actor
+/// states. Each block contains the hash of the state-tree that should be used
+/// as the starting state when executing the block messages.
+///
+/// # Execution environment
+///
+/// Transaction execution has the following inputs:
+/// - a current state-tree (stored as IPLD in a key-value database). This
+///   reference is in [`Tipset::parent_state`].
+/// - up to 900 past state-trees. See
+///   &lt;https://docs.filecoin.io/reference/general/glossary/#finality&gt;.
+/// - up to 900 past tipset IDs.
+/// - a deterministic source of randomness.
+/// - the circulating supply of FIL (see
+///   &lt;https://filecoin.io/blog/filecoin-circulating-supply/&gt;). The circulating
+///   supply is determined by the epoch and the states of a few key actors.
+/// - the base fee (see &lt;https://spec.filecoin.io/systems/filecoin_vm/gas_fee/&gt;).
+///   This value is defined by `tipset.parent_base_fee`.
+/// - the genesis timestamp (UNIX epoch time when the first block was
+///   mined/created).
+/// - a chain configuration (maps epoch to network version, has chain specific
+///   settings).
+///
+/// The result of running a set of block messages is an index to the final
+/// state-tree and an index to an array of message receipts (listing gas used,
+/// return codes, etc).
+///
+/// # Cron and null tipsets
+///
+/// Once per epoch, after all messages have run, a special &#39;cron&#39; transaction
+/// must be executed. The tasks of the &#39;cron&#39; transaction include running batch
+/// jobs and keeping the state up-to-date with the current epoch.
+///
+/// It can happen that no blocks are mined in an epoch. The tipset for such an
+/// epoch is called a null tipset. A null tipset has no identity and cannot be
+/// directly executed. This is a problem for &#39;cron&#39; which must run for every
+/// epoch, even if there are no messages. The fix is to run &#39;cron&#39; if there are
+/// any null tipsets between the current epoch and the parent epoch.
+///
+/// Imagine the blockchain looks like this with a null tipset at epoch 9:
+///
+/// ```text
+/// ┌────────┐ ┌────┐ ┌───────┐  ┌───────┐
+/// │Epoch 10│ │Null│ │Epoch 8├──►Epoch 7├─►
+/// └───┬────┘ └────┘ └───▲───┘  └───────┘
+///     └─────────────────┘
+/// ```
+///
+/// The parent of tipset-epoch-10 is tipset-epoch-8. Before executing the
+/// messages in epoch 10, we have to run cron for epoch 9. However, running
+/// &#39;cron&#39; requires the timestamp of the youngest block in the tipset (which
+/// doesn&#39;t exist because there are no blocks in the tipset). Lotus dictates that
+/// the timestamp of a null tipset is `30s * epoch` after the genesis timestamp.
+/// So, in the above example, if the genesis block was mined at time `X`, the
+/// null tipset for epoch 9 will have timestamp `X + 30 * 9`.
+///
+/// # Migrations
+///
+/// Migrations happen between network upgrades and modify the state tree. If a
+/// migration is scheduled for epoch 10, it will be run _after_ the messages for
+/// epoch 10. The tipset for epoch 11 will link the state-tree produced by the
+/// migration.
+///
+/// Example timeline with a migration at epoch 10:
+///   1. Tipset-epoch-10 executes, producing state-tree A.
+///   2. Migration consumes state-tree A and produces state-tree B.
+///   3. Tipset-epoch-11 executes, consuming state-tree B (rather than A).
+///
+/// Note: The migration actually happens when tipset-epoch-11 executes. This is
+///       because tipset-epoch-10 may be null and therefore not executed at all.
+///
+/// # Caching
+///
+/// Scanning the blockchain to find past tipsets and state-trees may be slow.
+/// The `ChainStore` caches recent tipsets to make these scans faster.
+</span><span class="kw">pub fn </span>apply_block_messages&lt;DB, CB&gt;(
+    chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    chain_config: Arc&lt;ChainConfig&gt;,
+    beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
+    engine: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::machine::MultiEngine,
     tipset: Arc&lt;Tipset&gt;,
-) -&gt; Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;
+    <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, anyhow::Error&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
+    CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;,
 {
-    Box::new(<span class="kw">move </span>|round| {
-        <span class="kw">let </span>(<span class="kw">_</span>, st) = sm.get_lookback_tipset_for_round(tipset.clone(), round)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(st)
-    })
-}
+    <span class="comment">// This function will:
+    // 1. handle the genesis block as a special case
+    // 2. run &#39;cron&#39; for any null-tipsets between the current tipset and our parent tipset
+    // 3. run migrations
+    // 4. execute block messages
+    // 5. write the state-tree to the DB and return the CID
 
-<span class="comment">// Create a boxed closure for getting the keys of a tipset at a given epoch. The indirection is due
-// to the way we interface with the FVM. Most likely, this could be written a lot better.
-</span><span class="kw">fn </span>chain_epoch_tsk&lt;DB&gt;(
-    sm: Arc&lt;StateManager&lt;DB&gt;&gt;,
-    tipset: Arc&lt;Tipset&gt;,
-) -&gt; Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;TipsetKeys&gt;&gt;
-<span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-{
-    Box::new(<span class="kw">move </span>|round| <span class="prelude-val">Ok</span>(sm.get_epoch_tsk(tipset.clone(), round)<span class="question-mark">?</span>))
+    // step 1: special case for genesis block
+    </span><span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
+        <span class="comment">// NB: This is here because the process that executes blocks requires that the
+        // block miner reference a valid miner in the state tree. Unless we create some
+        // magical genesis miner, this won&#39;t work properly, so we short circuit here
+        // This avoids the question of &#39;who gets paid the genesis block reward&#39;
+        </span><span class="kw">let </span>message_receipts = tipset.min_ticket_block().message_receipts();
+        <span class="kw">return </span><span class="prelude-val">Ok</span>((<span class="kw-2">*</span>tipset.parent_state(), <span class="kw-2">*</span>message_receipts));
+    }
+
+    <span class="kw">let </span>_timer = metrics::APPLY_BLOCKS_TIME.start_timer();
+
+    <span class="kw">let </span>genesis_timestamp = chain_store
+        .genesis()
+        .map_err(anyhow::Error::from)<span class="question-mark">?
+        </span>.timestamp();
+
+    <span class="kw">let </span>rand = ChainRand::new(
+        Arc::clone(<span class="kw-2">&amp;</span>chain_config),
+        Arc::clone(<span class="kw-2">&amp;</span>tipset),
+        Arc::clone(<span class="kw-2">&amp;</span>chain_store),
+        beacon,
+    );
+
+    <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span>chain_config);
+    <span class="kw">let </span>create_vm = |state_root: Cid, epoch, timestamp| {
+        <span class="kw">let </span>circulating_supply =
+            genesis_info.get_circulating_supply(epoch, <span class="kw-2">&amp;</span>chain_store.db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>;
+        VM::new(
+            ExecutionContext {
+                heaviest_tipset: Arc::clone(<span class="kw-2">&amp;</span>tipset),
+                state_tree_root: state_root,
+                epoch,
+                rand: Box::new(rand.clone()),
+                base_fee: tipset.min_ticket_block().parent_base_fee().clone(),
+                circ_supply: circulating_supply,
+                chain_config: Arc::clone(<span class="kw-2">&amp;</span>chain_config),
+                chain_store: Arc::clone(<span class="kw-2">&amp;</span>chain_store),
+                timestamp,
+            },
+            engine,
+        )
+    };
+
+    <span class="kw">let </span><span class="kw-2">mut </span>parent_state = <span class="kw-2">*</span>tipset.parent_state();
+
+    <span class="kw">let </span>parent_epoch = Tipset::load_required(<span class="kw-2">&amp;</span>chain_store.db, tipset.parents())<span class="question-mark">?</span>.epoch();
+    <span class="kw">let </span>epoch = tipset.epoch();
+
+    <span class="kw">for </span>epoch_i <span class="kw">in </span>parent_epoch..epoch {
+        <span class="kw">if </span>epoch_i &gt; parent_epoch {
+            <span class="comment">// step 2: running cron for any null-tipsets
+            </span><span class="kw">let </span>timestamp = genesis_timestamp + ((EPOCH_DURATION_SECONDS * epoch_i) <span class="kw">as </span>u64);
+            <span class="kw">let </span><span class="kw-2">mut </span>vm = create_vm(parent_state, epoch_i, timestamp)<span class="question-mark">?</span>;
+            <span class="comment">// run cron for null rounds if any
+            </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) = vm.run_cron(epoch_i, callback.as_mut()) {
+                <span class="macro">error!</span>(<span class="string">&quot;Beginning of epoch cron failed to run: {}&quot;</span>, e);
+            }
+
+            parent_state = vm.flush()<span class="question-mark">?</span>;
+        }
+
+        <span class="comment">// step 3: run migrations
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(new_state) =
+            run_state_migrations(epoch_i, <span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>chain_store.db, <span class="kw-2">&amp;</span>parent_state)<span class="question-mark">?
+        </span>{
+            parent_state = new_state;
+        }
+    }
+
+    <span class="kw">let </span>block_messages = chain_store
+        .block_msgs_for_tipset(<span class="kw-2">&amp;</span>tipset)
+        .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
+
+    <span class="kw">let </span><span class="kw-2">mut </span>vm = create_vm(parent_state, epoch, tipset.min_timestamp())<span class="question-mark">?</span>;
+
+    <span class="comment">// step 4: apply tipset messages
+    </span><span class="kw">let </span>receipts = vm.apply_block_messages(<span class="kw-2">&amp;</span>block_messages, epoch, callback)<span class="question-mark">?</span>;
+
+    <span class="comment">// step 5: construct receipt root from receipts and flush the state-tree
+    </span><span class="kw">let </span>receipt_root = Amt::new_from_iter(<span class="kw-2">&amp;</span>chain_store.db, receipts)<span class="question-mark">?</span>;
+    <span class="kw">let </span>state_root = vm.flush()<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>((state_root, receipt_root))
 }
 </code></pre></div></section></main></body></html>

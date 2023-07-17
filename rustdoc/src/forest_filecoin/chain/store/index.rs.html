@@ -376,7 +376,7 @@
 
 <span class="doccomment">/// Keeps look-back tipsets in cache at a given interval `skip_length` and can
 /// be used to look-back at the chain to retrieve an old tipset.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">struct </span>ChainIndex&lt;BS&gt; {
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">struct </span>ChainIndex&lt;DB&gt; {
     <span class="doccomment">/// Cache of look-back entries to speed up lookup.
     </span>skip_cache: Mutex&lt;LruCache&lt;TipsetKeys, Arc&lt;LookbackEntry&gt;&gt;&gt;,
 
@@ -384,11 +384,11 @@
     </span>ts_cache: Arc&lt;TipsetCache&gt;,
 
     <span class="doccomment">/// `Blockstore` pointer needed to load tipsets from cold storage.
-    </span>db: BS,
+    </span>db: Arc&lt;DB&gt;,
 }
 
-<span class="kw">impl</span>&lt;BS: Blockstore&gt; ChainIndex&lt;BS&gt; {
-    <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>new(ts_cache: Arc&lt;TipsetCache&gt;, db: BS) -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;DB: Blockstore&gt; ChainIndex&lt;DB&gt; {
+    <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>new(ts_cache: Arc&lt;TipsetCache&gt;, db: Arc&lt;DB&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             skip_cache: Mutex::new(LruCache::new(DEFAULT_CHAIN_INDEX_CACHE_SIZE)),
             ts_cache,

@@ -810,6 +810,9 @@
 <a href="#810" id="810">810</a>
 <a href="#811" id="811">811</a>
 <a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -983,7 +986,10 @@
     <span class="kw">let </span>keystore = Arc::new(RwLock::new(keystore));
 
     <span class="kw">let </span>chain_data_path = chain_path(<span class="kw-2">&amp;</span>config);
-    <span class="kw">let </span>db = open_proxy_db(db_root(<span class="kw-2">&amp;</span>chain_data_path), config.db_config().clone())<span class="question-mark">?</span>;
+    <span class="kw">let </span>db = Arc::new(open_proxy_db(
+        db_root(<span class="kw-2">&amp;</span>chain_data_path),
+        config.db_config().clone(),
+    )<span class="question-mark">?</span>);
 
     <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();
 
@@ -1025,7 +1031,7 @@
 
     <span class="comment">// Initialize ChainStore
     </span><span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
-        db.clone(),
+        Arc::clone(<span class="kw-2">&amp;</span>db),
         config.chain.clone(),
         <span class="kw-2">&amp;</span>genesis_header,
         chain_data_path.as_path(),
@@ -1038,7 +1044,7 @@
         <span class="kw">let </span>chain_store = chain_store.clone();
         <span class="kw">let </span>get_tipset = <span class="kw">move </span>|| chain_store.heaviest_tipset().as_ref().clone();
         Arc::new(DbGarbageCollector::new(
-            db,
+            db.as_ref().clone(),
             file_backed_chain_meta,
             config.chain.policy.chain_finality,
             config.chain.recent_state_roots,
@@ -1119,8 +1125,8 @@
         provider,
         network_name.clone(),
         network_send.clone(),
-        MpoolConfig::load_config(<span class="kw-2">&amp;</span>db)<span class="question-mark">?</span>,
-        Arc::clone(state_manager.chain_config()),
+        MpoolConfig::load_config(db.as_ref())<span class="question-mark">?</span>,
+        state_manager.chain_config(),
         <span class="kw-2">&amp;mut </span>services,
     )<span class="question-mark">?</span>;
 
@@ -1565,7 +1571,7 @@
     }
 
     <span class="kw">async fn </span>import_snapshot_from_file(file_path: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>db = MemoryDB::default();
+        <span class="kw">let </span>db = Arc::new(MemoryDB::default());
         <span class="kw">let </span>chain_config = Arc::new(ChainConfig::default());
 
         <span class="kw">let </span>genesis_header = BlockHeader::builder()
@@ -1594,7 +1600,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>import_chain_from_file() -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>db = MemoryDB::default();
+        <span class="kw">let </span>db = Arc::new(MemoryDB::default());
         <span class="kw">let </span>chain_config = Arc::new(ChainConfig::default());
         <span class="kw">let </span>genesis_header = BlockHeader::builder()
             .miner_address(Address::new_id(<span class="number">0</span>))

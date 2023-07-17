@@ -184,12 +184,12 @@
 </span><span class="attr">#[derive(Default)]
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">struct </span>TipsetTracker&lt;DB&gt; {
     entries: Mutex&lt;BTreeMap&lt;ChainEpoch, Vec&lt;Cid&gt;&gt;&gt;,
-    db: DB,
+    db: Arc&lt;DB&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
 }
 
 <span class="kw">impl</span>&lt;DB: Blockstore&gt; TipsetTracker&lt;DB&gt; {
-    <span class="kw">pub fn </span>new(db: DB, chain_config: Arc&lt;ChainConfig&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(db: Arc&lt;DB&gt;, chain_config: Arc&lt;ChainConfig&gt;) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             entries: Default::default(),
             db,
@@ -306,7 +306,7 @@
             (head_epoch - chain_config.policy.chain_finality + <span class="number">3</span>, <span class="macro">vec!</span>[]),
         ]);
         <span class="kw">let </span>tipset_tracker = TipsetTracker {
-            db,
+            db: Arc::new(db),
             chain_config: chain_config.clone(),
             entries: Mutex::new(entries),
         };

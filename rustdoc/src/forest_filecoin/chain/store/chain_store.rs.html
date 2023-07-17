@@ -874,6 +874,80 @@
 <a href="#874" id="874">874</a>
 <a href="#875" id="875">875</a>
 <a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
+<a href="#879" id="879">879</a>
+<a href="#880" id="880">880</a>
+<a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+<a href="#886" id="886">886</a>
+<a href="#887" id="887">887</a>
+<a href="#888" id="888">888</a>
+<a href="#889" id="889">889</a>
+<a href="#890" id="890">890</a>
+<a href="#891" id="891">891</a>
+<a href="#892" id="892">892</a>
+<a href="#893" id="893">893</a>
+<a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
+<a href="#912" id="912">912</a>
+<a href="#913" id="913">913</a>
+<a href="#914" id="914">914</a>
+<a href="#915" id="915">915</a>
+<a href="#916" id="916">916</a>
+<a href="#917" id="917">917</a>
+<a href="#918" id="918">918</a>
+<a href="#919" id="919">919</a>
+<a href="#920" id="920">920</a>
+<a href="#921" id="921">921</a>
+<a href="#922" id="922">922</a>
+<a href="#923" id="923">923</a>
+<a href="#924" id="924">924</a>
+<a href="#925" id="925">925</a>
+<a href="#926" id="926">926</a>
+<a href="#927" id="927">927</a>
+<a href="#928" id="928">928</a>
+<a href="#929" id="929">929</a>
+<a href="#930" id="930">930</a>
+<a href="#931" id="931">931</a>
+<a href="#932" id="932">932</a>
+<a href="#933" id="933">933</a>
+<a href="#934" id="934">934</a>
+<a href="#935" id="935">935</a>
+<a href="#936" id="936">936</a>
+<a href="#937" id="937">937</a>
+<a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -889,7 +963,8 @@
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
-    address::Address, econ::TokenAmount, executor::Receipt, message::Message, state_tree::StateTree,
+    address::Address, econ::TokenAmount, executor::Receipt, message::Message,
+    state_tree::StateTree, version::NetworkVersion,
 };
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
     db::{
@@ -951,10 +1026,7 @@
     </span>publisher: Publisher&lt;HeadChange&gt;,
 
     <span class="doccomment">/// key-value `datastore`.
-    </span><span class="kw">pub </span>db: DB,
-
-    <span class="doccomment">/// Caches loaded tipsets for fast retrieval.
-    </span>ts_cache: Arc&lt;TipsetCache&gt;,
+    </span><span class="kw">pub </span>db: Arc&lt;DB&gt;,
 
     <span class="doccomment">/// Used as a cache for tipset `lookbacks`.
     </span>chain_index: ChainIndex&lt;DB&gt;,
@@ -1001,17 +1073,14 @@
 
 <span class="kw">impl</span>&lt;DB&gt; ChainStore&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync,
+    </span>DB: Blockstore,
 {
     <span class="kw">pub fn </span>new(
-        db: DB,
+        db: Arc&lt;DB&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
         genesis_block_header: <span class="kw-2">&amp;</span>BlockHeader,
         chain_data_root: <span class="kw-2">&amp;</span>Path,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt;
-    <span class="kw">where
-        </span>DB: Clone,
-    {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>(publisher, <span class="kw">_</span>) = broadcast::channel(SINK_CAP);
         <span class="kw">let </span>ts_cache = Arc::new(Mutex::new(LruCache::new(DEFAULT_TIPSET_CACHE_SIZE)));
         <span class="kw">let </span>file_backed_genesis = Mutex::new(FileBacked::new(
@@ -1040,10 +1109,9 @@
 
         <span class="kw">let </span>cs = <span class="self">Self </span>{
             publisher,
-            chain_index: ChainIndex::new(ts_cache.clone(), db.clone()),
-            tipset_tracker: TipsetTracker::new(db.clone(), chain_config),
+            chain_index: ChainIndex::new(ts_cache, Arc::clone(<span class="kw-2">&amp;</span>db)),
+            tipset_tracker: TipsetTracker::new(Arc::clone(<span class="kw-2">&amp;</span>db), chain_config),
             db,
-            ts_cache,
             file_backed_genesis,
             file_backed_heaviest_tipset_keys,
             validated_blocks,
@@ -1139,7 +1207,7 @@
         <span class="kw">if </span>tsk.cids().is_empty() {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="self">self</span>.heaviest_tipset());
         }
-        tipset_from_keys(<span class="kw-2">&amp;</span><span class="self">self</span>.ts_cache, <span class="self">self</span>.blockstore(), tsk)
+        <span class="self">self</span>.chain_index.load_tipset(tsk)
     }
 
     <span class="doccomment">/// Returns Tipset key hash from key-value store from provided CIDs
@@ -1222,7 +1290,7 @@
         <span class="kw">if </span>lbts.epoch() == height || !prev {
             <span class="prelude-val">Ok</span>(lbts)
         } <span class="kw">else </span>{
-            <span class="self">self</span>.tipset_from_keys(lbts.parents())
+            <span class="self">self</span>.chain_index.load_tipset(lbts.parents())
         }
     }
 
@@ -1313,7 +1381,9 @@
         ))
     }
 
-    <span class="doccomment">/// Retrieves block messages to be passed through the VM.
+    <span class="comment">// FIXME: This function doesn&#39;t use the chain store at all.
+    //        Tracking issue: https://github.com/ChainSafe/forest/issues/3208
+    </span><span class="doccomment">/// Retrieves block messages to be passed through the VM.
     ///
     /// It removes duplicate messages which appear in multiple blocks.
     </span><span class="kw">pub fn </span>block_msgs_for_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;BlockMessages&gt;, Error&gt; {
@@ -1377,7 +1447,8 @@
         skip_checksum: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;digest::Output&lt;D&gt;&gt;, Error&gt;
     <span class="kw">where
-        </span>D: Digest + Send + <span class="lifetime">&#39;static</span>,
+        </span>DB: Send + Sync,
+        D: Digest + Send + <span class="lifetime">&#39;static</span>,
         W: AsyncWrite + Send + Unpin + <span class="lifetime">&#39;static</span>,
     {
         <span class="kw">let </span>writer = AsyncWriterWithChecksum::&lt;D, <span class="kw">_</span>&gt;::new(BufWriter::new(writer), !skip_checksum);
@@ -1469,6 +1540,83 @@
         .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(digest)
+    }
+
+    <span class="doccomment">/// Get the [`TipsetKeys`] for a given epoch. The returned key will never be null.
+    </span><span class="kw">pub fn </span>get_epoch_tsk(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        tipset: Arc&lt;Tipset&gt;,
+        round: ChainEpoch,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetKeys, Error&gt; {
+        <span class="kw">let </span>ts = <span class="self">self
+            </span>.tipset_by_height(round, tipset, <span class="bool-val">true</span>)
+            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(ts.key().clone())
+    }
+
+    <span class="doccomment">/// Gets look-back tipset (and state-root of that tipset) for block
+    /// validations.
+    ///
+    /// The look-back tipset for a round is the tipset with epoch `round -
+    /// chain_finality`. [Chain
+    /// finality](https://docs.filecoin.io/reference/general/glossary/#finality)
+    /// is usually 900. The `heaviest_tipset` is a reference point in the
+    /// blockchain. It must be a child of the look-back tipset.
+    </span><span class="kw">pub fn </span>get_lookback_tipset_for_round(
+        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
+        chain_config: Arc&lt;ChainConfig&gt;,
+        heaviest_tipset: Arc&lt;Tipset&gt;,
+        round: ChainEpoch,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Arc&lt;Tipset&gt;, Cid), Error&gt;
+    <span class="kw">where
+        </span>DB: Send + Sync + <span class="lifetime">&#39;static</span>,
+    {
+        <span class="kw">let </span>version = chain_config.network_version(round);
+        <span class="kw">let </span>lb = <span class="kw">if </span>version &lt;= NetworkVersion::V3 {
+            ChainEpoch::from(<span class="number">10</span>)
+        } <span class="kw">else </span>{
+            chain_config.policy.chain_finality
+        };
+        <span class="kw">let </span>lbr = (round - lb).max(<span class="number">0</span>);
+
+        <span class="comment">// More null blocks than lookback
+        </span><span class="kw">if </span>lbr &gt;= heaviest_tipset.epoch() {
+            <span class="comment">// This situation is extremely rare so it&#39;s fine to compute the
+            // state-root without caching.
+            </span><span class="kw">let </span>genesis_timestamp = <span class="self">self</span>.genesis().map_err(anyhow::Error::from)<span class="question-mark">?</span>.timestamp();
+            <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis_timestamp));
+            <span class="kw">let </span>(state, <span class="kw">_</span>) = <span class="kw">crate</span>::state_manager::apply_block_messages(
+                Arc::clone(<span class="self">self</span>),
+                Arc::clone(<span class="kw-2">&amp;</span>chain_config),
+                beacon,
+                <span class="comment">// Creating new WASM engines is expensive (takes seconds to
+                // minutes). It&#39;s only acceptable here because this situation is
+                // so rare (may happen in dev-networks, doesn&#39;t happen in
+                // calibnet or mainnet.)
+                </span><span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::machine::MultiEngine::default(),
+                Arc::clone(<span class="kw-2">&amp;</span>heaviest_tipset),
+                <span class="kw">crate</span>::state_manager::NO_CALLBACK,
+            )
+            .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
+            <span class="kw">return </span><span class="prelude-val">Ok</span>((heaviest_tipset, state));
+        }
+
+        <span class="kw">let </span>next_ts = <span class="self">self
+            </span>.tipset_by_height(lbr + <span class="number">1</span>, heaviest_tipset.clone(), <span class="bool-val">false</span>)
+            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
+        <span class="kw">if </span>lbr &gt; next_ts.epoch() {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
+                <span class="string">&quot;failed to find non-null tipset {:?} {} which is known to exist, found {:?} {}&quot;</span>,
+                heaviest_tipset.key(),
+                heaviest_tipset.epoch(),
+                next_ts.key(),
+                next_ts.epoch()
+            )));
+        }
+        <span class="kw">let </span>lbts = <span class="self">self
+            </span>.tipset_from_keys(next_ts.parents())
+            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset from keys {e:?}&quot;</span>)))<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>((lbts, <span class="kw-2">*</span>next_ts.parent_state()))
     }
 }
 
@@ -1713,7 +1861,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>genesis_test() {
-        <span class="kw">let </span>db = <span class="kw">crate</span>::db::MemoryDB::default();
+        <span class="kw">let </span>db = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
         <span class="kw">let </span>chain_config = Arc::new(ChainConfig::default());
 
         <span class="kw">let </span>gen_block = BlockHeader::builder()
@@ -1733,7 +1881,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>block_validation_cache_basic() {
-        <span class="kw">let </span>db = <span class="kw">crate</span>::db::MemoryDB::default();
+        <span class="kw">let </span>db = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
         <span class="kw">let </span>chain_config = Arc::new(ChainConfig::default());
         <span class="kw">let </span>gen_block = BlockHeader::builder()
             .miner_address(Address::new_id(<span class="number">0</span>))

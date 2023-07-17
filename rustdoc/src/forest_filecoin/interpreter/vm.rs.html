@@ -384,11 +384,40 @@
 <a href="#384" id="384">384</a>
 <a href="#385" id="385">385</a>
 <a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+<span class="kw">use </span><span class="kw">crate</span>::chain::store::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::message::ChainMessage;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
@@ -407,8 +436,11 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::{cron, reward, AwardBlockRewardParams};
 <span class="kw">use </span>fvm2::{
-    executor::{DefaultExecutor, Executor},
-    machine::{DefaultMachine, Machine, NetworkConfig},
+    executor::{DefaultExecutor <span class="kw">as </span>DefaultExecutor_v2, Executor <span class="kw">as </span>Executor_v2},
+    machine::{
+        DefaultMachine <span class="kw">as </span>DefaultMachine_v2, Machine <span class="kw">as </span>Machine_v2,
+        NetworkConfig <span class="kw">as </span>NetworkConfig_v2,
+    },
 };
 <span class="kw">use </span>fvm3::{
     executor::{DefaultExecutor <span class="kw">as </span>DefaultExecutor_v3, Executor <span class="kw">as </span>Executor_v3},
@@ -422,16 +454,18 @@
 <span class="kw">use </span>fvm_shared2::{clock::ChainEpoch, BLOCK_GAS_LIMIT};
 <span class="kw">use </span>num::Zero;
 
-<span class="kw">use </span><span class="kw">crate</span>::interpreter::{fvm::ForestExternsV2, fvm3::ForestExterns <span class="kw">as </span>ForestExterns_v3};
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::{fvm2::ForestExternsV2, fvm3::ForestExterns <span class="kw">as </span>ForestExternsV3};
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::interpreter) <span class="kw">type </span>ForestMachine&lt;DB&gt; = DefaultMachine&lt;DB, ForestExternsV2&lt;DB&gt;&gt;;
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::interpreter) <span class="kw">type </span>ForestMachineV3&lt;DB&gt; = DefaultMachine_v3&lt;DB, ForestExterns_v3&lt;DB&gt;&gt;;
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::interpreter) <span class="kw">type </span>ForestMachineV2&lt;DB&gt; =
+    DefaultMachine_v2&lt;Arc&lt;DB&gt;, ForestExternsV2&lt;DB&gt;&gt;;
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::interpreter) <span class="kw">type </span>ForestMachineV3&lt;DB&gt; =
+    DefaultMachine_v3&lt;Arc&lt;DB&gt;, ForestExternsV3&lt;DB&gt;&gt;;
 
-<span class="kw">type </span>ForestKernel&lt;DB&gt; =
-    fvm2::DefaultKernel&lt;fvm2::call_manager::DefaultCallManager&lt;ForestMachine&lt;DB&gt;&gt;&gt;;
+<span class="kw">type </span>ForestKernelV2&lt;DB&gt; =
+    fvm2::DefaultKernel&lt;fvm2::call_manager::DefaultCallManager&lt;ForestMachineV2&lt;DB&gt;&gt;&gt;;
 <span class="kw">type </span>ForestKernelV3&lt;DB&gt; =
     fvm3::DefaultKernel&lt;fvm3::call_manager::DefaultCallManager&lt;ForestMachineV3&lt;DB&gt;&gt;&gt;;
-<span class="kw">type </span>ForestExecutor&lt;DB&gt; = DefaultExecutor&lt;ForestKernel&lt;DB&gt;&gt;;
+<span class="kw">type </span>ForestExecutorV2&lt;DB&gt; = DefaultExecutor_v2&lt;ForestKernelV2&lt;DB&gt;&gt;;
 <span class="kw">type </span>ForestExecutorV3&lt;DB&gt; = DefaultExecutor_v3&lt;ForestKernelV3&lt;DB&gt;&gt;;
 
 <span class="doccomment">/// Contains all messages to process through the VM as well as miner information
@@ -445,28 +479,51 @@
 
 <span class="doccomment">/// Interpreter which handles execution of state transitioning messages and
 /// returns receipts from the VM execution.
-</span><span class="kw">pub enum </span>VM&lt;DB: Blockstore + <span class="lifetime">&#39;static</span>&gt; {
-    VM2(ForestExecutor&lt;DB&gt;),
+</span><span class="kw">pub enum </span>VM&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>&gt; {
+    VM2(ForestExecutorV2&lt;DB&gt;),
     VM3(ForestExecutorV3&lt;DB&gt;),
+}
+
+<span class="kw">pub struct </span>ExecutionContext&lt;DB&gt; {
+    <span class="comment">// This tipset identifies of the blockchain. It functions as a starting
+    // point when searching for ancestors. It may be any tipset as long as its
+    // epoch is at or higher than the epoch in `epoch`.
+    </span><span class="kw">pub </span>heaviest_tipset: Arc&lt;Tipset&gt;,
+    <span class="comment">// State-tree generated by the parent tipset.
+    </span><span class="kw">pub </span>state_tree_root: Cid,
+    <span class="comment">// Epoch of the messages to be executed.
+    </span><span class="kw">pub </span>epoch: ChainEpoch,
+    <span class="comment">// Source of deterministic randomness
+    </span><span class="kw">pub </span>rand: Box&lt;<span class="kw">dyn </span>Rand&gt;,
+    <span class="comment">// https://spec.filecoin.io/systems/filecoin_vm/gas_fee/
+    </span><span class="kw">pub </span>base_fee: TokenAmount,
+    <span class="comment">// https://filecoin.io/blog/filecoin-circulating-supply/
+    </span><span class="kw">pub </span>circ_supply: TokenAmount,
+    <span class="comment">// The chain config is used to determine which consensus rules to use.
+    </span><span class="kw">pub </span>chain_config: Arc&lt;ChainConfig&gt;,
+    <span class="comment">// Caching interface to the DB
+    </span><span class="kw">pub </span>chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    <span class="comment">// UNIX timestamp for epoch
+    </span><span class="kw">pub </span>timestamp: u64,
 }
 
 <span class="kw">impl</span>&lt;DB&gt; VM&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone,
+    </span>DB: Blockstore + Send + Sync,
 {
-    <span class="attr">#[allow(clippy::too_many_arguments)]
-    </span><span class="kw">pub fn </span>new(
-        root: Cid,
-        store: DB,
-        epoch: ChainEpoch,
-        rand: <span class="kw">impl </span>Rand + <span class="lifetime">&#39;static</span>,
-        base_fee: TokenAmount,
-        circ_supply: TokenAmount,
-        lb_fn: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
-        epoch_tsk: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;<span class="kw">crate</span>::blocks::TipsetKeys&gt;&gt;,
+    <span class="kw">pub fn </span>new(
+        ExecutionContext {
+            heaviest_tipset,
+            state_tree_root,
+            epoch,
+            rand,
+            base_fee,
+            circ_supply,
+            chain_config,
+            chain_store,
+            timestamp,
+        }: ExecutionContext&lt;DB&gt;,
         multi_engine: <span class="kw-2">&amp;</span>MultiEngine,
-        chain_config: Arc&lt;ChainConfig&gt;,
-        timestamp: u64,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
         <span class="kw">let </span>network_version = chain_config.network_version(epoch);
         <span class="kw">if </span>network_version &gt;= NetworkVersion::V18 {
@@ -478,47 +535,44 @@
             }
 
             <span class="kw">let </span>engine = multi_engine.v3.get(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, timestamp, root);
+            <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, timestamp, state_tree_root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());
-            <span class="kw">let </span>fvm: fvm3::machine::DefaultMachine&lt;DB, ForestExterns_v3&lt;DB&gt;&gt; =
-                fvm3::machine::DefaultMachine::new(
-                    <span class="kw-2">&amp;</span>context,
-                    store.clone(),
-                    ForestExterns_v3::new(
-                        RandWrapper::from(rand),
-                        epoch,
-                        root,
-                        lb_fn,
-                        epoch_tsk,
-                        store,
-                        chain_config,
-                    ),
-                )<span class="question-mark">?</span>;
-            <span class="kw">let </span>executor: ForestExecutorV3&lt;DB&gt; = DefaultExecutor_v3::new(engine, fvm)<span class="question-mark">?</span>;
-            <span class="prelude-val">Ok</span>(VM::VM3(executor))
+            <span class="kw">let </span>fvm: ForestMachineV3&lt;DB&gt; = ForestMachineV3::new(
+                <span class="kw-2">&amp;</span>context,
+                Arc::clone(<span class="kw-2">&amp;</span>chain_store.db),
+                ForestExternsV3::new(
+                    RandWrapper::from(rand),
+                    heaviest_tipset,
+                    epoch,
+                    state_tree_root,
+                    chain_store,
+                    chain_config,
+                ),
+            )<span class="question-mark">?</span>;
+            <span class="kw">let </span>exec: ForestExecutorV3&lt;DB&gt; = DefaultExecutor_v3::new(engine, fvm)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(VM::VM3(exec))
         } <span class="kw">else </span>{
-            <span class="kw">let </span>config = NetworkConfig::new(network_version.into());
+            <span class="kw">let </span>config = NetworkConfig_v2::new(network_version.into());
             <span class="kw">let </span>engine = multi_engine.v2.get(<span class="kw-2">&amp;</span>config)<span class="question-mark">?</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, root);
+            <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, state_tree_root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());
-            <span class="kw">let </span>fvm: fvm2::machine::DefaultMachine&lt;DB, ForestExternsV2&lt;DB&gt;&gt; =
-                fvm2::machine::DefaultMachine::new(
-                    <span class="kw-2">&amp;</span>engine,
-                    <span class="kw-2">&amp;</span>context,
-                    store.clone(),
-                    ForestExternsV2::new(
-                        RandWrapper::from(rand),
-                        epoch,
-                        root,
-                        lb_fn,
-                        store,
-                        chain_config,
-                    ),
-                )<span class="question-mark">?</span>;
-            <span class="kw">let </span>executor: ForestExecutor&lt;DB&gt; = DefaultExecutor::new(fvm);
-            <span class="prelude-val">Ok</span>(VM::VM2(executor))
+            <span class="kw">let </span>fvm: ForestMachineV2&lt;DB&gt; = ForestMachineV2::new(
+                <span class="kw-2">&amp;</span>engine,
+                <span class="kw-2">&amp;</span>context,
+                Arc::clone(<span class="kw-2">&amp;</span>chain_store.db),
+                ForestExternsV2::new(
+                    RandWrapper::from(rand),
+                    heaviest_tipset,
+                    epoch,
+                    state_tree_root,
+                    chain_store,
+                    chain_config,
+                ),
+            )<span class="question-mark">?</span>;
+            <span class="kw">let </span>exec: ForestExecutorV2&lt;DB&gt; = DefaultExecutor_v2::new(fvm);
+            <span class="prelude-val">Ok</span>(VM::VM2(exec))
         }
     }
 

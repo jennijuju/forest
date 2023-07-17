@@ -413,8 +413,8 @@
         <span class="kw-2">*</span>,
     };
 
-    <span class="kw">async fn </span>populate_db() -&gt; (Vec&lt;Cid&gt;, MemoryDB) {
-        <span class="kw">let </span>db = MemoryDB::default();
+    <span class="kw">async fn </span>populate_db() -&gt; (Vec&lt;Cid&gt;, Arc&lt;MemoryDB&gt;) {
+        <span class="kw">let </span>db = Arc::new(MemoryDB::default());
         <span class="kw">let </span>reader = BufReader::&lt;<span class="kw-2">&amp;</span>[u8]&gt;::new(EXPORT_SR_40);
         <span class="comment">// The cids are the tipset cids of the most recent tipset (39th)
         </span><span class="kw">let </span>cids: Vec&lt;Cid&gt; = load_car(<span class="kw-2">&amp;</span>db, reader.compat()).<span class="kw">await</span>.unwrap();

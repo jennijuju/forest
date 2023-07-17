@@ -370,6 +370,16 @@
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
 <a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -377,6 +387,8 @@
 <span class="kw">use </span>std::{cell::Ref, sync::Arc};
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
+<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+<span class="kw">use </span><span class="kw">crate</span>::chain::store::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::errors::Error;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
@@ -404,35 +416,41 @@
 
 <span class="kw">pub struct </span>ForestExterns&lt;DB&gt; {
     rand: Box&lt;<span class="kw">dyn </span>Rand&gt;,
+    heaviest_tipset: Arc&lt;Tipset&gt;,
     epoch: ChainEpoch,
     root: Cid,
-    lookback: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
-    get_tsk: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;<span class="kw">crate</span>::blocks::TipsetKeys&gt;&gt;,
-    db: DB,
+    chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     bail: AtomicBool,
 }
 
-<span class="kw">impl</span>&lt;DB: Blockstore&gt; ForestExterns&lt;DB&gt; {
+<span class="kw">impl</span>&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>&gt; ForestExterns&lt;DB&gt; {
     <span class="kw">pub fn </span>new(
         rand: <span class="kw">impl </span>Rand + <span class="lifetime">&#39;static</span>,
+        heaviest_tipset: Arc&lt;Tipset&gt;,
         epoch: ChainEpoch,
         root: Cid,
-        lookback: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;&gt;,
-        get_tsk: Box&lt;<span class="kw">dyn </span>Fn(ChainEpoch) -&gt; anyhow::Result&lt;<span class="kw">crate</span>::blocks::TipsetKeys&gt;&gt;,
-        db: DB,
+        chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
     ) -&gt; <span class="self">Self </span>{
         ForestExterns {
             rand: Box::new(rand),
+            heaviest_tipset,
             epoch,
             root,
-            lookback,
-            get_tsk,
-            db,
+            chain_store,
             chain_config,
             bail: AtomicBool::new(<span class="bool-val">false</span>),
         }
+    }
+
+    <span class="kw">fn </span>get_lookback_tipset_state_root_for_round(<span class="kw-2">&amp;</span><span class="self">self</span>, height: ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt; {
+        <span class="kw">let </span>(<span class="kw">_</span>, st) = <span class="self">self</span>.chain_store.get_lookback_tipset_for_round(
+            Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config),
+            Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset),
+            height,
+        )<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(st)
     }
 
     <span class="kw">fn </span>worker_key_at_lookback(
@@ -448,20 +466,20 @@
             );
         }
 
-        <span class="kw">let </span>prev_root = (<span class="self">self</span>.lookback)(height)<span class="question-mark">?</span>;
-        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>prev_root = <span class="self">self</span>.get_lookback_tipset_state_root_for_round(height)<span class="question-mark">?</span>;
+        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>actor = lb_state
             .get_actor(miner_addr)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;actor not found {:?}&quot;</span>, miner_addr))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.db);
+        <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db);
 
         <span class="kw">let </span>ms = fil_actor_interface::miner::State::load(<span class="kw-2">&amp;</span>tbs, actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>worker = ms.info(<span class="kw-2">&amp;</span>tbs)<span class="question-mark">?</span>.worker.into();
 
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>addr = resolve_to_key_addr(<span class="kw-2">&amp;</span>state, <span class="kw-2">&amp;</span>tbs, <span class="kw-2">&amp;</span>worker)<span class="question-mark">?</span>;
 
@@ -489,11 +507,13 @@
     }
 }
 
-<span class="kw">impl</span>&lt;DB: Blockstore&gt; Externs <span class="kw">for </span>ForestExterns&lt;DB&gt; {}
+<span class="kw">impl</span>&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>&gt; Externs <span class="kw">for </span>ForestExterns&lt;DB&gt; {}
 
-<span class="kw">impl</span>&lt;DB&gt; Chain <span class="kw">for </span>ForestExterns&lt;DB&gt; {
+<span class="kw">impl</span>&lt;DB: Blockstore&gt; Chain <span class="kw">for </span>ForestExterns&lt;DB&gt; {
     <span class="kw">fn </span>get_tipset_cid(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt; {
-        (<span class="self">self</span>.get_tsk)(epoch)<span class="question-mark">?</span>.cid()
+        <span class="self">self</span>.chain_store
+            .get_epoch_tsk(Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset), epoch)<span class="question-mark">?
+            </span>.cid()
     }
 }
 
@@ -517,7 +537,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;DB: Blockstore&gt; Consensus <span class="kw">for </span>ForestExterns&lt;DB&gt; {
+<span class="kw">impl</span>&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>&gt; Consensus <span class="kw">for </span>ForestExterns&lt;DB&gt; {
     <span class="comment">// See https://github.com/filecoin-project/lotus/blob/v1.18.0/chain/vm/fvm.go#L102-L216 for reference implementation
     </span><span class="kw">fn </span>verify_consensus_fault(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
