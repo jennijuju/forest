@@ -383,7 +383,6 @@
 <a href="#383" id="383">383</a>
 <a href="#384" id="384">384</a>
 <a href="#385" id="385">385</a>
-<a href="#386" id="386">386</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -716,7 +715,6 @@
                     <span class="kw">move </span>|| {
                         <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">1</span>);
                         network_send.send(NetworkMessage::BitswapRequest {
-                            epoch: <span class="number">0</span>,
                             cid,
                             response_channel: tx,
                         })<span class="question-mark">?</span>;

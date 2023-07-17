@@ -209,7 +209,7 @@
 <span class="attr">#[async_trait]
 </span><span class="kw">impl</span>&lt;B&gt; Consensus <span class="kw">for </span>FilecoinConsensus&lt;B&gt;
 <span class="kw">where
-    </span>B: Beacon + Unpin,
+    </span>B: Beacon,
 {
     <span class="kw">type </span>Error = FilecoinConsensusError;
 

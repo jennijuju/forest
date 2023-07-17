@@ -1444,7 +1444,7 @@
             <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.kind() == UnexpectedEof &amp;&amp; v.is_empty() =&gt; <span class="prelude-val">None</span>,
             <span class="prelude-val">Err</span>(e)
                 <span class="kw">if </span>e.kind() == UnexpectedEof
-                    &amp;&amp; u64::try_from(v.len()).unwrap() == <span class="self">self</span>.max_frame_size =&gt;
+                    &amp;&amp; u64::try_from(v.len()).unwrap() &gt;= <span class="self">self</span>.max_frame_size =&gt;
             {
                 <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(io::Error::new(Other, MaxFrameSizeExceeded)))
             }

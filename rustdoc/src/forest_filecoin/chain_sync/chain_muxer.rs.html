@@ -1302,14 +1302,14 @@
         </span><span class="kw">let </span>bls_messages: Vec&lt;<span class="kw">_</span>&gt; = block
             .bls_messages
             .into_iter()
-            .map(|m| network.bitswap_get::&lt;Message&gt;(epoch, m))
+            .map(|m| network.bitswap_get::&lt;Message&gt;(m))
             .collect();
 
         <span class="comment">// Get secp_messages in the store or over Bitswap
         </span><span class="kw">let </span>secp_messages: Vec&lt;<span class="kw">_</span>&gt; = block
             .secpk_messages
             .into_iter()
-            .map(|m| network.bitswap_get::&lt;SignedMessage&gt;(epoch, m))
+            .map(|m| network.bitswap_get::&lt;SignedMessage&gt;(m))
             .collect();
 
         <span class="kw">let </span>(bls_messages, secp_messages) =
@@ -1323,7 +1323,7 @@
             bls_messages,
             secp_messages,
         };
-        <span class="prelude-val">Ok</span>(FullTipset::new(<span class="macro">vec!</span>[block]).unwrap())
+        <span class="prelude-val">Ok</span>(FullTipset::from(block))
     }
 
     <span class="kw">fn </span>handle_pubsub_message(mem_pool: Arc&lt;MessagePool&lt;M&gt;&gt;, message: SignedMessage) {
