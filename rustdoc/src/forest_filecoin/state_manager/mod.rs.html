@@ -1343,12 +1343,6 @@
 <a href="#1343" id="1343">1343</a>
 <a href="#1344" id="1344">1344</a>
 <a href="#1345" id="1345">1345</a>
-<a href="#1346" id="1346">1346</a>
-<a href="#1347" id="1347">1347</a>
-<a href="#1348" id="1348">1348</a>
-<a href="#1349" id="1349">1349</a>
-<a href="#1350" id="1350">1350</a>
-<a href="#1351" id="1351">1351</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1366,7 +1360,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconSchedule, DrandBeacon};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::{ChainStore, HeadChange};
-<span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, BlockMessages, RewardCalc, VM};
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, BlockMessages, VM};
 <span class="kw">use </span><span class="kw">crate</span>::json::message_receipt;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
@@ -1554,7 +1548,6 @@
     beacon: Arc&lt;<span class="kw">crate</span>::beacon::BeaconSchedule&lt;DrandBeacon&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     engine: <span class="kw">crate</span>::shim::machine::MultiEngine,
-    reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
 }
 
 <span class="attr">#[allow(clippy::type_complexity)]
@@ -1567,7 +1560,6 @@
     <span class="kw">pub fn </span>new(
         cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
-        reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
         <span class="kw">let </span>genesis = cs.genesis()<span class="question-mark">?</span>;
         <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis.timestamp()));
@@ -1579,7 +1571,6 @@
             beacon,
             chain_config,
             engine: <span class="kw">crate</span>::shim::machine::MultiEngine::default(),
-            reward_calc,
         })
     }
 
@@ -1726,7 +1717,6 @@
                 base_fee.clone(),
                 <span class="self">self</span>.genesis_info
                     .get_circulating_supply(epoch, <span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>,
-                <span class="self">self</span>.reward_calc.clone(),
                 chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>tipset)),
                 chain_epoch_tsk(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>tipset)),
                 <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
@@ -1828,7 +1818,6 @@
             TokenAmount::zero(),
             <span class="self">self</span>.genesis_info
                 .get_circulating_supply(bheight, <span class="self">self</span>.blockstore(), bstate)<span class="question-mark">?</span>,
-            <span class="self">self</span>.reward_calc.clone(),
             chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(tipset)),
             chain_epoch_tsk(Arc::clone(<span class="self">self</span>), Arc::clone(tipset)),
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
@@ -1901,7 +1890,6 @@
             ts.blocks()[<span class="number">0</span>].parent_base_fee().clone(),
             <span class="self">self</span>.genesis_info
                 .get_circulating_supply(epoch, <span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>st)<span class="question-mark">?</span>,
-            <span class="self">self</span>.reward_calc.clone(),
             chain_epoch_root(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>ts)),
             chain_epoch_tsk(Arc::clone(<span class="self">self</span>), Arc::clone(<span class="kw-2">&amp;</span>ts)),
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,

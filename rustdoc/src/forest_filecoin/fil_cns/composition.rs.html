@@ -31,10 +31,6 @@
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
-<a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::sync::Arc;
@@ -51,10 +47,6 @@
 <span class="kw">pub type </span>FullConsensus = FilecoinConsensus&lt;DrandBeacon&gt;;
 
 <span class="kw">pub const </span>FETCH_PARAMS: bool = <span class="bool-val">true</span>;
-
-<span class="kw">pub fn </span>reward_calc() -&gt; Arc&lt;<span class="kw">dyn </span><span class="kw">crate</span>::interpreter::RewardCalc&gt; {
-    Arc::new(<span class="kw">crate</span>::interpreter::RewardActorMessageCalc)
-}
 
 <span class="attr">#[allow(clippy::unused_async)]
 </span><span class="kw">pub async fn </span>consensus&lt;DB, MP&gt;(
