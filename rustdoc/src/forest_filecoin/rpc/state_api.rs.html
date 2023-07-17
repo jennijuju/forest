@@ -357,38 +357,11 @@
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
-<a href="#370" id="370">370</a>
-<a href="#371" id="371">371</a>
-<a href="#372" id="372">372</a>
-<a href="#373" id="373">373</a>
-<a href="#374" id="374">374</a>
-<a href="#375" id="375">375</a>
-<a href="#376" id="376">376</a>
-<a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
-<a href="#381" id="381">381</a>
-<a href="#382" id="382">382</a>
-<a href="#383" id="383">383</a>
-<a href="#384" id="384">384</a>
-<a href="#385" id="385">385</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
-</span><span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::tipset_keys_json::TipsetKeysJson;
+</span><span class="kw">use </span><span class="kw">crate</span>::blocks::tipset_keys_json::TipsetKeysJson;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::json::IpldJson;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
@@ -417,11 +390,8 @@
 // defaulting to Full).
 
 </span><span class="doccomment">/// runs the given message and returns its result without any persisted changes.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_call&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_call&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateCallParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateCallResult, JsonRpcError&gt; {
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
@@ -436,11 +406,8 @@
 
 <span class="doccomment">/// returns the result of executing the indicated message, assuming it was
 /// executed in the indicated tipset.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_replay&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_replay&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateReplayParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateReplayResult, JsonRpcError&gt; {
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
@@ -460,11 +427,8 @@
 }
 
 <span class="doccomment">/// gets network name from state manager
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_network_name&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_network_name&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateNetworkNameResult, JsonRpcError&gt; {
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
     <span class="kw">let </span>heaviest_tipset = state_manager.chain_store().heaviest_tipset();
@@ -476,9 +440,8 @@
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_get_network_version&lt;
     DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 &gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateNetworkVersionParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateNetworkVersionResult, JsonRpcError&gt; {
     <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
@@ -488,11 +451,8 @@
 
 <span class="doccomment">/// looks up the Escrow and Locked balances of the given address in the Storage
 /// Market
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_market_balance&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_market_balance&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateMarketBalanceParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateMarketBalanceResult, JsonRpcError&gt; {
     <span class="kw">let </span>(address, key) = params;
@@ -506,11 +466,8 @@
         .map_err(|e| e.into())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_market_deals&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_market_deals&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateMarketDealsParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateMarketDealsResult, JsonRpcError&gt; {
     <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
@@ -545,11 +502,8 @@
 }
 
 <span class="doccomment">/// returns the message receipt for the given message
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_get_receipt&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_get_receipt&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateGetReceiptParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateGetReceiptResult, JsonRpcError&gt; {
     <span class="kw">let </span>(cidjson, key) = params;
@@ -566,11 +520,8 @@
 }
 <span class="doccomment">/// looks back in the chain for a message. If not found, it blocks until the
 /// message arrives on chain, and gets to the indicated confidence depth.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_wait_msg&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_wait_msg&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateWaitMsgParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateWaitMsgResult, JsonRpcError&gt; {
     <span class="kw">let </span>(cidjson, confidence) = params;
@@ -607,11 +558,8 @@
 /// This function has two primary uses: (1) Downloading specific state-roots when Forest deviates
 /// from the mainline blockchain, (2) fetching historical state-trees to verify past versions of the
 /// consensus rules.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_fetch_root&lt;
-    DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_fetch_root&lt;DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params((CidJson(root_cid), save_to_file)): Params&lt;StateFetchRootParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateFetchRootResult, JsonRpcError&gt; {
     <span class="kw">let </span>network_send = data.network_send.clone();

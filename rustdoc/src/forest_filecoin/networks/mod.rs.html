@@ -308,17 +308,10 @@
 <a href="#308" id="308">308</a>
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{fmt::Display, str::FromStr, sync::Arc};
+</span><span class="kw">use </span>std::{fmt::Display, str::FromStr};
 
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconPoint, BeaconSchedule, DrandBeacon, DrandConfig};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCH_DURATION_SECONDS};
@@ -577,28 +570,21 @@
         From::from(height)
     }
 
-    <span class="kw">pub fn </span>get_beacon_schedule(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        genesis_ts: u64,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;BeaconSchedule&lt;DrandBeacon&gt;, anyhow::Error&gt; {
+    <span class="kw">pub fn </span>get_beacon_schedule(<span class="kw-2">&amp;</span><span class="self">self</span>, genesis_ts: u64) -&gt; BeaconSchedule&lt;DrandBeacon&gt; {
         <span class="kw">let </span>ds_iter = <span class="kw">match </span><span class="self">self</span>.network {
             NetworkChain::Mainnet =&gt; mainnet::DRAND_SCHEDULE.iter(),
             NetworkChain::Calibnet =&gt; calibnet::DRAND_SCHEDULE.iter(),
             NetworkChain::Devnet(<span class="kw">_</span>) =&gt; devnet::DRAND_SCHEDULE.iter(),
         };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>points = BeaconSchedule::with_capacity(ds_iter.len());
-        <span class="kw">for </span>dc <span class="kw">in </span>ds_iter {
-            points.<span class="number">0</span>.push(BeaconPoint {
-                height: dc.height,
-                beacon: Arc::new(DrandBeacon::new(
-                    genesis_ts,
-                    <span class="self">self</span>.block_delay_secs,
-                    dc.config,
-                )<span class="question-mark">?</span>),
-            });
-        }
-        <span class="prelude-val">Ok</span>(points)
+        BeaconSchedule(
+            ds_iter
+                .map(|dc| BeaconPoint {
+                    height: dc.height,
+                    beacon: DrandBeacon::new(genesis_ts, <span class="self">self</span>.block_delay_secs, dc.config),
+                })
+                .collect(),
+        )
     }
 
     <span class="kw">pub fn </span>epoch(<span class="kw-2">&amp;</span><span class="self">self</span>, height: Height) -&gt; ChainEpoch {

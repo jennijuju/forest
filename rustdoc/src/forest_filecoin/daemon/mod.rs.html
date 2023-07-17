@@ -822,6 +822,12 @@
 <a href="#822" id="822">822</a>
 <a href="#823" id="823">823</a>
 <a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1190,7 +1196,13 @@
         services.spawn(<span class="kw">async move </span>{
             <span class="macro">info!</span>(<span class="string">&quot;JSON-RPC endpoint started at {}&quot;</span>, config.client.rpc_address);
             <span class="comment">// XXX: The JSON error message are a nightmare to print.
-            </span>start_rpc::&lt;<span class="kw">_</span>, <span class="kw">_</span>, cns::FullConsensus&gt;(
+            </span><span class="kw">let </span>beacon = Arc::new(
+                rpc_state_manager
+                    .chain_config()
+                    .get_beacon_schedule(chain_store.genesis()<span class="question-mark">?</span>.timestamp())
+                    .into_dyn(),
+            );
+            start_rpc(
                 Arc::new(RPCState {
                     state_manager: Arc::clone(<span class="kw-2">&amp;</span>rpc_state_manager),
                     keystore: keystore_rpc,
@@ -1201,7 +1213,7 @@
                     network_name,
                     start_time,
                     <span class="comment">// TODO: the RPCState can fetch this itself from the StateManager
-                    </span>beacon: rpc_state_manager.beacon_schedule(),
+                    </span>beacon,
                     chain_store: rpc_chain_store,
                     new_mined_block_tx: tipset_sink,
                     gc_event_tx,

@@ -36,26 +36,21 @@
 <a href="#36" id="36">36</a>
 <a href="#37" id="37">37</a>
 <a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
-<a href="#40" id="40">40</a>
-<a href="#41" id="41">41</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::auth::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{auth_api::<span class="kw-2">*</span>, data_types::RPCState};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 
 <span class="doccomment">/// RPC call to create a new JWT Token
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_new&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_new&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;AuthNewParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;AuthNewResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>auth_params: AuthNewParams = params;
     <span class="kw">let </span>ks = data.keystore.read().<span class="kw">await</span>;
@@ -65,13 +60,12 @@
 }
 
 <span class="doccomment">/// RPC call to verify JWT Token and return the token&#39;s permissions
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_verify&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_verify&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;AuthVerifyParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;AuthVerifyResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>ks = data.keystore.read().<span class="kw">await</span>;
     <span class="kw">let </span>(header_raw,) = params;

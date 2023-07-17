@@ -23,7 +23,6 @@
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -35,13 +34,12 @@
 <span class="doccomment">/// `BeaconGetEntry` returns the beacon entry for the given Filecoin epoch. If
 /// the entry has not yet been produced, the call will block until the entry
 /// becomes available
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>beacon_get_entry&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>beacon_get_entry&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;BeaconGetEntryParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;BeaconGetEntryResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(first,) = params;
     <span class="kw">let </span>(<span class="kw">_</span>, beacon) = data.beacon.beacon_for_epoch(first)<span class="question-mark">?</span>;

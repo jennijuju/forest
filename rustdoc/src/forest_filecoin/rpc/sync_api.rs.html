@@ -213,16 +213,11 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
-</span><span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
-<span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncState;
+</span><span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncState;
 <span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     data_types::{RPCState, RPCSyncState},
@@ -233,26 +228,24 @@
 <span class="kw">use </span>parking_lot::RwLock;
 
 <span class="doccomment">/// Checks if a given block is marked as bad.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_check_bad&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_check_bad&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;SyncCheckBadParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;SyncCheckBadResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(cid),) = params;
     <span class="prelude-val">Ok</span>(data.bad_blocks.peek(<span class="kw-2">&amp;</span>cid).unwrap_or_default())
 }
 
 <span class="doccomment">/// Marks a block as bad, meaning it will never be synced.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_mark_bad&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_mark_bad&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;SyncMarkBadParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;SyncMarkBadResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(cid),) = params;
     data.bad_blocks
@@ -265,12 +258,11 @@
 }
 
 <span class="doccomment">/// Returns the current status of the `ChainSync` process.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_state&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_state&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;SyncStateResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>active_syncs = <span class="macro">vec!</span>[clone_state(data.sync_state.as_ref()).<span class="kw">await</span>];
     <span class="prelude-val">Ok</span>(RPCSyncState { active_syncs })
@@ -300,14 +292,14 @@
 
     <span class="kw">const </span>TEST_NET_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;test&quot;</span>;
 
-    <span class="kw">fn </span>state_setup() -&gt; (
-        Arc&lt;RPCState&lt;MemoryDB, MockBeacon&gt;&gt;,
-        flume::Receiver&lt;NetworkMessage&gt;,
-    ) {
-        <span class="kw">let </span>beacon = Arc::new(BeaconSchedule(<span class="macro">vec!</span>[BeaconPoint {
-            height: <span class="number">0</span>,
-            beacon: Arc::new(MockBeacon::default()),
-        }]));
+    <span class="kw">fn </span>state_setup() -&gt; (Arc&lt;RPCState&lt;MemoryDB&gt;&gt;, flume::Receiver&lt;NetworkMessage&gt;) {
+        <span class="kw">let </span>beacon = Arc::new(
+            BeaconSchedule(<span class="macro">vec!</span>[BeaconPoint {
+                height: <span class="number">0</span>,
+                beacon: MockBeacon::default(),
+            }])
+            .into_dyn(),
+        );
 
         <span class="kw">let </span>(network_send, network_rx) = flume::bounded(<span class="number">5</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();

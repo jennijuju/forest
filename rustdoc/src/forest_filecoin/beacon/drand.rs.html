@@ -309,10 +309,39 @@
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
 <a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{borrow::Cow, sync::Arc};
+</span><span class="kw">use </span>std::borrow::Cow;
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
@@ -374,6 +403,10 @@
 <span class="kw">where
     </span>T: Beacon,
 {
+    <span class="kw">pub fn </span>into_dyn(<span class="self">self</span>: BeaconSchedule&lt;T&gt;) -&gt; BeaconSchedule&lt;Box&lt;<span class="kw">dyn </span>Beacon&gt;&gt; {
+        BeaconSchedule(<span class="self">self</span>.<span class="number">0</span>.into_iter().map(BeaconPoint::into_dyn).collect())
+    }
+
     <span class="doccomment">/// Constructs a new, empty `BeaconSchedule&lt;T&gt;` with the specified capacity.
     </span><span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
         BeaconSchedule(Vec::with_capacity(capacity))
@@ -431,7 +464,7 @@
             </span>.iter()
             .rev()
             .find(|upgrade| epoch &gt;= upgrade.height)
-            .map(|upgrade| (upgrade.height, upgrade.beacon.as_ref()))
+            .map(|upgrade| (upgrade.height, <span class="kw-2">&amp;</span>upgrade.beacon))
             .context(<span class="string">&quot;Invalid beacon schedule, no valid beacon&quot;</span>)
     }
 }
@@ -440,7 +473,16 @@
 /// itself.
 </span><span class="kw">pub struct </span>BeaconPoint&lt;T&gt; {
     <span class="kw">pub </span>height: ChainEpoch,
-    <span class="kw">pub </span>beacon: Arc&lt;T&gt;,
+    <span class="kw">pub </span>beacon: T,
+}
+
+<span class="kw">impl</span>&lt;T: Beacon&gt; BeaconPoint&lt;T&gt; {
+    <span class="kw">fn </span>into_dyn(<span class="self">self</span>) -&gt; BeaconPoint&lt;Box&lt;<span class="kw">dyn </span>Beacon&gt;&gt; {
+        BeaconPoint {
+            height: <span class="self">self</span>.height,
+            beacon: Box::new(<span class="self">self</span>.beacon),
+        }
+    }
 }
 
 <span class="attr">#[async_trait]
@@ -448,7 +490,7 @@
 /// beacon.
 </span><span class="kw">pub trait </span>Beacon
 <span class="kw">where
-    </span><span class="self">Self</span>: Sized + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span><span class="self">Self</span>: Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="doccomment">/// Verify a new beacon entry against the most recent one before it.
     </span><span class="kw">fn </span>verify_entry(<span class="kw-2">&amp;</span><span class="self">self</span>, curr: <span class="kw-2">&amp;</span>BeaconEntry, prev: <span class="kw-2">&amp;</span>BeaconEntry) -&gt; <span class="prelude-ty">Result</span>&lt;bool, anyhow::Error&gt;;
@@ -463,6 +505,26 @@
         network_version: NetworkVersion,
         fil_epoch: ChainEpoch,
     ) -&gt; u64;
+}
+
+<span class="attr">#[async_trait]
+</span><span class="kw">impl </span>Beacon <span class="kw">for </span>Box&lt;<span class="kw">dyn </span>Beacon&gt; {
+    <span class="kw">fn </span>verify_entry(<span class="kw-2">&amp;</span><span class="self">self</span>, curr: <span class="kw-2">&amp;</span>BeaconEntry, prev: <span class="kw-2">&amp;</span>BeaconEntry) -&gt; <span class="prelude-ty">Result</span>&lt;bool, anyhow::Error&gt; {
+        <span class="self">self</span>.as_ref().verify_entry(curr, prev)
+    }
+
+    <span class="kw">async fn </span>entry(<span class="kw-2">&amp;</span><span class="self">self</span>, round: u64) -&gt; <span class="prelude-ty">Result</span>&lt;BeaconEntry, anyhow::Error&gt; {
+        <span class="self">self</span>.as_ref().entry(round).<span class="kw">await
+    </span>}
+
+    <span class="kw">fn </span>max_beacon_round_for_epoch(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        network_version: NetworkVersion,
+        fil_epoch: ChainEpoch,
+    ) -&gt; u64 {
+        <span class="self">self</span>.as_ref()
+            .max_beacon_round_for_epoch(network_version, fil_epoch)
+    }
 }
 
 <span class="attr">#[derive(SerdeDeserialize, SerdeSerialize, Debug, Clone, PartialEq, Eq, Default)]
@@ -506,14 +568,8 @@
 
 <span class="kw">impl </span>DrandBeacon {
     <span class="doccomment">/// Construct a new `DrandBeacon`.
-    </span><span class="kw">pub fn </span>new(
-        genesis_ts: u64,
-        interval: u64,
-        config: <span class="kw-2">&amp;</span>DrandConfig&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
-        <span class="kw">if </span>genesis_ts == <span class="number">0 </span>{
-            <span class="macro">panic!</span>(<span class="string">&quot;Genesis timestamp cannot be 0&quot;</span>)
-        }
+    </span><span class="kw">pub fn </span>new(genesis_ts: u64, interval: u64, config: <span class="kw-2">&amp;</span>DrandConfig&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="self">Self </span>{
+        <span class="macro">assert!</span>(genesis_ts != <span class="number">0</span>, <span class="string">&quot;Genesis timestamp cannot be 0&quot;</span>);
 
         <span class="kw">let </span>chain_info = <span class="kw-2">&amp;</span>config.chain_info;
 
@@ -535,21 +591,23 @@
                 })
             })
             .join()
-            .expect(<span class="string">&quot;thread panicked&quot;</span>)<span class="question-mark">?</span>;
+            .expect(<span class="string">&quot;thread panicked&quot;</span>)
+            .expect(<span class="string">&quot;failed to fetch remote drand chain info&quot;</span>);
             <span class="macro">debug_assert!</span>(<span class="kw-2">&amp;</span>remote_chain_info == chain_info);
         }
 
-        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+        <span class="self">Self </span>{
             url: config.server,
             pub_key: DrandPublic {
-                coefficient: hex::decode(chain_info.public_key.as_ref())<span class="question-mark">?</span>,
+                coefficient: hex::decode(chain_info.public_key.as_ref())
+                    .expect(<span class="string">&quot;invalid static encoding of drand hex public key&quot;</span>),
             },
             interval: chain_info.period <span class="kw">as </span>u64,
             drand_gen_time: chain_info.genesis_time <span class="kw">as </span>u64,
             fil_round_time: interval,
             fil_gen_time: genesis_ts,
             local_cache: Default::default(),
-        })
+        }
     }
 }
 

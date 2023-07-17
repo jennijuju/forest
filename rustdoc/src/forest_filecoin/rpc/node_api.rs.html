@@ -55,26 +55,18 @@
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span>std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCState, node_api::NodeStatusResult};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError};
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>node_status&lt;
-    DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>node_status&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NodeStatusResult, JsonRpcError&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>node_status = NodeStatusResult::default();
 

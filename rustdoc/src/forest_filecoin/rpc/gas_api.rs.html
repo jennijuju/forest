@@ -248,21 +248,11 @@
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
-</span><span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, TipsetKeys};
+</span><span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::{BASE_FEE_MAX_CHANGE_DENOM, BLOCK_GAS_TARGET, MINIMUM_BASE_FEE};
 <span class="kw">use </span><span class="kw">crate</span>::json::{address::json::AddressJson, message::json::MessageJson};
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
@@ -281,28 +271,26 @@
 <span class="kw">const </span>MIN_GAS_PREMIUM: f64 = <span class="number">100000.0</span>;
 
 <span class="doccomment">/// Estimate the fee cap
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_fee_cap&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_fee_cap&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;GasEstimateFeeCapParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateFeeCapResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(MessageJson(msg), max_queue_blks, TipsetKeysJson(tsk)) = params;
 
-    estimate_fee_cap::&lt;DB, B&gt;(<span class="kw-2">&amp;</span>data, msg, max_queue_blks, tsk).map(|n| TokenAmount::to_string(<span class="kw-2">&amp;</span>n))
+    estimate_fee_cap::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, msg, max_queue_blks, tsk).map(|n| TokenAmount::to_string(<span class="kw-2">&amp;</span>n))
 }
 
-<span class="kw">fn </span>estimate_fee_cap&lt;DB, B&gt;(
-    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">fn </span>estimate_fee_cap&lt;DB&gt;(
+    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB&gt;&gt;,
     msg: Message,
     max_queue_blks: i64,
     _tsk: TipsetKeys,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>ts = data.state_manager.chain_store().heaviest_tipset();
 
@@ -319,27 +307,25 @@
 }
 
 <span class="doccomment">/// Estimate the fee cap
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_gas_premium&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_gas_premium&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;GasEstimateGasPremiumParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateGasPremiumResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(nblocksincl, AddressJson(_sender), _gas_limit, TipsetKeysJson(_tsk)) = params;
-    estimate_gas_premium::&lt;DB, B&gt;(<span class="kw-2">&amp;</span>data, nblocksincl)
+    estimate_gas_premium::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, nblocksincl)
         .<span class="kw">await
         </span>.map(|n| TokenAmount::to_string(<span class="kw-2">&amp;</span>n))
 }
 
-<span class="kw">async fn </span>estimate_gas_premium&lt;DB, B&gt;(
-    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">async fn </span>estimate_gas_premium&lt;DB&gt;(
+    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB&gt;&gt;,
     <span class="kw-2">mut </span>nblocksincl: u64,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">if </span>nblocksincl == <span class="number">0 </span>{
         nblocksincl = <span class="number">1</span>;
@@ -420,26 +406,24 @@
 }
 
 <span class="doccomment">/// Estimate the gas limit
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_gas_limit&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_gas_limit&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;GasEstimateGasLimitParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateGasLimitResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(MessageJson(msg), TipsetKeysJson(tsk)) = params;
-    estimate_gas_limit::&lt;DB, B&gt;(<span class="kw-2">&amp;</span>data, msg, tsk).<span class="kw">await
+    estimate_gas_limit::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, msg, tsk).<span class="kw">await
 </span>}
 
-<span class="kw">async fn </span>estimate_gas_limit&lt;DB, B&gt;(
-    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">async fn </span>estimate_gas_limit&lt;DB&gt;(
+    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB&gt;&gt;,
     msg: Message,
     <span class="kw">_</span>: TipsetKeys,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;i64, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>msg = msg;
     msg.set_gas_limit(BLOCK_GAS_LIMIT);
@@ -476,33 +460,31 @@
 }
 
 <span class="doccomment">/// Estimates the gas parameters for a given message
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_message_gas&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>gas_estimate_message_gas&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;GasEstimateMessageGasParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateMessageGasResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(MessageJson(msg), spec, TipsetKeysJson(tsk)) = params;
-    estimate_message_gas::&lt;DB, B&gt;(<span class="kw-2">&amp;</span>data, msg, spec, tsk)
+    estimate_message_gas::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, msg, spec, tsk)
         .<span class="kw">await
         </span>.map(MessageJson::from)
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>estimate_message_gas&lt;DB, B&gt;(
-    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>estimate_message_gas&lt;DB&gt;(
+    data: <span class="kw-2">&amp;</span>Data&lt;RPCState&lt;DB&gt;&gt;,
     msg: Message,
     _spec: <span class="prelude-ty">Option</span>&lt;MessageSendSpec&gt;,
     tsk: TipsetKeys,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Message, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>msg = msg;
     <span class="kw">if </span>msg.gas_limit == <span class="number">0 </span>{
-        <span class="kw">let </span>gl = estimate_gas_limit::&lt;DB, B&gt;(data, msg.clone(), tsk.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>gl = estimate_gas_limit::&lt;DB&gt;(data, msg.clone(), tsk.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
         msg.set_gas_limit(gl <span class="kw">as </span>u64);
     }
     <span class="kw">if </span>msg.gas_premium.is_zero() {

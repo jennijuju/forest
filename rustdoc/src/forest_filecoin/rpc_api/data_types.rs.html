@@ -126,7 +126,6 @@
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -157,10 +156,9 @@
 
 <span class="doccomment">/// This is where you store persistent data, or at least access to stateful
 /// data.
-</span><span class="kw">pub struct </span>RPCState&lt;DB, B&gt;
+</span><span class="kw">pub struct </span>RPCState&lt;DB&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">pub </span>keystore: Arc&lt;RwLock&lt;KeyStore&gt;&gt;,
     <span class="kw">pub </span>chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
@@ -172,7 +170,7 @@
     <span class="kw">pub </span>network_name: String,
     <span class="kw">pub </span>start_time: chrono::DateTime&lt;Utc&gt;,
     <span class="kw">pub </span>new_mined_block_tx: flume::Sender&lt;Arc&lt;Tipset&gt;&gt;,
-    <span class="kw">pub </span>beacon: Arc&lt;BeaconSchedule&lt;B&gt;&gt;,
+    <span class="kw">pub </span>beacon: Arc&lt;BeaconSchedule&lt;Box&lt;<span class="kw">dyn </span>Beacon&gt;&gt;&gt;,
     <span class="kw">pub </span>gc_event_tx: flume::Sender&lt;flume::Sender&lt;anyhow::Result&lt;()&gt;&gt;&gt;,
 }
 

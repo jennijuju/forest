@@ -1570,7 +1570,7 @@
         reward_calc: Arc&lt;<span class="kw">dyn </span>RewardCalc&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
         <span class="kw">let </span>genesis = cs.genesis()<span class="question-mark">?</span>;
-        <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis.timestamp())<span class="question-mark">?</span>);
+        <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis.timestamp()));
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             cs,

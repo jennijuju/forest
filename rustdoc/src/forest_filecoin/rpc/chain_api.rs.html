@@ -339,21 +339,6 @@
 <a href="#339" id="339">339</a>
 <a href="#340" id="340">340</a>
 <a href="#341" id="341">341</a>
-<a href="#342" id="342">342</a>
-<a href="#343" id="343">343</a>
-<a href="#344" id="344">344</a>
-<a href="#345" id="345">345</a>
-<a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
-<a href="#354" id="354">354</a>
-<a href="#355" id="355">355</a>
-<a href="#356" id="356">356</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -363,7 +348,6 @@
     sync::Arc,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{
     header::json::BlockHeaderJson, tipset_json::TipsetJson, tipset_keys_json::TipsetKeysJson,
     BlockHeader, Tipset,
@@ -385,13 +369,12 @@
 <span class="kw">use </span>tokio::{io::AsyncWriteExt, sync::Mutex};
 <span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_message&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_message&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainGetMessageParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetMessageResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(msg_cid),) = params;
     <span class="kw">let </span>ret: Message = data
@@ -402,8 +385,8 @@
     <span class="prelude-val">Ok</span>(MessageJson(ret))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_export&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_export&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(ChainExportParams {
         epoch,
         recent_roots,
@@ -415,7 +398,6 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainExportResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="macro">lazy_static::lazy_static! </span>{
         <span class="kw">static </span><span class="kw-2">ref </span>LOCK: Mutex&lt;()&gt; = Mutex::new(());
@@ -505,13 +487,12 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_read_obj&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_read_obj&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainReadObjParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainReadObjResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(obj_cid),) = params;
     <span class="kw">let </span>ret = data
@@ -522,25 +503,23 @@
     <span class="prelude-val">Ok</span>(hex::encode(ret))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_has_obj&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_has_obj&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainHasObjParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainHasObjResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(obj_cid),) = params;
     <span class="prelude-val">Ok</span>(data.state_manager.blockstore().get(<span class="kw-2">&amp;</span>obj_cid)<span class="question-mark">?</span>.is_some())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block_messages&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block_messages&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainGetBlockMessagesParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetBlockMessagesResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(blk_cid),) = params;
     <span class="kw">let </span>blk: BlockHeader = data
@@ -569,13 +548,12 @@
     <span class="prelude-val">Ok</span>(ret)
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_by_height&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_by_height&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainGetTipsetByHeightParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipsetByHeightResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(height, tsk) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
@@ -586,36 +564,33 @@
     <span class="prelude-val">Ok</span>(TipsetJson(tss))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_genesis&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_genesis&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetGenesisResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>genesis = data.state_manager.chain_store().genesis()<span class="question-mark">?</span>;
     <span class="kw">let </span>gen_ts = Arc::new(Tipset::from(genesis));
     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(TipsetJson(gen_ts)))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_head&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_head&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainHeadResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>heaviest = data.state_manager.chain_store().heaviest_tipset();
     <span class="prelude-val">Ok</span>(TipsetJson(heaviest))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainGetBlockParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetBlockResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJson(blk_cid),) = params;
     <span class="kw">let </span>blk: BlockHeader = data
@@ -626,39 +601,36 @@
     <span class="prelude-val">Ok</span>(BlockHeaderJson(blk))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainGetTipSetParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipSetResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(TipsetJson(ts))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_hash&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_hash&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainGetTipSetHashParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipSetHashResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_hash_from_keys(<span class="kw-2">&amp;</span>tsk);
     <span class="prelude-val">Ok</span>(ts)
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_validate_tipset_checkpoints&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_validate_tipset_checkpoints&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainValidateTipSetCheckpointsParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainValidateTipSetCheckpointsResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>() = params;
 
@@ -673,25 +645,23 @@
     <span class="prelude-val">Ok</span>(<span class="string">&quot;Ok&quot;</span>.to_string())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_name&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_name&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetNameResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="prelude-val">Ok</span>(data.state_manager.chain_config().network.to_string())
 }
 
 <span class="comment">// This is basically a port of the reference implementation at
 // https://github.com/filecoin-project/lotus/blob/v1.23.0/node/impl/full/chain.go#L321
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_set_head&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_set_head&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;ChainSetHeadParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainSetHeadResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(params,) = params;
     <span class="kw">let </span>new_head = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>;

@@ -220,23 +220,11 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 </span><span class="kw">use </span>std::{convert::TryFrom, str::FromStr};
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
 <span class="kw">use </span><span class="kw">crate</span>::json::{address::json::AddressJson, signature::json::SignatureJson};
 <span class="kw">use </span><span class="kw">crate</span>::key_management::{json::KeyInfoJson, Error, Key};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCState, wallet_api::<span class="kw-2">*</span>};
@@ -247,13 +235,12 @@
 <span class="kw">use </span>num_traits::Zero;
 
 <span class="doccomment">/// Return the balance from `StateManager` for a given `Address`
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_balance&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_balance&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletBalanceParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletBalanceResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(addr_str,) = params;
     <span class="kw">let </span>address = Address::from_str(<span class="kw-2">&amp;</span>addr_str)<span class="question-mark">?</span>;
@@ -276,12 +263,11 @@
 }
 
 <span class="doccomment">/// Get the default Address for the Wallet
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_default_address&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_default_address&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletDefaultAddressResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>keystore = data.keystore.read().<span class="kw">await</span>;
 
@@ -290,13 +276,12 @@
 }
 
 <span class="doccomment">/// Export `KeyInfo` from the Wallet given its address
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_export&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_export&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletExportParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletExportResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(addr_str,) = params;
     <span class="kw">let </span>addr = Address::from_str(<span class="kw-2">&amp;</span>addr_str)<span class="question-mark">?</span>;
@@ -308,13 +293,12 @@
 }
 
 <span class="doccomment">/// Return whether or not a Key is in the Wallet
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_has&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_has&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletHasParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletHasResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(addr_str,) = params;
     <span class="kw">let </span>addr = Address::from_str(<span class="kw-2">&amp;</span>addr_str)<span class="question-mark">?</span>;
@@ -326,13 +310,12 @@
 }
 
 <span class="doccomment">/// Import `KeyInfo` to the Wallet, return the Address that corresponds to it
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_import&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_import&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletImportParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletImportResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>key_info: <span class="kw">crate</span>::key_management::KeyInfo = <span class="kw">match </span>params.first().cloned() {
         <span class="prelude-val">Some</span>(key_info) =&gt; key_info.into(),
@@ -359,12 +342,11 @@
 }
 
 <span class="doccomment">/// List all Addresses in the Wallet
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_list&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_list&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletListResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>keystore = data.keystore.read().<span class="kw">await</span>;
     <span class="prelude-val">Ok</span>(<span class="kw">crate</span>::key_management::list_addrs(<span class="kw-2">&amp;</span>keystore)<span class="question-mark">?
@@ -374,13 +356,12 @@
 }
 
 <span class="doccomment">/// Generate a new Address that is stored in the Wallet
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_new&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_new&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletNewParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletNewResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(sig_raw,) = params;
     <span class="kw">let </span><span class="kw-2">mut </span>keystore = data.keystore.write().<span class="kw">await</span>;
@@ -397,13 +378,12 @@
 }
 
 <span class="doccomment">/// Set the default Address for the Wallet
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_set_default&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_set_default&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletSetDefaultParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletSetDefaultResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(address,) = params;
     <span class="kw">let </span><span class="kw-2">mut </span>keystore = data.keystore.write().<span class="kw">await</span>;
@@ -416,13 +396,12 @@
 }
 
 <span class="doccomment">/// Sign a vector of bytes
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_sign&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_sign&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletSignParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletSignResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
     <span class="kw">let </span>(addr, msg_string) = params;
@@ -450,13 +429,12 @@
 }
 
 <span class="doccomment">/// Verify a Signature, true if verified, false otherwise
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_verify&lt;DB, B&gt;(
-    _data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>wallet_verify&lt;DB&gt;(
+    _data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;WalletVerifyParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletVerifyResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
-    B: Beacon,
 {
     <span class="kw">let </span>(addr, msg, SignatureJson(sig)) = params;
     <span class="kw">let </span>address = addr.<span class="number">0</span>;

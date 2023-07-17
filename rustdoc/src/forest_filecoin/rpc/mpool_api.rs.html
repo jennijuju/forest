@@ -143,17 +143,12 @@
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span>std::convert::TryFrom;
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
 <span class="kw">use </span><span class="kw">crate</span>::json::{
     cid::{vec::CidJsonVec, CidJson},
@@ -170,13 +165,12 @@
 <span class="kw">use </span><span class="kw">super</span>::gas_api::estimate_message_gas;
 
 <span class="doccomment">/// Return `Vec` of pending messages in `mpool`
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_pending&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_pending&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;MpoolPendingParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPendingResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(CidJsonVec(cid_vec),) = params;
     <span class="kw">let </span>tsk = TipsetKeys::new(cid_vec);
@@ -230,13 +224,12 @@
 }
 
 <span class="doccomment">/// Add `SignedMessage` to `mpool`, return message CID
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_push&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_push&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;MpoolPushParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(SignedMessageJson(smsg),) = params;
 
@@ -246,13 +239,12 @@
 }
 
 <span class="doccomment">/// Sign given `UnsignedMessage` and add it to `mpool`, return `SignedMessage`
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_push_message&lt;DB, B&gt;(
-    data: Data&lt;RPCState&lt;DB, B&gt;&gt;,
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_push_message&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;MpoolPushMessageParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushMessageResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
 {
     <span class="kw">let </span>(MessageJson(umsg), spec) = params;
 
@@ -270,7 +262,7 @@
             <span class="string">&quot;Expected nonce for MpoolPushMessage is 0, and will be calculated for you.&quot;</span>.into(),
         );
     }
-    <span class="kw">let </span><span class="kw-2">mut </span>umsg = estimate_message_gas::&lt;DB, B&gt;(<span class="kw-2">&amp;</span>data, umsg, spec, Default::default()).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>umsg = estimate_message_gas::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, umsg, spec, Default::default()).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">if </span>umsg.gas_premium &gt; umsg.gas_fee_cap {
         <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;After estimation, gas premium is greater than gas fee cap&quot;</span>.into());
     }

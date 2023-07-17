@@ -150,13 +150,6 @@
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
 <a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -179,8 +172,6 @@
 
 <span class="kw">use </span>std::{net::TcpListener, sync::Arc};
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::Beacon;
-<span class="kw">use </span><span class="kw">crate</span>::chain::Scale;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     auth_api::<span class="kw-2">*</span>, beacon_api::<span class="kw-2">*</span>, chain_api::<span class="kw-2">*</span>, common_api::<span class="kw-2">*</span>, data_types::RPCState, db_api::<span class="kw-2">*</span>,
     gas_api::<span class="kw-2">*</span>, mpool_api::<span class="kw-2">*</span>, net_api::<span class="kw-2">*</span>, node_api::NODE_STATUS, progress_api::GET_PROGRESS,
@@ -202,16 +193,14 @@
 
 <span class="kw">pub type </span>RpcResult&lt;T&gt; = <span class="prelude-ty">Result</span>&lt;T, JSONRPCError&gt;;
 
-<span class="kw">pub async fn </span>start_rpc&lt;DB, B, S&gt;(
-    state: Arc&lt;RPCState&lt;DB, B&gt;&gt;,
+<span class="kw">pub async fn </span>start_rpc&lt;DB&gt;(
+    state: Arc&lt;RPCState&lt;DB&gt;&gt;,
     rpc_endpoint: TcpListener,
     forest_version: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
     shutdown_send: Sender&lt;()&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), JSONRPCError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    B: Beacon,
-    S: Scale + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">use </span>auth_api::<span class="kw-2">*</span>;
     <span class="kw">use </span>chain_api::<span class="kw-2">*</span>;
@@ -225,81 +214,78 @@
         Server::new()
             .with_data(Data(state))
             <span class="comment">// Auth API
-            </span>.with_method(AUTH_NEW, auth_new::&lt;DB, B&gt;)
-            .with_method(AUTH_VERIFY, auth_verify::&lt;DB, B&gt;)
+            </span>.with_method(AUTH_NEW, auth_new::&lt;DB&gt;)
+            .with_method(AUTH_VERIFY, auth_verify::&lt;DB&gt;)
             <span class="comment">// Beacon API
-            </span>.with_method(BEACON_GET_ENTRY, beacon_get_entry::&lt;DB, B&gt;)
+            </span>.with_method(BEACON_GET_ENTRY, beacon_get_entry::&lt;DB&gt;)
             <span class="comment">// Chain API
-            </span>.with_method(CHAIN_GET_MESSAGE, chain_api::chain_get_message::&lt;DB, B&gt;)
-            .with_method(CHAIN_EXPORT, chain_api::chain_export::&lt;DB, B&gt;)
-            .with_method(CHAIN_READ_OBJ, chain_read_obj::&lt;DB, B&gt;)
-            .with_method(CHAIN_HAS_OBJ, chain_has_obj::&lt;DB, B&gt;)
-            .with_method(CHAIN_GET_BLOCK_MESSAGES, chain_get_block_messages::&lt;DB, B&gt;)
-            .with_method(
-                CHAIN_GET_TIPSET_BY_HEIGHT,
-                chain_get_tipset_by_height::&lt;DB, B&gt;,
-            )
-            .with_method(CHAIN_GET_GENESIS, chain_get_genesis::&lt;DB, B&gt;)
-            .with_method(CHAIN_GET_TIPSET, chain_get_tipset::&lt;DB, B&gt;)
-            .with_method(CHAIN_GET_TIPSET_HASH, chain_get_tipset_hash::&lt;DB, B&gt;)
+            </span>.with_method(CHAIN_GET_MESSAGE, chain_api::chain_get_message::&lt;DB&gt;)
+            .with_method(CHAIN_EXPORT, chain_api::chain_export::&lt;DB&gt;)
+            .with_method(CHAIN_READ_OBJ, chain_read_obj::&lt;DB&gt;)
+            .with_method(CHAIN_HAS_OBJ, chain_has_obj::&lt;DB&gt;)
+            .with_method(CHAIN_GET_BLOCK_MESSAGES, chain_get_block_messages::&lt;DB&gt;)
+            .with_method(CHAIN_GET_TIPSET_BY_HEIGHT, chain_get_tipset_by_height::&lt;DB&gt;)
+            .with_method(CHAIN_GET_GENESIS, chain_get_genesis::&lt;DB&gt;)
+            .with_method(CHAIN_GET_TIPSET, chain_get_tipset::&lt;DB&gt;)
+            .with_method(CHAIN_GET_TIPSET_HASH, chain_get_tipset_hash::&lt;DB&gt;)
             .with_method(
                 CHAIN_VALIDATE_TIPSET_CHECKPOINTS,
-                chain_validate_tipset_checkpoints::&lt;DB, B&gt;,
+                chain_validate_tipset_checkpoints::&lt;DB&gt;,
             )
-            .with_method(CHAIN_HEAD, chain_head::&lt;DB, B&gt;)
-            .with_method(CHAIN_GET_BLOCK, chain_api::chain_get_block::&lt;DB, B&gt;)
-            .with_method(CHAIN_GET_NAME, chain_api::chain_get_name::&lt;DB, B&gt;)
-            .with_method(CHAIN_SET_HEAD, chain_api::chain_set_head::&lt;DB, B&gt;)
+            .with_method(CHAIN_HEAD, chain_head::&lt;DB&gt;)
+            .with_method(CHAIN_GET_BLOCK, chain_api::chain_get_block::&lt;DB&gt;)
+            .with_method(CHAIN_GET_NAME, chain_api::chain_get_name::&lt;DB&gt;)
+            .with_method(CHAIN_SET_HEAD, chain_api::chain_set_head::&lt;DB&gt;)
             <span class="comment">// Message Pool API
-            </span>.with_method(MPOOL_PENDING, mpool_pending::&lt;DB, B&gt;)
-            .with_method(MPOOL_PUSH, mpool_push::&lt;DB, B&gt;)
-            .with_method(MPOOL_PUSH_MESSAGE, mpool_push_message::&lt;DB, B&gt;)
+            </span>.with_method(MPOOL_PENDING, mpool_pending::&lt;DB&gt;)
+            .with_method(MPOOL_PUSH, mpool_push::&lt;DB&gt;)
+            .with_method(MPOOL_PUSH_MESSAGE, mpool_push_message::&lt;DB&gt;)
             <span class="comment">// Sync API
-            </span>.with_method(SYNC_CHECK_BAD, sync_check_bad::&lt;DB, B&gt;)
-            .with_method(SYNC_MARK_BAD, sync_mark_bad::&lt;DB, B&gt;)
-            .with_method(SYNC_STATE, sync_state::&lt;DB, B&gt;)
+            </span>.with_method(SYNC_CHECK_BAD, sync_check_bad::&lt;DB&gt;)
+            .with_method(SYNC_MARK_BAD, sync_mark_bad::&lt;DB&gt;)
+            .with_method(SYNC_STATE, sync_state::&lt;DB&gt;)
             <span class="comment">// Wallet API
-            </span>.with_method(WALLET_BALANCE, wallet_balance::&lt;DB, B&gt;)
-            .with_method(WALLET_DEFAULT_ADDRESS, wallet_default_address::&lt;DB, B&gt;)
-            .with_method(WALLET_EXPORT, wallet_export::&lt;DB, B&gt;)
-            .with_method(WALLET_HAS, wallet_has::&lt;DB, B&gt;)
-            .with_method(WALLET_IMPORT, wallet_import::&lt;DB, B&gt;)
-            .with_method(WALLET_LIST, wallet_list::&lt;DB, B&gt;)
-            .with_method(WALLET_NEW, wallet_new::&lt;DB, B&gt;)
-            .with_method(WALLET_SET_DEFAULT, wallet_set_default::&lt;DB, B&gt;)
-            .with_method(WALLET_SIGN, wallet_sign::&lt;DB, B&gt;)
-            .with_method(WALLET_VERIFY, wallet_verify::&lt;DB, B&gt;)
+            </span>.with_method(WALLET_BALANCE, wallet_balance::&lt;DB&gt;)
+            .with_method(WALLET_DEFAULT_ADDRESS, wallet_default_address::&lt;DB&gt;)
+            .with_method(WALLET_EXPORT, wallet_export::&lt;DB&gt;)
+            .with_method(WALLET_HAS, wallet_has::&lt;DB&gt;)
+            .with_method(WALLET_IMPORT, wallet_import::&lt;DB&gt;)
+            .with_method(WALLET_LIST, wallet_list::&lt;DB&gt;)
+            .with_method(WALLET_NEW, wallet_new::&lt;DB&gt;)
+            .with_method(WALLET_SET_DEFAULT, wallet_set_default::&lt;DB&gt;)
+            .with_method(WALLET_SIGN, wallet_sign::&lt;DB&gt;)
+            .with_method(WALLET_VERIFY, wallet_verify::&lt;DB&gt;)
             <span class="comment">// State API
-            </span>.with_method(STATE_CALL, state_call::&lt;DB, B&gt;)
-            .with_method(STATE_REPLAY, state_replay::&lt;DB, B&gt;)
-            .with_method(STATE_NETWORK_NAME, state_network_name::&lt;DB, B&gt;)
-            .with_method(STATE_NETWORK_VERSION, state_get_network_version::&lt;DB, B&gt;)
-            .with_method(STATE_REPLAY, state_replay::&lt;DB, B&gt;)
-            .with_method(STATE_MARKET_BALANCE, state_market_balance::&lt;DB, B&gt;)
-            .with_method(STATE_MARKET_DEALS, state_market_deals::&lt;DB, B&gt;)
-            .with_method(STATE_GET_RECEIPT, state_get_receipt::&lt;DB, B&gt;)
-            .with_method(STATE_WAIT_MSG, state_wait_msg::&lt;DB, B&gt;)
-            .with_method(STATE_FETCH_ROOT, state_fetch_root::&lt;DB, B&gt;)
+            </span>.with_method(STATE_CALL, state_call::&lt;DB&gt;)
+            .with_method(STATE_REPLAY, state_replay::&lt;DB&gt;)
+            .with_method(STATE_NETWORK_NAME, state_network_name::&lt;DB&gt;)
+            .with_method(STATE_NETWORK_VERSION, state_get_network_version::&lt;DB&gt;)
+            .with_method(STATE_REPLAY, state_replay::&lt;DB&gt;)
+            .with_method(STATE_MARKET_BALANCE, state_market_balance::&lt;DB&gt;)
+            .with_method(STATE_MARKET_DEALS, state_market_deals::&lt;DB&gt;)
+            .with_method(STATE_GET_RECEIPT, state_get_receipt::&lt;DB&gt;)
+            .with_method(STATE_WAIT_MSG, state_wait_msg::&lt;DB&gt;)
+            .with_method(STATE_FETCH_ROOT, state_fetch_root::&lt;DB&gt;)
             <span class="comment">// Gas API
-            </span>.with_method(GAS_ESTIMATE_FEE_CAP, gas_estimate_fee_cap::&lt;DB, B&gt;)
-            .with_method(GAS_ESTIMATE_GAS_LIMIT, gas_estimate_gas_limit::&lt;DB, B&gt;)
-            .with_method(GAS_ESTIMATE_GAS_PREMIUM, gas_estimate_gas_premium::&lt;DB, B&gt;)
-            .with_method(GAS_ESTIMATE_MESSAGE_GAS, gas_estimate_message_gas::&lt;DB, B&gt;)
+            </span>.with_method(GAS_ESTIMATE_FEE_CAP, gas_estimate_fee_cap::&lt;DB&gt;)
+            .with_method(GAS_ESTIMATE_GAS_LIMIT, gas_estimate_gas_limit::&lt;DB&gt;)
+            .with_method(GAS_ESTIMATE_GAS_PREMIUM, gas_estimate_gas_premium::&lt;DB&gt;)
+            .with_method(GAS_ESTIMATE_MESSAGE_GAS, gas_estimate_message_gas::&lt;DB&gt;)
             <span class="comment">// Common API
             </span>.with_method(VERSION, <span class="kw">move </span>|| version(block_delay, forest_version))
             .with_method(SHUTDOWN, <span class="kw">move </span>|| shutdown(shutdown_send.clone()))
-            .with_method(START_TIME, start_time::&lt;DB, B&gt;)
+            .with_method(START_TIME, start_time::&lt;DB&gt;)
             <span class="comment">// Net API
-            </span>.with_method(NET_ADDRS_LISTEN, net_api::net_addrs_listen::&lt;DB, B&gt;)
-            .with_method(NET_PEERS, net_api::net_peers::&lt;DB, B&gt;)
-            .with_method(NET_CONNECT, net_api::net_connect::&lt;DB, B&gt;)
-            .with_method(NET_DISCONNECT, net_api::net_disconnect::&lt;DB, B&gt;)
+            </span>.with_method(NET_ADDRS_LISTEN, net_api::net_addrs_listen::&lt;DB&gt;)
+            .with_method(NET_PEERS, net_api::net_peers::&lt;DB&gt;)
+            .with_method(NET_CONNECT, net_api::net_connect::&lt;DB&gt;)
+            .with_method(NET_DISCONNECT, net_api::net_disconnect::&lt;DB&gt;)
             <span class="comment">// DB API
-            </span>.with_method(DB_GC, db_api::db_gc::&lt;DB, B&gt;)
+            </span>.with_method(DB_GC, db_api::db_gc::&lt;DB&gt;)
             <span class="comment">// Progress API
             </span>.with_method(GET_PROGRESS, progress_api::get_progress)
             <span class="comment">// Node API
-            </span>.with_method(NODE_STATUS, node_api::node_status::&lt;DB, B&gt;)
+            </span>.with_method(NODE_STATUS, node_api::node_status::&lt;DB&gt;)
             .finish_unwrapped(),
     );
 
