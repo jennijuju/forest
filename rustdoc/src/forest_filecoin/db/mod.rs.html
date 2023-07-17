@@ -77,47 +77,64 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">mod </span>errors;
-<span class="kw">mod </span>memory;
+</span><span class="kw">mod </span>memory;
 <span class="kw">mod </span>metrics;
 <span class="kw">pub mod </span>parity_db;
 <span class="kw">pub mod </span>parity_db_config;
-<span class="kw">pub use </span>errors::Error;
 <span class="kw">pub use </span>memory::MemoryDB;
 
 <span class="kw">pub mod </span>rolling;
 
-<span class="doccomment">/// Store interface used as a KV store implementation
-</span><span class="kw">pub trait </span>Store {
-    <span class="doccomment">/// Read single value from data store and return `None` if key doesn&#39;t
-    /// exist.
-    </span><span class="kw">fn </span>read&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;, Error&gt;
+<span class="doccomment">/// Interface used to store and retrieve settings from the database.
+/// To store IPLD blocks, use the `BlockStore` trait.
+</span><span class="kw">pub trait </span>SettingsStore {
+    <span class="doccomment">/// Reads binary field from the Settings store. This should be used for
+    /// non-serializable data. For serializable data, use [`SettingsStore::read_obj`].
+    </span><span class="kw">fn </span>read_bin&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;;
+        </span>K: AsRef&lt;str&gt;;
 
-    <span class="doccomment">/// Write a single value to the data store.
-    </span><span class="kw">fn </span>write&lt;K, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: V) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
+    <span class="doccomment">/// Writes binary field to the Settings store. This should be used for
+    /// non-serializable data. For serializable data, use [`SettingsStore::write_obj`].
+    </span><span class="kw">fn </span>write_bin&lt;K, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: V) -&gt; anyhow::Result&lt;()&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
+        </span>K: AsRef&lt;str&gt;,
         V: AsRef&lt;[u8]&gt;;
 
-    <span class="doccomment">/// Returns `Ok(true)` if key exists in store
-    </span><span class="kw">fn </span>exists&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt;
+    <span class="kw">fn </span>read_obj&lt;K, T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;T&gt;&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;;
-
-    <span class="doccomment">/// Write slice of KV pairs.
-    </span><span class="kw">fn </span>bulk_write(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        values: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;, <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;)&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        values
-            .into_iter()
-            .try_for_each(|(key, value)| <span class="self">self</span>.write(key.into(), value.into()))
+        </span>K: AsRef&lt;str&gt;,
+        T: serde::de::DeserializeOwned,
+    {
+        <span class="kw">match </span><span class="self">self</span>.read_bin(key)<span class="question-mark">? </span>{
+            <span class="prelude-val">Some</span>(bytes) =&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(serde_json::from_slice(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>)),
+            <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
+        }
     }
+
+    <span class="kw">fn </span>write_obj&lt;K, T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: <span class="kw-2">&amp;</span>T) -&gt; anyhow::Result&lt;()&gt;
+    <span class="kw">where
+        </span>K: AsRef&lt;str&gt;,
+        T: serde::Serialize,
+    {
+        <span class="self">self</span>.write_bin(key, serde_json::to_vec(value)<span class="question-mark">?</span>)
+    }
+
+    <span class="doccomment">/// Returns `Ok(true)` if key exists in store
+    </span><span class="kw">fn </span>exists&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;bool&gt;
+    <span class="kw">where
+        </span>K: AsRef&lt;str&gt;;
 }
 
 <span class="doccomment">/// Traits for collecting DB stats
@@ -134,7 +151,6 @@
 
     <span class="kw">pub type </span>Db = <span class="kw">crate</span>::db::parity_db::ParityDb;
     <span class="kw">pub type </span>DbConfig = <span class="kw">crate</span>::db::parity_db_config::ParityDbConfig;
-    <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::db) <span class="kw">type </span>DbError = parity_db::Error;
     <span class="kw">const </span>DIR_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;paritydb&quot;</span>;
 
     <span class="kw">pub fn </span>db_root(chain_data_root: <span class="kw-2">&amp;</span>Path) -&gt; PathBuf {

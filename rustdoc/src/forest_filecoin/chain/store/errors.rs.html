@@ -64,17 +64,12 @@
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::fmt::Debug;
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Error <span class="kw">as </span>BlkErr;
-<span class="kw">use </span><span class="kw">crate</span>::db::Error <span class="kw">as </span>DbErr;
 <span class="kw">use </span>cid::Error <span class="kw">as </span>CidErr;
 <span class="kw">use </span>fvm_ipld_amt::Error <span class="kw">as </span>AmtErr;
 <span class="kw">use </span>fvm_ipld_encoding::Error <span class="kw">as </span>EncErr;
@@ -89,9 +84,6 @@
     <span class="doccomment">/// Key not found in database
     </span><span class="attr">#[error(<span class="string">&quot;{0} not found&quot;</span>)]
     </span>NotFound(String),
-    <span class="doccomment">/// Error originating from key-value store
-    </span><span class="attr">#[error(transparent)]
-    </span>DB(<span class="attr">#[from] </span>DbErr),
     <span class="doccomment">/// Error originating constructing blockchain structures
     </span><span class="attr">#[error(transparent)]
     </span>Blockchain(<span class="attr">#[from] </span>BlkErr),

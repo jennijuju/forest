@@ -33,16 +33,11 @@
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::fmt::Debug;
 
-<span class="kw">use </span><span class="kw">crate</span>::db::Error <span class="kw">as </span>DbErr;
 <span class="kw">use </span>thiserror::Error;
 <span class="kw">use </span>tokio::task::JoinError;
 
@@ -52,9 +47,6 @@
     <span class="doccomment">/// Error originating from state
     </span><span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
     </span>State(String),
-    <span class="doccomment">/// Error originating from key-value store
-    </span><span class="attr">#[error(transparent)]
-    </span>DB(<span class="attr">#[from] </span>DbErr),
     <span class="doccomment">/// Other state manager error
     </span><span class="attr">#[error(<span class="string">&quot;{0}&quot;</span>)]
     </span>Other(String),

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DIR_NAME"],"fn":["db_root","open_db","open_proxy_db"],"type":["Db","DbConfig","DbError"]};
+window.SIDEBAR_ITEMS = {"constant":["DIR_NAME"],"fn":["db_root","open_db","open_proxy_db"],"type":["Db","DbConfig"]};

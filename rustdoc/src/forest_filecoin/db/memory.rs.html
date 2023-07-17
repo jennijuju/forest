@@ -72,6 +72,9 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -84,54 +87,57 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>parking_lot::RwLock;
 
-<span class="kw">use super</span>::{Error, Store};
+<span class="kw">use </span><span class="kw">super</span>::SettingsStore;
 
-<span class="doccomment">/// A thread-safe `HashMap` wrapper.
-</span><span class="attr">#[derive(Debug, Default, Clone)]
+<span class="attr">#[derive(Debug, Default, Clone)]
 </span><span class="kw">pub struct </span>MemoryDB {
-    db: Arc&lt;RwLock&lt;HashMap&lt;Vec&lt;u8&gt;, Vec&lt;u8&gt;&gt;&gt;&gt;,
+    blockchain_db: Arc&lt;RwLock&lt;HashMap&lt;Vec&lt;u8&gt;, Vec&lt;u8&gt;&gt;&gt;&gt;,
+    settings_db: Arc&lt;RwLock&lt;HashMap&lt;String, Vec&lt;u8&gt;&gt;&gt;&gt;,
 }
 
-<span class="kw">impl </span>Store <span class="kw">for </span>MemoryDB {
-    <span class="kw">fn </span>write&lt;K, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: V) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
+<span class="kw">impl </span>SettingsStore <span class="kw">for </span>MemoryDB {
+    <span class="kw">fn </span>read_bin&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
+        </span>K: AsRef&lt;str&gt;,
+    {
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.settings_db.read().get(key.as_ref()).cloned())
+    }
+
+    <span class="kw">fn </span>write_bin&lt;K, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: V) -&gt; anyhow::Result&lt;()&gt;
+    <span class="kw">where
+        </span>K: AsRef&lt;str&gt;,
         V: AsRef&lt;[u8]&gt;,
     {
-        <span class="self">self</span>.db
+        <span class="self">self</span>.settings_db
             .write()
-            .insert(key.as_ref().to_vec(), value.as_ref().to_vec());
+            .insert(key.as_ref().to_owned(), value.as_ref().to_vec());
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>read&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;, Error&gt;
+    <span class="kw">fn </span>exists&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;bool&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
+        </span>K: AsRef&lt;str&gt;,
     {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.db.read().get(key.as_ref()).cloned())
-    }
-
-    <span class="kw">fn </span>exists&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; <span class="prelude-ty">Result</span>&lt;bool, Error&gt;
-    <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
-    {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.db.read().contains_key(key.as_ref()))
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.settings_db.read().contains_key(key.as_ref()))
     }
 }
 
 <span class="kw">impl </span>Blockstore <span class="kw">for </span>MemoryDB {
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {
-        <span class="self">self</span>.read(k.to_bytes()).map_err(|e| e.into())
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.blockchain_db.read().get(<span class="kw-2">&amp;</span>k.to_bytes()).cloned())
     }
 
     <span class="kw">fn </span>put_keyed(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid, block: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.write(k.to_bytes(), block).map_err(|e| e.into())
+        <span class="self">self</span>.blockchain_db
+            .write()
+            .insert(k.to_bytes(), block.to_vec());
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
 <span class="kw">impl </span>BitswapStoreRead <span class="kw">for </span>MemoryDB {
     <span class="kw">fn </span>contains(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;bool&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.exists(cid.to_bytes())<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.blockchain_db.read().contains_key(<span class="kw-2">&amp;</span>cid.to_bytes()))
     }
 
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {

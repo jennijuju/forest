@@ -320,13 +320,6 @@
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -397,13 +390,13 @@
     }
 }
 
-<span class="kw">impl </span>Store <span class="kw">for </span>RollingDB {
-    <span class="kw">fn </span>read&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;, <span class="kw">crate</span>::db::Error&gt;
+<span class="kw">impl </span>SettingsStore <span class="kw">for </span>RollingDB {
+    <span class="kw">fn </span>read_bin&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
+        </span>K: AsRef&lt;str&gt;,
     {
         <span class="kw">for </span>db <span class="kw">in </span><span class="self">self</span>.db_queue().iter() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = Store::read(db, key.as_ref())<span class="question-mark">? </span>{
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = SettingsStore::read_bin(db, key.as_ref())<span class="question-mark">? </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(v));
             }
         }
@@ -411,12 +404,12 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
 
-    <span class="kw">fn </span>exists&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; <span class="prelude-ty">Result</span>&lt;bool, <span class="kw">crate</span>::db::Error&gt;
+    <span class="kw">fn </span>exists&lt;K&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K) -&gt; anyhow::Result&lt;bool&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
+        </span>K: AsRef&lt;str&gt;,
     {
         <span class="kw">for </span>db <span class="kw">in </span><span class="self">self</span>.db_queue().iter() {
-            <span class="kw">if </span>Store::exists(db, key.as_ref())<span class="question-mark">? </span>{
+            <span class="kw">if </span>SettingsStore::exists(db, key.as_ref())<span class="question-mark">? </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
             }
         }
@@ -424,19 +417,12 @@
         <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
     }
 
-    <span class="kw">fn </span>write&lt;K, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: V) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="kw">crate</span>::db::Error&gt;
+    <span class="kw">fn </span>write_bin&lt;K, V&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: K, value: V) -&gt; anyhow::Result&lt;()&gt;
     <span class="kw">where
-        </span>K: AsRef&lt;[u8]&gt;,
+        </span>K: AsRef&lt;str&gt;,
         V: AsRef&lt;[u8]&gt;,
     {
-        Store::write(<span class="kw-2">&amp;</span><span class="self">self</span>.current(), key, value)
-    }
-
-    <span class="kw">fn </span>bulk_write(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        values: <span class="kw">impl </span>IntoIterator&lt;Item = (<span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;, <span class="kw">impl </span>Into&lt;Vec&lt;u8&gt;&gt;)&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="kw">crate</span>::db::Error&gt; {
-        Store::bulk_write(<span class="kw-2">&amp;</span><span class="self">self</span>.current(), values)
+        SettingsStore::write_bin(<span class="kw-2">&amp;</span><span class="self">self</span>.current(), key, value)
     }
 }
 
