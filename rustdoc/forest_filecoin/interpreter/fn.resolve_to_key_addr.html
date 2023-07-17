@@ -2,7 +2,7 @@
     st: &amp;<a class="enum" href="../shim/state_tree/enum.StateTree.html" title="enum forest_filecoin::shim::state_tree::StateTree">StateTree</a>&lt;S&gt;,
     store: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;BS</a>,
     addr: &amp;<a class="struct" href="../shim/address/struct.Address.html" title="struct forest_filecoin::shim::address::Address">Address</a>
-) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="../shim/address/struct.Address.html" title="struct forest_filecoin::shim::address::Address">Address</a>, <a class="struct" href="https://docs.rs/anyhow/1.0.71/anyhow/struct.Error.html" title="struct anyhow::Error">Error</a>&gt;<span class="where fmt-newline">where
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="struct" href="../shim/address/struct.Address.html" title="struct forest_filecoin::shim::address::Address">Address</a>, <a class="struct" href="https://docs.rs/anyhow/1.0.72/anyhow/struct.Error.html" title="struct anyhow::Error">Error</a>&gt;<span class="where fmt-newline">where
     BS: Blockstore,
     S: Blockstore + <a class="trait" href="https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html" title="trait core::clone::Clone">Clone</a>,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>returns the public key type of address (<code>BLS</code>/<code>SECP256K1</code>) of an account
 actor identified by <code>addr</code>.</p>
