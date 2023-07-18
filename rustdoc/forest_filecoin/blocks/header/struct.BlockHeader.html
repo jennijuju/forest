@@ -27,10 +27,10 @@
 <span class="kw">use </span>cid::multihash::MultihashDigest;
 
 BlockHeader::builder()
-    .messages(Cid::new_v1(DAG_CBOR, Identity.digest(<span class="kw-2">&amp;</span>[]))) <span class="comment">// required
-    </span>.message_receipts(Cid::new_v1(DAG_CBOR, Identity.digest(<span class="kw-2">&amp;</span>[]))) <span class="comment">// required
+    .message_receipts(Cid::new_v1(DAG_CBOR, Identity.digest(<span class="kw-2">&amp;</span>[]))) <span class="comment">// required
     </span>.state_root(Cid::new_v1(DAG_CBOR, Identity.digest(<span class="kw-2">&amp;</span>[]))) <span class="comment">// required
-    </span>.miner_address(Address::new_id(<span class="number">0</span>)) <span class="comment">// optional
+    </span>.miner_address(Address::new_id(<span class="number">0</span>)) <span class="comment">// required
+    </span>.messages(Cid::new_v1(DAG_CBOR, Identity.digest(<span class="kw-2">&amp;</span>[]))) <span class="comment">// optional
     </span>.beacon_entries(Vec::new()) <span class="comment">// optional
     </span>.winning_post_proof(Vec::new()) <span class="comment">// optional
     </span>.election_proof(<span class="prelude-val">None</span>) <span class="comment">// optional

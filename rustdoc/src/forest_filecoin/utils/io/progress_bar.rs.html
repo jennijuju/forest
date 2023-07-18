@@ -131,17 +131,11 @@
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
-<a href="#135" id="135">135</a>
-<a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 // JANK(aatifsyed): I don&#39;t really understand why this module exists, a lot of
 // the code looks wrong
-</span><span class="kw">use </span>std::{io::Stdout, str::FromStr, sync::Arc, time::Duration};
+</span><span class="kw">use </span>std::{io::Stdout, str::FromStr, sync::Arc};
 
 <span class="kw">use </span>is_terminal::IsTerminal;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock};
@@ -205,12 +199,6 @@
     <span class="kw">pub fn </span>message(<span class="kw-2">&amp;</span><span class="self">self</span>, message: <span class="kw-2">&amp;</span>str) {
         <span class="kw">if </span><span class="self">self</span>.display {
             <span class="self">self</span>.inner.lock().message(message);
-        }
-    }
-
-    <span class="kw">pub fn </span>set_max_refresh_rate(<span class="kw-2">&amp;</span><span class="self">self</span>, w: <span class="prelude-ty">Option</span>&lt;Duration&gt;) {
-        <span class="kw">if </span><span class="self">self</span>.display {
-            <span class="self">self</span>.inner.lock().set_max_refresh_rate(w);
         }
     }
 

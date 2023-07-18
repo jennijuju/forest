@@ -376,6 +376,82 @@
 <a href="#376" id="376">376</a>
 <a href="#377" id="377">377</a>
 <a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -384,19 +460,19 @@
 <span class="kw">use </span><span class="kw">crate</span>::car_backed_blockstore::{
     <span class="self">self</span>, CompressedCarV1BackedBlockstore, MaxFrameSizeExceeded, UncompressedCarV1BackedBlockstore,
 };
+<span class="kw">use </span><span class="kw">crate</span>::chain::store::index::checkpoint_tipsets::genesis_from_checkpoint_tipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::fil_cns::composition <span class="kw">as </span>cns;
 <span class="kw">use </span><span class="kw">crate</span>::genesis::read_genesis_header;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{recurse_links_hash, CidHashSet};
-<span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
+<span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{chain_api::ChainExportParams, progress_api::GetProgressType};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, progress_ops::get_progress};
-<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span><span class="kw">crate</span>::utils::{io::ProgressBar, proofs_api::paramfetch::ensure_params_downloaded};
-<span class="kw">use </span>anyhow::{bail, Context};
+<span class="kw">use </span>anyhow::{bail, Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -433,13 +509,16 @@
 
     <span class="doccomment">/// Validates the snapshot.
     </span>Validate {
-        <span class="doccomment">/// Number of block headers to validate from the tip
-        </span><span class="attr">#[arg(long, default_value = <span class="string">&quot;2000&quot;</span>)]
-        </span>recent_stateroots: i64,
-        <span class="doccomment">/// Validate already computed tipsets at given EPOCH,
-        /// use a negative value -N to validate the last N EPOCH(s) starting at HEAD.
+        <span class="doccomment">/// Number of recent epochs to scan for broken links
+        </span><span class="attr">#[arg(long, default_value_t = <span class="number">2000</span>)]
+        </span>check_links: u32,
+        <span class="doccomment">/// Assert the snapshot belongs to this network. If left blank, the
+        /// network will be inferred before executing messages.
         </span><span class="attr">#[arg(long)]
-        </span>validate_tipsets: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+        </span>check_network: <span class="prelude-ty">Option</span>&lt;<span class="kw">crate</span>::networks::NetworkChain&gt;,
+        <span class="doccomment">/// Number of recent epochs to scan for bad messages/transactions
+        </span><span class="attr">#[arg(long, default_value_t = <span class="number">60</span>)]
+        </span>check_stateroots: u32,
         <span class="doccomment">/// Path to a snapshot CAR, which may be zstd compressed
         </span>snapshot: PathBuf,
     },
@@ -457,7 +536,7 @@
 }
 
 <span class="kw">impl </span>SnapshotCommands {
-    <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Export {
                 output_path,
@@ -490,8 +569,8 @@
                     recent_roots: config.chain.recent_state_roots,
                     output_path,
                     tipset_keys: TipsetKeysJson(chain_head.key().clone()),
-                    skip_checksum: <span class="kw-2">*</span>skip_checksum,
-                    dry_run: <span class="kw-2">*</span>dry_run,
+                    skip_checksum,
+                    dry_run,
                 };
 
                 <span class="kw">let </span>bar = Arc::new(tokio::sync::Mutex::new({
@@ -531,7 +610,7 @@
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Fetch { directory, vendor } =&gt; {
-                <span class="kw">match </span>snapshot::fetch(directory, <span class="kw-2">&amp;</span>config.chain.network, <span class="kw-2">*</span>vendor).<span class="kw">await </span>{
+                <span class="kw">match </span>snapshot::fetch(<span class="kw-2">&amp;</span>directory, <span class="kw-2">&amp;</span>config.chain.network, vendor).<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(out) =&gt; {
                         <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, out.display());
                         <span class="prelude-val">Ok</span>(())
@@ -540,20 +619,21 @@
                 }
             }
             <span class="self">Self</span>::Validate {
-                recent_stateroots,
-                validate_tipsets,
+                check_links,
+                check_network,
+                check_stateroots,
                 snapshot,
             } =&gt; {
                 <span class="comment">// this is all blocking...
                 </span><span class="kw">use </span>std::fs::File;
-                <span class="kw">match </span>CompressedCarV1BackedBlockstore::new(BufReader::new(File::open(snapshot)<span class="question-mark">?</span>)) {
+                <span class="kw">match </span>CompressedCarV1BackedBlockstore::new(BufReader::new(File::open(<span class="kw-2">&amp;</span>snapshot)<span class="question-mark">?</span>)) {
                     <span class="prelude-val">Ok</span>(store) =&gt; {
                         validate_with_blockstore(
-                            <span class="kw-2">&amp;</span>config,
                             store.roots(),
                             Arc::new(store),
-                            recent_stateroots,
-                            <span class="kw-2">*</span>validate_tipsets,
+                            check_links,
+                            check_network,
+                            check_stateroots,
                         )
                         .<span class="kw">await
                     </span>}
@@ -567,13 +647,13 @@
                     }
                     <span class="prelude-val">Err</span>(error) =&gt; {
                         <span class="macro">info!</span>(%error, <span class="string">&quot;file may be uncompressed, retrying as a plain CAR...&quot;</span>);
-                        <span class="kw">let </span>store = UncompressedCarV1BackedBlockstore::new(File::open(snapshot)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+                        <span class="kw">let </span>store = UncompressedCarV1BackedBlockstore::new(File::open(<span class="kw-2">&amp;</span>snapshot)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
                         validate_with_blockstore(
-                            <span class="kw-2">&amp;</span>config,
                             store.roots(),
                             Arc::new(store),
-                            recent_stateroots,
-                            <span class="kw-2">*</span>validate_tipsets,
+                            check_links,
+                            check_network,
+                            check_stateroots,
                         )
                         .<span class="kw">await
                     </span>}
@@ -596,11 +676,11 @@
                 <span class="kw">use </span>tokio::fs::File;
                 <span class="kw">match </span>zstd_compress_varint_manyframe(
                     async_compression::tokio::bufread::ZstdDecoder::new(tokio::io::BufReader::new(
-                        File::open(source).<span class="kw">await</span><span class="question-mark">?</span>,
+                        File::open(<span class="kw-2">&amp;</span>source).<span class="kw">await</span><span class="question-mark">?</span>,
                     )),
-                    File::create(destination).<span class="kw">await</span><span class="question-mark">?</span>,
-                    <span class="kw-2">*</span>frame_size,
-                    <span class="kw-2">*</span>compression_level,
+                    File::create(<span class="kw-2">&amp;</span>destination).<span class="kw">await</span><span class="question-mark">?</span>,
+                    frame_size,
+                    compression_level,
                 )
                 .<span class="kw">await
                 </span>{
@@ -608,10 +688,10 @@
                     <span class="prelude-val">Err</span>(error) =&gt; {
                         <span class="macro">info!</span>(%error, <span class="string">&quot;file may be uncompressed, retrying as a plain CAR...&quot;</span>);
                         zstd_compress_varint_manyframe(
-                            File::open(source).<span class="kw">await</span><span class="question-mark">?</span>,
-                            File::create(destination).<span class="kw">await</span><span class="question-mark">?</span>,
-                            <span class="kw-2">*</span>frame_size,
-                            <span class="kw-2">*</span>compression_level,
+                            File::open(<span class="kw-2">&amp;</span>source).<span class="kw">await</span><span class="question-mark">?</span>,
+                            File::create(<span class="kw-2">&amp;</span>destination).<span class="kw">await</span><span class="question-mark">?</span>,
+                            frame_size,
+                            compression_level,
                         )
                         .<span class="kw">await</span><span class="question-mark">?</span>;
                         <span class="prelude-val">Ok</span>(())
@@ -622,136 +702,208 @@
     }
 }
 
-<span class="kw">async fn </span>validate_with_blockstore&lt;BlockstoreT&gt;(
-    config: <span class="kw-2">&amp;</span>Config,
+<span class="comment">// Check the validity of a snapshot by looking at IPLD links, the genesis block,
+// and message output. More checks may be added in the future.
+//
+// If the snapshot is valid, the output should look like this:
+//     Checking IPLD integrity:       ✅ verified!
+//     Identifying genesis block:     ✅ found!
+//     Verifying network identity:    ✅ verified!
+//     Running tipset transactions:   ✅ verified!
+//   Snapshot is valid
+//
+// If we receive a mainnet snapshot but expect a calibnet snapshot, the output
+// should look like this:
+//     Checking IPLD integrity:       ✅ verified!
+//     Identifying genesis block:     ✅ found!
+//     Verifying network identity:    ❌ wrong!
+//   Error: Expected mainnet but found calibnet
+</span><span class="kw">async fn </span>validate_with_blockstore&lt;BlockstoreT&gt;(
     roots: Vec&lt;Cid&gt;,
     store: Arc&lt;BlockstoreT&gt;,
-    recent_stateroots: <span class="kw-2">&amp;</span>i64,
-    validate_tipsets: <span class="prelude-ty">Option</span>&lt;i64&gt;,
-) -&gt; anyhow::Result&lt;()&gt;
+    check_links: u32,
+    check_network: <span class="prelude-ty">Option</span>&lt;NetworkChain&gt;,
+    check_stateroots: u32,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
 <span class="kw">where
     </span>BlockstoreT: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">let </span>genesis = read_genesis_header(
-        config.client.genesis_file.as_ref(),
-        config.chain.genesis_bytes(),
-        <span class="kw-2">&amp;</span>store,
-    )
-    .<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>chain_data_root = TempDir::new()<span class="question-mark">?</span>;
-    <span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
-        Arc::clone(<span class="kw-2">&amp;</span>store),
-        config.chain.clone(),
-        <span class="kw-2">&amp;</span>genesis,
-        chain_data_root.path(),
-    )<span class="question-mark">?</span>);
+    <span class="kw">let </span>tipset_key = TipsetKeys::new(roots);
+    <span class="kw">let </span>store_clone = Arc::clone(<span class="kw-2">&amp;</span>store);
+    <span class="kw">let </span>ts = Tipset::load(<span class="kw-2">&amp;</span>store_clone, <span class="kw-2">&amp;</span>tipset_key)<span class="question-mark">?</span>.context(<span class="string">&quot;missing root tipset&quot;</span>)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>ts = Tipset::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(roots))<span class="question-mark">?</span>.context(<span class="string">&quot;missing root tipset&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">if </span>check_links != <span class="number">0 </span>{
+        validate_ipld_links(ts.clone(), <span class="kw-2">&amp;</span>store, check_links).<span class="kw">await</span><span class="question-mark">?</span>;
+    }
 
-    validate_links_and_genesis_traversal(
-        <span class="kw-2">&amp;</span>chain_store,
-        <span class="kw-2">&amp;</span>ts,
-        chain_store.blockstore(),
-        <span class="kw-2">*</span>recent_stateroots,
-        <span class="kw-2">&amp;</span>Tipset::from(genesis),
-        <span class="kw-2">&amp;</span>config.chain.network,
-    )
-    .<span class="kw">await</span><span class="question-mark">?</span>;
-
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(validate_from) = validate_tipsets {
-        <span class="kw">let </span>last_epoch = <span class="kw">match </span>validate_from.is_negative() {
-            <span class="bool-val">true </span>=&gt; ts.epoch() + validate_from,
-            <span class="bool-val">false </span>=&gt; validate_from,
-        };
-        <span class="comment">// Set proof parameter data dir
-        </span><span class="kw">if </span>cns::FETCH_PARAMS {
-            <span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
-                <span class="kw-2">&amp;</span>config.client.data_dir,
-            );
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(expected_network) = <span class="kw-2">&amp;</span>check_network {
+        <span class="kw">let </span>actual_network = query_network(ts.clone(), <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        <span class="comment">// Somewhat silly use of a spinner but this makes the checks line up nicely.
+        </span><span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Verifying network identity:&quot;</span>);
+        <span class="kw">if </span>expected_network != <span class="kw-2">&amp;</span>actual_network {
+            pb.finish_with_message(<span class="string">&quot;❌ wrong!&quot;</span>);
+            <span class="macro">bail!</span>(<span class="string">&quot;Expected {} but found {}&quot;</span>, expected_network, actual_network);
+        } <span class="kw">else </span>{
+            pb.finish_with_message(<span class="string">&quot;✅ verified!&quot;</span>);
         }
-        <span class="comment">// Initialize StateManager
-        </span><span class="kw">let </span>state_manager = Arc::new(StateManager::new(chain_store, Arc::clone(<span class="kw-2">&amp;</span>config.chain))<span class="question-mark">?</span>);
-        ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="comment">// Prepare tipset stream to validate
-        </span><span class="kw">let </span>tipsets = ts
-            .chain(<span class="kw-2">&amp;</span>store)
-            .map(|ts| Arc::clone(<span class="kw-2">&amp;</span>Arc::new(ts)))
-            .take_while(|tipset| tipset.epoch() &gt;= last_epoch);
+    }
 
-        state_manager.validate_tipsets(tipsets)<span class="question-mark">?
-    </span>}
+    <span class="kw">if </span>check_stateroots != <span class="number">0 </span>{
+        <span class="kw">let </span>network = check_network
+            .map(anyhow::Ok)
+            .unwrap_or_else(|| query_network(ts.clone(), <span class="kw-2">&amp;</span>store))<span class="question-mark">?</span>;
+        validate_stateroots(ts, <span class="kw-2">&amp;</span>store, network, check_stateroots).<span class="kw">await</span><span class="question-mark">?</span>;
+    }
 
     <span class="macro">println!</span>(<span class="string">&quot;Snapshot is valid&quot;</span>);
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async fn </span>validate_links_and_genesis_traversal&lt;DB&gt;(
-    chain_store: <span class="kw-2">&amp;</span>ChainStore&lt;DB&gt;,
-    ts: <span class="kw-2">&amp;</span>Tipset,
-    db: <span class="kw-2">&amp;</span>DB,
-    recent_stateroots: ChainEpoch,
-    genesis_tipset: <span class="kw-2">&amp;</span>Tipset,
-    network: <span class="kw-2">&amp;</span>NetworkChain,
-) -&gt; anyhow::Result&lt;()&gt;
+<span class="comment">// The Filecoin block chain is a DAG of Ipld nodes. The complete graph isn&#39;t
+// required to sync to the network and snapshot files usually disgard data after
+// 2000 epochs. Validity can be verified by ensuring there are no bad IPLD or
+// broken links in the N most recent epochs.
+</span><span class="kw">async fn </span>validate_ipld_links&lt;DB&gt;(ts: Tipset, db: <span class="kw-2">&amp;</span>DB, epochs: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync,
 {
+    <span class="kw">let </span>epoch_limit = ts.epoch() - epochs <span class="kw">as </span>i64;
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
-    <span class="kw">let </span>upto = ts.epoch() - recent_stateroots;
 
-    <span class="kw">let </span><span class="kw-2">mut </span>tsk = ts.parents().clone();
+    <span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Checking IPLD integrity:&quot;</span>).with_finish(
+        indicatif::ProgressFinish::AbandonWithMessage(<span class="string">&quot;❌ Invalid IPLD data!&quot;</span>.into()),
+    );
 
-    <span class="kw">let </span>total_size = ts.epoch();
-    <span class="kw">let </span>pb = <span class="kw">crate</span>::utils::io::ProgressBar::new(total_size <span class="kw">as </span>u64);
-    pb.message(<span class="string">&quot;Validating tipsets: &quot;</span>);
-    pb.set_max_refresh_rate(<span class="prelude-val">Some</span>(std::time::Duration::from_millis(<span class="number">500</span>)));
-
-    <span class="comment">// Security: Recursive snapshots are difficult to create but not impossible.
-    // This limits the amount of recursion we do.
-    </span><span class="kw">let </span><span class="kw-2">mut </span>prev_epoch = ts.epoch();
-    <span class="kw">loop </span>{
-        <span class="comment">// if we reach 0 here, it means parent traversal didn&#39;t end up reaching genesis
-        // properly, bail with error.
-        </span><span class="kw">if </span>prev_epoch &lt;= <span class="number">0 </span>{
-            <span class="macro">bail!</span>(<span class="string">&quot;Broken invariant: no genesis tipset in snapshot.&quot;</span>);
-        }
-
-        <span class="kw">let </span>tipset = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">for </span>tipset <span class="kw">in </span>ts
+        .chain(db)
+        .take_while(|tipset| tipset.epoch() &gt; epoch_limit)
+    {
         <span class="kw">let </span>height = tipset.epoch();
-        <span class="comment">// if parent tipset epoch is smaller than child, bail with error.
-        </span><span class="kw">if </span>height &gt;= prev_epoch {
-            <span class="macro">bail!</span>(<span class="string">&quot;Broken tipset invariant: parent epoch larger than current epoch at: {height}&quot;</span>);
-        }
-        <span class="comment">// genesis is reachable, break with success
-        </span><span class="kw">if </span>height == <span class="number">0 </span>{
-            <span class="kw">if </span>tipset.as_ref() != genesis_tipset {
-                <span class="macro">bail!</span>(<span class="string">&quot;Invalid genesis tipset. Snapshot isn&#39;t valid for {network}. It may be valid for another network.&quot;</span>);
-            }
+        pb.set_message(<span class="macro">format!</span>(<span class="string">&quot;{} remaining epochs&quot;</span>, height - epoch_limit));
 
-            <span class="kw">break</span>;
-        }
-        <span class="comment">// check for ipld links backwards till `upto`
-        </span><span class="kw">if </span>height &gt; upto {
-            <span class="kw">let </span><span class="kw-2">mut </span>assert_cid_exists = |cid: Cid| <span class="kw">async move </span>{
-                <span class="kw">let </span>data = db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>;
-                data.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Broken IPLD link at epoch: {height}&quot;</span>))
-            };
+        <span class="kw">let </span><span class="kw-2">mut </span>assert_cid_exists = |cid: Cid| <span class="kw">async move </span>{
+            <span class="kw">let </span>data = db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>;
+            data.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Broken IPLD link at epoch: {height}&quot;</span>))
+        };
 
-            <span class="kw">for </span>h <span class="kw">in </span>tipset.blocks() {
-                recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.state_root(), <span class="kw-2">&amp;mut </span>assert_cid_exists, <span class="kw-2">&amp;</span>|<span class="kw">_</span>| ())
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-                recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.messages(), <span class="kw-2">&amp;mut </span>assert_cid_exists, <span class="kw-2">&amp;</span>|<span class="kw">_</span>| ())
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
-            }
+        <span class="kw">for </span>h <span class="kw">in </span>tipset.blocks() {
+            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.state_root(), <span class="kw-2">&amp;mut </span>assert_cid_exists, <span class="kw-2">&amp;</span>|<span class="kw">_</span>| ()).<span class="kw">await</span><span class="question-mark">?</span>;
+            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.messages(), <span class="kw-2">&amp;mut </span>assert_cid_exists, <span class="kw-2">&amp;</span>|<span class="kw">_</span>| ()).<span class="kw">await</span><span class="question-mark">?</span>;
         }
-
-        tsk = tipset.parents().clone();
-        prev_epoch = tipset.epoch();
-        pb.set((ts.epoch() - tipset.epoch()) <span class="kw">as </span>u64);
     }
 
-    drop(pb);
-
+    pb.finish_with_message(<span class="string">&quot;✅ verified!&quot;</span>);
     <span class="prelude-val">Ok</span>(())
+}
+
+<span class="comment">// The genesis block determines the network identity (e.g., mainnet or
+// calibnet). Scanning through the entire blockchain can be time-consuming, so
+// Forest keeps a list of known tipsets for each network. Finding a known tipset
+// short-circuits the search for the genesis block. If no genesis block can be
+// found or if the genesis block is unrecognizable, an error is returned.
+</span><span class="kw">fn </span>query_network&lt;DB&gt;(ts: Tipset, db: <span class="kw-2">&amp;</span>DB) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt;
+<span class="kw">where
+    </span>DB: Blockstore + Send + Sync + Clone + <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Identifying genesis block:&quot;</span>).with_finish(
+        indicatif::ProgressFinish::AbandonWithMessage(<span class="string">&quot;✅ found!&quot;</span>.into()),
+    );
+
+    <span class="kw">fn </span>match_genesis_block(block_cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt; {
+        <span class="kw">if </span>block_cid.to_string() == calibnet::GENESIS_CID {
+            <span class="prelude-val">Ok</span>(NetworkChain::Calibnet)
+        } <span class="kw">else if </span>block_cid.to_string() == mainnet::GENESIS_CID {
+            <span class="prelude-val">Ok</span>(NetworkChain::Mainnet)
+        } <span class="kw">else </span>{
+            <span class="macro">bail!</span>(<span class="string">&quot;Unrecognizable genesis block&quot;</span>);
+        }
+    }
+
+    <span class="kw">for </span>tipset <span class="kw">in </span>pb.wrap_iter(ts.chain(db)) {
+        <span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
+            <span class="kw">return </span>match_genesis_block(<span class="kw-2">*</span>tipset.min_ticket_block().cid());
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(genesis_keys) = genesis_from_checkpoint_tipset(tipset.key()) {
+            <span class="kw">let </span>genesis_cid = genesis_keys.cids[<span class="number">0</span>];
+            <span class="kw">return </span>match_genesis_block(genesis_cid);
+        }
+    }
+    pb.finish_with_message(<span class="string">&quot;❌ No valid genesis block!&quot;</span>);
+    <span class="macro">bail!</span>(<span class="string">&quot;Snapshot does not contain a genesis block&quot;</span>)
+}
+
+<span class="comment">// Each tipset in the blockchain contains a set of messages. A message is a
+// transaction that manipulates a persistent state-tree. The hashes of these
+// state-trees are stored in the tipsets and can be used to verify if the
+// messages were correctly executed.
+// Note: Messages may access state-trees 900 epochs in the past. So, if a
+// snapshot has state-trees for 2000 epochs, one can only validate the messages
+// for the last 1100 epochs.
+</span><span class="kw">async fn </span>validate_stateroots&lt;DB&gt;(
+    ts: Tipset,
+    db: <span class="kw-2">&amp;</span>DB,
+    network: NetworkChain,
+    epochs: u32,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+<span class="kw">where
+    </span>DB: Blockstore + Send + Sync + Clone + <span class="lifetime">&#39;static</span>,
+{
+    <span class="kw">let </span>chain_config = Arc::new(ChainConfig::from_chain(<span class="kw-2">&amp;</span>network));
+    <span class="kw">let </span>genesis = read_genesis_header(<span class="prelude-val">None</span>, chain_config.genesis_bytes(), db).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="kw">let </span>chain_data_root = TempDir::new()<span class="question-mark">?</span>;
+    <span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
+        Arc::new(db.clone()),
+        Arc::clone(<span class="kw-2">&amp;</span>chain_config),
+        <span class="kw-2">&amp;</span>genesis,
+        chain_data_root.path(),
+    )<span class="question-mark">?</span>);
+
+    <span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Running tipset transactions:&quot;</span>).with_finish(
+        indicatif::ProgressFinish::AbandonWithMessage(
+            <span class="string">&quot;❌ Transaction result differs from Lotus!&quot;</span>.into(),
+        ),
+    );
+
+    <span class="kw">let </span>last_epoch = ts.epoch() - epochs <span class="kw">as </span>i64;
+
+    <span class="comment">// Set proof parameter data dir
+    </span><span class="kw">if </span>cns::FETCH_PARAMS {
+        <span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
+            <span class="kw-2">&amp;</span>Config::default().client.data_dir,
+        );
+    }
+    <span class="comment">// Initialize StateManager
+    </span><span class="kw">let </span>state_manager = Arc::new(StateManager::new(chain_store, Arc::clone(<span class="kw-2">&amp;</span>chain_config))<span class="question-mark">?</span>);
+    ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// Prepare tipsets for validation
+    </span><span class="kw">let </span>tipsets = ts
+        .chain(db)
+        .map(|ts| Arc::clone(<span class="kw-2">&amp;</span>Arc::new(ts)))
+        .take_while(|tipset| tipset.epoch() &gt;= last_epoch)
+        .inspect(|tipset| {
+            pb.set_message(<span class="macro">format!</span>(<span class="string">&quot;epoch queue: {}&quot;</span>, tipset.epoch() - last_epoch));
+        });
+
+    <span class="comment">// ProgressBar::wrap_iter believes the progress has been abandoned once the
+    // iterator is consumed.
+    </span>state_manager.validate_tipsets(tipsets)<span class="question-mark">?</span>;
+
+    pb.finish_with_message(<span class="string">&quot;✅ verified!&quot;</span>);
+    drop(pb);
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn </span>validation_spinner(prefix: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; indicatif::ProgressBar {
+    <span class="kw">let </span>pb = indicatif::ProgressBar::new_spinner()
+        .with_style(
+            indicatif::ProgressStyle::with_template(<span class="string">&quot;{spinner} {prefix:&lt;30} {msg}&quot;</span>)
+                .expect(<span class="string">&quot;indicatif template must be valid&quot;</span>),
+        )
+        .with_prefix(prefix);
+    pb.enable_steady_tick(std::time::Duration::from_secs_f32(<span class="number">0.1</span>));
+    pb
 }
 </code></pre></div></section></main></body></html>
