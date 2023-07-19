@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["LogFilter"],"struct":["Config","DaemonConfig","LogConfig","LogValue","TokioConfig"]};
+window.SIDEBAR_ITEMS = {"struct":["Config","DaemonConfig","TokioConfig"]};

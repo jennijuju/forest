@@ -75,14 +75,13 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::ffi::OsString;
 <span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::{cli::LogConfig, logger};
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::logger;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{CurrentNetwork, Network};
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
@@ -108,7 +107,7 @@
         .block_on(<span class="kw">async </span>{
             <span class="kw">match </span>opts.to_config() {
                 <span class="prelude-val">Ok</span>((<span class="kw-2">mut </span>config, <span class="kw">_</span>)) =&gt; {
-                    logger::setup_logger(<span class="kw-2">&amp;</span>config.log, <span class="kw-2">&amp;</span>opts);
+                    logger::setup_logger(<span class="kw-2">&amp;</span>opts);
                     ProgressBar::set_progress_bars_visibility(config.client.show_progress_bars);
                     <span class="kw">if </span>opts.dry_run {
                         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
@@ -148,7 +147,6 @@
                     }
                 }
                 <span class="prelude-val">Err</span>(e) =&gt; {
-                    logger::setup_logger(<span class="kw-2">&amp;</span>LogConfig::default(), <span class="kw-2">&amp;</span>opts);
                     cli_error_and_die(<span class="macro">format!</span>(<span class="string">&quot;Error parsing config: {e}&quot;</span>), <span class="number">1</span>);
                 }
             }

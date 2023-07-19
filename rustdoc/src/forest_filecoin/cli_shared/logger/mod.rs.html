@@ -93,21 +93,36 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>tracing_chrome::{ChromeLayerBuilder, FlushGuard};
-<span class="kw">use </span>tracing_subscriber::{
-    filter::{EnvFilter, LevelFilter},
-    prelude::<span class="kw-2">*</span>,
-};
+<span class="kw">use </span>tracing_subscriber::{filter::LevelFilter, prelude::<span class="kw-2">*</span>, EnvFilter};
 
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{CliOpts, LogConfig};
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::CliOpts;
 
-<span class="kw">pub fn </span>setup_logger(
-    log_config: <span class="kw-2">&amp;</span>LogConfig,
-    opts: <span class="kw-2">&amp;</span>CliOpts,
-) -&gt; (<span class="prelude-ty">Option</span>&lt;tracing_loki::BackgroundTask&gt;, <span class="prelude-ty">Option</span>&lt;FlushGuard&gt;) {
+<span class="kw">pub fn </span>setup_logger(opts: <span class="kw-2">&amp;</span>CliOpts) -&gt; (<span class="prelude-ty">Option</span>&lt;tracing_loki::BackgroundTask&gt;, <span class="prelude-ty">Option</span>&lt;FlushGuard&gt;) {
     <span class="kw">let </span><span class="kw-2">mut </span>loki_task = <span class="prelude-val">None</span>;
     <span class="kw">let </span>tracing_tokio_console = <span class="kw">if </span>opts.tokio_console {
         <span class="prelude-val">Some</span>(
@@ -147,7 +162,7 @@
             tracing_subscriber::fmt::Layer::new()
                 .with_ansi(<span class="bool-val">false</span>)
                 .with_writer(file_appender)
-                .with_filter(build_env_filter(log_config)),
+                .with_filter(get_env_filter()),
         )
     } <span class="kw">else </span>{
         <span class="prelude-val">None
@@ -172,20 +187,47 @@
         .with(
             tracing_subscriber::fmt::Layer::new()
                 .with_ansi(opts.color.coloring_enabled())
-                .with_filter(build_env_filter(log_config)),
+                .with_filter(get_env_filter()),
         )
         .init();
     (loki_task, flush_guard)
 }
 
-<span class="kw">fn </span>build_env_filter(log_config: <span class="kw-2">&amp;</span>LogConfig) -&gt; EnvFilter {
-    EnvFilter::builder().parse_lossy(
-        [
-            <span class="string">&quot;info&quot;</span>.into(),
-            log_config.to_filter_string(),
-            std::env::var(EnvFilter::DEFAULT_ENV).unwrap_or_default(),
-        ]
-        .join(<span class="string">&quot;,&quot;</span>),
-    )
+<span class="doccomment">/// Returns an [`EnvFilter`] according to the `RUST_LOG` environment variable, or a default
+/// - see [`default_env_filter`]
+///
+/// Note that [`tracing_subscriber::filter::Builder`] only allows a single default directive,
+/// whereas we want to provide multiple.
+/// See also &lt;https://github.com/tokio-rs/tracing/blob/27f688efb72316a26f3ec1f952c82626692c08ff/tracing-subscriber/src/filter/env/builder.rs#L189-L194&gt;
+</span><span class="kw">fn </span>get_env_filter() -&gt; EnvFilter {
+    <span class="kw">use </span>std::env::{
+        <span class="self">self</span>,
+        VarError::{NotPresent, NotUnicode},
+    };
+    <span class="kw">match </span>env::var(tracing_subscriber::EnvFilter::DEFAULT_ENV) {
+        <span class="prelude-val">Ok</span>(s) =&gt; EnvFilter::new(s),
+        <span class="prelude-val">Err</span>(NotPresent) =&gt; default_env_filter(),
+        <span class="prelude-val">Err</span>(NotUnicode(<span class="kw">_</span>)) =&gt; EnvFilter::default(),
+    }
+}
+
+<span class="kw">fn </span>default_env_filter() -&gt; EnvFilter {
+    <span class="kw">let </span>default_directives = [
+        <span class="string">&quot;bellperson::groth16::aggregate::verify=warn&quot;</span>,
+        <span class="string">&quot;axum=warn&quot;</span>,
+        <span class="string">&quot;filecoin_proofs=warn&quot;</span>,
+        <span class="string">&quot;libp2p_bitswap=off&quot;</span>,
+        <span class="string">&quot;libp2p_gossipsub=error&quot;</span>,
+        <span class="string">&quot;libp2p_kad=error&quot;</span>,
+        <span class="string">&quot;rpc=error&quot;</span>,
+        <span class="string">&quot;storage_proofs_core=warn&quot;</span>,
+        <span class="string">&quot;tracing_loki=off&quot;</span>,
+    ];
+    EnvFilter::try_new(default_directives.join(<span class="string">&quot;,&quot;</span>)).unwrap()
+}
+
+<span class="attr">#[test]
+</span><span class="kw">fn </span>test_default_env_filter() {
+    <span class="kw">let </span>_did_not_panic = default_env_filter();
 }
 </code></pre></div></section></main></body></html>

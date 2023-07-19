@@ -253,7 +253,7 @@
     <span class="comment">// Run forest as a daemon if no other subcommands are used. Otherwise, run the
     // subcommand.
 
-    </span><span class="kw">let </span>(loki_task, _chrome_flush_guard) = logger::setup_logger(<span class="kw-2">&amp;</span>cfg.log, <span class="kw-2">&amp;</span>opts);
+    </span><span class="kw">let </span>(loki_task, _chrome_flush_guard) = logger::setup_logger(<span class="kw-2">&amp;</span>opts);
     ProgressBar::set_progress_bars_visibility(cfg.client.show_progress_bars);
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>path {
