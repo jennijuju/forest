@@ -358,6 +358,52 @@
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
 <a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -388,12 +434,12 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::car_backed_blockstore::UncompressedCarV1BackedBlockstore;
+<span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::{ChainEpochDelta, ChainStore};
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot;
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::TrustedVendor;
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::genesis::read_genesis_header;
-<span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet};
-<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
+<span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, NetworkChain};
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY};
 <span class="kw">use </span><span class="kw">crate</span>::Config;
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::Utc;
@@ -439,6 +485,11 @@
         </span><span class="attr">#[arg(short)]
         </span>depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
     },
+    <span class="doccomment">/// Print block headers at 30 day interval for a snapshot file
+    </span>Checkpoints {
+        <span class="doccomment">/// Path to snapshot file.
+        </span>snapshot: PathBuf,
+    },
 }
 
 <span class="kw">impl </span>ArchiveCommands {
@@ -469,6 +520,7 @@
 
                 do_export(config, reader, output_path, epoch, depth).<span class="kw">await
             </span>}
+            <span class="self">Self</span>::Checkpoints { snapshot } =&gt; print_checkpoints(snapshot),
         }
     }
 }
@@ -520,7 +572,8 @@
     <span class="macro">info!</span>(<span class="string">&quot;looking up a tipset by epoch: {}&quot;</span>, epoch);
 
     <span class="kw">let </span>ts = chain_store
-        .tipset_by_height(epoch, ts, <span class="bool-val">true</span>)
+        .chain_index
+        .tipset_by_height(epoch, ts, ResolveNullTipset::TakeOlder)
         .context(<span class="string">&quot;unable to get a tipset at given height&quot;</span>)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>output_path = build_output_path(config.chain.network.to_string(), epoch, output_path);
@@ -641,18 +694,17 @@
             </span><span class="kw">let </span>may_skip =
                 lowest_stateroot_epoch != tipset.epoch() &amp;&amp; lowest_message_epoch != tipset.epoch();
             <span class="kw">if </span>may_skip {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(genesis_keys) =
-                    <span class="kw">crate</span>::chain::store::index::checkpoint_tipsets::genesis_from_checkpoint_tipset(
-                        tipset.key(),
-                    )
-                {
-                    <span class="kw">let </span>genesis_cid = genesis_keys.cids[<span class="number">0</span>];
-                    <span class="kw">if </span>genesis_cid.to_string() == calibnet::GENESIS_CID {
-                        network = <span class="string">&quot;calibnet&quot;</span>.into();
-                    } <span class="kw">else if </span>genesis_cid.to_string() == mainnet::GENESIS_CID {
-                        network = <span class="string">&quot;mainnet&quot;</span>.into();
+                <span class="kw">match </span>tipset.genesis(<span class="kw-2">&amp;</span>store).ok() {
+                    <span class="prelude-val">Some</span>(genesis_block) =&gt; {
+                        <span class="kw">if </span>genesis_block.cid().to_string() == calibnet::GENESIS_CID {
+                            network = <span class="string">&quot;calibnet&quot;</span>.into();
+                        } <span class="kw">else if </span>genesis_block.cid().to_string() == mainnet::GENESIS_CID {
+                            network = <span class="string">&quot;mainnet&quot;</span>.into();
+                        }
                     }
-                    <span class="kw">break</span>;
+                    <span class="prelude-val">None </span>=&gt; {
+                        <span class="kw">break</span>;
+                    }
                 }
             }
         }
@@ -665,6 +717,46 @@
             messages: lowest_message_epoch,
         })
     }
+}
+
+<span class="comment">// Print a mapping of epochs to block headers in yaml format. This mapping can
+// be used by Forest to quickly identify tipsets.
+</span><span class="kw">fn </span>print_checkpoints(snapshot: PathBuf) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>file = std::fs::File::open(snapshot)<span class="question-mark">?</span>;
+    <span class="kw">let </span>store = UncompressedCarV1BackedBlockstore::new(file)
+        .context(<span class="string">&quot;couldn&#39;t read input CAR file - is it compressed?&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>root = Tipset::load_required(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>genesis = root.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+    <span class="kw">let </span>chain_name = <span class="kw">if </span>genesis.cid().to_string() == calibnet::GENESIS_CID {
+        NetworkChain::Calibnet
+    } <span class="kw">else if </span>genesis.cid().to_string() == mainnet::GENESIS_CID {
+        NetworkChain::Mainnet
+    } <span class="kw">else </span>{
+        <span class="macro">bail!</span>(<span class="string">&quot;Unrecognizable genesis block&quot;</span>);
+    };
+
+    <span class="macro">println!</span>(<span class="string">&quot;{}:&quot;</span>, chain_name);
+    <span class="kw">for </span>(epoch, cid) <span class="kw">in </span>list_checkpoints(store, root) {
+        <span class="macro">println!</span>(<span class="string">&quot;  {}: {}&quot;</span>, epoch, cid);
+    }
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn </span>list_checkpoints(
+    db: <span class="kw">impl </span>Blockstore,
+    root: Tipset,
+) -&gt; <span class="kw">impl </span>Iterator&lt;Item = (ChainEpoch, cid::Cid)&gt; {
+    <span class="kw">let </span>interval = EPOCHS_IN_DAY * <span class="number">30</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>target_epoch = root.epoch() - root.epoch() % interval;
+    root.chain(db).filter_map(<span class="kw">move </span>|tipset| {
+        <span class="kw">if </span>tipset.epoch() &lt;= target_epoch &amp;&amp; tipset.epoch() != <span class="number">0 </span>{
+            target_epoch -= interval;
+            <span class="prelude-val">Some</span>((tipset.epoch(), <span class="kw-2">*</span>tipset.min_ticket_block().cid()))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    })
 }
 
 <span class="attr">#[cfg(test)]

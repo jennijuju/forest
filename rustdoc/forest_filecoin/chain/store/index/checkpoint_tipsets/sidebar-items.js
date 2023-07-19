@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize","genesis_from_checkpoint_tipset","get_tipset_hashes","tipset_hash","validate_genesis_cid"],"struct":["KNOWN_CHECKPOINTS","KnownCheckpoints"],"type":["GenesisTipsetCids"]};

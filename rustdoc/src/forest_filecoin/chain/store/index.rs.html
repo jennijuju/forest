@@ -249,44 +249,6 @@
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -296,114 +258,20 @@
 <span class="kw">use </span><span class="kw">crate</span>::metrics;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>lru::LruCache;
 <span class="kw">use </span>nonzero_ext::nonzero;
 <span class="kw">use </span>parking_lot::Mutex;
-<span class="kw">use </span>tracing::info;
 
 <span class="kw">use </span><span class="kw">crate</span>::chain::Error;
 
 <span class="kw">const </span>DEFAULT_TIPSET_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">8192usize</span>);
 
-<span class="kw">const </span>DEFAULT_CHAIN_INDEX_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">32usize </span>&lt;&lt; <span class="number">10</span>);
-
-<span class="doccomment">/// Configuration which sets the length of tipsets to skip in between each
-/// cached entry.
-</span><span class="kw">const </span>SKIP_LENGTH: ChainEpoch = <span class="number">20</span>;
-
-<span class="comment">// This module helps speed up boot times for forest by checkpointing previously
-// seen tipsets from snapshots.
-</span><span class="kw">pub mod </span>checkpoint_tipsets {
-    <span class="kw">use </span>std::str::FromStr;
-
-    <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
-    <span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
-    <span class="kw">use </span>ahash::HashSet;
-    <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>serde::{Deserialize, Serialize};
-
-    <span class="comment">// Represents a static map of validated tipset hashes which helps to remove the
-    // need to validate the tipset back to genesis if it has been validated
-    // before, thereby reducing boot times. NB: Add desired tipset checkpoints
-    // below this by using RPC command: forest-cli chain tipset-hash &lt;cid keys&gt;
-    // and one can use forest-cli chain validate-tipset-checkpoints to validate
-    // tipset hashes for entries that fall within the range of epochs in current
-    // downloaded snapshot file.
-    </span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize, Eq, PartialEq)]
-    </span><span class="kw">struct </span>KnownCheckpoints {
-        calibnet: HashSet&lt;String&gt;,
-        mainnet: HashSet&lt;String&gt;,
-    }
-
-    <span class="macro">lazy_static::lazy_static! </span>{
-        <span class="kw">static </span><span class="kw-2">ref </span>KNOWN_CHECKPOINTS: KnownCheckpoints = serde_yaml::from_str(<span class="macro">include_str!</span>(<span class="string">&quot;known_checkpoints.yaml&quot;</span>)).unwrap();
-    }
-
-    <span class="kw">type </span>GenesisTipsetCids = TipsetKeys;
-
-    <span class="kw">pub fn </span>genesis_from_checkpoint_tipset(tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Option</span>&lt;GenesisTipsetCids&gt; {
-        <span class="kw">let </span>key = tipset_hash(tsk);
-        <span class="kw">if </span>KNOWN_CHECKPOINTS.mainnet.contains(<span class="kw-2">&amp;</span>key) {
-            <span class="kw">return </span><span class="prelude-val">Some</span>(TipsetKeys::new(<span class="macro">vec!</span>[Cid::from_str(
-                <span class="kw">crate</span>::networks::mainnet::GENESIS_CID,
-            )
-            .unwrap()]));
-        }
-        <span class="kw">if </span>KNOWN_CHECKPOINTS.calibnet.contains(<span class="kw-2">&amp;</span>key) {
-            <span class="kw">return </span><span class="prelude-val">Some</span>(TipsetKeys::new(<span class="macro">vec!</span>[Cid::from_str(
-                <span class="kw">crate</span>::networks::calibnet::GENESIS_CID,
-            )
-            .unwrap()]));
-        }
-        <span class="prelude-val">None
-    </span>}
-
-    <span class="kw">pub fn </span>get_tipset_hashes(network: <span class="kw-2">&amp;</span>NetworkChain) -&gt; <span class="prelude-ty">Option</span>&lt;HashSet&lt;String&gt;&gt; {
-        <span class="kw">match </span>network {
-            NetworkChain::Mainnet =&gt; <span class="prelude-val">Some</span>(KNOWN_CHECKPOINTS.mainnet.clone()),
-            NetworkChain::Calibnet =&gt; <span class="prelude-val">Some</span>(KNOWN_CHECKPOINTS.calibnet.clone()),
-            NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>, <span class="comment">// skip and pass through if an unsupported network found
-        </span>}
-    }
-
-    <span class="comment">// Validate that the genesis tipset matches our hard-coded values
-    </span><span class="kw">pub fn </span>validate_genesis_cid(ts: <span class="kw-2">&amp;</span>Tipset, network: <span class="kw-2">&amp;</span>NetworkChain) -&gt; bool {
-        <span class="kw">match </span>network {
-            NetworkChain::Mainnet =&gt; {
-                ts.min_ticket_block().cid().to_string() == <span class="kw">crate</span>::networks::mainnet::GENESIS_CID
-            }
-            NetworkChain::Calibnet =&gt; {
-                ts.min_ticket_block().cid().to_string() == <span class="kw">crate</span>::networks::calibnet::GENESIS_CID
-            }
-            NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="bool-val">true</span>, <span class="comment">// skip and pass through if an unsupported network found
-        </span>}
-    }
-
-    <span class="kw">pub fn </span>tipset_hash(tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; String {
-        <span class="kw">let </span>ts_bytes: Vec&lt;<span class="kw">_</span>&gt; = tsk.cids().iter().flat_map(|s| s.to_bytes()).collect();
-        <span class="kw">let </span>tipset_keys_hash = blake2b_simd::blake2b(<span class="kw-2">&amp;</span>ts_bytes).to_hex();
-        tipset_keys_hash.to_string()
-    }
-}
-
-<span class="doccomment">/// `Lookback` entry to cache in the `ChainIndex`. Stores all relevant info when
-/// doing `lookbacks`.
-</span><span class="attr">#[derive(Clone, PartialEq, Debug)]
-</span><span class="kw">struct </span>LookbackEntry {
-    tipset: Arc&lt;Tipset&gt;,
-    parent_height: ChainEpoch,
-    target_height: ChainEpoch,
-    target: TipsetKeys,
-}
-
 <span class="kw">type </span>TipsetCache = Mutex&lt;LruCache&lt;TipsetKeys, Arc&lt;Tipset&gt;&gt;&gt;;
 
 <span class="doccomment">/// Keeps look-back tipsets in cache at a given interval `skip_length` and can
 /// be used to look-back at the chain to retrieve an old tipset.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">struct </span>ChainIndex&lt;DB&gt; {
-    <span class="doccomment">/// Cache of look-back entries to speed up lookup.
-    </span>skip_cache: Mutex&lt;LruCache&lt;TipsetKeys, Arc&lt;LookbackEntry&gt;&gt;&gt;,
-
+</span><span class="kw">pub struct </span>ChainIndex&lt;DB&gt; {
     <span class="doccomment">/// `Arc` reference tipset cache.
     </span>ts_cache: TipsetCache,
 
@@ -411,17 +279,23 @@
     </span>db: Arc&lt;DB&gt;,
 }
 
+<span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="doccomment">/// Methods for resolving fetches of null tipsets.
+/// Imagine epoch 10 is null but epoch 9 and 11 exist. If epoch we request epoch
+/// 10, should 9 or 11 be returned?
+</span><span class="kw">pub enum </span>ResolveNullTipset {
+    TakeNewer,
+    TakeOlder,
+}
+
 <span class="kw">impl</span>&lt;DB: Blockstore&gt; ChainIndex&lt;DB&gt; {
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>new(db: Arc&lt;DB&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>ts_cache = Mutex::new(LruCache::new(DEFAULT_TIPSET_CACHE_SIZE));
-        <span class="self">Self </span>{
-            skip_cache: Mutex::new(LruCache::new(DEFAULT_CHAIN_INDEX_CACHE_SIZE)),
-            ts_cache,
-            db,
-        }
+        <span class="self">Self </span>{ ts_cache, db }
     }
 
-    <span class="doccomment">/// Loads a tipset from memory given the tipset keys and cache.
+    <span class="doccomment">/// Loads a tipset from memory given the tipset keys and cache. Semantically
+    /// identical to [`Tipset::load`] but the result is cached.
     </span><span class="kw">pub fn </span>load_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(ts) = <span class="self">self</span>.ts_cache.lock().get(tsk) {
             metrics::LRU_CACHE_HIT
@@ -440,140 +314,190 @@
         <span class="prelude-val">Ok</span>(ts)
     }
 
-    <span class="doccomment">/// Loads tipset at `to` [`ChainEpoch`], loading from sparse cache and/or
-    /// loading parents from the `blockstore`.
-    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>get_tipset_by_height(
+    <span class="doccomment">/// Find tipset at epoch `to` in the chain of ancestors starting at `from`.
+    /// If the tipset is _not_ in the chain of ancestors (i.e., if the `to`
+    /// epoch is higher than `from.epoch()`), an error will be returned.
+    ///
+    /// # Why pass in the `from` argument?
+    ///
+    /// Imagine the database contains five tipsets and a genesis block in this
+    /// configuration:
+    ///
+    /// ```text
+    ///           ┌───────┐  ┌────────┐  ┌────────┐
+    /// Genesis◄──┤Epoch 1◄──┤Epoch 2A◄──┤Epoch 3A│
+    ///           └───▲───┘  └────────┘  └────────┘
+    ///               │      ┌────────┐  ┌────────┐
+    ///               └──────┤Epoch 2B◄──┤Epoch 3B│
+    ///                      └────────┘  └────────┘
+    /// ```
+    ///
+    /// Here we have a fork in the chain and it is ambiguous which tipset to
+    /// load when epoch 2 is requested. The ambiguity is solved by passing in a
+    /// younger tipset (higher epoch) from which has the desired tipset as an
+    /// ancestor.
+    /// Calling `get_tipset_by_height(2, epoch_3a)` will return `Epoch 2A`.
+    /// Calling `get_tipset_by_height(2, epoch_3b)` will return `Epoch 2B`.
+    ///
+    /// # What happens when a null tipset is requested?
+    ///
+    /// ```text
+    ///           ┌───────┐          ┌───────┐  ┌───────┐
+    /// Genesis◄──┤Epoch 1│   Null   │Epoch 3◄──┤Epoch 4│
+    ///           └───▲───┘          └───┬───┘  └───────┘
+    ///               │                  │
+    ///               └──────────────────┘
+    /// ```
+    /// If the requested epoch points to a null tipset, there are two options:
+    /// Pick the nearest older tipset or pick the nearest younger tipset.
+    /// Requesting epoch 2 with [`ResolveNullTipset::TakeNewer`] will return
+    /// epoch 3. Requesting with [`ResolveNullTipset::TakeOlder`] will return
+    /// epoch 1.
+    </span><span class="kw">pub fn </span>tipset_by_height(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        from: Arc&lt;Tipset&gt;,
         to: ChainEpoch,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
-        <span class="kw">if </span>from.epoch() - to &lt;= SKIP_LENGTH {
-            <span class="kw">return </span><span class="self">self</span>.walk_back(from, to);
-        }
-        <span class="kw">let </span>rounded = <span class="self">self</span>.round_down(from)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>cur = rounded.key().clone();
-
-        <span class="kw">loop </span>{
-            <span class="kw">let </span>entry = <span class="self">self</span>.skip_cache.lock().get(<span class="kw-2">&amp;</span>cur).cloned();
-            <span class="kw">let </span>lbe = <span class="kw">if let </span><span class="prelude-val">Some</span>(cached) = entry {
-                metrics::LRU_CACHE_HIT
-                    .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::SKIP])
-                    .inc();
-                cached
-            } <span class="kw">else </span>{
-                metrics::LRU_CACHE_MISS
-                    .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::SKIP])
-                    .inc();
-                <span class="self">self</span>.fill_cache(std::mem::take(<span class="kw-2">&amp;mut </span>cur))<span class="question-mark">?
-            </span>};
-
-            <span class="kw">if </span>to == <span class="number">0 </span>{
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(genesis_tipset_keys) =
-                    checkpoint_tipsets::genesis_from_checkpoint_tipset(lbe.tipset.key())
-                {
-                    <span class="kw">let </span>tipset = <span class="self">self</span>.load_tipset(<span class="kw-2">&amp;</span>genesis_tipset_keys)<span class="question-mark">?</span>;
-                    <span class="macro">info!</span>(
-                        <span class="string">&quot;Resolving genesis using checkpoint tipset at height: {}&quot;</span>,
-                        lbe.tipset.epoch()
-                    );
-                    <span class="kw">return </span><span class="prelude-val">Ok</span>(tipset);
-                }
-            }
-
-            <span class="kw">if </span>lbe.tipset.epoch() == to || lbe.parent_height &lt; to {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(lbe.tipset.clone());
-            } <span class="kw">else if </span>to &gt; lbe.target_height {
-                <span class="kw">return </span><span class="self">self</span>.walk_back(lbe.tipset.clone(), to);
-            }
-
-            cur = lbe.target.clone();
-        }
-    }
-
-    <span class="doccomment">/// Walks back from the tipset, ignoring the cached entries.
-    /// This should only be used when the cache is checked to be invalidated.
-    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>get_tipset_by_height_without_cache(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
         from: Arc&lt;Tipset&gt;,
-        to: ChainEpoch,
+        resolve: ResolveNullTipset,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
-        <span class="self">self</span>.walk_back(from, to)
-    }
-
-    <span class="doccomment">/// Fills cache with look-back entry, and returns inserted entry.
-    </span><span class="kw">fn </span>fill_cache(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;LookbackEntry&gt;, Error&gt; {
-        <span class="kw">let </span>tipset = <span class="self">self</span>.load_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
-
-        <span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(Arc::new(LookbackEntry {
-                tipset,
-                parent_height: <span class="number">0</span>,
-                target_height: Default::default(),
-                target: Default::default(),
-            }));
+        <span class="kw">if </span>to == <span class="number">0 </span>{
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(Arc::new(Tipset::from(from.genesis(<span class="kw-2">&amp;</span><span class="self">self</span>.db)<span class="question-mark">?</span>)));
         }
-
-        <span class="kw">let </span>parent = <span class="self">self</span>.load_tipset(tipset.parents())<span class="question-mark">?</span>;
-        <span class="kw">let </span>r_height = <span class="self">self</span>.round_height(tipset.epoch()) - SKIP_LENGTH;
-
-        <span class="kw">let </span>parent_epoch = parent.epoch();
-        <span class="kw">let </span>skip_target = <span class="kw">if </span>parent.epoch() &lt; r_height {
-            parent
-        } <span class="kw">else </span>{
-            <span class="self">self</span>.walk_back(parent, r_height)<span class="question-mark">?
-        </span>};
-
-        <span class="kw">let </span>lbe = Arc::new(LookbackEntry {
-            tipset,
-            parent_height: parent_epoch,
-            target_height: skip_target.epoch(),
-            target: skip_target.key().clone(),
-        });
-
-        <span class="self">self</span>.skip_cache.lock().put(tsk, lbe.clone());
-        <span class="prelude-val">Ok</span>(lbe)
-    }
-
-    <span class="doccomment">/// Rounds height epoch to nearest sparse cache index epoch.
-    </span><span class="kw">fn </span>round_height(<span class="kw-2">&amp;</span><span class="self">self</span>, height: ChainEpoch) -&gt; ChainEpoch {
-        (height / SKIP_LENGTH) * SKIP_LENGTH
-    }
-
-    <span class="doccomment">/// Gets the closest rounded sparse index and returns the loaded tipset at
-    /// that index.
-    </span><span class="kw">fn </span>round_down(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: Arc&lt;Tipset&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
-        <span class="kw">let </span>target = <span class="self">self</span>.round_height(ts.epoch());
-
-        <span class="self">self</span>.walk_back(ts, target)
-    }
-
-    <span class="doccomment">/// Load parent tipsets until the `to` [`ChainEpoch`].
-    </span><span class="kw">fn </span>walk_back(<span class="kw-2">&amp;</span><span class="self">self</span>, from: Arc&lt;Tipset&gt;, to: ChainEpoch) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
         <span class="kw">if </span>to &gt; from.epoch() {
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(
                 <span class="string">&quot;Looking for tipset with height greater than start point&quot;</span>.to_string(),
             ));
         }
 
-        <span class="kw">if </span>to == from.epoch() {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(from);
-        }
-
-        <span class="kw">let </span><span class="kw-2">mut </span>ts = from;
-        <span class="kw">loop </span>{
-            <span class="kw">let </span>pts = <span class="self">self</span>.load_tipset(ts.parents())<span class="question-mark">?</span>;
-
-            <span class="kw">if </span>to &gt; pts.epoch() {
-                <span class="comment">// Pts is lower than to epoch, return the tipset above that height
-                </span><span class="kw">return </span><span class="prelude-val">Ok</span>(ts);
+        <span class="kw">for </span>(child, parent) <span class="kw">in </span><span class="self">self</span>.chain(from).tuple_windows() {
+            <span class="kw">if </span>to == child.epoch() {
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(child);
             }
-
-            <span class="kw">if </span>to == pts.epoch() {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(pts);
+            <span class="kw">if </span>to &gt; parent.epoch() {
+                <span class="comment">// We&#39;re at a point where child.epoch() &gt; x &gt; parent.epoch().
+                </span><span class="kw">match </span>resolve {
+                    ResolveNullTipset::TakeOlder =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(parent),
+                    ResolveNullTipset::TakeNewer =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(child),
+                }
             }
-            ts = pts;
         }
+        <span class="prelude-val">Err</span>(Error::Other(
+            <span class="string">&quot;Tipset with epoch={to} does not exist&quot;</span>.to_string(),
+        ))
+    }
+
+    <span class="doccomment">/// Iterate from the given tipset to genesis. Missing tipsets cut the chain
+    /// short. Semantically identical to [`Tipset::chain`] but the results are
+    /// cached.
+    </span><span class="kw">pub fn </span>chain(<span class="kw-2">&amp;</span><span class="self">self</span>, from: Arc&lt;Tipset&gt;) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Arc&lt;Tipset&gt;&gt; + <span class="lifetime">&#39;_ </span>{
+        itertools::unfold(<span class="prelude-val">Some</span>(from), <span class="kw">move </span>|tipset| {
+            tipset.take().map(|child| {
+                <span class="kw-2">*</span>tipset = <span class="self">self</span>.load_tipset(child.parents()).ok();
+                child
+            })
+        })
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>std::sync::atomic::{AtomicU64, Ordering};
+
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
+    <span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
+    <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
+
+    <span class="kw">fn </span>persist_tipset(tipset: <span class="kw-2">&amp;</span>Tipset, db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) {
+        <span class="kw">for </span>block <span class="kw">in </span>tipset.blocks() {
+            db.put_cbor_default(block).unwrap();
+        }
+    }
+
+    <span class="kw">fn </span>genesis_tipset() -&gt; Tipset {
+        Tipset::from(BlockHeader::default())
+    }
+
+    <span class="kw">fn </span>tipset_child(parent: <span class="kw-2">&amp;</span>Tipset, epoch: ChainEpoch) -&gt; Tipset {
+        <span class="comment">// Use a static counter to give all tipsets a unique timestamp
+        </span><span class="kw">static </span>COUNTER: AtomicU64 = AtomicU64::new(<span class="number">0</span>);
+        <span class="kw">let </span>n = COUNTER.fetch_add(<span class="number">1</span>, Ordering::Relaxed);
+        Tipset::from(
+            BlockHeader::builder()
+                .parents(parent.key().clone())
+                .epoch(epoch)
+                .timestamp(n)
+                .build()
+                .unwrap(),
+        )
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>get_null_tipset() {
+        <span class="kw">let </span>db = Arc::new(MemoryDB::default());
+        <span class="kw">let </span>gen = genesis_tipset();
+        <span class="kw">let </span>epoch1 = tipset_child(<span class="kw-2">&amp;</span>gen, <span class="number">1</span>);
+        <span class="kw">let </span>epoch3 = tipset_child(<span class="kw-2">&amp;</span>epoch1, <span class="number">3</span>);
+        <span class="kw">let </span>epoch4 = tipset_child(<span class="kw-2">&amp;</span>epoch3, <span class="number">4</span>);
+        persist_tipset(<span class="kw-2">&amp;</span>gen, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch1, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch3, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch4, <span class="kw-2">&amp;</span>db);
+
+        <span class="kw">let </span>index = ChainIndex::new(db);
+        <span class="comment">// epoch 2 is null. ResolveNullTipset decided whether to return epoch 1 or epoch 3
+        </span><span class="macro">assert_eq!</span>(
+            index
+                .tipset_by_height(<span class="number">2</span>, Arc::new(epoch4.clone()), ResolveNullTipset::TakeOlder)
+                .unwrap()
+                .as_ref(),
+            <span class="kw-2">&amp;</span>epoch1
+        );
+
+        <span class="macro">assert_eq!</span>(
+            index
+                .tipset_by_height(<span class="number">2</span>, Arc::new(epoch4), ResolveNullTipset::TakeNewer)
+                .unwrap()
+                .as_ref(),
+            <span class="kw-2">&amp;</span>epoch3
+        );
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>get_different_branches() {
+        <span class="kw">let </span>db = Arc::new(MemoryDB::default());
+        <span class="kw">let </span>gen = genesis_tipset();
+        <span class="kw">let </span>epoch1 = tipset_child(<span class="kw-2">&amp;</span>gen, <span class="number">1</span>);
+
+        <span class="kw">let </span>epoch2a = tipset_child(<span class="kw-2">&amp;</span>epoch1, <span class="number">2</span>);
+        <span class="kw">let </span>epoch3a = tipset_child(<span class="kw-2">&amp;</span>epoch2a, <span class="number">3</span>);
+
+        <span class="kw">let </span>epoch2b = tipset_child(<span class="kw-2">&amp;</span>epoch1, <span class="number">2</span>);
+        <span class="kw">let </span>epoch3b = tipset_child(<span class="kw-2">&amp;</span>epoch2b, <span class="number">3</span>);
+
+        persist_tipset(<span class="kw-2">&amp;</span>gen, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch1, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch2a, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch3a, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch2b, <span class="kw-2">&amp;</span>db);
+        persist_tipset(<span class="kw-2">&amp;</span>epoch3b, <span class="kw-2">&amp;</span>db);
+
+        <span class="kw">let </span>index = ChainIndex::new(db);
+        <span class="comment">// The chain as forked, epoch 2 and 3 are ambiguous
+        </span><span class="macro">assert_eq!</span>(
+            index
+                .tipset_by_height(<span class="number">2</span>, Arc::new(epoch3a), ResolveNullTipset::TakeOlder)
+                .unwrap()
+                .as_ref(),
+            <span class="kw-2">&amp;</span>epoch2a
+        );
+
+        <span class="macro">assert_eq!</span>(
+            index
+                .tipset_by_height(<span class="number">2</span>, Arc::new(epoch3b), ResolveNullTipset::TakeOlder)
+                .unwrap()
+                .as_ref(),
+            <span class="kw-2">&amp;</span>epoch2b
+        );
     }
 }
 </code></pre></div></section></main></body></html>

@@ -830,91 +830,6 @@
 <a href="#830" id="830">830</a>
 <a href="#831" id="831">831</a>
 <a href="#832" id="832">832</a>
-<a href="#833" id="833">833</a>
-<a href="#834" id="834">834</a>
-<a href="#835" id="835">835</a>
-<a href="#836" id="836">836</a>
-<a href="#837" id="837">837</a>
-<a href="#838" id="838">838</a>
-<a href="#839" id="839">839</a>
-<a href="#840" id="840">840</a>
-<a href="#841" id="841">841</a>
-<a href="#842" id="842">842</a>
-<a href="#843" id="843">843</a>
-<a href="#844" id="844">844</a>
-<a href="#845" id="845">845</a>
-<a href="#846" id="846">846</a>
-<a href="#847" id="847">847</a>
-<a href="#848" id="848">848</a>
-<a href="#849" id="849">849</a>
-<a href="#850" id="850">850</a>
-<a href="#851" id="851">851</a>
-<a href="#852" id="852">852</a>
-<a href="#853" id="853">853</a>
-<a href="#854" id="854">854</a>
-<a href="#855" id="855">855</a>
-<a href="#856" id="856">856</a>
-<a href="#857" id="857">857</a>
-<a href="#858" id="858">858</a>
-<a href="#859" id="859">859</a>
-<a href="#860" id="860">860</a>
-<a href="#861" id="861">861</a>
-<a href="#862" id="862">862</a>
-<a href="#863" id="863">863</a>
-<a href="#864" id="864">864</a>
-<a href="#865" id="865">865</a>
-<a href="#866" id="866">866</a>
-<a href="#867" id="867">867</a>
-<a href="#868" id="868">868</a>
-<a href="#869" id="869">869</a>
-<a href="#870" id="870">870</a>
-<a href="#871" id="871">871</a>
-<a href="#872" id="872">872</a>
-<a href="#873" id="873">873</a>
-<a href="#874" id="874">874</a>
-<a href="#875" id="875">875</a>
-<a href="#876" id="876">876</a>
-<a href="#877" id="877">877</a>
-<a href="#878" id="878">878</a>
-<a href="#879" id="879">879</a>
-<a href="#880" id="880">880</a>
-<a href="#881" id="881">881</a>
-<a href="#882" id="882">882</a>
-<a href="#883" id="883">883</a>
-<a href="#884" id="884">884</a>
-<a href="#885" id="885">885</a>
-<a href="#886" id="886">886</a>
-<a href="#887" id="887">887</a>
-<a href="#888" id="888">888</a>
-<a href="#889" id="889">889</a>
-<a href="#890" id="890">890</a>
-<a href="#891" id="891">891</a>
-<a href="#892" id="892">892</a>
-<a href="#893" id="893">893</a>
-<a href="#894" id="894">894</a>
-<a href="#895" id="895">895</a>
-<a href="#896" id="896">896</a>
-<a href="#897" id="897">897</a>
-<a href="#898" id="898">898</a>
-<a href="#899" id="899">899</a>
-<a href="#900" id="900">900</a>
-<a href="#901" id="901">901</a>
-<a href="#902" id="902">902</a>
-<a href="#903" id="903">903</a>
-<a href="#904" id="904">904</a>
-<a href="#905" id="905">905</a>
-<a href="#906" id="906">906</a>
-<a href="#907" id="907">907</a>
-<a href="#908" id="908">908</a>
-<a href="#909" id="909">909</a>
-<a href="#910" id="910">910</a>
-<a href="#911" id="911">911</a>
-<a href="#912" id="912">912</a>
-<a href="#913" id="913">913</a>
-<a href="#914" id="914">914</a>
-<a href="#915" id="915">915</a>
-<a href="#916" id="916">916</a>
-<a href="#917" id="917">917</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -926,7 +841,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{walk_snapshot, WALK_SNAPSHOT_PROGRESS_EXPORT};
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait, SignedMessage};
-<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
+<span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address, econ::TokenAmount, executor::Receipt, message::Message,
@@ -960,7 +875,7 @@
 <span class="kw">use </span>tracing::{debug, info, warn};
 
 <span class="kw">use super</span>::{
-    index::{checkpoint_tipsets, ChainIndex},
+    index::{ChainIndex, ResolveNullTipset},
     tipset_tracker::TipsetTracker,
     Error,
 };
@@ -991,7 +906,7 @@
     </span><span class="kw">pub </span>db: Arc&lt;DB&gt;,
 
     <span class="doccomment">/// Used as a cache for tipset `lookbacks`.
-    </span>chain_index: ChainIndex&lt;DB&gt;,
+    </span><span class="kw">pub </span>chain_index: ChainIndex&lt;DB&gt;,
 
     <span class="doccomment">/// Tracks blocks for the purpose of forming tipsets.
     </span>tipset_tracker: TipsetTracker&lt;DB&gt;,
@@ -1172,11 +1087,6 @@
         <span class="self">self</span>.chain_index.load_tipset(tsk)
     }
 
-    <span class="doccomment">/// Returns Tipset key hash from key-value store from provided CIDs
-    </span><span class="kw">pub fn </span>tipset_hash_from_keys(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; String {
-        checkpoint_tipsets::tipset_hash(tsk)
-    }
-
     <span class="doccomment">/// Determines if provided tipset is heavier than existing known heaviest
     /// tipset
     </span><span class="kw">fn </span>update_heaviest&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: Arc&lt;Tipset&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
@@ -1215,92 +1125,6 @@
     <span class="kw">pub fn </span>unmark_block_as_validated(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) {
         <span class="kw">let </span><span class="kw-2">mut </span>file = <span class="self">self</span>.validated_blocks.lock();
         <span class="kw">let </span>_did_work = file.remove(cid);
-    }
-
-    <span class="doccomment">/// Returns the tipset behind `tsk` at a given `height`.
-    /// If the given height is a null round:
-    /// - If `prev` is `true`, the tipset before the null round is returned.
-    /// - If `prev` is `false`, the tipset following the null round is returned.
-    </span><span class="attr">#[tracing::instrument(skip(<span class="self">self</span>, ts))]
-    </span><span class="kw">pub fn </span>tipset_by_height(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        height: ChainEpoch,
-        ts: Arc&lt;Tipset&gt;,
-        prev: bool,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
-        <span class="kw">if </span>height &gt; ts.epoch() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(
-                <span class="string">&quot;searching for tipset that has a height less than starting point&quot;</span>.to_owned(),
-            ));
-        }
-        <span class="kw">if </span>height == ts.epoch() {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(ts);
-        }
-
-        <span class="kw">let </span><span class="kw-2">mut </span>lbts = <span class="self">self</span>.chain_index.get_tipset_by_height(ts.clone(), height)<span class="question-mark">?</span>;
-
-        <span class="kw">if </span>lbts.epoch() &lt; height {
-            <span class="macro">warn!</span>(
-                <span class="string">&quot;chain index returned the wrong tipset at height {}, using slow retrieval&quot;</span>,
-                height
-            );
-            lbts = <span class="self">self
-                </span>.chain_index
-                .get_tipset_by_height_without_cache(ts, height)<span class="question-mark">?</span>;
-        }
-
-        <span class="kw">if </span>lbts.epoch() == height || !prev {
-            <span class="prelude-val">Ok</span>(lbts)
-        } <span class="kw">else </span>{
-            <span class="self">self</span>.chain_index.load_tipset(lbts.parents())
-        }
-    }
-
-    <span class="kw">pub fn </span>validate_tipset_checkpoints(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        from: Arc&lt;Tipset&gt;,
-        network: <span class="kw-2">&amp;</span>NetworkChain,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="macro">info!</span>(
-            <span class="string">&quot;Validating {network} tipset checkpoint hashes from: {}&quot;</span>,
-            from.epoch()
-        );
-
-        <span class="kw">let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>hashes) = checkpoint_tipsets::get_tipset_hashes(network) <span class="kw">else </span>{
-            <span class="macro">info!</span>(<span class="string">&quot;No checkpoint tipsets found for network: {network}, skipping validation.&quot;</span>);
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
-        };
-
-        <span class="kw">let </span><span class="kw-2">mut </span>ts = from;
-        <span class="kw">let </span>tipset_hash = checkpoint_tipsets::tipset_hash(ts.key());
-        hashes.remove(<span class="kw-2">&amp;</span>tipset_hash);
-
-        <span class="kw">loop </span>{
-            <span class="kw">let </span>pts = <span class="self">self</span>.chain_index.load_tipset(ts.parents())<span class="question-mark">?</span>;
-            <span class="kw">let </span>tipset_hash = checkpoint_tipsets::tipset_hash(ts.key());
-            hashes.remove(<span class="kw-2">&amp;</span>tipset_hash);
-
-            ts = pts;
-
-            <span class="kw">if </span>ts.epoch() == <span class="number">0 </span>{
-                <span class="kw">break</span>;
-            }
-        }
-
-        <span class="kw">if </span>!hashes.is_empty() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
-                <span class="string">&quot;Found tipset hash(es) on {network} that are no longer valid: {hashes:?}&quot;
-            </span>)));
-        }
-
-        <span class="kw">if </span>!checkpoint_tipsets::validate_genesis_cid(<span class="kw-2">&amp;</span>ts, network) {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
-                <span class="string">&quot;Genesis cid {:?} on {network} network does not match with one stored in checkpoint registry&quot;</span>,
-                ts.key().cid()
-            )));
-        }
-
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Finds the latest beacon entry given a tipset up to 20 tipsets behind
@@ -1511,7 +1335,8 @@
         round: ChainEpoch,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetKeys, Error&gt; {
         <span class="kw">let </span>ts = <span class="self">self
-            </span>.tipset_by_height(round, tipset, <span class="bool-val">true</span>)
+            </span>.chain_index
+            .tipset_by_height(round, tipset, ResolveNullTipset::TakeOlder)
             .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ts.key().clone())
     }
@@ -1564,7 +1389,12 @@
         }
 
         <span class="kw">let </span>next_ts = <span class="self">self
-            </span>.tipset_by_height(lbr + <span class="number">1</span>, heaviest_tipset.clone(), <span class="bool-val">false</span>)
+            </span>.chain_index
+            .tipset_by_height(
+                lbr + <span class="number">1</span>,
+                heaviest_tipset.clone(),
+                ResolveNullTipset::TakeNewer,
+            )
             .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
         <span class="kw">if </span>lbr &gt; next_ts.epoch() {
             <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(

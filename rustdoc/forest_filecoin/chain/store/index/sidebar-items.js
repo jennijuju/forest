@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_CHAIN_INDEX_CACHE_SIZE","DEFAULT_TIPSET_CACHE_SIZE","SKIP_LENGTH"],"mod":["checkpoint_tipsets"],"static":["CALLSITE"],"struct":["ChainIndex","LookbackEntry"],"type":["TipsetCache"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_TIPSET_CACHE_SIZE"],"enum":["ResolveNullTipset"],"struct":["ChainIndex"],"type":["TipsetCache"]};

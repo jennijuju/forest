@@ -145,11 +145,6 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -227,11 +222,6 @@
             .with_method(CHAIN_GET_TIPSET_BY_HEIGHT, chain_get_tipset_by_height::&lt;DB&gt;)
             .with_method(CHAIN_GET_GENESIS, chain_get_genesis::&lt;DB&gt;)
             .with_method(CHAIN_GET_TIPSET, chain_get_tipset::&lt;DB&gt;)
-            .with_method(CHAIN_GET_TIPSET_HASH, chain_get_tipset_hash::&lt;DB&gt;)
-            .with_method(
-                CHAIN_VALIDATE_TIPSET_CHECKPOINTS,
-                chain_validate_tipset_checkpoints::&lt;DB&gt;,
-            )
             .with_method(CHAIN_HEAD, chain_head::&lt;DB&gt;)
             .with_method(CHAIN_GET_BLOCK, chain_api::chain_get_block::&lt;DB&gt;)
             .with_method(CHAIN_GET_NAME, chain_api::chain_get_name::&lt;DB&gt;)

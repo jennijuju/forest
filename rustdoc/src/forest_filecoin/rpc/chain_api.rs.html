@@ -312,33 +312,6 @@
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
 <a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
-<a href="#341" id="341">341</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -352,6 +325,7 @@
     header::json::BlockHeaderJson, tipset_json::TipsetJson, tipset_keys_json::TipsetKeysJson,
     BlockHeader, Tipset,
 };
+<span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
 <span class="kw">use </span><span class="kw">crate</span>::json::{cid::CidJson, message::json::MessageJson};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     chain_api::<span class="kw-2">*</span>,
@@ -424,7 +398,10 @@
     })<span class="question-mark">?</span>;
     <span class="kw">let </span>temp_path = NamedTempFile::new_in(output_dir)<span class="question-mark">?</span>.into_temp_path();
     <span class="kw">let </span>head = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
-    <span class="kw">let </span>start_ts = data.chain_store.tipset_by_height(epoch, head, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>start_ts =
+        data.chain_store
+            .chain_index
+            .tipset_by_height(epoch, head, ResolveNullTipset::TakeOlder)<span class="question-mark">?</span>;
 
     <span class="kw">match if </span>dry_run {
         data.chain_store
@@ -560,7 +537,8 @@
     <span class="kw">let </span>tss = data
         .state_manager
         .chain_store()
-        .tipset_by_height(height, ts, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
+        .chain_index
+        .tipset_by_height(height, ts, ResolveNullTipset::TakeOlder)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(TipsetJson(tss))
 }
 
@@ -611,38 +589,6 @@
     <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(TipsetJson(ts))
-}
-
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_hash&lt;DB&gt;(
-    data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetTipSetHashParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipSetHashResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
-    <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_hash_from_keys(<span class="kw-2">&amp;</span>tsk);
-    <span class="prelude-val">Ok</span>(ts)
-}
-
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_validate_tipset_checkpoints&lt;DB&gt;(
-    data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainValidateTipSetCheckpointsParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainValidateTipSetCheckpointsResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">let </span>() = params;
-
-    <span class="kw">let </span>tipset = data.state_manager.chain_store().heaviest_tipset();
-    <span class="kw">let </span>ts = data
-        .state_manager
-        .chain_store()
-        .tipset_from_keys(tipset.key())<span class="question-mark">?</span>;
-    data.state_manager
-        .chain_store()
-        .validate_tipset_checkpoints(ts, <span class="kw-2">&amp;</span>data.state_manager.chain_config().network)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(<span class="string">&quot;Ok&quot;</span>.to_string())
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_name&lt;DB&gt;(

@@ -1289,6 +1289,7 @@
 <a href="#1289" id="1289">1289</a>
 <a href="#1290" id="1290">1290</a>
 <a href="#1291" id="1291">1291</a>
+<a href="#1292" id="1292">1292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1305,7 +1306,7 @@
 <span class="kw">pub use </span><span class="self">self</span>::errors::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconSchedule, DrandBeacon};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::chain::{ChainStore, HeadChange};
+<span class="kw">use </span><span class="kw">crate</span>::chain::{index::ResolveNullTipset, ChainStore, HeadChange};
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, ExecutionContext, VM};
 <span class="kw">use </span><span class="kw">crate</span>::json::message_receipt;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
@@ -2330,7 +2331,8 @@
         <span class="kw">let </span>heaviest_epoch = heaviest.epoch();
         <span class="kw">let </span>end = <span class="self">self
             </span>.cs
-            .tipset_by_height(<span class="kw-2">*</span>epochs.end(), heaviest, <span class="bool-val">false</span>)
+            .chain_index
+            .tipset_by_height(<span class="kw-2">*</span>epochs.end(), heaviest, ResolveNullTipset::TakeOlder)
             .context(<span class="macro">format!</span>(
             <span class="string">&quot;couldn&#39;t get a tipset at height {} behind heaviest tipset at height {heaviest_epoch}&quot;</span>,
             <span class="kw-2">*</span>epochs.end(),

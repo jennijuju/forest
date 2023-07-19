@@ -491,6 +491,7 @@
 <a href="#491" id="491">491</a>
 <a href="#492" id="492">492</a>
 <a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -529,9 +530,9 @@
 /// use cid::multihash::MultihashDigest;
 ///
 /// BlockHeader::builder()
-///     .message_receipts(Cid::new_v1(DAG_CBOR, Identity.digest(&amp;[]))) // required
-///     .state_root(Cid::new_v1(DAG_CBOR, Identity.digest(&amp;[]))) // required
-///     .miner_address(Address::new_id(0)) // required
+///     .message_receipts(Cid::new_v1(DAG_CBOR, Identity.digest(&amp;[]))) // optional
+///     .state_root(Cid::new_v1(DAG_CBOR, Identity.digest(&amp;[]))) // optional
+///     .miner_address(Address::new_id(0)) // optional
 ///     .messages(Cid::new_v1(DAG_CBOR, Identity.digest(&amp;[]))) // optional
 ///     .beacon_entries(Vec::new()) // optional
 ///     .winning_post_proof(Vec::new()) // optional
@@ -547,7 +548,7 @@
 ///     .build()
 ///     .unwrap();
 /// ```
-</span><span class="attr">#[derive(Clone, Debug, Builder)]
+</span><span class="attr">#[derive(Clone, Debug, Default, Builder)]
 #[builder(name = <span class="string">&quot;BlockHeaderBuilder&quot;</span>)]
 </span><span class="kw">pub struct </span>BlockHeader {
     <span class="comment">// CHAIN LINKING
@@ -577,6 +578,7 @@
 
     <span class="comment">// MINER INFO
     </span><span class="doccomment">/// `miner_address` is the address of the miner actor that mined this block
+    </span><span class="attr">#[builder(default)]
     </span>miner_address: Address,
 
     <span class="comment">// STATE

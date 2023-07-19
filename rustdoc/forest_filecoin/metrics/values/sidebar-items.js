@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["SKIP","STATE_MANAGER_TIPSET","TIPSET"]};
+window.SIDEBAR_ITEMS = {"constant":["STATE_MANAGER_TIPSET","TIPSET"]};
