@@ -458,6 +458,11 @@
 <a href="#458" id="458">458</a>
 <a href="#459" id="459">459</a>
 <a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -502,6 +507,9 @@
         <span class="doccomment">/// Don&#39;t write the archive.
         </span><span class="attr">#[arg(long)]
         </span>dry_run: bool,
+        <span class="doccomment">/// Tipset to start the export from, default is the chain head
+        </span><span class="attr">#[arg(short, long)]
+        </span>tipset: <span class="prelude-ty">Option</span>&lt;i64&gt;,
     },
 
     <span class="doccomment">/// Fetches the most recent snapshot from a trusted, pre-defined location.
@@ -548,13 +556,14 @@
                 output_path,
                 skip_checksum,
                 dry_run,
+                tipset,
             } =&gt; {
                 <span class="kw">let </span>chain_head = <span class="kw">match </span>chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(head) =&gt; head.<span class="number">0</span>,
                     <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; cli_error_and_die(<span class="string">&quot;Could not get network head&quot;</span>, <span class="number">1</span>),
                 };
 
-                <span class="kw">let </span>epoch = chain_head.epoch();
+                <span class="kw">let </span>epoch = tipset.unwrap_or(chain_head.epoch());
 
                 <span class="kw">let </span>chain_name = chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token)
                     .<span class="kw">await
@@ -565,7 +574,7 @@
                         TrustedVendor::Forest,
                         chain_name,
                         Utc::now().date_naive(),
-                        chain_head.epoch(),
+                        epoch,
                     )),
                     <span class="bool-val">false </span>=&gt; output_path.clone(),
                 };
@@ -613,6 +622,7 @@
                     <span class="string">&quot;Export completed. Snapshot located at {}&quot;</span>,
                     out.display()
                 ));
+                <span class="macro">println!</span>(<span class="string">&quot;\n&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Fetch { directory, vendor } =&gt; {
