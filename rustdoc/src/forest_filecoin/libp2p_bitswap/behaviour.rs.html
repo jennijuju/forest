@@ -206,7 +206,7 @@
     PeerId,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{codec::<span class="kw-2">*</span>, request_manager::<span class="kw-2">*</span>, <span class="kw-2">*</span>};
+<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{codec::<span class="kw-2">*</span>, protocol::<span class="kw-2">*</span>, request_manager::<span class="kw-2">*</span>, <span class="kw-2">*</span>};
 
 <span class="doccomment">/// `libp2p` swarm network behavior event of `bitswap`
 </span><span class="kw">pub type </span>BitswapBehaviourEvent = request_response::Event&lt;Vec&lt;BitswapMessage&gt;, ()&gt;;
@@ -220,15 +220,15 @@
 
 <span class="kw">impl </span>BitswapBehaviour {
     <span class="doccomment">/// Creates a [`BitswapBehaviour`] instance
-    </span><span class="kw">pub fn </span>new(protocols: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str], cfg: request_response::Config) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(protocols: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]], cfg: request_response::Config) -&gt; <span class="self">Self </span>{
         <span class="macro">assert!</span>(!protocols.is_empty(), <span class="string">&quot;protocols cannot be empty&quot;</span>);
 
         <span class="kw">let </span>protocols: Vec&lt;<span class="kw">_</span>&gt; = protocols
             .iter()
-            .map(|<span class="kw-2">&amp;</span>n| (n, ProtocolSupport::Full))
+            .map(|<span class="kw-2">&amp;</span>n| (BitswapProtocol(n), ProtocolSupport::Full))
             .collect();
         BitswapBehaviour {
-            inner: request_response::Behaviour::new(protocols, cfg),
+            inner: request_response::Behaviour::new(BitswapRequestResponseCodec, protocols, cfg),
             request_manager: Default::default(),
         }
     }
@@ -288,10 +288,10 @@
         <span class="comment">// This matches default values in `go-bitswap`
         </span>BitswapBehaviour::new(
             <span class="kw-2">&amp;</span>[
-                <span class="string">&quot;/ipfs/bitswap/1.2.0&quot;</span>,
-                <span class="string">&quot;/ipfs/bitswap/1.1.0&quot;</span>,
-                <span class="string">&quot;/ipfs/bitswap/1.0.0&quot;</span>,
-                <span class="string">&quot;/ipfs/bitswap&quot;</span>,
+                <span class="string">b&quot;/ipfs/bitswap/1.2.0&quot;</span>,
+                <span class="string">b&quot;/ipfs/bitswap/1.1.0&quot;</span>,
+                <span class="string">b&quot;/ipfs/bitswap/1.0.0&quot;</span>,
+                <span class="string">b&quot;/ipfs/bitswap&quot;</span>,
             ],
             Default::default(),
         )
@@ -302,8 +302,8 @@
     <span class="kw">type </span>ConnectionHandler =
         &lt;request_response::Behaviour&lt;BitswapRequestResponseCodec&gt; <span class="kw">as </span>NetworkBehaviour&gt;::ConnectionHandler;
 
-    <span class="kw">type </span>ToSwarm =
-        &lt;request_response::Behaviour&lt;BitswapRequestResponseCodec&gt; <span class="kw">as </span>NetworkBehaviour&gt;::ToSwarm;
+    <span class="kw">type </span>OutEvent =
+        &lt;request_response::Behaviour&lt;BitswapRequestResponseCodec&gt; <span class="kw">as </span>NetworkBehaviour&gt;::OutEvent;
 
     <span class="kw">fn </span>handle_established_inbound_connection(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -388,7 +388,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>std::task::Context&lt;<span class="lifetime">&#39;_</span>&gt;,
         params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
-    ) -&gt; std::task::Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
+    ) -&gt; std::task::Poll&lt;ToSwarm&lt;<span class="self">Self</span>::OutEvent, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
         <span class="self">self</span>.inner_mut().poll(cx, params)
     }
 }

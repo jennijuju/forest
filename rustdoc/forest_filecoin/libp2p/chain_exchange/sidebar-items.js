@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["CHAIN_EXCHANGE_PROTOCOL_NAME"],"mod":["behaviour","message","provider"],"type":["ChainExchangeCodec"]};
+window.SIDEBAR_ITEMS = {"constant":["CHAIN_XCHG_PROTOCOL_ID"],"mod":["behaviour","message","provider"],"struct":["ChainExchangeProtocolName"],"type":["ChainExchangeCodec"]};

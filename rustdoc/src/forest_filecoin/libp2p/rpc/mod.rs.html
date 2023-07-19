@@ -175,6 +175,9 @@
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -184,7 +187,10 @@
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>decoder::DagCborDecodingReader;
 <span class="kw">use </span>futures::prelude::<span class="kw-2">*</span>;
-<span class="kw">use </span>libp2p::request_response::{<span class="self">self</span>, OutboundFailure};
+<span class="kw">use </span>libp2p::{
+    core::ProtocolName,
+    request_response::{<span class="self">self</span>, OutboundFailure},
+};
 <span class="kw">use </span>serde::{de::DeserializeOwned, Serialize};
 
 <span class="doccomment">/// Generic `Cbor` `RequestResponse` type. This is just needed to satisfy
@@ -245,7 +251,7 @@
 <span class="attr">#[async_trait]
 </span><span class="kw">impl</span>&lt;P, RQ, RS&gt; request_response::Codec <span class="kw">for </span>CborRequestResponse&lt;P, RQ, RS&gt;
 <span class="kw">where
-    </span>P: AsRef&lt;str&gt; + Send + Clone,
+    </span>P: ProtocolName + Clone + Send + Sync,
     RQ: Serialize + DeserializeOwned + Send + Sync,
     RS: Serialize + DeserializeOwned + Send + Sync,
 {

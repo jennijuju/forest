@@ -9,15 +9,39 @@
 <a href="#9" id="9">9</a>
 <a href="#10" id="10">10</a>
 <a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use super</span>::<span class="kw-2">*</span>;
+</span><span class="kw">use </span>libp2p::request_response::ProtocolName;
+
+<span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::rpc::CborRequestResponse;
 
-<span class="doccomment">/// Libp2p Hello protocol name.
-</span><span class="kw">pub const </span>HELLO_PROTOCOL_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/fil/hello/1.0.0&quot;</span>;
+<span class="doccomment">/// Libp2p Hello protocol ID.
+</span><span class="kw">pub const </span>HELLO_PROTOCOL_ID: <span class="kw-2">&amp;</span>[u8] = <span class="string">b&quot;/fil/hello/1.0.0&quot;</span>;
+
+<span class="doccomment">/// Type to satisfy `ProtocolName` interface for Hello RPC.
+</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Default)]
+</span><span class="kw">pub struct </span>HelloProtocolName;
+
+<span class="kw">impl </span>ProtocolName <span class="kw">for </span>HelloProtocolName {
+    <span class="kw">fn </span>protocol_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+        HELLO_PROTOCOL_ID
+    }
+}
 
 <span class="doccomment">/// Hello protocol codec to be used within the RPC service.
-</span><span class="kw">pub type </span>HelloCodec = CborRequestResponse&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, HelloRequest, HelloResponse&gt;;
+</span><span class="kw">pub type </span>HelloCodec = CborRequestResponse&lt;HelloProtocolName, HelloRequest, HelloResponse&gt;;
 </code></pre></div></section></main></body></html>

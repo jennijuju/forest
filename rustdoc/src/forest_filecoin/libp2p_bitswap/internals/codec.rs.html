@@ -126,17 +126,17 @@
 <span class="kw">use </span>pb::bitswap_pb;
 <span class="kw">use </span>protobuf::Message;
 
-<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{prefix::Prefix, <span class="kw-2">*</span>};
+<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{prefix::Prefix, protocol::<span class="kw-2">*</span>, <span class="kw-2">*</span>};
 
 <span class="comment">// 2MB Block Size according to the specs at https://github.com/ipfs/specs/blob/main/BITSWAP.md
 </span><span class="kw">const </span>MAX_BUF_SIZE: usize = <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">2</span>;
 
-<span class="attr">#[derive(Default, Debug, Clone)]
+<span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>BitswapRequestResponseCodec;
 
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>request_response::Codec <span class="kw">for </span>BitswapRequestResponseCodec {
-    <span class="kw">type </span>Protocol = <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str;
+    <span class="kw">type </span>Protocol = BitswapProtocol;
     <span class="kw">type </span>Request = Vec&lt;BitswapMessage&gt;;
     <span class="kw">type </span>Response = ();
 
