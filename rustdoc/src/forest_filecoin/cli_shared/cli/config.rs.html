@@ -147,18 +147,6 @@
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
 <a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -166,7 +154,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::db::db_engine::DbConfig;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::Libp2pConfig;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
-<span class="kw">use </span>core::time::Duration;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::{path::PathBuf, sync::Arc};
 
@@ -198,15 +185,6 @@
     }
 }
 
-<span class="attr">#[derive(Deserialize, Serialize, PartialEq, Eq, Clone, Default, Debug)]
-</span><span class="kw">pub struct </span>TokioConfig {
-    <span class="kw">pub </span>worker_threads: <span class="prelude-ty">Option</span>&lt;usize&gt;,
-    <span class="kw">pub </span>max_blocking_threads: <span class="prelude-ty">Option</span>&lt;usize&gt;,
-    <span class="kw">pub </span>thread_keep_alive: <span class="prelude-ty">Option</span>&lt;Duration&gt;,
-    <span class="kw">pub </span>thread_stack_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
-    <span class="kw">pub </span>global_queue_interval: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-}
-
 <span class="attr">#[derive(Serialize, Deserialize, PartialEq, Default, Debug, Clone)]
 #[serde(default)]
 </span><span class="kw">pub struct </span>Config {
@@ -216,7 +194,6 @@
     <span class="kw">pub </span>sync: SyncConfig,
     <span class="kw">pub </span>chain: Arc&lt;ChainConfig&gt;,
     <span class="kw">pub </span>daemon: DaemonConfig,
-    <span class="kw">pub </span>tokio: TokioConfig,
 }
 
 <span class="kw">impl </span>Config {
@@ -260,7 +237,6 @@
                 sync: val.sync,
                 chain: Arc::new(ChainConfig::default()),
                 daemon: DaemonConfig::default(),
-                tokio: Default::default(),
             }
         }
     }

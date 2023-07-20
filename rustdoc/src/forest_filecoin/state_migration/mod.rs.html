@@ -72,6 +72,18 @@
 <a href="#72" id="72">72</a>
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -82,9 +94,11 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
+<span class="kw">use </span><span class="kw">crate</span>::shim::state_tree::StateRoot;
 <span class="kw">use </span><span class="kw">crate</span>::utils::misc::reveal_five_trees;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::state_migration) <span class="kw">mod </span>common;
 <span class="kw">mod </span>nv17;
@@ -119,7 +133,7 @@
                 <span class="kw">if </span>height == <span class="kw-2">&amp;</span>info.height {
                     <span class="macro">assert!</span>(
                         info.bundle.is_some(),
-                        <span class="string">&quot;Actor bundle info for height {height} needs to be defined in `networks/src/lib.rs` to run state migration&quot;
+                        <span class="string">&quot;Actor bundle info for height {height} needs to be defined in `src/networks/mod.rs` to run state migration&quot;
                     </span>);
                     <span class="kw">break</span>;
                 }
@@ -133,11 +147,18 @@
             <span class="kw">let </span>start_time = std::time::Instant::now();
             <span class="kw">let </span>new_state = migrate(chain_config, db, parent_state, epoch)<span class="question-mark">?</span>;
             <span class="kw">let </span>elapsed = start_time.elapsed().as_secs_f32();
+            <span class="comment">// `new_state_actors` is the Go state migration output, log for comparision
+            </span><span class="kw">let </span>new_state_actors = db
+                .get_cbor::&lt;StateRoot&gt;(<span class="kw-2">&amp;</span>new_state)
+                .ok()
+                .flatten()
+                .map(|sr| <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, sr.actors))
+                .unwrap_or_default();
             <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
                 reveal_five_trees();
-                <span class="macro">tracing::info!</span>(<span class="string">&quot;State migration at height {height}(epoch {epoch}) was successful, Previous state: {parent_state}, new state: {new_state}. Took: {elapsed}s.&quot;</span>);
+                <span class="macro">tracing::info!</span>(<span class="string">&quot;State migration at height {height}(epoch {epoch}) was successful, Previous state: {parent_state}, new state: {new_state}, new state actors: {new_state_actors}. Took: {elapsed}s.&quot;</span>);
             } <span class="kw">else </span>{
-                anyhow:: <span class="macro">bail!</span>(<span class="string">&quot;State post migration at height {height} must not match. Previous state: {parent_state}, new state: {new_state}. Took {elapsed}s.&quot;</span>);
+                anyhow:: <span class="macro">bail!</span>(<span class="string">&quot;State post migration at height {height} must not match. Previous state: {parent_state}, new state: {new_state}, new state actors: {new_state_actors}. Took {elapsed}s.&quot;</span>);
             }
 
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(new_state));
@@ -146,4 +167,7 @@
 
     <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
 }
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests;
 </code></pre></div></section></main></body></html>

@@ -919,7 +919,6 @@
 <a href="#919" id="919">919</a>
 <a href="#920" id="920">920</a>
 <a href="#921" id="921">921</a>
-<a href="#922" id="922">922</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1292,7 +1291,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::shim::{
         econ::TokenAmount,
         machine::Manifest,
-        state_tree::{ActorState, StateTree, StateTreeVersion},
+        state_tree::{ActorState, StateRoot, StateTree, StateTreeVersion},
     };
     <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
     <span class="kw">use </span>cid::multihash::{Multihash, MultihashDigest};
@@ -1306,7 +1305,6 @@
             SHA2_256_TRUNC254_PADDED,
         },
         piece::PaddedPieceSize,
-        state::StateRoot,
     };
 
     <span class="attr">#[test]

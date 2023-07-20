@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Config","DaemonConfig","TokioConfig"]};
+window.SIDEBAR_ITEMS = {"struct":["Config","DaemonConfig"]};
