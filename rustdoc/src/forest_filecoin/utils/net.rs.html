@@ -67,16 +67,57 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::utils::io::WithProgress;
 <span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
-<span class="kw">use </span>futures::TryStreamExt;
-<span class="kw">use </span>std::io::ErrorKind;
+<span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>futures::{AsyncWriteExt, TryStreamExt};
+<span class="kw">use </span>std::{io::ErrorKind, path::Path};
 <span class="kw">use </span>tap::Pipe;
 <span class="kw">use </span>tokio::io::{AsyncBufReadExt, AsyncRead};
-<span class="kw">use </span>tokio_util::either::Either::{Left, Right};
+<span class="kw">use </span>tokio_util::{
+    compat::TokioAsyncReadCompatExt,
+    either::Either::{Left, Right},
+};
 <span class="kw">use </span>tracing::info;
 <span class="kw">use </span>url::Url;
 
@@ -85,6 +126,39 @@
 <span class="kw">pub fn </span>global_http_client() -&gt; reqwest::Client {
     <span class="kw">static </span>CLIENT: Lazy&lt;reqwest::Client&gt; = Lazy::new(reqwest::Client::new);
     CLIENT.clone()
+}
+
+<span class="doccomment">/// Download a file via IPFS HTTP gateway in trustless mode.
+/// See &lt;https://github.com/ipfs/specs/blob/main/http-gateways/TRUSTLESS_GATEWAY.md&gt;
+</span><span class="kw">pub async fn </span>download_ipfs_file_trustlessly(
+    cid: <span class="kw-2">&amp;</span>Cid,
+    gateway: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
+    destination: <span class="kw-2">&amp;</span>Path,
+) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>url = {
+        <span class="comment">// https://docs.ipfs.tech/concepts/ipfs-gateway/
+        </span><span class="kw">const </span>DEFAULT_IPFS_GATEWAY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://ipfs.io/ipfs/&quot;</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>url =
+            Url::parse(gateway.unwrap_or(DEFAULT_IPFS_GATEWAY))<span class="question-mark">?</span>.join(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{cid}&quot;</span>))<span class="question-mark">?</span>;
+        url.set_query(<span class="prelude-val">Some</span>(<span class="string">&quot;format=car&quot;</span>));
+        <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, anyhow::Error&gt;(url)
+    }<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>tmp =
+        tempfile::NamedTempFile::new_in(destination.parent().unwrap_or_else(|| Path::new(<span class="string">&quot;.&quot;</span>)))<span class="question-mark">?
+            </span>.into_temp_path();
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>reader = reader(url.as_str()).<span class="kw">await</span><span class="question-mark">?</span>.compat();
+        <span class="kw">let </span><span class="kw-2">mut </span>writer = futures::io::BufWriter::new(async_fs::File::create(<span class="kw-2">&amp;</span>tmp).<span class="kw">await</span><span class="question-mark">?</span>);
+        rs_car_ipfs::single_file::read_single_file_seek(<span class="kw-2">&amp;mut </span>reader, <span class="kw-2">&amp;mut </span>writer, <span class="prelude-val">Some</span>(cid))
+            .<span class="kw">await</span><span class="question-mark">?</span>;
+        writer.flush().<span class="kw">await</span><span class="question-mark">?</span>;
+        writer.close().<span class="kw">await</span><span class="question-mark">?</span>;
+    }
+
+    tmp.persist(destination)<span class="question-mark">?</span>;
+
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// `location` may be:

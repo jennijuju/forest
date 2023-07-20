@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["global_http_client","is_zstd","reader"]};
+window.SIDEBAR_ITEMS = {"fn":["download_ipfs_file_trustlessly","global_http_client","is_zstd","reader"]};

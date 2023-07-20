@@ -219,23 +219,6 @@
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
-<a href="#235" id="235">235</a>
-<a href="#236" id="236">236</a>
-<a href="#237" id="237">237</a>
-<a href="#238" id="238">238</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -243,18 +226,17 @@
     fs::File <span class="kw">as </span>SyncFile,
     io::{<span class="self">self</span>, copy <span class="kw">as </span>sync_copy, BufReader <span class="kw">as </span>SyncBufReader, ErrorKind},
     path::{Path, PathBuf},
+    str::FromStr,
     sync::Arc,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::sector::SectorSize;
-<span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
+<span class="kw">use crate</span>::{shim::sector::SectorSize, utils::net::download_ipfs_file_trustlessly};
 <span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>backoff::{future::retry, ExponentialBackoff};
 <span class="kw">use </span>blake2b_simd::{Hash, State <span class="kw">as </span>Blake2b};
-<span class="kw">use </span>futures::TryStreamExt;
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>tap::Pipe <span class="kw">as _</span>;
-<span class="kw">use </span>tokio::fs::{<span class="self">self</span>, File};
+<span class="kw">use </span>tokio::fs::{<span class="self">self</span>};
 <span class="kw">use </span>tracing::{debug, error, info, warn};
 
 <span class="kw">const </span>GATEWAY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://proofs.filecoin.io/ipfs/&quot;</span>;
@@ -396,9 +378,8 @@
     info: Arc&lt;ParameterData&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
     <span class="kw">let </span>path: PathBuf = param_dir(data_dir).join(name);
-    <span class="kw">let </span>path: Arc&lt;Path&gt; = Arc::from(path.as_path());
 
-    <span class="kw">match </span>check_file(path.clone(), info.clone()).<span class="kw">await </span>{
+    <span class="kw">match </span>check_file(<span class="kw-2">&amp;</span>path, <span class="kw-2">&amp;</span>info).<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(()) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
         <span class="prelude-val">Err</span>(e) =&gt; {
             <span class="kw">if </span>e.kind() != ErrorKind::NotFound {
@@ -409,53 +390,38 @@
 
     fetch_params(<span class="kw-2">&amp;</span>path, <span class="kw-2">&amp;</span>info).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    check_file(path, info).<span class="kw">await</span>.map_err(|e| {
+    check_file(<span class="kw-2">&amp;</span>path, <span class="kw-2">&amp;</span>info).<span class="kw">await</span>.map_err(|e| {
         <span class="comment">// TODO remove invalid file
         </span>e.into()
     })
 }
 
-<span class="kw">async fn </span>fetch_params(path: <span class="kw-2">&amp;</span>Path, info: <span class="kw-2">&amp;</span>ParameterData) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
+<span class="kw">async fn </span>fetch_params(path: <span class="kw-2">&amp;</span>Path, info: <span class="kw-2">&amp;</span>ParameterData) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>cid = Cid::from_str(<span class="kw-2">&amp;</span>info.cid)<span class="question-mark">?</span>;
     <span class="kw">let </span>gw = std::env::var(GATEWAY_ENV).unwrap_or_else(|<span class="kw">_</span>| GATEWAY.to_owned());
     <span class="macro">info!</span>(<span class="string">&quot;Fetching param file {:?} from {}&quot;</span>, path, gw);
-    <span class="kw">let </span>url = <span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, gw, info.cid);
     <span class="kw">let </span>result = retry(ExponentialBackoff::default(), || <span class="kw">async </span>{
-        <span class="prelude-val">Ok</span>(fetch_params_inner(<span class="kw-2">&amp;</span>url, path).<span class="kw">await</span><span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(download_ipfs_file_trustlessly(<span class="kw-2">&amp;</span>cid, <span class="prelude-val">Some</span>(GATEWAY), path).<span class="kw">await</span><span class="question-mark">?</span>)
     })
     .<span class="kw">await</span>;
     <span class="macro">debug!</span>(<span class="string">&quot;Done fetching param file {:?} from {}&quot;</span>, path, gw);
     result
 }
 
-<span class="kw">async fn </span>fetch_params_inner(url: <span class="kw">impl </span>AsRef&lt;str&gt;, path: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>dst = File::create(path).<span class="kw">await</span><span class="question-mark">?</span>;
-
-    <span class="kw">let </span><span class="kw-2">mut </span>src = global_http_client()
-        .get(url.as_ref())
-        .send()
-        .<span class="kw">await</span><span class="question-mark">?
-        </span>.error_for_status()<span class="question-mark">?
-        </span>.bytes_stream()
-        .map_err(|reqwest_error| std::io::Error::new(ErrorKind::Other, reqwest_error))
-        .pipe(tokio_util::io::StreamReader::new);
-
-    tokio::io::copy(<span class="kw-2">&amp;mut </span>src, <span class="kw-2">&amp;mut </span>dst).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(())
-}
-
-<span class="kw">async fn </span>check_file(path: Arc&lt;Path&gt;, info: Arc&lt;ParameterData&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), io::Error&gt; {
+<span class="kw">async fn </span>check_file(path: <span class="kw-2">&amp;</span>Path, info: <span class="kw-2">&amp;</span>ParameterData) -&gt; <span class="prelude-ty">Result</span>&lt;(), io::Error&gt; {
     <span class="kw">if </span>std::env::var(TRUST_PARAMS_ENV) == <span class="prelude-val">Ok</span>(<span class="string">&quot;1&quot;</span>.to_owned()) {
         <span class="macro">warn!</span>(<span class="string">&quot;Assuming parameter files are okay. Do not use in production!&quot;</span>);
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());
     }
 
-    <span class="kw">let </span>cloned_path = path.clone();
-    <span class="kw">let </span>hash = tokio::task::spawn_blocking(<span class="kw">move </span>|| -&gt; <span class="prelude-ty">Result</span>&lt;Hash, io::Error&gt; {
-        <span class="kw">let </span>file = SyncFile::open(cloned_path.as_ref())<span class="question-mark">?</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>reader = SyncBufReader::new(file);
-        <span class="kw">let </span><span class="kw-2">mut </span>hasher = Blake2b::new();
-        sync_copy(<span class="kw-2">&amp;mut </span>reader, <span class="kw-2">&amp;mut </span>hasher)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(hasher.finalize())
+    <span class="kw">let </span>hash = tokio::task::spawn_blocking({
+        <span class="kw">let </span>file = SyncFile::open(path)<span class="question-mark">?</span>;
+        <span class="kw">move </span>|| -&gt; <span class="prelude-ty">Result</span>&lt;Hash, io::Error&gt; {
+            <span class="kw">let </span><span class="kw-2">mut </span>reader = SyncBufReader::new(file);
+            <span class="kw">let </span><span class="kw-2">mut </span>hasher = Blake2b::new();
+            sync_copy(<span class="kw-2">&amp;mut </span>reader, <span class="kw-2">&amp;mut </span>hasher)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(hasher.finalize())
+        }
     })
     .<span class="kw">await</span><span class="question-mark">??</span>;
 
