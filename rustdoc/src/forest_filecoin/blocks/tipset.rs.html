@@ -736,10 +736,6 @@
 <a href="#736" id="736">736</a>
 <a href="#737" id="737">737</a>
 <a href="#738" id="738">738</a>
-<a href="#739" id="739">739</a>
-<a href="#740" id="740">740</a>
-<a href="#741" id="741">741</a>
-<a href="#742" id="742">742</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -756,7 +752,6 @@
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>tracing::info;
 
 <span class="kw">use super</span>::{Block, BlockHeader, Error, Ticket};
@@ -1026,14 +1021,11 @@
             serde_yaml::from_str(<span class="macro">include_str!</span>(<span class="string">&quot;../../build/known_blocks.yaml&quot;</span>)).unwrap()
         });
 
-        <span class="kw">let </span>calibnet_cid = Cid::from_str(calibnet::GENESIS_CID).unwrap();
-        <span class="kw">let </span>mainnet_cid = Cid::from_str(mainnet::GENESIS_CID).unwrap();
-
         <span class="kw">for </span>tipset <span class="kw">in </span><span class="self">self</span>.clone().chain(<span class="kw-2">&amp;</span>store) {
             <span class="comment">// Search for known calibnet and mainnet blocks
             </span><span class="kw">for </span>(genesis_cid, known_blocks) <span class="kw">in </span>[
-                (calibnet_cid, <span class="kw-2">&amp;</span>headers.calibnet),
-                (mainnet_cid, <span class="kw-2">&amp;</span>headers.mainnet),
+                (<span class="kw-2">*</span>calibnet::GENESIS_CID, <span class="kw-2">&amp;</span>headers.calibnet),
+                (<span class="kw-2">*</span>mainnet::GENESIS_CID, <span class="kw-2">&amp;</span>headers.mainnet),
             ] {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(known_block_cid) = known_blocks.get(<span class="kw-2">&amp;</span>tipset.epoch()) {
                     <span class="kw">if </span>known_block_cid == <span class="kw-2">&amp;</span>tipset.min_ticket_block().cid().to_string() {

@@ -681,9 +681,9 @@
             }
 
             <span class="kw">if </span>tipset.epoch() == <span class="number">0 </span>{
-                <span class="kw">if </span>tipset.min_ticket_block().cid().to_string() == calibnet::GENESIS_CID {
+                <span class="kw">if </span>tipset.min_ticket_block().cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
                     network = <span class="string">&quot;calibnet&quot;</span>.into();
-                } <span class="kw">else if </span>tipset.min_ticket_block().cid().to_string() == mainnet::GENESIS_CID {
+                } <span class="kw">else if </span>tipset.min_ticket_block().cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
                     network = <span class="string">&quot;mainnet&quot;</span>.into();
                 }
             }
@@ -696,9 +696,9 @@
             <span class="kw">if </span>may_skip {
                 <span class="kw">match </span>tipset.genesis(<span class="kw-2">&amp;</span>store).ok() {
                     <span class="prelude-val">Some</span>(genesis_block) =&gt; {
-                        <span class="kw">if </span>genesis_block.cid().to_string() == calibnet::GENESIS_CID {
+                        <span class="kw">if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
                             network = <span class="string">&quot;calibnet&quot;</span>.into();
-                        } <span class="kw">else if </span>genesis_block.cid().to_string() == mainnet::GENESIS_CID {
+                        } <span class="kw">else if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
                             network = <span class="string">&quot;mainnet&quot;</span>.into();
                         }
                     }
@@ -728,9 +728,9 @@
     <span class="kw">let </span>root = Tipset::load_required(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>genesis = root.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-    <span class="kw">let </span>chain_name = <span class="kw">if </span>genesis.cid().to_string() == calibnet::GENESIS_CID {
+    <span class="kw">let </span>chain_name = <span class="kw">if </span>genesis.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
         NetworkChain::Calibnet
-    } <span class="kw">else if </span>genesis.cid().to_string() == mainnet::GENESIS_CID {
+    } <span class="kw">else if </span>genesis.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
         NetworkChain::Mainnet
     } <span class="kw">else </span>{
         <span class="macro">bail!</span>(<span class="string">&quot;Unrecognizable genesis block&quot;</span>);

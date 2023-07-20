@@ -174,12 +174,18 @@
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>lazy_static::lazy_static;
+<span class="kw">use </span>once_cell::sync::Lazy;
+<span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>url::Url;
 
 <span class="kw">use super</span>::{
@@ -193,7 +199,9 @@
 <span class="doccomment">/// Default genesis car file bytes.
 </span><span class="kw">pub const </span>DEFAULT_GENESIS: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">&quot;genesis.car&quot;</span>);
 <span class="doccomment">/// Genesis CID
-</span><span class="kw">pub const </span>GENESIS_CID: <span class="kw-2">&amp;</span>str = <span class="string">&quot;bafy2bzacecnamqgqmifpluoeldx7zzglxcljo6oja4vrmtj7432rphldpdmm2&quot;</span>;
+</span><span class="kw">pub static </span>GENESIS_CID: Lazy&lt;Cid&gt; = Lazy::new(|| {
+    Cid::from_str(<span class="string">&quot;bafy2bzacecnamqgqmifpluoeldx7zzglxcljo6oja4vrmtj7432rphldpdmm2&quot;</span>).unwrap()
+});
 
 <span class="doccomment">/// Default bootstrap peer ids.
 </span><span class="kw">pub const </span>DEFAULT_BOOTSTRAP: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] =

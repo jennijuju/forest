@@ -826,9 +826,9 @@
     );
 
     <span class="kw">fn </span>match_genesis_block(block_cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt; {
-        <span class="kw">if </span>block_cid.to_string() == calibnet::GENESIS_CID {
+        <span class="kw">if </span>block_cid == <span class="kw-2">*</span>calibnet::GENESIS_CID {
             <span class="prelude-val">Ok</span>(NetworkChain::Calibnet)
-        } <span class="kw">else if </span>block_cid.to_string() == mainnet::GENESIS_CID {
+        } <span class="kw">else if </span>block_cid == <span class="kw-2">*</span>mainnet::GENESIS_CID {
             <span class="prelude-val">Ok</span>(NetworkChain::Mainnet)
         } <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="string">&quot;Unrecognizable genesis block&quot;</span>);
