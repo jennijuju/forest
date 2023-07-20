@@ -833,35 +833,10 @@
 <a href="#833" id="833">833</a>
 <a href="#834" id="834">834</a>
 <a href="#835" id="835">835</a>
-<a href="#836" id="836">836</a>
-<a href="#837" id="837">837</a>
-<a href="#838" id="838">838</a>
-<a href="#839" id="839">839</a>
-<a href="#840" id="840">840</a>
-<a href="#841" id="841">841</a>
-<a href="#842" id="842">842</a>
-<a href="#843" id="843">843</a>
-<a href="#844" id="844">844</a>
-<a href="#845" id="845">845</a>
-<a href="#846" id="846">846</a>
-<a href="#847" id="847">847</a>
-<a href="#848" id="848">848</a>
-<a href="#849" id="849">849</a>
-<a href="#850" id="850">850</a>
-<a href="#851" id="851">851</a>
-<a href="#852" id="852">852</a>
-<a href="#853" id="853">853</a>
-<a href="#854" id="854">854</a>
-<a href="#855" id="855">855</a>
-<a href="#856" id="856">856</a>
-<a href="#857" id="857">857</a>
-<a href="#858" id="858">858</a>
-<a href="#859" id="859">859</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{
-    path::Path,
     sync::Arc,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
@@ -872,7 +847,6 @@
     request_manager::BitswapRequestManager, BitswapStoreRead, BitswapStoreReadWrite,
 };
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::read_file_to_vec;
 <span class="kw">use </span>ahash::{HashMap, HashSet};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
@@ -1693,27 +1667,5 @@
         .multiplex(yamux::Config::default())
         .timeout(Duration::from_secs(<span class="number">20</span>))
         .boxed())
-}
-
-<span class="doccomment">/// Fetch key-pair from disk, returning none if it cannot be decoded.
-</span><span class="kw">pub fn </span>get_keypair(path: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Option</span>&lt;Keypair&gt; {
-    <span class="kw">match </span>read_file_to_vec(path) {
-        <span class="prelude-val">Err</span>(e) =&gt; {
-            <span class="macro">info!</span>(<span class="string">&quot;Networking keystore not found!&quot;</span>);
-            <span class="macro">trace!</span>(<span class="string">&quot;Error {:?}&quot;</span>, e);
-            <span class="prelude-val">None
-        </span>}
-        <span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>vec) =&gt; <span class="kw">match </span>Keypair::ed25519_from_bytes(<span class="kw-2">&amp;mut </span>vec) {
-            <span class="prelude-val">Ok</span>(kp) =&gt; {
-                <span class="macro">info!</span>(<span class="string">&quot;Recovered libp2p keypair from {:?}&quot;</span>, <span class="kw-2">&amp;</span>path);
-                <span class="prelude-val">Some</span>(kp)
-            }
-            <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="macro">info!</span>(<span class="string">&quot;Could not decode networking keystore!&quot;</span>);
-                <span class="macro">trace!</span>(<span class="string">&quot;Error {:?}&quot;</span>, e);
-                <span class="prelude-val">None
-            </span>}
-        },
-    }
 }
 </code></pre></div></section></main></body></html>
