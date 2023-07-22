@@ -5,6 +5,7 @@ use std::{ops::DerefMut, path::Path, sync::Arc, time::SystemTime};
 
 use crate::beacon::{BeaconEntry, IGNORE_DRAND_VAR};
 use crate::blocks::{BlockHeader, Tipset, TipsetKeys, TxMeta};
+use crate::db::Store;
 use crate::interpreter::BlockMessages;
 use crate::ipld::{walk_snapshot, WALK_SNAPSHOT_PROGRESS_EXPORT};
 use crate::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
@@ -125,7 +126,10 @@ where
         chain_config: Arc<ChainConfig>,
         genesis_block_header: &BlockHeader,
         chain_data_root: &Path,
-    ) -> Result<Self> {
+    ) -> Result<Self>
+    where
+        DB: Store,
+    {
         let (publisher, _) = broadcast::channel(SINK_CAP);
         let chain_index = ChainIndex::new(Arc::clone(&db));
         let file_backed_genesis = Mutex::new(FileBacked::new(

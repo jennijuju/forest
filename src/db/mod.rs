@@ -9,6 +9,16 @@ pub use memory::MemoryDB;
 
 pub mod rolling;
 
+use fvm_ipld_blockstore::Blockstore;
+
+// Trait for databases that can store:
+//   - a filecoin graph (i.e., a mapping from CID to value),
+//   - information about which blockchain branches have been validated and which
+//     block is the heaviest.
+pub trait Store: Blockstore + SettingsStore + Send + Sync {}
+
+impl<T: Blockstore + SettingsStore + Send + Sync> Store for T {}
+
 /// Interface used to store and retrieve settings from the database.
 /// To store IPLD blocks, use the `BlockStore` trait.
 pub trait SettingsStore {

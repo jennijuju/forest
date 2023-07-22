@@ -12,6 +12,7 @@ use crate::blocks::{
     Block, Error as ForestBlockError, FullTipset, GossipBlock, Tipset, TipsetKeys,
 };
 use crate::chain::{ChainStore, Error as ChainStoreError};
+use crate::db::Store;
 use crate::libp2p::{
     hello::HelloRequest, NetworkEvent, NetworkMessage, PeerId, PeerManager, PubsubMessage,
 };
@@ -158,7 +159,7 @@ pub struct ChainMuxer<DB, M, C: Consensus> {
 
 impl<DB, M, C> ChainMuxer<DB, M, C>
 where
-    DB: Blockstore + Clone + Sync + Send + 'static,
+    DB: Blockstore + Store + Clone + Sync + Send + 'static,
     M: Provider + Sync + Send + 'static,
     C: Consensus,
 {
@@ -839,7 +840,7 @@ enum ChainMuxerState<C: Consensus> {
 
 impl<DB, M, C> Future for ChainMuxer<DB, M, C>
 where
-    DB: Blockstore + Clone + Sync + Send + 'static,
+    DB: Store + Clone + Sync + Send + 'static,
     M: Provider + Sync + Send + 'static,
     C: Consensus,
 {
