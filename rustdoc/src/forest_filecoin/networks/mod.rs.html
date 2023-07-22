@@ -308,17 +308,6 @@
 <a href="#308" id="308">308</a>
 <a href="#309" id="309">309</a>
 <a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -331,7 +320,6 @@
 <span class="kw">use </span>anyhow::Error;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actors_shared::v10::runtime::Policy;
-<span class="kw">use </span>libp2p::Multiaddr;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>strum_macros::Display;
 <span class="kw">use </span>url::Url;
@@ -480,7 +468,7 @@
 </span><span class="kw">pub struct </span>ChainConfig {
     <span class="kw">pub </span>network: NetworkChain,
     <span class="kw">pub </span>genesis_cid: <span class="prelude-ty">Option</span>&lt;String&gt;,
-    <span class="kw">pub </span>bootstrap_peers: Vec&lt;Multiaddr&gt;,
+    <span class="kw">pub </span>bootstrap_peers: Vec&lt;String&gt;,
     <span class="kw">pub </span>block_delay_secs: u64,
     <span class="kw">pub </span>propagation_delay_secs: u64,
     <span class="kw">pub </span>height_infos: Vec&lt;HeightInfo&gt;,
@@ -499,7 +487,7 @@
         <span class="self">Self </span>{
             network: NetworkChain::Mainnet,
             genesis_cid: <span class="prelude-val">Some</span>(GENESIS_CID.to_string()),
-            bootstrap_peers: DEFAULT_BOOTSTRAP.clone(),
+            bootstrap_peers: DEFAULT_BOOTSTRAP.iter().map(|x| x.to_string()).collect(),
             block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u64,
             propagation_delay_secs: <span class="number">10</span>,
             height_infos: HEIGHT_INFOS.to_vec(),
@@ -515,7 +503,7 @@
         <span class="self">Self </span>{
             network: NetworkChain::Calibnet,
             genesis_cid: <span class="prelude-val">Some</span>(GENESIS_CID.to_string()),
-            bootstrap_peers: DEFAULT_BOOTSTRAP.clone(),
+            bootstrap_peers: DEFAULT_BOOTSTRAP.iter().map(|x| x.to_string()).collect(),
             block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u64,
             propagation_delay_secs: <span class="number">10</span>,
             height_infos: HEIGHT_INFOS.to_vec(),
@@ -629,15 +617,5 @@
 <span class="comment">// XXX: Dummy default. Will be overwritten later. Wish we could get rid of this.
 </span><span class="kw">fn </span>default_policy() -&gt; Policy {
     Policy::mainnet()
-}
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>parse_bootstrap_peers(bootstrap_peer_list: <span class="kw-2">&amp;</span>str) -&gt; Vec&lt;Multiaddr&gt; {
-    bootstrap_peer_list
-        .split(<span class="string">&#39;\n&#39;</span>)
-        .filter(|s| !s.is_empty())
-        .map(|s| {
-            Multiaddr::from_str(s).unwrap_or_else(|e| <span class="macro">panic!</span>(<span class="string">&quot;invalid bootstrap peer {s}: {e}&quot;</span>))
-        })
-        .collect()
 }
 </code></pre></div></section></main></body></html>

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["KEYPAIR_FILE"],"fn":["create_and_save_keypair","get_keypair","get_or_create_keypair"]};

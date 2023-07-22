@@ -359,7 +359,7 @@
     <span class="kw">impl </span>Arbitrary <span class="kw">for </span>Blocks {
         <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
             <span class="comment">// `CarReader` complains when n is 0: Error: Failed to parse CAR file: empty CAR file
-            </span><span class="kw">let </span>n = u8::arbitrary(g).saturating_add(<span class="number">1</span>) <span class="kw">as </span>usize;
+            </span><span class="kw">let </span>n = u16::arbitrary(g).saturating_add(<span class="number">1</span>) <span class="kw">as </span>usize;
             <span class="kw">let </span><span class="kw-2">mut </span>blocks = Vec::with_capacity(n);
             <span class="kw">for _ in </span><span class="number">0</span>..n {
                 <span class="comment">// use small len here to increase the chance of duplication

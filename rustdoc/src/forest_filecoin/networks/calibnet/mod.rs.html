@@ -166,17 +166,18 @@
 <a href="#166" id="166">166</a>
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>lazy_static::lazy_static;
-<span class="kw">use </span>libp2p::Multiaddr;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::str::FromStr;
 <span class="kw">use </span>url::Url;
 
-<span class="kw">use super</span>::{drand::DRAND_MAINNET, parse_bootstrap_peers, DrandPoint, Height, HeightInfo};
+<span class="kw">use super</span>::{drand::DRAND_MAINNET, DrandPoint, Height, HeightInfo};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ActorBundleInfo;
 
 <span class="doccomment">/// Default genesis car file bytes.
@@ -187,8 +188,8 @@
 });
 
 <span class="doccomment">/// Default bootstrap peer ids.
-</span><span class="kw">pub static </span>DEFAULT_BOOTSTRAP: Lazy&lt;Vec&lt;Multiaddr&gt;&gt; =
-    Lazy::new(|| parse_bootstrap_peers(<span class="macro">include_str!</span>(<span class="string">&quot;../../../build/bootstrap/calibnet&quot;</span>)));
+</span><span class="kw">pub const </span>DEFAULT_BOOTSTRAP: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] =
+    <span class="kw-2">&amp;</span><span class="macro">const_str::split!</span>(<span class="macro">include_str!</span>(<span class="string">&quot;../../../build/bootstrap/calibnet&quot;</span>), <span class="string">&quot;\n&quot;</span>);
 
 <span class="kw">const </span>LIGHTNING_EPOCH: i64 = <span class="number">489_094</span>;
 
@@ -332,6 +333,9 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>default_boostrap_list_not_empty() {
         <span class="macro">assert!</span>(!DEFAULT_BOOTSTRAP.is_empty());
+        DEFAULT_BOOTSTRAP.iter().for_each(|addr| {
+            <span class="macro">assert!</span>(addr.parse::&lt;libp2p::multiaddr::Multiaddr&gt;().is_ok());
+        });
     }
 }
 </code></pre></div></section></main></body></html>

@@ -789,6 +789,30 @@
 <a href="#789" id="789">789</a>
 <a href="#790" id="790">790</a>
 <a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
+<a href="#809" id="809">809</a>
+<a href="#810" id="810">810</a>
+<a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -812,7 +836,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::key_management::{
     KeyStore, KeyStoreConfig, ENCRYPTED_KEYSTORE_NAME, FOREST_KEYSTORE_PHRASE_ENV,
 };
-<span class="kw">use </span><span class="kw">crate</span>::libp2p::{Libp2pConfig, Libp2pService, PeerId, PeerManager};
+<span class="kw">use </span><span class="kw">crate</span>::libp2p::{get_keypair, Libp2pConfig, Libp2pService, PeerId, PeerManager};
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, MpoolConfig, MpoolRpcProvider};
 <span class="kw">use </span><span class="kw">crate</span>::rpc::start_rpc;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::RPCState;
@@ -823,8 +847,9 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
-    monitoring::MemStatsTracker, proofs_api::paramfetch::ensure_params_downloaded, retry,
-    version::FOREST_VERSION_STRING, RetryArgs,
+    io::write_to_file, monitoring::MemStatsTracker,
+    proofs_api::paramfetch::ensure_params_downloaded, retry, version::FOREST_VERSION_STRING,
+    RetryArgs,
 };
 <span class="kw">use </span>anyhow::{bail, Context};
 <span class="kw">use </span>bundle::load_bundles;
@@ -924,7 +949,26 @@
 
     <span class="kw">let </span>start_time = chrono::Utc::now();
     <span class="kw">let </span>path: PathBuf = config.client.data_dir.join(<span class="string">&quot;libp2p&quot;</span>);
-    <span class="kw">let </span>net_keypair = <span class="kw">crate</span>::libp2p::keypair::get_or_create_keypair(<span class="kw-2">&amp;</span>path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>net_keypair = <span class="kw">match </span>get_keypair(<span class="kw-2">&amp;</span>path.join(<span class="string">&quot;keypair&quot;</span>)) {
+        <span class="prelude-val">Some</span>(keypair) =&gt; <span class="prelude-val">Ok</span>::&lt;<span class="kw">crate</span>::libp2p::Keypair, std::io::Error&gt;(keypair),
+        <span class="prelude-val">None </span>=&gt; {
+            <span class="kw">let </span>gen_keypair = <span class="kw">crate</span>::libp2p::Keypair::generate_ed25519();
+            <span class="comment">// Save Ed25519 keypair to file
+            // TODO rename old file to keypair.old(?)
+            </span><span class="kw">let </span>file = write_to_file(
+                <span class="kw-2">&amp;</span>gen_keypair
+                    .clone()
+                    .try_into_ed25519()
+                    .context(<span class="string">&quot;couldn&#39;t convert keypair to ed25519&quot;</span>)<span class="question-mark">?
+                    </span>.to_bytes(),
+                <span class="kw-2">&amp;</span>path,
+                <span class="string">&quot;keypair&quot;</span>,
+            )<span class="question-mark">?</span>;
+            <span class="comment">// Restrict permissions on files containing private keys
+            </span><span class="kw">crate</span>::utils::io::set_user_perm(<span class="kw-2">&amp;</span>file)<span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>(gen_keypair)
+        }
+    }<span class="question-mark">?</span>;
 
     <span class="comment">// Hint at the multihash which has to go in the `/p2p/&lt;multihash&gt;` part of the
     // peer&#39;s multiaddress. Useful if others want to use this node to bootstrap
@@ -1034,8 +1078,12 @@
 
     <span class="comment">// if bootstrap peers are not set, set them
     </span><span class="kw">let </span>config = <span class="kw">if </span>config.network.bootstrap_peers.is_empty() {
-        <span class="kw">let </span>bootstrap_peers = config.chain.bootstrap_peers.clone();
-
+        <span class="kw">let </span>bootstrap_peers = config
+            .chain
+            .bootstrap_peers
+            .iter()
+            .map(|node| node.parse())
+            .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
         Config {
             network: Libp2pConfig {
                 bootstrap_peers,
@@ -1053,7 +1101,7 @@
 
     <span class="kw">let </span>epoch = chain_store.heaviest_tipset().epoch();
 
-    load_bundles(epoch, <span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;</span>db).<span class="kw">await</span><span class="question-mark">?</span>;
+    load_bundles(epoch, <span class="kw-2">&amp;</span>config, db.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>peer_manager = Arc::new(PeerManager::default());
     services.spawn(peer_manager.clone().peer_operation_event_loop_task());
