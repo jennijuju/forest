@@ -366,6 +366,7 @@
 <a href="#366" id="366">366</a>
 <a href="#367" id="367">367</a>
 <a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -374,7 +375,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
-<span class="kw">use </span><span class="kw">crate</span>::chain::store::ChainStore;
+<span class="kw">use </span><span class="kw">crate</span>::chain::{index::ChainIndex, store::ChainStore};
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::errors::Error;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
@@ -404,7 +405,7 @@
     heaviest_tipset: Arc&lt;Tipset&gt;,
     epoch: ChainEpoch,
     root: Cid,
-    chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     bail: AtomicBool,
 }
@@ -415,7 +416,7 @@
         heaviest_tipset: Arc&lt;Tipset&gt;,
         epoch: ChainEpoch,
         root: Cid,
-        chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+        chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
     ) -&gt; <span class="self">Self </span>{
         ForestExternsV2 {
@@ -423,14 +424,15 @@
             heaviest_tipset,
             epoch,
             root,
-            chain_store,
+            chain_index,
             chain_config,
             bail: AtomicBool::new(<span class="bool-val">false</span>),
         }
     }
 
     <span class="kw">fn </span>get_lookback_tipset_state_root_for_round(<span class="kw-2">&amp;</span><span class="self">self</span>, height: ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt; {
-        <span class="kw">let </span>(<span class="kw">_</span>, st) = <span class="self">self</span>.chain_store.get_lookback_tipset_for_round(
+        <span class="kw">let </span>(<span class="kw">_</span>, st) = ChainStore::get_lookback_tipset_for_round(
+            <span class="self">self</span>.chain_index.clone(),
             Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config),
             Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset),
             height,
@@ -452,19 +454,19 @@
         }
 
         <span class="kw">let </span>prev_root = <span class="self">self</span>.get_lookback_tipset_state_root_for_round(height)<span class="question-mark">?</span>;
-        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>actor = lb_state
             .get_actor(<span class="kw-2">&amp;</span>miner_addr.into())<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;actor not found {:?}&quot;</span>, miner_addr))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db);
+        <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db);
 
         <span class="kw">let </span>ms = fil_actor_interface::miner::State::load(<span class="kw-2">&amp;</span>tbs, actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>worker = ms.info(<span class="kw-2">&amp;</span>tbs)<span class="question-mark">?</span>.worker;
 
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>addr = resolve_to_key_addr(<span class="kw-2">&amp;</span>state, <span class="kw-2">&amp;</span>tbs, <span class="kw-2">&amp;</span>worker.into())<span class="question-mark">?</span>;
 

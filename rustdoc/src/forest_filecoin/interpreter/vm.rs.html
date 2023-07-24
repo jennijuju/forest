@@ -406,7 +406,7 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
-<span class="kw">use </span><span class="kw">crate</span>::chain::store::ChainStore;
+<span class="kw">use </span><span class="kw">crate</span>::chain::index::ChainIndex;
 <span class="kw">use </span><span class="kw">crate</span>::message::ChainMessage;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
@@ -490,7 +490,7 @@
     <span class="comment">// The chain config is used to determine which consensus rules to use.
     </span><span class="kw">pub </span>chain_config: Arc&lt;ChainConfig&gt;,
     <span class="comment">// Caching interface to the DB
-    </span><span class="kw">pub </span>chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    </span><span class="kw">pub </span>chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
     <span class="comment">// UNIX timestamp for epoch
     </span><span class="kw">pub </span>timestamp: u64,
 }
@@ -508,7 +508,7 @@
             base_fee,
             circ_supply,
             chain_config,
-            chain_store,
+            chain_index,
             timestamp,
         }: ExecutionContext&lt;DB&gt;,
         multi_engine: <span class="kw-2">&amp;</span>MultiEngine,
@@ -528,13 +528,13 @@
             context.set_circulating_supply(circ_supply.into());
             <span class="kw">let </span>fvm: ForestMachineV3&lt;DB&gt; = ForestMachineV3::new(
                 <span class="kw-2">&amp;</span>context,
-                Arc::clone(<span class="kw-2">&amp;</span>chain_store.db),
+                Arc::clone(<span class="kw-2">&amp;</span>chain_index.db),
                 ForestExternsV3::new(
                     RandWrapper::from(rand),
                     heaviest_tipset,
                     epoch,
                     state_tree_root,
-                    chain_store,
+                    chain_index,
                     chain_config,
                 ),
             )<span class="question-mark">?</span>;
@@ -549,13 +549,13 @@
             <span class="kw">let </span>fvm: ForestMachineV2&lt;DB&gt; = ForestMachineV2::new(
                 <span class="kw-2">&amp;</span>engine,
                 <span class="kw-2">&amp;</span>context,
-                Arc::clone(<span class="kw-2">&amp;</span>chain_store.db),
+                Arc::clone(<span class="kw-2">&amp;</span>chain_index.db),
                 ForestExternsV2::new(
                     RandWrapper::from(rand),
                     heaviest_tipset,
                     epoch,
                     state_tree_root,
-                    chain_store,
+                    chain_index,
                     chain_config,
                 ),
             )<span class="question-mark">?</span>;

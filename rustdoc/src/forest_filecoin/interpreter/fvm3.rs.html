@@ -380,22 +380,33 @@
 <a href="#380" id="380">380</a>
 <a href="#381" id="381">381</a>
 <a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::atomic::{AtomicBool, Ordering};
 <span class="kw">use </span>std::{cell::Ref, sync::Arc};
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
-<span class="kw">use </span><span class="kw">crate</span>::chain::store::ChainStore;
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
+<span class="kw">use </span><span class="kw">crate</span>::chain::{
+    index::{ChainIndex, ResolveNullTipset},
+    ChainStore,
+};
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::errors::Error;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address, gas::price_list_by_network_version, state_tree::StateTree,
     version::NetworkVersion,
 };
-<span class="kw">use </span>anyhow::bail;
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm3::{
     externs::{Chain, Consensus, Externs, Rand},
@@ -419,7 +430,7 @@
     heaviest_tipset: Arc&lt;Tipset&gt;,
     epoch: ChainEpoch,
     root: Cid,
-    chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     bail: AtomicBool,
 }
@@ -430,7 +441,7 @@
         heaviest_tipset: Arc&lt;Tipset&gt;,
         epoch: ChainEpoch,
         root: Cid,
-        chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+        chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
     ) -&gt; <span class="self">Self </span>{
         ForestExterns {
@@ -438,14 +449,15 @@
             heaviest_tipset,
             epoch,
             root,
-            chain_store,
+            chain_index,
             chain_config,
             bail: AtomicBool::new(<span class="bool-val">false</span>),
         }
     }
 
     <span class="kw">fn </span>get_lookback_tipset_state_root_for_round(<span class="kw-2">&amp;</span><span class="self">self</span>, height: ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt; {
-        <span class="kw">let </span>(<span class="kw">_</span>, st) = <span class="self">self</span>.chain_store.get_lookback_tipset_for_round(
+        <span class="kw">let </span>(<span class="kw">_</span>, st) = ChainStore::get_lookback_tipset_for_round(
+            <span class="self">self</span>.chain_index.clone(),
             Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config),
             Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset),
             height,
@@ -467,19 +479,19 @@
         }
 
         <span class="kw">let </span>prev_root = <span class="self">self</span>.get_lookback_tipset_state_root_for_round(height)<span class="question-mark">?</span>;
-        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>actor = lb_state
             .get_actor(miner_addr)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;actor not found {:?}&quot;</span>, miner_addr))<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db);
+        <span class="kw">let </span>tbs = TrackingBlockstore::new(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db);
 
         <span class="kw">let </span>ms = fil_actor_interface::miner::State::load(<span class="kw-2">&amp;</span>tbs, actor.code, actor.state)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>worker = ms.info(<span class="kw-2">&amp;</span>tbs)<span class="question-mark">?</span>.worker.into();
 
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>addr = resolve_to_key_addr(<span class="kw-2">&amp;</span>state, <span class="kw-2">&amp;</span>tbs, <span class="kw-2">&amp;</span>worker)<span class="question-mark">?</span>;
 
@@ -511,9 +523,15 @@
 
 <span class="kw">impl</span>&lt;DB: Blockstore&gt; Chain <span class="kw">for </span>ForestExterns&lt;DB&gt; {
     <span class="kw">fn </span>get_tipset_cid(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt; {
-        <span class="self">self</span>.chain_store
-            .get_epoch_tsk(Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset), epoch)<span class="question-mark">?
-            </span>.cid()
+        <span class="kw">let </span>ts = <span class="self">self
+            </span>.chain_index
+            .tipset_by_height(
+                epoch,
+                <span class="self">self</span>.heaviest_tipset.clone(),
+                ResolveNullTipset::TakeOlder,
+            )
+            .context(<span class="string">&quot;Failed to get tipset cid&quot;</span>)<span class="question-mark">?</span>;
+        ts.key().cid()
     }
 }
 

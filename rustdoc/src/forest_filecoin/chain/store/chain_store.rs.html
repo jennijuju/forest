@@ -759,66 +759,11 @@
 <a href="#759" id="759">759</a>
 <a href="#760" id="760">760</a>
 <a href="#761" id="761">761</a>
-<a href="#762" id="762">762</a>
-<a href="#763" id="763">763</a>
-<a href="#764" id="764">764</a>
-<a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a>
-<a href="#768" id="768">768</a>
-<a href="#769" id="769">769</a>
-<a href="#770" id="770">770</a>
-<a href="#771" id="771">771</a>
-<a href="#772" id="772">772</a>
-<a href="#773" id="773">773</a>
-<a href="#774" id="774">774</a>
-<a href="#775" id="775">775</a>
-<a href="#776" id="776">776</a>
-<a href="#777" id="777">777</a>
-<a href="#778" id="778">778</a>
-<a href="#779" id="779">779</a>
-<a href="#780" id="780">780</a>
-<a href="#781" id="781">781</a>
-<a href="#782" id="782">782</a>
-<a href="#783" id="783">783</a>
-<a href="#784" id="784">784</a>
-<a href="#785" id="785">785</a>
-<a href="#786" id="786">786</a>
-<a href="#787" id="787">787</a>
-<a href="#788" id="788">788</a>
-<a href="#789" id="789">789</a>
-<a href="#790" id="790">790</a>
-<a href="#791" id="791">791</a>
-<a href="#792" id="792">792</a>
-<a href="#793" id="793">793</a>
-<a href="#794" id="794">794</a>
-<a href="#795" id="795">795</a>
-<a href="#796" id="796">796</a>
-<a href="#797" id="797">797</a>
-<a href="#798" id="798">798</a>
-<a href="#799" id="799">799</a>
-<a href="#800" id="800">800</a>
-<a href="#801" id="801">801</a>
-<a href="#802" id="802">802</a>
-<a href="#803" id="803">803</a>
-<a href="#804" id="804">804</a>
-<a href="#805" id="805">805</a>
-<a href="#806" id="806">806</a>
-<a href="#807" id="807">807</a>
-<a href="#808" id="808">808</a>
-<a href="#809" id="809">809</a>
-<a href="#810" id="810">810</a>
-<a href="#811" id="811">811</a>
-<a href="#812" id="812">812</a>
-<a href="#813" id="813">813</a>
-<a href="#814" id="814">814</a>
-<a href="#815" id="815">815</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{ops::DerefMut, path::Path, sync::Arc, time::SystemTime};
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconEntry, IGNORE_DRAND_VAR};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys, TxMeta};
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::BlockMessages;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{walk_snapshot, WALK_SNAPSHOT_PROGRESS_EXPORT};
@@ -889,7 +834,7 @@
     </span><span class="kw">pub </span>db: Arc&lt;DB&gt;,
 
     <span class="doccomment">/// Used as a cache for tipset `lookbacks`.
-    </span><span class="kw">pub </span>chain_index: ChainIndex&lt;Arc&lt;DB&gt;&gt;,
+    </span><span class="kw">pub </span>chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
 
     <span class="doccomment">/// Tracks blocks for the purpose of forming tipsets.
     </span>tipset_tracker: TipsetTracker&lt;DB&gt;,
@@ -941,7 +886,7 @@
         chain_data_root: <span class="kw-2">&amp;</span>Path,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>(publisher, <span class="kw">_</span>) = broadcast::channel(SINK_CAP);
-        <span class="kw">let </span>chain_index = ChainIndex::new(Arc::clone(<span class="kw-2">&amp;</span>db));
+        <span class="kw">let </span>chain_index = Arc::new(ChainIndex::new(Arc::clone(<span class="kw-2">&amp;</span>db)));
         <span class="kw">let </span>file_backed_heaviest_tipset_keys = Mutex::new({
             <span class="kw">let </span><span class="kw-2">mut </span>head_store = FileBacked::load_from_file_or_create(
                 chain_data_root.join(<span class="string">&quot;HEAD&quot;</span>),
@@ -1092,52 +1037,12 @@
         <span class="kw">let </span>_did_work = file.remove(cid);
     }
 
-    <span class="doccomment">/// Finds the latest beacon entry given a tipset up to 20 tipsets behind
-    </span><span class="kw">pub fn </span>latest_beacon_entry(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;BeaconEntry, Error&gt; {
-        <span class="kw">let </span>check_for_beacon_entry = |ts: <span class="kw-2">&amp;</span>Tipset| {
-            <span class="kw">let </span>cbe = ts.min_ticket_block().beacon_entries();
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(entry) = cbe.last() {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(entry.clone()));
-            }
-            <span class="kw">if </span>ts.epoch() == <span class="number">0 </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(
-                    <span class="string">&quot;made it back to genesis block without finding beacon entry&quot;</span>.to_owned(),
-                ));
-            }
-            <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
-        };
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(entry) = check_for_beacon_entry(ts)<span class="question-mark">? </span>{
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(entry);
-        }
-        <span class="kw">let </span><span class="kw-2">mut </span>cur = <span class="self">self</span>.tipset_from_keys(ts.parents())<span class="question-mark">?</span>;
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..<span class="number">20 </span>{
-            <span class="kw">if </span>i != <span class="number">1 </span>{
-                cur = <span class="self">self</span>.tipset_from_keys(cur.parents())<span class="question-mark">?</span>;
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(entry) = check_for_beacon_entry(<span class="kw-2">&amp;</span>cur)<span class="question-mark">? </span>{
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(entry);
-            }
-        }
-
-        <span class="kw">if </span>std::env::var(IGNORE_DRAND_VAR) == <span class="prelude-val">Ok</span>(<span class="string">&quot;1&quot;</span>.to_owned()) {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(BeaconEntry::new(
-                <span class="number">0</span>,
-                <span class="macro">vec!</span>[<span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>, <span class="number">9</span>],
-            ));
-        }
-
-        <span class="prelude-val">Err</span>(Error::Other(
-            <span class="string">&quot;Found no beacon entries in the 20 latest tipsets&quot;</span>.to_owned(),
-        ))
-    }
-
     <span class="comment">// FIXME: This function doesn&#39;t use the chain store at all.
     //        Tracking issue: https://github.com/ChainSafe/forest/issues/3208
     </span><span class="doccomment">/// Retrieves block messages to be passed through the VM.
     ///
     /// It removes duplicate messages which appear in multiple blocks.
-    </span><span class="kw">pub fn </span>block_msgs_for_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;BlockMessages&gt;, Error&gt; {
+    </span><span class="kw">pub fn </span>block_msgs_for_tipset(db: DB, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;BlockMessages&gt;, Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>applied = HashMap::new();
         <span class="kw">let </span><span class="kw-2">mut </span>select_msg = |m: ChainMessage| -&gt; <span class="prelude-ty">Option</span>&lt;ChainMessage&gt; {
             <span class="comment">// The first match for a sender is guaranteed to have correct nonce
@@ -1155,7 +1060,7 @@
         ts.blocks()
             .iter()
             .map(|b| {
-                <span class="kw">let </span>(usm, sm) = block_messages(<span class="self">self</span>.blockstore(), b)<span class="question-mark">?</span>;
+                <span class="kw">let </span>(usm, sm) = block_messages(<span class="kw-2">&amp;</span>db, b)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span><span class="kw-2">mut </span>messages = Vec::with_capacity(usm.len() + sm.len());
                 messages.extend(
@@ -1183,7 +1088,7 @@
     <span class="doccomment">/// Retrieves ordered valid messages from a `Tipset`. This will only include
     /// messages that will be passed through the VM.
     </span><span class="kw">pub fn </span>messages_for_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;ChainMessage&gt;, Error&gt; {
-        <span class="kw">let </span>bmsgs = <span class="self">self</span>.block_msgs_for_tipset(ts)<span class="question-mark">?</span>;
+        <span class="kw">let </span>bmsgs = ChainStore::block_msgs_for_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>.db, ts)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(bmsgs.into_iter().flat_map(|bm| bm.messages).collect())
     }
 
@@ -1293,19 +1198,6 @@
         <span class="prelude-val">Ok</span>(digest)
     }
 
-    <span class="doccomment">/// Get the [`TipsetKeys`] for a given epoch. The returned key will never be null.
-    </span><span class="kw">pub fn </span>get_epoch_tsk(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        tipset: Arc&lt;Tipset&gt;,
-        round: ChainEpoch,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetKeys, Error&gt; {
-        <span class="kw">let </span>ts = <span class="self">self
-            </span>.chain_index
-            .tipset_by_height(round, tipset, ResolveNullTipset::TakeOlder)
-            .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset by height {e:?}&quot;</span>)))<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(ts.key().clone())
-    }
-
     <span class="doccomment">/// Gets look-back tipset (and state-root of that tipset) for block
     /// validations.
     ///
@@ -1315,7 +1207,7 @@
     /// is usually 900. The `heaviest_tipset` is a reference point in the
     /// blockchain. It must be a child of the look-back tipset.
     </span><span class="kw">pub fn </span>get_lookback_tipset_for_round(
-        <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
+        chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
         heaviest_tipset: Arc&lt;Tipset&gt;,
         round: ChainEpoch,
@@ -1335,10 +1227,11 @@
         </span><span class="kw">if </span>lbr &gt;= heaviest_tipset.epoch() {
             <span class="comment">// This situation is extremely rare so it&#39;s fine to compute the
             // state-root without caching.
-            </span><span class="kw">let </span>genesis_timestamp = <span class="self">self</span>.genesis().timestamp();
+            </span><span class="kw">let </span>genesis_timestamp = heaviest_tipset.genesis(<span class="kw-2">&amp;</span>chain_index.db)<span class="question-mark">?</span>.timestamp();
             <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis_timestamp));
             <span class="kw">let </span>(state, <span class="kw">_</span>) = <span class="kw">crate</span>::state_manager::apply_block_messages(
-                Arc::clone(<span class="self">self</span>),
+                genesis_timestamp,
+                Arc::clone(<span class="kw-2">&amp;</span>chain_index),
                 Arc::clone(<span class="kw-2">&amp;</span>chain_config),
                 beacon,
                 <span class="comment">// Creating new WASM engines is expensive (takes seconds to
@@ -1353,8 +1246,7 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>((heaviest_tipset, state));
         }
 
-        <span class="kw">let </span>next_ts = <span class="self">self
-            </span>.chain_index
+        <span class="kw">let </span>next_ts = chain_index
             .tipset_by_height(
                 lbr + <span class="number">1</span>,
                 heaviest_tipset.clone(),
@@ -1370,8 +1262,8 @@
                 next_ts.epoch()
             )));
         }
-        <span class="kw">let </span>lbts = <span class="self">self
-            </span>.tipset_from_keys(next_ts.parents())
+        <span class="kw">let </span>lbts = chain_index
+            .load_tipset(next_ts.parents())
             .map_err(|e| Error::Other(<span class="macro">format!</span>(<span class="string">&quot;Could not get tipset from keys {e:?}&quot;</span>)))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>((lbts, <span class="kw-2">*</span>next_ts.parent_state()))
     }

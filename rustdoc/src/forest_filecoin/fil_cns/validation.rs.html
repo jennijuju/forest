@@ -457,6 +457,7 @@
 <a href="#457" id="457">457</a>
 <a href="#458" id="458">458</a>
 <a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -464,6 +465,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconEntry, BeaconSchedule, IGNORE_DRAND_VAR};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{Block, BlockHeader, Tipset};
+<span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::collect_errs;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
 <span class="kw">use </span><span class="kw">crate</span>::shim::crypto::{
@@ -529,18 +531,18 @@
     <span class="kw">let </span>win_p_nv = state_manager.get_network_version(base_tipset.epoch());
 
     <span class="comment">// Retrieve lookback tipset for validation
-    </span><span class="kw">let </span>(lookback_tipset, lookback_state) = state_manager
-        .chain_store()
-        .get_lookback_tipset_for_round(
-            state_manager.chain_config(),
-            base_tipset.clone(),
-            block.header().epoch(),
-        )
-        .map_err(to_errs)<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>(lookback_tipset, lookback_state) = ChainStore::get_lookback_tipset_for_round(
+        state_manager.chain_store().chain_index.clone(),
+        state_manager.chain_config(),
+        base_tipset.clone(),
+        block.header().epoch(),
+    )
+    .map_err(to_errs)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>lookback_state = Arc::new(lookback_state);
 
     <span class="kw">let </span>prev_beacon = chain_store
+        .chain_index
         .latest_beacon_entry(<span class="kw-2">&amp;</span>base_tipset)
         .map(Arc::new)
         .map_err(to_errs)<span class="question-mark">?</span>;

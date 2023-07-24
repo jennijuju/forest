@@ -229,9 +229,6 @@
 <a href="#229" id="229">229</a>
 <a href="#230" id="230">230</a>
 <a href="#231" id="231">231</a>
-<a href="#232" id="232">232</a>
-<a href="#233" id="233">233</a>
-<a href="#234" id="234">234</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -239,8 +236,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconEntry, BeaconSchedule, DrandBeacon};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
-<span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
-<span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
+<span class="kw">use </span><span class="kw">crate</span>::chain::index::{ChainIndex, ResolveNullTipset};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::externs::Rand;
@@ -254,7 +250,7 @@
 </span><span class="kw">pub struct </span>ChainRand&lt;DB&gt; {
     chain_config: Arc&lt;ChainConfig&gt;,
     tipset: Arc&lt;Tipset&gt;,
-    cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
     beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
 }
 
@@ -263,7 +259,7 @@
         ChainRand {
             chain_config: <span class="self">self</span>.chain_config.clone(),
             tipset: Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.tipset),
-            cs: <span class="self">self</span>.cs.clone(),
+            chain_index: <span class="self">self</span>.chain_index.clone(),
             beacon: <span class="self">self</span>.beacon.clone(),
         }
     }
@@ -276,13 +272,13 @@
     <span class="kw">pub fn </span>new(
         chain_config: Arc&lt;ChainConfig&gt;,
         tipset: Arc&lt;Tipset&gt;,
-        cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+        chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
         beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             chain_config,
             tipset,
-            cs,
+            chain_index,
             beacon,
         }
     }
@@ -310,8 +306,7 @@
             ResolveNullTipset::TakeNewer
         };
         <span class="kw">let </span>rand_ts = <span class="self">self
-            </span>.cs
-            .chain_index
+            </span>.chain_index
             .tipset_by_height(search_height, ts, resolve)<span class="question-mark">?</span>;
 
         draw_randomness(
@@ -372,7 +367,7 @@
         lookback: bool,
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
         <span class="kw">let </span>rand_ts: Arc&lt;Tipset&gt; = <span class="self">self</span>.get_beacon_randomness_tipset(round, lookback)<span class="question-mark">?</span>;
-        <span class="kw">let </span>be = <span class="self">self</span>.cs.latest_beacon_entry(<span class="kw-2">&amp;</span>rand_ts)<span class="question-mark">?</span>;
+        <span class="kw">let </span>be = <span class="self">self</span>.chain_index.latest_beacon_entry(<span class="kw-2">&amp;</span>rand_ts)<span class="question-mark">?</span>;
         draw_randomness(be.data(), pers, round, entropy)
     }
 
@@ -390,7 +385,7 @@
                 }
             }
 
-            rand_ts = <span class="self">self</span>.cs.tipset_from_keys(rand_ts.parents())<span class="question-mark">?</span>;
+            rand_ts = <span class="self">self</span>.chain_index.load_tipset(rand_ts.parents())<span class="question-mark">?</span>;
         }
 
         <span class="macro">bail!</span>(
@@ -419,8 +414,7 @@
             ResolveNullTipset::TakeNewer
         };
 
-        <span class="self">self</span>.cs
-            .chain_index
+        <span class="self">self</span>.chain_index
             .tipset_by_height(search_height, ts, resolve)
             .map_err(|e| e.into())
     }

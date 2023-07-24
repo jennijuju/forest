@@ -1287,6 +1287,27 @@
 <a href="#1287" id="1287">1287</a>
 <a href="#1288" id="1288">1288</a>
 <a href="#1289" id="1289">1289</a>
+<a href="#1290" id="1290">1290</a>
+<a href="#1291" id="1291">1291</a>
+<a href="#1292" id="1292">1292</a>
+<a href="#1293" id="1293">1293</a>
+<a href="#1294" id="1294">1294</a>
+<a href="#1295" id="1295">1295</a>
+<a href="#1296" id="1296">1296</a>
+<a href="#1297" id="1297">1297</a>
+<a href="#1298" id="1298">1298</a>
+<a href="#1299" id="1299">1299</a>
+<a href="#1300" id="1300">1300</a>
+<a href="#1301" id="1301">1301</a>
+<a href="#1302" id="1302">1302</a>
+<a href="#1303" id="1303">1303</a>
+<a href="#1304" id="1304">1304</a>
+<a href="#1305" id="1305">1305</a>
+<a href="#1306" id="1306">1306</a>
+<a href="#1307" id="1307">1307</a>
+<a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1295,7 +1316,6 @@
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::run_state_migrations;
-<span class="kw">use </span><span class="kw">crate</span>::statediff::print_state_diff;
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>rayon::prelude::ParallelBridge;
 <span class="kw">pub use </span>utils::is_valid_for_sending;
@@ -1303,7 +1323,10 @@
 <span class="kw">pub use </span><span class="self">self</span>::errors::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconSchedule, DrandBeacon};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::chain::{index::ResolveNullTipset, ChainStore, HeadChange};
+<span class="kw">use </span><span class="kw">crate</span>::chain::{
+    index::{ChainIndex, ResolveNullTipset},
+    ChainStore, HeadChange,
+};
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, ExecutionContext, VM};
 <span class="kw">use </span><span class="kw">crate</span>::json::message_receipt;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
@@ -1670,7 +1693,7 @@
                     bstate,
                 )<span class="question-mark">?</span>,
                 chain_config: <span class="self">self</span>.chain_config(),
-                chain_store: Arc::clone(<span class="self">self</span>.chain_store()),
+                chain_index: Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store().chain_index),
                 timestamp: tipset.min_timestamp(),
             },
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
@@ -1746,7 +1769,7 @@
                     <span class="kw-2">&amp;</span>st,
                 )<span class="question-mark">?</span>,
                 chain_config: <span class="self">self</span>.chain_config(),
-                chain_store: Arc::clone(<span class="self">self</span>.chain_store()),
+                chain_index: Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store().chain_index),
                 timestamp: ts.min_timestamp(),
             },
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
@@ -1913,7 +1936,8 @@
         </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
     {
         <span class="prelude-val">Ok</span>(apply_block_messages(
-            Arc::clone(<span class="self">self</span>.chain_store()),
+            <span class="self">self</span>.chain_store().genesis().timestamp(),
+            Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store().chain_index),
             Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config),
             <span class="self">self</span>.beacon_schedule(),
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
@@ -2351,52 +2375,72 @@
     <span class="kw">where
         </span>T: Iterator&lt;Item = Arc&lt;Tipset&gt;&gt; + Send,
     {
-        <span class="kw">use </span>rayon::iter::ParallelIterator <span class="kw">as _</span>;
-        tipsets
-            .tuple_windows()
-            .par_bridge()
-            .try_for_each(|(child, parent)| {
-                <span class="macro">info!</span>(height = parent.epoch(), <span class="string">&quot;compute parent state&quot;</span>);
-                <span class="kw">let </span>(actual_state, actual_receipt) = <span class="self">self
-                    </span>.compute_tipset_state_blocking(parent, NO_CALLBACK)
-                    .context(<span class="string">&quot;couldn&#39;t compute tipset state&quot;</span>)<span class="question-mark">?</span>;
-                <span class="kw">let </span>expected_receipt = child.min_ticket_block().message_receipts();
-                <span class="kw">let </span>expected_state = child.parent_state();
-                <span class="kw">match </span>(expected_state, expected_receipt) == (<span class="kw-2">&amp;</span>actual_state, <span class="kw-2">&amp;</span>actual_receipt) {
-                    <span class="bool-val">true </span>=&gt; <span class="prelude-val">Ok</span>(()),
-                    <span class="bool-val">false </span>=&gt; {
-                        <span class="macro">error!</span>(
-                            height = child.epoch(),
-                            <span class="question-mark">?</span>expected_state,
-                            <span class="question-mark">?</span>expected_receipt,
-                            <span class="question-mark">?</span>actual_state,
-                            <span class="question-mark">?</span>actual_receipt,
-                            <span class="string">&quot;state mismatch&quot;
-                        </span>);
-
-                        <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = print_state_diff(
-                            <span class="self">self</span>.blockstore(),
-                            <span class="kw-2">&amp;</span>actual_state,
-                            expected_state,
-                            <span class="prelude-val">Some</span>(<span class="number">1</span>), <span class="comment">// To not make the log too verbose
-                        </span>) {
-                            <span class="macro">warn!</span>(<span class="string">&quot;Failed to print state diff: {err}&quot;</span>);
-                        }
-
-                        <span class="macro">bail!</span>(<span class="string">&quot;state mismatch&quot;</span>);
-                    }
-                }
-            })
+        <span class="kw">let </span>genesis_timestamp = <span class="self">self</span>.chain_store().genesis().timestamp();
+        validate_tipsets(
+            genesis_timestamp,
+            <span class="self">self</span>.chain_store().chain_index.clone(),
+            <span class="self">self</span>.chain_config(),
+            <span class="self">self</span>.beacon_schedule(),
+            <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
+            tipsets,
+        )
     }
 
     <span class="kw">fn </span>chain_rand(<span class="kw-2">&amp;</span><span class="self">self</span>, tipset: Arc&lt;Tipset&gt;) -&gt; ChainRand&lt;DB&gt; {
         ChainRand::new(
             <span class="self">self</span>.chain_config.clone(),
             tipset,
-            <span class="self">self</span>.cs.clone(),
+            <span class="self">self</span>.cs.chain_index.clone(),
             <span class="self">self</span>.beacon.clone(),
         )
     }
+}
+
+<span class="kw">pub fn </span>validate_tipsets&lt;DB, T&gt;(
+    genesis_timestamp: u64,
+    chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
+    chain_config: Arc&lt;ChainConfig&gt;,
+    beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
+    engine: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::machine::MultiEngine,
+    tipsets: T,
+) -&gt; anyhow::Result&lt;()&gt;
+<span class="kw">where
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
+    T: Iterator&lt;Item = Arc&lt;Tipset&gt;&gt; + Send,
+{
+    <span class="kw">use </span>rayon::iter::ParallelIterator <span class="kw">as _</span>;
+    tipsets
+        .tuple_windows()
+        .par_bridge()
+        .try_for_each(|(child, parent)| {
+            <span class="macro">info!</span>(height = parent.epoch(), <span class="string">&quot;compute parent state&quot;</span>);
+            <span class="kw">let </span>(actual_state, actual_receipt) = apply_block_messages(
+                genesis_timestamp,
+                chain_index.clone(),
+                chain_config.clone(),
+                beacon.clone(),
+                engine,
+                parent,
+                NO_CALLBACK,
+            )
+            .context(<span class="string">&quot;couldn&#39;t compute tipset state&quot;</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span>expected_receipt = child.min_ticket_block().message_receipts();
+            <span class="kw">let </span>expected_state = child.parent_state();
+            <span class="kw">match </span>(expected_state, expected_receipt) == (<span class="kw-2">&amp;</span>actual_state, <span class="kw-2">&amp;</span>actual_receipt) {
+                <span class="bool-val">true </span>=&gt; <span class="prelude-val">Ok</span>(()),
+                <span class="bool-val">false </span>=&gt; {
+                    <span class="macro">error!</span>(
+                        height = child.epoch(),
+                        <span class="question-mark">?</span>expected_state,
+                        <span class="question-mark">?</span>expected_receipt,
+                        <span class="question-mark">?</span>actual_state,
+                        <span class="question-mark">?</span>actual_receipt,
+                        <span class="string">&quot;state mismatch&quot;
+                    </span>);
+                    <span class="macro">bail!</span>(<span class="string">&quot;state mismatch&quot;</span>);
+                }
+            }
+        })
 }
 
 <span class="doccomment">/// Messages are transactions that produce new states. The state (usually
@@ -2476,7 +2520,8 @@
 /// Scanning the blockchain to find past tipsets and state-trees may be slow.
 /// The `ChainStore` caches recent tipsets to make these scans faster.
 </span><span class="kw">pub fn </span>apply_block_messages&lt;DB, CB&gt;(
-    chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
+    genesis_timestamp: u64,
+    chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
     engine: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::machine::MultiEngine,
@@ -2506,19 +2551,17 @@
 
     <span class="kw">let </span>_timer = metrics::APPLY_BLOCKS_TIME.start_timer();
 
-    <span class="kw">let </span>genesis_timestamp = chain_store.genesis().timestamp();
-
     <span class="kw">let </span>rand = ChainRand::new(
         Arc::clone(<span class="kw-2">&amp;</span>chain_config),
         Arc::clone(<span class="kw-2">&amp;</span>tipset),
-        Arc::clone(<span class="kw-2">&amp;</span>chain_store),
+        Arc::clone(<span class="kw-2">&amp;</span>chain_index),
         beacon,
     );
 
     <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span>chain_config);
     <span class="kw">let </span>create_vm = |state_root: Cid, epoch, timestamp| {
         <span class="kw">let </span>circulating_supply =
-            genesis_info.get_circulating_supply(epoch, <span class="kw-2">&amp;</span>chain_store.db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>;
+            genesis_info.get_circulating_supply(epoch, <span class="kw-2">&amp;</span>chain_index.db, <span class="kw-2">&amp;</span>state_root)<span class="question-mark">?</span>;
         VM::new(
             ExecutionContext {
                 heaviest_tipset: Arc::clone(<span class="kw-2">&amp;</span>tipset),
@@ -2528,7 +2571,7 @@
                 base_fee: tipset.min_ticket_block().parent_base_fee().clone(),
                 circ_supply: circulating_supply,
                 chain_config: Arc::clone(<span class="kw-2">&amp;</span>chain_config),
-                chain_store: Arc::clone(<span class="kw-2">&amp;</span>chain_store),
+                chain_index: Arc::clone(<span class="kw-2">&amp;</span>chain_index),
                 timestamp,
             },
             engine,
@@ -2537,7 +2580,7 @@
 
     <span class="kw">let </span><span class="kw-2">mut </span>parent_state = <span class="kw-2">*</span>tipset.parent_state();
 
-    <span class="kw">let </span>parent_epoch = Tipset::load_required(<span class="kw-2">&amp;</span>chain_store.db, tipset.parents())<span class="question-mark">?</span>.epoch();
+    <span class="kw">let </span>parent_epoch = Tipset::load_required(<span class="kw-2">&amp;</span>chain_index.db, tipset.parents())<span class="question-mark">?</span>.epoch();
     <span class="kw">let </span>epoch = tipset.epoch();
 
     <span class="kw">for </span>epoch_i <span class="kw">in </span>parent_epoch..epoch {
@@ -2555,14 +2598,13 @@
 
         <span class="comment">// step 3: run migrations
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(new_state) =
-            run_state_migrations(epoch_i, <span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>chain_store.db, <span class="kw-2">&amp;</span>parent_state)<span class="question-mark">?
+            run_state_migrations(epoch_i, <span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>chain_index.db, <span class="kw-2">&amp;</span>parent_state)<span class="question-mark">?
         </span>{
             parent_state = new_state;
         }
     }
 
-    <span class="kw">let </span>block_messages = chain_store
-        .block_msgs_for_tipset(<span class="kw-2">&amp;</span>tipset)
+    <span class="kw">let </span>block_messages = ChainStore::block_msgs_for_tipset(<span class="kw-2">&amp;</span>chain_index.db, <span class="kw-2">&amp;</span>tipset)
         .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>vm = create_vm(parent_state, epoch, tipset.min_timestamp())<span class="question-mark">?</span>;
@@ -2571,7 +2613,7 @@
     </span><span class="kw">let </span>receipts = vm.apply_block_messages(<span class="kw-2">&amp;</span>block_messages, epoch, callback)<span class="question-mark">?</span>;
 
     <span class="comment">// step 5: construct receipt root from receipts and flush the state-tree
-    </span><span class="kw">let </span>receipt_root = Amt::new_from_iter(<span class="kw-2">&amp;</span>chain_store.db, receipts)<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>receipt_root = Amt::new_from_iter(<span class="kw-2">&amp;</span>chain_index.db, receipts)<span class="question-mark">?</span>;
     <span class="kw">let </span>state_root = vm.flush()<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>((state_root, receipt_root))
