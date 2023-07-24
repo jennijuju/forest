@@ -172,16 +172,22 @@
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::beacon::beacon_entries;
+</span><span class="kw">use </span><span class="kw">super</span>::BlockHeader;
+<span class="kw">use </span><span class="kw">crate</span>::beacon::{beacon_entries, BeaconEntry};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{
+    election_proof, ticket, tipset::tipset_keys_json, ElectionProof, Ticket, TipsetKeys,
+};
 <span class="kw">use </span><span class="kw">crate</span>::json::{sector, signature};
-<span class="kw">use </span><span class="kw">crate</span>::shim::sector::PoStProof;
-<span class="kw">use </span>serde::{de, Deserialize, Serialize};
-
-<span class="kw">use super</span>::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{election_proof, ticket, tipset::tipset_keys_json};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{crypto::Signature, econ::TokenAmount, sector::PoStProof};
+<span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>num::BigInt;
+<span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 
 <span class="comment">// Wrapper for serializing and deserializing a BlockHeader from JSON.
 </span><span class="attr">#[derive(Deserialize, Serialize)]

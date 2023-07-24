@@ -874,13 +874,13 @@
         })
     }
 
-    <span class="doccomment">/// Fetch a tipset from the blockstore. This call fails if the tipset
+    <span class="doccomment">/// Fetch a tipset from the blockstore. This call fails if the tipset is
     /// present but invalid. If the tipset is missing, None is returned.
     </span><span class="kw">pub fn </span>load(store: <span class="kw">impl </span>Blockstore, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Tipset&gt;&gt; {
         <span class="prelude-val">Ok</span>(tsk
             .cids()
             .iter()
-            .map(|c| store.get_cbor(c))
+            .map(|key| BlockHeader::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">*</span>key))
             .collect::&lt;anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?
             </span>.map(Tipset::new)
             .transpose()<span class="question-mark">?</span>)

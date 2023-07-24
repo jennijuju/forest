@@ -276,7 +276,7 @@
     </span>ts_cache: TipsetCache,
 
     <span class="doccomment">/// `Blockstore` pointer needed to load tipsets from cold storage.
-    </span>db: Arc&lt;DB&gt;,
+    </span>db: DB,
 }
 
 <span class="attr">#[derive(Debug, Clone, Copy)]
@@ -289,7 +289,7 @@
 }
 
 <span class="kw">impl</span>&lt;DB: Blockstore&gt; ChainIndex&lt;DB&gt; {
-    <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>new(db: Arc&lt;DB&gt;) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain) <span class="kw">fn </span>new(db: DB) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>ts_cache = Mutex::new(LruCache::new(DEFAULT_TIPSET_CACHE_SIZE));
         <span class="self">Self </span>{ ts_cache, db }
     }
