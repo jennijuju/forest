@@ -216,7 +216,6 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -345,7 +344,6 @@
             ts.clone(),
             ResolveNullTipset::TakeOlder,
         )<span class="question-mark">?</span>;
-        sm.chain_store().set_genesis(<span class="kw-2">&amp;</span>gb.blocks()[<span class="number">0</span>])<span class="question-mark">?</span>;
         <span class="kw">if </span>sm.chain_config().genesis_cid.is_some()
             &amp;&amp; !<span class="macro">matches!</span>(<span class="kw-2">&amp;</span>sm.chain_config().genesis_cid, <span class="prelude-val">Some</span>(expected_cid) <span class="kw">if </span>expected_cid ==  <span class="kw-2">&amp;</span>gb.blocks()[<span class="number">0</span>].cid().to_string())
         {

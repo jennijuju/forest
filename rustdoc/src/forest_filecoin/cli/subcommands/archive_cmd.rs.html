@@ -563,7 +563,7 @@
     <span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
         store,
         config.chain.clone(),
-        <span class="kw-2">&amp;</span>genesis,
+        genesis.clone(),
         tmp_chain_dir.path(),
     )<span class="question-mark">?</span>);
 

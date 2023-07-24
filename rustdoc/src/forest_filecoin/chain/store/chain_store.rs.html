@@ -813,22 +813,6 @@
 <a href="#813" id="813">813</a>
 <a href="#814" id="814">814</a>
 <a href="#815" id="815">815</a>
-<a href="#816" id="816">816</a>
-<a href="#817" id="817">817</a>
-<a href="#818" id="818">818</a>
-<a href="#819" id="819">819</a>
-<a href="#820" id="820">820</a>
-<a href="#821" id="821">821</a>
-<a href="#822" id="822">822</a>
-<a href="#823" id="823">823</a>
-<a href="#824" id="824">824</a>
-<a href="#825" id="825">825</a>
-<a href="#826" id="826">826</a>
-<a href="#827" id="827">827</a>
-<a href="#828" id="828">828</a>
-<a href="#829" id="829">829</a>
-<a href="#830" id="830">830</a>
-<a href="#831" id="831">831</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -910,8 +894,7 @@
     <span class="doccomment">/// Tracks blocks for the purpose of forming tipsets.
     </span>tipset_tracker: TipsetTracker&lt;DB&gt;,
 
-    <span class="doccomment">/// File backed genesis block CID
-    </span>file_backed_genesis: Mutex&lt;FileBacked&lt;Cid&gt;&gt;,
+    genesis_block_header: BlockHeader,
 
     <span class="doccomment">/// File backed heaviest tipset keys
     </span>file_backed_heaviest_tipset_keys: Mutex&lt;FileBacked&lt;TipsetKeys&gt;&gt;,
@@ -954,15 +937,11 @@
     <span class="kw">pub fn </span>new(
         db: Arc&lt;DB&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
-        genesis_block_header: <span class="kw-2">&amp;</span>BlockHeader,
+        genesis_block_header: BlockHeader,
         chain_data_root: <span class="kw-2">&amp;</span>Path,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>(publisher, <span class="kw">_</span>) = broadcast::channel(SINK_CAP);
         <span class="kw">let </span>chain_index = ChainIndex::new(Arc::clone(<span class="kw-2">&amp;</span>db));
-        <span class="kw">let </span>file_backed_genesis = Mutex::new(FileBacked::new(
-            <span class="kw-2">*</span>genesis_block_header.cid(),
-            chain_data_root.join(<span class="string">&quot;GENESIS&quot;</span>),
-        ));
         <span class="kw">let </span>file_backed_heaviest_tipset_keys = Mutex::new({
             <span class="kw">let </span><span class="kw-2">mut </span>head_store = FileBacked::load_from_file_or_create(
                 chain_data_root.join(<span class="string">&quot;HEAD&quot;</span>),
@@ -988,13 +967,11 @@
             chain_index,
             tipset_tracker: TipsetTracker::new(Arc::clone(<span class="kw-2">&amp;</span>db), chain_config),
             db,
-            file_backed_genesis,
+            genesis_block_header,
             file_backed_heaviest_tipset_keys,
             validated_blocks,
             file_backed_chain_meta,
         };
-
-        cs.set_genesis(genesis_block_header)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(cs)
     }
@@ -1014,15 +991,6 @@
             <span class="macro">debug!</span>(<span class="string">&quot;did not publish head change, no active receivers&quot;</span>);
         }
         <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="doccomment">/// Writes genesis to `blockstore`.
-    </span><span class="kw">pub fn </span>set_genesis(<span class="kw-2">&amp;</span><span class="self">self</span>, header: <span class="kw-2">&amp;</span>BlockHeader) -&gt; <span class="prelude-ty">Result</span>&lt;Cid, Error&gt; {
-        <span class="self">self</span>.file_backed_genesis.lock().set_inner(<span class="kw-2">*</span>header.cid())<span class="question-mark">?</span>;
-
-        <span class="self">self</span>.blockstore()
-            .put_cbor_default(<span class="kw-2">&amp;</span>header)
-            .map_err(Error::from)
     }
 
     <span class="doccomment">/// Adds a [`BlockHeader`] to the tipset tracker, which tracks valid
@@ -1054,10 +1022,9 @@
         <span class="self">self</span>.tipset_tracker.expand(header)
     }
 
-    <span class="doccomment">/// Returns genesis [`BlockHeader`] from the store based on a static key.
-    </span><span class="kw">pub fn </span>genesis(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;BlockHeader, Error&gt; {
-        BlockHeader::load(<span class="self">self</span>.blockstore(), <span class="kw-2">*</span><span class="self">self</span>.file_backed_genesis.lock().inner())<span class="question-mark">?
-            </span>.ok_or_else(|| Error::Other(<span class="string">&quot;Genesis block not set&quot;</span>.into()))
+    <span class="doccomment">/// Returns genesis [`BlockHeader`].
+    </span><span class="kw">pub fn </span>genesis(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>BlockHeader {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.genesis_block_header
     }
 
     <span class="doccomment">/// Returns the currently tracked heaviest tipset.
@@ -1368,7 +1335,7 @@
         </span><span class="kw">if </span>lbr &gt;= heaviest_tipset.epoch() {
             <span class="comment">// This situation is extremely rare so it&#39;s fine to compute the
             // state-root without caching.
-            </span><span class="kw">let </span>genesis_timestamp = <span class="self">self</span>.genesis().map_err(anyhow::Error::from)<span class="question-mark">?</span>.timestamp();
+            </span><span class="kw">let </span>genesis_timestamp = <span class="self">self</span>.genesis().timestamp();
             <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis_timestamp));
             <span class="kw">let </span>(state, <span class="kw">_</span>) = <span class="kw">crate</span>::state_manager::apply_block_messages(
                 Arc::clone(<span class="self">self</span>),
@@ -1636,9 +1603,10 @@
             .build()
             .unwrap();
         <span class="kw">let </span>chain_data_root = TempDir::new().unwrap();
-        <span class="kw">let </span>cs = ChainStore::new(db, chain_config, <span class="kw-2">&amp;</span>gen_block, chain_data_root.path()).unwrap();
+        <span class="kw">let </span>cs =
+            ChainStore::new(db, chain_config, gen_block.clone(), chain_data_root.path()).unwrap();
 
-        <span class="macro">assert_eq!</span>(cs.genesis().unwrap(), gen_block);
+        <span class="macro">assert_eq!</span>(cs.genesis(), <span class="kw-2">&amp;</span>gen_block);
     }
 
     <span class="attr">#[test]
@@ -1651,7 +1619,7 @@
             .unwrap();
 
         <span class="kw">let </span>chain_data_root = TempDir::new().unwrap();
-        <span class="kw">let </span>cs = ChainStore::new(db, chain_config, <span class="kw-2">&amp;</span>gen_block, chain_data_root.path()).unwrap();
+        <span class="kw">let </span>cs = ChainStore::new(db, chain_config, gen_block, chain_data_root.path()).unwrap();
 
         <span class="kw">let </span>cid = Cid::new_v1(DAG_CBOR, Blake2b256.digest(<span class="kw-2">&amp;</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]));
         <span class="macro">assert!</span>(!cs.is_block_validated(<span class="kw-2">&amp;</span>cid));

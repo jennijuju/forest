@@ -1287,9 +1287,6 @@
 <a href="#1287" id="1287">1287</a>
 <a href="#1288" id="1288">1288</a>
 <a href="#1289" id="1289">1289</a>
-<a href="#1290" id="1290">1290</a>
-<a href="#1291" id="1291">1291</a>
-<a href="#1292" id="1292">1292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1506,7 +1503,7 @@
         cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
-        <span class="kw">let </span>genesis = cs.genesis()<span class="question-mark">?</span>;
+        <span class="kw">let </span>genesis = cs.genesis();
         <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis.timestamp()));
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
@@ -2509,10 +2506,7 @@
 
     <span class="kw">let </span>_timer = metrics::APPLY_BLOCKS_TIME.start_timer();
 
-    <span class="kw">let </span>genesis_timestamp = chain_store
-        .genesis()
-        .map_err(anyhow::Error::from)<span class="question-mark">?
-        </span>.timestamp();
+    <span class="kw">let </span>genesis_timestamp = chain_store.genesis().timestamp();
 
     <span class="kw">let </span>rand = ChainRand::new(
         Arc::clone(<span class="kw-2">&amp;</span>chain_config),

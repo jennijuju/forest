@@ -788,7 +788,6 @@
 <a href="#788" id="788">788</a>
 <a href="#789" id="789">789</a>
 <a href="#790" id="790">790</a>
-<a href="#791" id="791">791</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -989,11 +988,10 @@
     </span><span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
         Arc::clone(<span class="kw-2">&amp;</span>db),
         config.chain.clone(),
-        <span class="kw-2">&amp;</span>genesis_header,
+        genesis_header.clone(),
         chain_data_path.as_path(),
     )<span class="question-mark">?</span>);
 
-    chain_store.set_genesis(<span class="kw-2">&amp;</span>genesis_header)<span class="question-mark">?</span>;
     <span class="kw">let </span>db_garbage_collector = {
         <span class="kw">let </span>db = db.clone();
         <span class="kw">let </span>file_backed_chain_meta = chain_store.file_backed_chain_meta().clone();
@@ -1129,7 +1127,7 @@
             </span><span class="kw">let </span>beacon = Arc::new(
                 rpc_state_manager
                     .chain_config()
-                    .get_beacon_schedule(chain_store.genesis()<span class="question-mark">?</span>.timestamp())
+                    .get_beacon_schedule(chain_store.genesis().timestamp())
                     .into_dyn(),
             );
             start_rpc(
@@ -1535,7 +1533,7 @@
         <span class="kw">let </span>cs = Arc::new(ChainStore::new(
             db,
             chain_config.clone(),
-            <span class="kw-2">&amp;</span>genesis_header,
+            genesis_header,
             chain_data_root.path(),
         )<span class="question-mark">?</span>);
         <span class="kw">let </span>sm = Arc::new(StateManager::new(cs, chain_config)<span class="question-mark">?</span>);
@@ -1563,7 +1561,7 @@
         <span class="kw">let </span>cs = Arc::new(ChainStore::new(
             db,
             chain_config.clone(),
-            <span class="kw-2">&amp;</span>genesis_header,
+            genesis_header,
             chain_data_root.path(),
         )<span class="question-mark">?</span>);
         <span class="kw">let </span>sm = Arc::new(StateManager::new(cs, chain_config)<span class="question-mark">?</span>);
