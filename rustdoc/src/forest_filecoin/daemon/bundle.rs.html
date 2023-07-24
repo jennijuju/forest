@@ -82,32 +82,21 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{BufferSize, ChunkSize, Config};
-<span class="kw">use </span><span class="kw">crate</span>::genesis::forest_load_car;
+</span><span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::Config;
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>tokio::{
-    fs::File,
-    io::{BufReader, BufWriter},
-};
-<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
+<span class="kw">use </span>tokio::{fs::File, io::BufWriter};
 <span class="kw">use </span>tracing::info;
 
-<span class="kw">pub async fn </span>load_bundles&lt;DB&gt;(epoch: ChainEpoch, config: <span class="kw-2">&amp;</span>Config, db: DB) -&gt; anyhow::Result&lt;()&gt;
-<span class="kw">where
-    </span>DB: Blockstore + Send + Sync + Clone + <span class="lifetime">&#39;static</span>,
-{
+<span class="kw">pub async fn </span>load_bundles(
+    epoch: ChainEpoch,
+    config: <span class="kw-2">&amp;</span>Config,
+    db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore,
+) -&gt; anyhow::Result&lt;()&gt; {
     <span class="comment">// collect bundles to load into the database.
     </span><span class="kw">let </span><span class="kw-2">mut </span>bundles = Vec::new();
     <span class="kw">for </span>info <span class="kw">in </span><span class="kw-2">&amp;</span>config.chain.height_infos {
@@ -122,23 +111,17 @@
     }
 
     <span class="kw">for </span>(manifest_cid, reader) <span class="kw">in </span>bundles {
-        <span class="kw">let </span>(result, <span class="kw">_</span>) = forest_load_car(
-            db.clone(),
-            reader.compat(),
-            ChunkSize::default(),
-            BufferSize::default(),
-        )
-        .<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>roots = fvm_ipld_car::load_car(db, reader).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="macro">assert_eq!</span>(
-            result.len(),
+            roots.len(),
             <span class="number">1</span>,
             <span class="string">&quot;expected one root when loading actors bundle&quot;
         </span>);
-        <span class="macro">info!</span>(<span class="string">&quot;Loaded actors bundle with CID: {}&quot;</span>, result[<span class="number">0</span>]);
+        <span class="macro">info!</span>(<span class="string">&quot;Loaded actors bundle with CID: {}&quot;</span>, roots[<span class="number">0</span>]);
         <span class="macro">anyhow::ensure!</span>(
-            manifest_cid == result[<span class="number">0</span>],
+            manifest_cid == roots[<span class="number">0</span>],
             <span class="string">&quot;manifest cid in config &#39;{manifest_cid}&#39; does not match manifest cid from bundle &#39;{}&#39;&quot;</span>,
-            result[<span class="number">0</span>]
+            roots[<span class="number">0</span>]
         );
     }
     <span class="prelude-val">Ok</span>(())
@@ -147,7 +130,10 @@
 <span class="doccomment">/// Downloads the actors bundle (if not already downloaded) and returns a reader
 /// to it.
 </span><span class="comment">// TODO Get it from IPFS instead of GitHub.
-</span><span class="kw">pub async fn </span>get_actors_bundle(config: <span class="kw-2">&amp;</span>Config, height: Height) -&gt; anyhow::Result&lt;BufReader&lt;File&gt;&gt; {
+</span><span class="kw">pub async fn </span>get_actors_bundle(
+    config: <span class="kw-2">&amp;</span>Config,
+    height: Height,
+) -&gt; anyhow::Result&lt;futures::io::BufReader&lt;async_fs::File&gt;&gt; {
     <span class="kw">let </span>bundle_info = config.chain.height_infos[height <span class="kw">as </span>usize]
         .bundle
         .as_ref()
@@ -165,8 +151,8 @@
 
     <span class="comment">// If the bundle already exists, return a reader to it.
     </span><span class="kw">if </span>bundle_path.exists() {
-        <span class="kw">let </span>file = tokio::fs::File::open(bundle_path).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(BufReader::new(file));
+        <span class="kw">let </span>file = async_fs::File::open(bundle_path).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(futures::io::BufReader::new(file));
     }
 
     <span class="comment">// Otherwise, download it.
@@ -177,7 +163,7 @@
     <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(file);
     tokio::io::copy(<span class="kw-2">&amp;mut </span>reader, <span class="kw-2">&amp;mut </span>writer).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">let </span>file = tokio::fs::File::open(bundle_path).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(BufReader::new(file))
+    <span class="kw">let </span>file = async_fs::File::open(bundle_path).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(futures::io::BufReader::new(file))
 }
 </code></pre></div></section></main></body></html>
