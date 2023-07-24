@@ -287,6 +287,7 @@
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
 <a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -402,9 +403,10 @@
             <span class="kw">return </span><span class="prelude-val">Ok</span>(Arc::new(Tipset::from(from.genesis(<span class="kw-2">&amp;</span><span class="self">self</span>.db)<span class="question-mark">?</span>)));
         }
         <span class="kw">if </span>to &gt; from.epoch() {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(
-                <span class="string">&quot;Looking for tipset with height greater than start point&quot;</span>.to_string(),
-            ));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
+                <span class="string">&quot;Looking for tipset {to} with height greater than start point {from}&quot;</span>,
+                from = from.epoch()
+            )));
         }
 
         <span class="kw">for </span>(child, parent) <span class="kw">in </span><span class="self">self</span>.chain(from).tuple_windows() {
@@ -419,9 +421,9 @@
                 }
             }
         }
-        <span class="prelude-val">Err</span>(Error::Other(
-            <span class="string">&quot;Tipset with epoch={to} does not exist&quot;</span>.to_string(),
-        ))
+        <span class="prelude-val">Err</span>(Error::Other(<span class="macro">format!</span>(
+            <span class="string">&quot;Tipset with epoch={to} does not exist&quot;
+        </span>)))
     }
 
     <span class="doccomment">/// Iterate from the given tipset to genesis. Missing tipsets cut the chain
