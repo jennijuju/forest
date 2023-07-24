@@ -812,6 +812,7 @@
 <a href="#812" id="812">812</a>
 <a href="#813" id="813">813</a>
 <a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1488,7 +1489,7 @@
     Collate&lt;zstd::Encoder&lt;<span class="lifetime">&#39;_</span>, Writer&lt;BytesMut&gt;&gt;, BytesMut&gt;,
 ) -&gt; ControlFlow&lt;BytesMut, zstd::Encoder&lt;<span class="lifetime">&#39;_</span>, Writer&lt;BytesMut&gt;&gt;&gt; {
     <span class="kw">move </span>|collate| {
-        <span class="kw">let </span>encoder = <span class="kw">match </span>collate {
+        <span class="kw">let </span><span class="kw-2">mut </span>encoder = <span class="kw">match </span>collate {
             Collate::Started(body) =&gt; zstd_compress_fold_varint_frame(
                 zstd::Encoder::new(BytesMut::new().writer(), i32::from(zstd_compression_level))
                     .expect(<span class="string">&quot;BytesMut has infallible IO&quot;</span>),
@@ -1496,6 +1497,7 @@
             ),
             Collate::Continued(encoder, body) =&gt; zstd_compress_fold_varint_frame(encoder, body),
         };
+        encoder.flush().expect(<span class="string">&quot;BytesMut has infallible IO&quot;</span>);
         <span class="kw">let </span>compressed_len = encoder.get_ref().get_ref().len();
 
         <span class="kw">match </span>compressed_len &gt;= zstd_frame_size_tripwire {
@@ -1604,7 +1606,7 @@
             <span class="number">3</span>,
         ))
         .unwrap();
-        <span class="macro">assert_eq!</span>(<span class="number">9</span>, num_zstd_frames);
+        <span class="macro">assert_eq!</span>(<span class="number">53</span>, num_zstd_frames);
 
         zstd_multiframe
     }
@@ -1617,7 +1619,7 @@
         )
         .collect::&lt;<span class="prelude-ty">Result</span>&lt;Vec&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()
         .unwrap();
-        <span class="macro">assert_eq!</span>(<span class="number">9</span>, frames.len());
+        <span class="macro">assert_eq!</span>(<span class="number">53</span>, frames.len());
     }
 
     <span class="attr">#[test]
