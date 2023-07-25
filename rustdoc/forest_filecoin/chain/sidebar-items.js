@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["store","weight"]};
+window.SIDEBAR_ITEMS = {"fn":["export"],"mod":["store","weight"]};

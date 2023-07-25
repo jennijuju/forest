@@ -490,7 +490,6 @@
 <a href="#490" id="490">490</a>
 <a href="#491" id="491">491</a>
 <a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">/// In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -674,7 +673,7 @@
         <span class="kw">pub </span>dry_run: bool,
     }
 
-    <span class="kw">pub type </span>ChainExportResult = PathBuf;
+    <span class="kw">pub type </span>ChainExportResult = <span class="prelude-ty">Option</span>&lt;String&gt;;
 
     <span class="kw">pub const </span>CHAIN_READ_OBJ: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainReadObj&quot;</span>;
     <span class="kw">pub type </span>ChainReadObjParams = (CidJson,);
@@ -946,7 +945,6 @@
 
     <span class="attr">#[derive(Serialize, Deserialize)]
     </span><span class="kw">pub enum </span>GetProgressType {
-        SnapshotExport,
         DatabaseGarbageCollection,
     }
 }

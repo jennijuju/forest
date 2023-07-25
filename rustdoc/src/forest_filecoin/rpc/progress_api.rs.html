@@ -22,9 +22,6 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -32,9 +29,7 @@
 
 </span><span class="kw">use </span>std::sync::atomic;
 
-<span class="kw">use </span><span class="kw">crate</span>::ipld::{
-    ProgressBarCurrentTotalPair, WALK_SNAPSHOT_PROGRESS_DB_GC, WALK_SNAPSHOT_PROGRESS_EXPORT,
-};
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{ProgressBarCurrentTotalPair, WALK_SNAPSHOT_PROGRESS_DB_GC};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::progress_api::{GetProgressParams, GetProgressResult, GetProgressType};
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc::<span class="kw-2">*</span>;
@@ -43,7 +38,6 @@
     Params((typ,)): Params&lt;GetProgressParams&gt;,
 ) -&gt; RpcResult&lt;GetProgressResult&gt; {
     <span class="kw">let </span>tracker: <span class="kw-2">&amp;</span>ProgressBarCurrentTotalPair = <span class="kw">match </span>typ {
-        GetProgressType::SnapshotExport =&gt; <span class="kw-2">&amp;</span>WALK_SNAPSHOT_PROGRESS_EXPORT,
         GetProgressType::DatabaseGarbageCollection =&gt; <span class="kw-2">&amp;</span>WALK_SNAPSHOT_PROGRESS_DB_GC,
     };
 

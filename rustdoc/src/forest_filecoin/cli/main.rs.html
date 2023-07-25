@@ -140,7 +140,7 @@
                         Subcommand::Info(cmd) =&gt; cmd.run(config, opts).<span class="kw">await</span>,
                         Subcommand::DB(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config).<span class="kw">await</span>,
                         Subcommand::Snapshot(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                        Subcommand::Archive(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Archive(cmd) =&gt; cmd.run().<span class="kw">await</span>,
                         Subcommand::Attach(cmd) =&gt; cmd.run(config),
                         Subcommand::Shutdown(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Car(cmd) =&gt; cmd.run().<span class="kw">await</span>,
