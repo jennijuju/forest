@@ -123,6 +123,7 @@ where
             .with_method(NET_PEERS, net_api::net_peers::<DB>)
             .with_method(NET_CONNECT, net_api::net_connect::<DB>)
             .with_method(NET_DISCONNECT, net_api::net_disconnect::<DB>)
+            .with_method(NET_QUERY, net_api::net_query::<DB>)
             // DB API
             .with_method(DB_GC, db_api::db_gc::<DB>)
             // Progress API

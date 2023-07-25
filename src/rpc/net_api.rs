@@ -94,3 +94,18 @@ pub(in crate::rpc) async fn net_disconnect<DB: Blockstore + Clone + Send + Sync 
 
     Ok(())
 }
+
+pub(in crate::rpc) async fn net_query<DB: Blockstore + Clone + Send + Sync + 'static>(
+    data: Data<RPCState<DB>>,
+    Params(params): Params<NetQueryParams>,
+) -> Result<NetDisconnectResult, JsonRpcError> {
+    let (id, cid) = params;
+    let peer_id = PeerId::from_str(&id)?;
+    let cid = cid.try_into().unwrap();
+
+    data.network_send
+        .send(NetworkMessage::BitswapRequestSinglePeer { cid, peer: peer_id })
+        .unwrap();
+
+    Ok(())
+}

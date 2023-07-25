@@ -160,6 +160,10 @@ pub enum NetworkMessage {
         cid: Cid,
         response_channel: flume::Sender<bool>,
     },
+    BitswapRequestSinglePeer {
+        cid: Cid,
+        peer: PeerId,
+    },
     JSONRPCRequest {
         method: NetRPCMethods,
     },
@@ -407,6 +411,10 @@ async fn handle_network_message(
             response_channel,
         } => {
             bitswap_request_manager.get_block(store, cid, BITSWAP_TIMEOUT, Some(response_channel));
+        }
+        NetworkMessage::BitswapRequestSinglePeer { cid, peer } => {
+            println!("BitswapRequestSinglePeer");
+            let _ = bitswap_request_manager.query_block_single_peer(cid, peer);
         }
         NetworkMessage::JSONRPCRequest { method } => {
             match method {

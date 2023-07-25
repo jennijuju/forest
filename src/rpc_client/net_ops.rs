@@ -33,3 +33,10 @@ pub async fn net_disconnect(
 ) -> Result<NetDisconnectResult, Error> {
     call(NET_DISCONNECT, params, auth_token).await
 }
+
+pub async fn net_query(
+    params: NetQueryParams,
+    auth_token: &Option<String>,
+) -> Result<NetQueryResult, Error> {
+    call(NET_QUERY, params, auth_token).await
+}

@@ -68,6 +68,10 @@ impl BitswapRequestManager {
         handle_event_impl(self, bitswap, store, event)
     }
 
+    pub fn query_block_single_peer(self: &Arc<Self>, cid: Cid, peer: PeerId) -> anyhow::Result<()> {
+        self.query_block_from_peer(cid, peer)
+    }
+
     /// Gets a block, writing it to the given block store that implements
     /// [`BitswapStoreReadWrite`] and respond to the channel. Note: this
     /// method is a non-blocking, it is intended to return immediately.
@@ -112,6 +116,12 @@ impl BitswapRequestManager {
 
             timer.observe_duration();
         });
+    }
+
+    fn query_block_from_peer(&self, cid: Cid, peer: PeerId) -> anyhow::Result<()> {
+        let block_request = BitswapRequest::new_block(cid).send_dont_have(false);
+        println!("Querying block {:?} from peer {:?}", cid, peer);
+        Ok(self.outbound_request_tx.send((peer, block_request))?)
     }
 
     fn get_block_sync(

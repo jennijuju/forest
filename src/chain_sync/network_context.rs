@@ -178,11 +178,14 @@ where
     pub async fn bitswap_get<TMessage: DeserializeOwned>(
         &self,
         content: Cid,
+        skip_store: bool,
     ) -> Result<TMessage, String> {
         // Check if what we are fetching over Bitswap already exists in the
         // database. If it does, return it, else fetch over the network.
-        if let Some(b) = self.db.get_cbor(&content).map_err(|e| e.to_string())? {
-            return Ok(b);
+        if !skip_store {
+            if let Some(b) = self.db.get_cbor(&content).map_err(|e| e.to_string())? {
+                return Ok(b);
+            }
         }
 
         let (tx, rx) = flume::bounded(1);

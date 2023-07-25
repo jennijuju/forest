@@ -96,6 +96,7 @@ pub static ACCESS_MAP: Lazy<HashMap<&str, Access>> = Lazy::new(|| {
     access.insert(net_api::NET_PEERS, Access::Read);
     access.insert(net_api::NET_CONNECT, Access::Write);
     access.insert(net_api::NET_DISCONNECT, Access::Write);
+    access.insert(net_api::NET_QUERY, Access::Read);
 
     // DB API
     access.insert(db_api::DB_GC, Access::Write);
@@ -434,6 +435,10 @@ pub mod net_api {
     pub const NET_DISCONNECT: &str = "Filecoin.NetDisconnect";
     pub type NetDisconnectParams = (String,);
     pub type NetDisconnectResult = ();
+
+    pub const NET_QUERY: &str = "Filecoin.NetQuery";
+    pub type NetQueryParams = (String, String);
+    pub type NetQueryResult = ();
 }
 
 /// DB API

@@ -24,8 +24,14 @@ pub enum NetCommands {
     },
     /// Disconnects from a peer by it's peer ID
     Disconnect {
-        /// Peer ID to disconnect from
+        /// Peer ID to disconnect from id: String, },
         id: String,
+    },
+    Query {
+        /// Peer ID to query
+        peer_id: String,
+        /// Cid to query
+        cid: String,
     },
 }
 
@@ -110,6 +116,15 @@ impl NetCommands {
                     .await
                     .map_err(handle_rpc_err)?;
                 println!("disconnect {id}: success");
+                Ok(())
+            }
+            Self::Query { peer_id, cid } => {
+                net_query(
+                    (peer_id.to_owned(), cid.to_owned()),
+                    &config.client.rpc_token,
+                )
+                .await
+                .map_err(handle_rpc_err)?;
                 Ok(())
             }
         }
