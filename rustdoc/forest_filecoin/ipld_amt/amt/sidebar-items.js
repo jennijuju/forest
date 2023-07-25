@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["FakeDeserialize"],"type":["Amt","Amtv0"]};

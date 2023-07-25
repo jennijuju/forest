@@ -1113,21 +1113,21 @@
             <span class="kw">let </span><span class="kw-2">mut </span>out_array = <span class="kw">if let </span><span class="prelude-val">Some</span>(prev_in_root) = prev_in_root {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(prev_out_root) = prev_out_root {
                     <span class="comment">// we have previous work, but the AMT has changed -- diff them
-                    </span><span class="kw">let </span>prev_in_sectors = <span class="kw">crate</span>::ipld_amt::Amt::&lt;
+                    </span><span class="kw">let </span>prev_in_sectors = fvm_ipld_amt::Amt::&lt;
                         fil_actor_miner_state::v8::SectorOnChainInfo,
                         <span class="kw">_</span>,
                     &gt;::load(prev_in_root, store)<span class="question-mark">?</span>;
-                    <span class="kw">let </span>in_sectors = <span class="kw">crate</span>::ipld_amt::Amt::&lt;
+                    <span class="kw">let </span>in_sectors = fvm_ipld_amt::Amt::&lt;
                         fil_actor_miner_state::v8::SectorOnChainInfo,
                         <span class="kw">_</span>,
                     &gt;::load(in_root, store)<span class="question-mark">?</span>;
-                    <span class="kw">let </span>changes = <span class="kw">crate</span>::ipld_amt::diff(<span class="kw-2">&amp;</span>prev_in_sectors, <span class="kw-2">&amp;</span>in_sectors)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>changes = fvm_ipld_amt::diff(<span class="kw-2">&amp;</span>prev_in_sectors, <span class="kw-2">&amp;</span>in_sectors)<span class="question-mark">?</span>;
                     <span class="kw">let </span><span class="kw-2">mut </span>prev_out_sectors = fil_actors_shared::v9::Array::&lt;
                         fil_actor_miner_state::v9::SectorOnChainInfo,
                         <span class="kw">_</span>,
                     &gt;::load(prev_out_root, store)<span class="question-mark">?</span>;
                     <span class="kw">for </span>change <span class="kw">in </span>changes {
-                        <span class="kw">use </span><span class="kw">crate</span>::ipld_amt::ChangeType;
+                        <span class="kw">use </span>fvm_ipld_amt::ChangeType;
                         <span class="kw">match </span><span class="kw-2">&amp;</span>change.change_type() {
                             ChangeType::Remove =&gt; {
                                 prev_out_sectors.delete(change.key)<span class="question-mark">?</span>;
