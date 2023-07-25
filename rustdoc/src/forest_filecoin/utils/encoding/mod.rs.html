@@ -185,6 +185,8 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -193,6 +195,8 @@
 <span class="kw">use </span>filecoin_proofs_api::ProverId;
 <span class="kw">use </span>fvm_ipld_encoding::strict_bytes::{Deserialize, Serialize};
 <span class="kw">pub use </span>serde::{de, ser, Deserializer, Serializer};
+
+<span class="kw">pub mod </span>uvibytes;
 
 <span class="doccomment">/// `serde_bytes` with max length check
 </span><span class="kw">pub mod </span>serde_byte_array {

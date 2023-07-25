@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["blake2b_256","prover_id_from_u64"],"mod":["de","ser","serde_byte_array"],"trait":["Deserializer","Serializer"]};
+window.SIDEBAR_ITEMS = {"fn":["blake2b_256","prover_id_from_u64"],"mod":["de","ser","serde_byte_array","uvibytes"],"trait":["Deserializer","Serializer"]};

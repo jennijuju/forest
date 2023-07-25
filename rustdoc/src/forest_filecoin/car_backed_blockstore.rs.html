@@ -803,24 +803,16 @@
 <a href="#803" id="803">803</a>
 <a href="#804" id="804">804</a>
 <a href="#805" id="805">805</a>
-<a href="#806" id="806">806</a>
-<a href="#807" id="807">807</a>
-<a href="#808" id="808">808</a>
-<a href="#809" id="809">809</a>
-<a href="#810" id="810">810</a>
-<a href="#811" id="811">811</a>
-<a href="#812" id="812">812</a>
-<a href="#813" id="813">813</a>
-<a href="#814" id="814">814</a>
-<a href="#815" id="815">815</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="doccomment">//! # Varint frames
 //!
-//! CARs are made of concatenations of _varint frames_.
-//! Each varint frame is a concatenation of the _body length_ as an [`unsigned_varint`], and the _frame body_ itself.
-//! [`unsigned_varint::codec`] can be used to read frames piecewise into memory.
+//! CARs are made of concatenations of _varint frames_. Each varint frame is a
+//! concatenation of the _body length_ as an
+//! [varint](https://docs.rs/integer-encoding/4.0.0/integer_encoding/trait.VarInt.html),
+//! and the _frame body_ itself. [`crate::utils::encoding::uvibytes::UviBytes`] can be
+//! used to read frames piecewise into memory.
 //!
 //! ```text
 //!        varint frame
@@ -872,6 +864,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
 <span class="kw">use </span>indexmap::IndexMap;
+<span class="kw">use </span>integer_encoding::{VarInt, VarIntReader};
 <span class="kw">use </span>itertools::Itertools <span class="kw">as _</span>;
 <span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>std::{
@@ -886,8 +879,7 @@
     ops::ControlFlow,
 };
 <span class="kw">use </span>tokio::io::{AsyncRead, AsyncWrite};
-<span class="kw">use </span>tokio_util::codec::{BytesCodec, FramedWrite};
-<span class="kw">use </span>tokio_util_06::codec::FramedRead;
+<span class="kw">use </span>tokio_util::codec::{BytesCodec, FramedRead, FramedWrite};
 <span class="kw">use </span>tracing::{debug, trace};
 
 <span class="kw">use </span><span class="kw">crate</span>::utils::{try_collate, Collate};
@@ -1348,21 +1340,10 @@
 ///        reader end ►│
 /// ```
 </span><span class="kw">fn </span>read_varint_body_length_or_eof(<span class="kw-2">mut </span>reader: <span class="kw">impl </span>Read) -&gt; io::Result&lt;<span class="prelude-ty">Option</span>&lt;u32&gt;&gt; {
-    <span class="kw">use </span>unsigned_varint::io::{
-        read_u32,
-        ReadError::{Decode, Io},
-    };
-
     <span class="kw">let </span><span class="kw-2">mut </span>byte = [<span class="number">0u8</span>; <span class="number">1</span>]; <span class="comment">// detect EOF
     </span><span class="kw">match </span>reader.read(<span class="kw-2">&amp;mut </span>byte)<span class="question-mark">? </span>{
         <span class="number">0 </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
-        <span class="number">1 </span>=&gt; read_u32(byte.chain(reader))
-            .map_err(|varint_error| <span class="kw">match </span>varint_error {
-                Io(e) =&gt; e,
-                Decode(e) =&gt; io::Error::new(InvalidData, e),
-                other =&gt; io::Error::new(Other, other),
-            })
-            .map(<span class="prelude-val">Some</span>),
+        <span class="number">1 </span>=&gt; (byte.chain(reader)).read_varint().map(<span class="prelude-val">Some</span>),
         <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
     }
 }
@@ -1468,7 +1449,7 @@
     zstd_frame_size_tripwire: usize,
     zstd_compression_level: u16,
 ) -&gt; io::Result&lt;usize&gt; {
-    <span class="kw">type </span>VarintFrameCodec = unsigned_varint::codec::UviBytes&lt;BytesMut&gt;;
+    <span class="kw">type </span>VarintFrameCodec = <span class="kw">crate</span>::utils::encoding::uvibytes::UviBytes;
     <span class="kw">let </span><span class="kw-2">mut </span>count = <span class="number">0</span>;
     try_collate(
         FramedRead::new(reader, VarintFrameCodec::default()),
@@ -1514,9 +1495,8 @@
     <span class="kw-2">mut </span>encoder: zstd::Encoder&lt;Writer&lt;BytesMut&gt;&gt;,
     body: BytesMut,
 ) -&gt; zstd::Encoder&lt;Writer&lt;BytesMut&gt;&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>header = unsigned_varint::encode::usize_buffer();
     encoder
-        .write_all(unsigned_varint::encode::usize(body.len(), <span class="kw-2">&amp;mut </span>header))
+        .write_all(<span class="kw-2">&amp;</span>body.len().encode_var_vec())
         .expect(<span class="string">&quot;BytesMut has infallible IO&quot;</span>);
     encoder
         .write_all(<span class="kw-2">&amp;</span>body)

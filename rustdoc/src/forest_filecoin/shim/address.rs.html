@@ -413,8 +413,6 @@
 <a href="#413" id="413">413</a>
 <a href="#414" id="414">414</a>
 <a href="#415" id="415">415</a>
-<a href="#416" id="416">416</a>
-<a href="#417" id="417">417</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -429,6 +427,7 @@
 <span class="kw">use </span>fvm_shared2::address::Address <span class="kw">as </span>Address_v2;
 <span class="kw">use </span>fvm_shared3::address::Address <span class="kw">as </span>Address_v3;
 <span class="kw">pub use </span>fvm_shared3::address::{Error, Network, Payload, Protocol, BLS_PUB_LEN, PAYLOAD_HASH_LEN};
+<span class="kw">use </span>integer_encoding::VarInt;
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>num_traits::FromPrimitive;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -641,10 +640,7 @@
                 write_payload(
                     f,
                     protocol,
-                    <span class="prelude-val">Some</span>(unsigned_varint::encode::u64(
-                        addr.namespace(),
-                        <span class="kw-2">&amp;mut </span>unsigned_varint::encode::u64_buffer(),
-                    )),
+                    <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>addr.namespace().encode_var_vec()),
                     addr.subaddress(),
                 )
             }

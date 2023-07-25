@@ -493,6 +493,8 @@
 <a href="#493" id="493">493</a>
 <a href="#494" id="494">494</a>
 <a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -723,7 +725,9 @@
                 <span class="comment">// We&#39;ve got a binary blob, and we&#39;re not exactly sure if it&#39;s compressed, and we can&#39;t just peek the header:
                 // For example, the zstsd magic bytes are a valid varint frame prefix:
                 </span><span class="macro">assert_eq!</span>(
-                    unsigned_varint::io::read_usize(<span class="kw-2">&amp;</span>[<span class="number">0xFD</span>, <span class="number">0x2F</span>, <span class="number">0xB5</span>, <span class="number">0x28</span>][..]).unwrap(),
+                    &lt;usize <span class="kw">as </span>integer_encoding::VarInt&gt;::decode_var(<span class="kw-2">&amp;</span>[<span class="number">0xFD</span>, <span class="number">0x2F</span>, <span class="number">0xB5</span>, <span class="number">0x28</span>])
+                        .unwrap()
+                        .<span class="number">1</span>,
                     <span class="number">6141</span>,
                 );
                 <span class="comment">// so the best thing to do is to just try compressed and then uncompressed.
