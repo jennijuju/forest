@@ -203,8 +203,8 @@
 
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>digest::{Digest, Output};
+<span class="kw">use </span>futures::AsyncWriteExt;
 <span class="kw">use </span>futures::{io::BufWriter, AsyncWrite};
-<span class="kw">use </span>futures_util::AsyncWriteExt;
 <span class="kw">use </span>pin_project_lite::pin_project;
 
 <span class="macro">pin_project! </span>{

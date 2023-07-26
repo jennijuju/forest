@@ -86,6 +86,8 @@
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -107,7 +109,6 @@
 <span class="kw">mod </span>auth;
 <span class="kw">mod </span>beacon;
 <span class="kw">mod </span>blocks;
-<span class="kw">mod </span>car_backed_blockstore;
 <span class="kw">mod </span>chain;
 <span class="kw">mod </span>chain_sync;
 <span class="kw">mod </span>cli;
@@ -164,7 +165,10 @@
 </span><span class="comment">// Allow benchmarks of forest internals
 </span><span class="attr">#[cfg(feature = <span class="string">&quot;benchmark-private&quot;</span>)]
 #[doc(hidden)]
-</span><span class="kw">pub mod </span>benchmark_private {}
+</span><span class="kw">pub mod </span>benchmark_private {
+    <span class="kw">pub use </span><span class="kw">crate</span>::utils::cid;
+    <span class="kw">pub use </span><span class="kw">crate</span>::utils::db::car_index;
+}
 
 <span class="comment">// These should be made private in https://github.com/ChainSafe/forest/issues/3013
 </span><span class="kw">pub use </span>auth::{verify_token, JWT_IDENTIFIER};

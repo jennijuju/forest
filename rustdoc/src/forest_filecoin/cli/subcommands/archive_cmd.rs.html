@@ -414,13 +414,13 @@
 //! running Forest-daemon or a separate database. Operations are carried out
 //! directly on CAR files.
 //!
-//! Additional reading: [`crate::car_backed_blockstore`]
+//! Additional reading: [`crate::db::car::plain`]
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::car_backed_blockstore::UncompressedCarV1BackedBlockstore;
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::{ChainIndex, ResolveNullTipset};
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainEpochDelta;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
+<span class="kw">use </span><span class="kw">crate</span>::db::car::AnyCar;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY};
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
@@ -430,7 +430,7 @@
 <span class="kw">use </span>indicatif::ProgressIterator;
 <span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>sha2::Sha256;
-<span class="kw">use </span>std::io::{Read, Seek};
+<span class="kw">use </span>std::io::{<span class="self">self</span>, Read, Seek};
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
@@ -480,12 +480,12 @@
                 epoch,
                 depth,
             } =&gt; {
-                <span class="kw">let </span>reader = std::fs::File::open(<span class="kw-2">&amp;</span>input_path)<span class="question-mark">?</span>;
-
                 <span class="macro">info!</span>(
                     <span class="string">&quot;indexing a car-backed store using snapshot: {}&quot;</span>,
                     input_path.to_str().unwrap_or_default()
                 );
+
+                <span class="kw">let </span>reader = <span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>input_path);
 
                 do_export(reader, output_path, epoch, depth).<span class="kw">await
             </span>}
@@ -508,16 +508,13 @@
     }
 }
 
-<span class="kw">async fn </span>do_export(
-    reader: <span class="kw">impl </span>Read + Seek + Send + Sync,
+<span class="kw">async fn </span>do_export&lt;ReaderT: Read + Seek + Send + Sync&gt;(
+    reader: <span class="kw">impl </span>Fn() -&gt; io::Result&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>,
     output_path: PathBuf,
     epoch_option: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     depth: ChainEpochDelta,
 ) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>store = Arc::new(
-        UncompressedCarV1BackedBlockstore::new(reader)
-            .context(<span class="string">&quot;couldn&#39;t read input CAR file - it&#39;s either compressed or corrupt&quot;</span>)<span class="question-mark">?</span>,
-    );
+    <span class="kw">let </span>store = Arc::new(AnyCar::new(reader).context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>);
 
     <span class="kw">let </span>index = ChainIndex::new(store.clone());
     <span class="kw">let </span>ts = index.load_tipset(<span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
@@ -590,31 +587,30 @@
     <span class="comment">// Scan a CAR file to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is rendered to stdout.
     </span><span class="kw">fn </span>from_file(path: PathBuf) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::from_reader(std::fs::File::open(path)<span class="question-mark">?</span>)
+        <span class="self">Self</span>::from_reader(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>path))
     }
 
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is rendered to stdout.
-    </span><span class="kw">fn </span>from_reader(reader: <span class="kw">impl </span>Read + Seek) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>from_reader&lt;ReaderT: Read + Seek&gt;(
+        reader: <span class="kw">impl </span>Fn() -&gt; io::Result&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>,
+    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::from_reader_with(reader, <span class="bool-val">true</span>)
     }
 
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is optionally rendered to
     // stdout.
-    </span><span class="kw">fn </span>from_reader_with(reader: <span class="kw">impl </span>Read + Seek, progress: bool) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>store = UncompressedCarV1BackedBlockstore::new(reader)
-            .context(<span class="string">&quot;couldn&#39;t read input CAR file - is it compressed?&quot;</span>)<span class="question-mark">?</span>;
+    </span><span class="kw">fn </span>from_reader_with&lt;ReaderT: Read + Seek&gt;(
+        reader: <span class="kw">impl </span>Fn() -&gt; io::Result&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>,
+        progress: bool,
+    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>store = AnyCar::new(reader)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>root = Tipset::load(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?
-            </span>.context(<span class="string">&quot;Missing root tipset&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>root = Tipset::load_required(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
         <span class="kw">let </span>root_epoch = root.epoch();
 
-        <span class="kw">let </span>tipsets = itertools::unfold(<span class="prelude-val">Some</span>(root.clone()), |tipset| {
-            <span class="kw">let </span>child = tipset.take()<span class="question-mark">?</span>;
-            <span class="kw-2">*</span>tipset = Tipset::load(<span class="kw-2">&amp;</span>store, child.parents()).ok().flatten();
-            <span class="prelude-val">Some</span>(child)
-        });
+        <span class="kw">let </span>tipsets = root.clone().chain(<span class="kw-2">&amp;</span>store);
 
         <span class="kw">let </span>windowed = (std::iter::once(root).chain(tipsets)).tuple_windows();
 
@@ -670,6 +666,7 @@
                         } <span class="kw">else if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
                             network = <span class="string">&quot;mainnet&quot;</span>.into();
                         }
+                        <span class="kw">break</span>;
                     }
                     <span class="prelude-val">None </span>=&gt; {
                         <span class="kw">break</span>;
@@ -679,7 +676,7 @@
         }
 
         <span class="prelude-val">Ok</span>(ArchiveInfo {
-            variant: <span class="string">&quot;CARv1&quot;</span>.into(),
+            variant: store.variant().to_string(),
             network,
             epoch: root_epoch,
             tipsets: lowest_stateroot_epoch,
@@ -691,9 +688,8 @@
 <span class="comment">// Print a mapping of epochs to block headers in yaml format. This mapping can
 // be used by Forest to quickly identify tipsets.
 </span><span class="kw">fn </span>print_checkpoints(snapshot: PathBuf) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>file = std::fs::File::open(snapshot)<span class="question-mark">?</span>;
-    <span class="kw">let </span>store = UncompressedCarV1BackedBlockstore::new(file)
-        .context(<span class="string">&quot;couldn&#39;t read input CAR file - is it compressed?&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>store = AnyCar::new(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>snapshot))
+        .context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>;
     <span class="kw">let </span>root = Tipset::load_required(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>genesis = root.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
@@ -738,18 +734,22 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>archive_info_calibnet() {
-        <span class="kw">let </span>info =
-            ArchiveInfo::from_reader_with(std::io::Cursor::new(calibnet::DEFAULT_GENESIS), <span class="bool-val">false</span>)
-                .unwrap();
+        <span class="kw">let </span>info = ArchiveInfo::from_reader_with(
+            || <span class="prelude-val">Ok</span>(std::io::Cursor::new(calibnet::DEFAULT_GENESIS)),
+            <span class="bool-val">false</span>,
+        )
+        .unwrap();
         <span class="macro">assert_eq!</span>(info.network, <span class="string">&quot;calibnet&quot;</span>);
         <span class="macro">assert_eq!</span>(info.epoch, <span class="number">0</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>archive_info_mainnet() {
-        <span class="kw">let </span>info =
-            ArchiveInfo::from_reader_with(std::io::Cursor::new(mainnet::DEFAULT_GENESIS), <span class="bool-val">false</span>)
-                .unwrap();
+        <span class="kw">let </span>info = ArchiveInfo::from_reader_with(
+            || <span class="prelude-val">Ok</span>(std::io::Cursor::new(mainnet::DEFAULT_GENESIS)),
+            <span class="bool-val">false</span>,
+        )
+        .unwrap();
         <span class="macro">assert_eq!</span>(info.network, <span class="string">&quot;mainnet&quot;</span>);
         <span class="macro">assert_eq!</span>(info.epoch, <span class="number">0</span>);
     }
@@ -758,7 +758,7 @@
     </span><span class="kw">async fn </span>export() {
         <span class="kw">let </span>output_path = TempDir::new().unwrap();
         do_export(
-            std::io::Cursor::new(calibnet::DEFAULT_GENESIS),
+            || <span class="prelude-val">Ok</span>(std::io::Cursor::new(calibnet::DEFAULT_GENESIS)),
             output_path.path().into(),
             <span class="prelude-val">Some</span>(<span class="number">0</span>),
             <span class="number">1</span>,

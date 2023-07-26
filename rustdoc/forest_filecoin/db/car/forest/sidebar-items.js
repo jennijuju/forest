@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["compressed_len","decode_zstd_single_frame","finalize_frame","invalid_data","new_encoder"],"static":["CALLSITE"],"struct":["Encoder","ForestCar","ForestCarFooter","ForestCarInner"]};

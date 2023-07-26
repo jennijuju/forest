@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["cid_error_to_io_error","get_roots_from_v1_header","handle_write_cache","read_block_data_location_and_skip","read_header","read_varint_body_length_or_eof","write_skip_frame_header_async"],"static":["CALLSITE"],"struct":["CompressedBlockDataLocation","CountRead","PlainCar","PlainCarInner","UncompressedBlockDataLocation"]};

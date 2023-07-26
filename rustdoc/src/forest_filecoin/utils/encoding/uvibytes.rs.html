@@ -150,7 +150,7 @@
 }
 
 <span class="kw">impl </span>Decoder <span class="kw">for </span>UviBytes {
-    <span class="kw">type </span>Item = BytesMut;
+    <span class="kw">type </span>Item = Bytes;
     <span class="kw">type </span>Error = io::Error;
 
     <span class="kw">fn </span>decode(<span class="kw-2">&amp;mut </span><span class="self">self</span>, src: <span class="kw-2">&amp;mut </span>BytesMut) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;, <span class="self">Self</span>::Error&gt; {
@@ -158,7 +158,7 @@
             <span class="kw">if let </span><span class="prelude-val">Some</span>((n, size)) = usize::decode_var(src) {
                 src.advance(size);
                 <span class="self">self</span>.len = <span class="prelude-val">Some</span>(n);
-            } <span class="kw">else if </span>src.len() &gt;= std::mem::size_of::&lt;usize&gt;() {
+            } <span class="kw">else if </span>src.len() &gt;= usize::MAX.required_space() {
                 <span class="kw">return </span><span class="prelude-val">Err</span>(io::Error::new(
                     io::ErrorKind::InvalidData,
                     <span class="string">&quot;invalid uvi frame&quot;</span>,
@@ -173,7 +173,7 @@
                 ));
             }
             <span class="kw">if </span>n &lt;= src.len() {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(src.split_to(n)));
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(src.split_to(n).freeze()));
             }
             src.reserve(n - src.len());
             <span class="self">self</span>.len = <span class="prelude-val">Some</span>(n);

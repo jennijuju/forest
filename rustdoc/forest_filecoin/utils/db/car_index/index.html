@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="TL;DR"><title>forest_filecoin::utils::db::car_index - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-ba5701c5741a7b69.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="forest_filecoin" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0-nightly (c609da59d 2023-04-18)" data-search-js="search-e077946657036a58.js" data-settings-js="settings-298e1ea74db45b39.js" data-settings-css="settings-7bfb4c59cc6bc502.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/main-1a524efa7bd4ab32.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../../forest_filecoin/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../../forest_filecoin/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module car_index</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../../index.html">forest_filecoin</a>::<wbr><a href="../../index.html">utils</a>::<wbr><a href="../index.html">db</a>::<wbr><a class="mod" href="#">car_index</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="srclink" href="../../../../src/forest_filecoin/utils/db/car_index.rs.html#4-181">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="tldr"><a href="#tldr">TL;DR</a></h2>
+<p><a href="struct.CarIndex.html" title="struct forest_filecoin::utils::db::car_index::CarIndex"><code>CarIndex</code></a> is equivalent to <code>HashMap&lt;Cid, Vec&lt;FrameOffset&gt;&gt;</code>. It can be
+built in <code>O(n)</code> time, loaded from a reader in <code>O(1)</code> time, has <code>O(1)</code>
+queries, and uses no caches by default.</p>
+<h2 id="context-binary-search"><a href="#context-binary-search">Context: Binary search</a></h2>
+<p>You can find any word in a dictionary in <code>O(logn)</code> steps by binary search.
+However, no human would look for <code>aardvark</code> in the middle of a dictionary.
+It’s reasonable to assume that a word starting with two <code>A</code>s will appear
+closer to the beginning of the dictionary rather than the end.</p>
+<p>Dictionary words are not evenly distributed, though, as there are more words
+starting with <code>c</code> than with <code>a</code>. This makes it difficult to know exactly
+where to start looking for a word in the dictionary.</p>
+<p>If we don’t care about ordering, we can hash the words and thus be sure that
+they are spread evenly across the dictionary. No hash key is any more or
+less likely than any other.</p>
+<h2 id="context-hash-tables-and-linear-probing"><a href="#context-hash-tables-and-linear-probing">Context: Hash tables and linear probing</a></h2>
+<p>We could take the dictionary words and put them in different buckets
+according to their hash value. Looking up a word requires finding the right
+bucket and sifting through its content. With more buckets and words, each
+bucket will, on average, not contain more than a single word.</p>
+<p>Let’s simplify things and put the buckets in a single array. The contents of
+bucket 0 starts at offset 0, bucket 1 starts at offset 1, etc. Some buckets
+are empty and leave unfilled slots, other buckets have multiple entries and
+spill into slots meant for someone else.</p>
+<p>To look up a value in this array, we go to the bucket offset and scan
+towards the end of the array. The scan ends once we’ve found the key or an
+empty slot. The maximum number of elements to scan is guaranteed to be
+small.</p>
+<p>This technique is called <a href="https://en.wikipedia.org/wiki/Linear_probing">linear
+probing</a>.</p>
+<h3 id="hash-collisions-and-bucket-collisions"><a href="#hash-collisions-and-bucket-collisions">Hash collisions and bucket collisions</a></h3>
+<p>It may happen that two keys have the same hash. In this (extremely rare)
+case, looking up the key will return two values.</p>
+<p>Bucket collisions are common and happen when two distinct hashes are assigned
+the same bucket.</p>
+<h3 id="examples-of-linear-probing"><a href="#examples-of-linear-probing">Examples of linear probing</a></h3>
+<p>In a perfect world, keys map uniquely to bucket. Imagine three keys assigned
+to distinct buckets:</p>
+<div class="example-wrap"><pre class="language-text"><code>  Keys:   1, 2, 3
+  Table: [1, 2, 3]
+</code></pre></div>
+<p>To look up key <code>2</code>, we go directly to the second bucket and scan right until
+we hit <code>3</code>.</p>
+<p>In a less perfect world, we may have to skip keys that were spilled from a
+bucket further to the left in the table. Consider:</p>
+<div class="example-wrap"><pre class="language-text"><code>  Keys:   1, 1, 2
+  Table: [1, 1, 2]
+</code></pre></div>
+<p>To look up key <code>2</code>, we go to the second bucket. This bucket contains a
+spill-over key which is skipped.</p>
+<h2 id="code-layout"><a href="#code-layout">Code layout</a></h2>
+<p>A <a href="struct.CarIndex.html" title="struct forest_filecoin::utils::db::car_index::CarIndex"><code>CarIndex</code></a> maps from [<code>cid::Cid</code>]s to possible <a href="key_value_pair/type.FrameOffset.html" title="type forest_filecoin::utils::db::car_index::key_value_pair::FrameOffset"><code>FrameOffset</code></a>s. The
+mapping is unique unless the hash of two CIDs collide (possible but
+extremely unlikely). The caller should always verify that the [<code>cid::Cid</code>] in the
+CAR file at <a href="key_value_pair/type.FrameOffset.html" title="type forest_filecoin::utils::db::car_index::key_value_pair::FrameOffset"><code>FrameOffset</code></a> matches the requested [<code>cid::Cid</code>].</p>
+<p><a href="car_index_builder/struct.CarIndexBuilder.html" title="struct forest_filecoin::utils::db::car_index::car_index_builder::CarIndexBuilder"><code>CarIndexBuilder</code></a> takes a collection of <code>(Cid, BlockPosition)</code> pairs and
+encodes them to a writer. The only guarantees about the format is that
+<a href="struct.CarIndex.html" title="struct forest_filecoin::utils::db::car_index::CarIndex"><code>CarIndex</code></a> can read it.</p>
+<h3 id="internal-structures"><a href="#internal-structures">Internal structures</a></h3>
+<p>A <a href="slot/enum.Slot.html" title="enum forest_filecoin::utils::db::car_index::slot::Slot"><code>Slot</code></a> is a position in the table that may or may not be filled with a
+<a href="key_value_pair/struct.KeyValuePair.html" title="struct forest_filecoin::utils::db::car_index::key_value_pair::KeyValuePair"><code>KeyValuePair</code></a>. <a href="hash/struct.Hash.html" title="struct forest_filecoin::utils::db::car_index::hash::Hash"><code>Hash</code></a>es are key and are not required to be unique. The
+performance of the index depends entirely on the quality of the chosen hash
+function.</p>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name" id="reexport.CarIndexBuilder"><code>pub use car_index_builder::<a class="struct" href="car_index_builder/struct.CarIndexBuilder.html" title="struct forest_filecoin::utils::db::car_index::car_index_builder::CarIndexBuilder">CarIndexBuilder</a>;</code></div></li><li><div class="item-name" id="reexport.FrameOffset"><code>pub use key_value_pair::<a class="type" href="key_value_pair/type.FrameOffset.html" title="type forest_filecoin::utils::db::car_index::key_value_pair::FrameOffset">FrameOffset</a>;</code></div></li></ul><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="car_index_builder/index.html" title="mod forest_filecoin::utils::db::car_index::car_index_builder">car_index_builder</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li><li><div class="item-name"><a class="mod" href="hash/index.html" title="mod forest_filecoin::utils::db::car_index::hash">hash</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li><li><div class="item-name"><a class="mod" href="index_header/index.html" title="mod forest_filecoin::utils::db::car_index::index_header">index_header</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li><li><div class="item-name"><a class="mod" href="key_value_pair/index.html" title="mod forest_filecoin::utils::db::car_index::key_value_pair">key_value_pair</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li><li><div class="item-name"><a class="mod" href="slot/index.html" title="mod forest_filecoin::utils::db::car_index::slot">slot</a><span title="Restricted Visibility">&nbsp;🔒</span> </div></li></ul><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.CarIndex.html" title="struct forest_filecoin::utils::db::car_index::CarIndex">CarIndex</a></div></li></ul></section></div></main></body></html>
