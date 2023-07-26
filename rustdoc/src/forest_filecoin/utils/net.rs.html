@@ -104,6 +104,10 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -113,7 +117,7 @@
 <span class="kw">use </span>futures::{AsyncWriteExt, TryStreamExt};
 <span class="kw">use </span>std::{io::ErrorKind, path::Path};
 <span class="kw">use </span>tap::Pipe;
-<span class="kw">use </span>tokio::io::{AsyncBufReadExt, AsyncRead};
+<span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncBufReadExt, AsyncRead};
 <span class="kw">use </span>tokio_util::{
     compat::TokioAsyncReadCompatExt,
     either::Either::{Left, Right},
@@ -168,7 +172,7 @@
 /// - uncompressed
 ///
 /// This function returns a reader of uncompressed data.
-</span><span class="kw">pub async fn </span>reader(location: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;<span class="kw">impl </span>AsyncRead&gt; {
+</span><span class="kw">pub async fn </span>reader(location: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;<span class="kw">impl </span>AsyncBufRead&gt; {
     <span class="comment">// This isn&#39;t the cleanest approach in terms of error-handling, but it works. If the URL is
     // malformed it&#39;ll end up trying to treat it as a local filepath. If that fails - an error
     // is thrown.
@@ -192,12 +196,16 @@
         }
     };
 
-    <span class="kw">let </span><span class="kw-2">mut </span>reader = tokio::io::BufReader::new(WithProgress::wrap_async_read(
+    <span class="prelude-val">Ok</span>(tokio::io::BufReader::new(WithProgress::wrap_async_read(
         <span class="string">&quot;Loading&quot;</span>,
         stream,
         content_length,
-    ));
+    )))
+}
 
+<span class="kw">pub async fn </span>decompress_if_needed(
+    <span class="kw-2">mut </span>reader: <span class="kw">impl </span>AsyncBufRead + Unpin,
+) -&gt; anyhow::Result&lt;<span class="kw">impl </span>AsyncRead&gt; {
     <span class="prelude-val">Ok</span>(<span class="kw">match </span>is_zstd(reader.fill_buf().<span class="kw">await</span><span class="question-mark">?</span>) {
         <span class="bool-val">true </span>=&gt; Left(ZstdDecoder::new(reader)),
         <span class="bool-val">false </span>=&gt; Right(reader),

@@ -216,6 +216,7 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -225,6 +226,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{BufferSize, ChunkSize};
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
+<span class="kw">use </span><span class="kw">crate</span>::utils::net;
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::{sink::SinkExt, stream, AsyncRead, Stream, StreamExt};
@@ -314,7 +316,7 @@
     <span class="macro">info!</span>(<span class="string">&quot;Importing chain from snapshot at: {path}&quot;</span>);
     <span class="comment">// start import
     </span><span class="kw">let </span>stopwatch = time::Instant::now();
-    <span class="kw">let </span>reader = <span class="kw">crate</span>::utils::net::reader(path).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>reader = net::decompress_if_needed(net::reader(path).<span class="kw">await</span><span class="question-mark">?</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>(cids, n_records) = load_and_retrieve_header(
         sm.blockstore().clone(),
