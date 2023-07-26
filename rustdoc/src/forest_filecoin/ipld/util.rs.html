@@ -336,6 +336,52 @@
 <a href="#336" id="336">336</a>
 <a href="#337" id="337">337</a>
 <a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -349,10 +395,16 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::progress_log::WithProgressRaw;
 <span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>futures::Stream;
+<span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::from_slice;
 <span class="kw">use </span>lazy_static::lazy_static;
+<span class="kw">use </span>pin_project_lite::pin_project;
+<span class="kw">use </span>std::pin::Pin;
+<span class="kw">use </span>std::task::{Context, Poll};
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{CidHashSet, Ipld};
 
@@ -532,18 +584,72 @@
     }
 }
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span>futures::Stream;
-<span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>pin_project_lite::pin_project;
-<span class="kw">use </span>std::pin::Pin;
-<span class="kw">use </span>std::task::{Context, Poll};
+<span class="doccomment">/// Depth-first-search iterator for `ipld` leaf nodes.
+///
+/// This iterator consumes the given `ipld` structure and returns leaf nodes (i.e.,
+/// no list or map) in depth-first order. The iterator can be extended at any
+/// point by the caller.
+///
+/// Consider walking this `ipld` graph:
+/// ```text
+/// List
+///  ├ Integer(5)
+///  ├ Link(Y)
+///  └ String(&quot;string&quot;)
+///
+/// Link(Y):
+/// Map
+///  ├ &quot;key1&quot; =&gt; Bool(true)
+///  └ &quot;key2&quot; =&gt; Float(3.14)
+/// ```
+///
+/// If we walk the above `ipld` graph (replacing `Link(Y)` when it is encountered), the leaf nodes will be seen in this order:
+/// 1. `Integer(5)`
+/// 2. `Bool(true)`
+/// 3. `Float(3.14)`
+/// 4. `String(&quot;string&quot;)`
+</span><span class="kw">pub struct </span>DfsIter {
+    dfs: VecDeque&lt;Ipld&gt;,
+}
+
+<span class="kw">impl </span>DfsIter {
+    <span class="kw">pub fn </span>new(root: Ipld) -&gt; <span class="self">Self </span>{
+        DfsIter {
+            dfs: VecDeque::from([root]),
+        }
+    }
+
+    <span class="kw">pub fn </span>walk_next(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ipld: Ipld) {
+        <span class="self">self</span>.dfs.push_front(ipld)
+    }
+}
+
+<span class="kw">impl </span>From&lt;Cid&gt; <span class="kw">for </span>DfsIter {
+    <span class="kw">fn </span>from(cid: Cid) -&gt; <span class="self">Self </span>{
+        DfsIter::new(Ipld::Link(cid))
+    }
+}
+
+<span class="kw">impl </span>Iterator <span class="kw">for </span>DfsIter {
+    <span class="kw">type </span>Item = Ipld;
+
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="kw">while let </span><span class="prelude-val">Some</span>(ipld) = <span class="self">self</span>.dfs.pop_front() {
+            <span class="kw">match </span>ipld {
+                Ipld::List(list) =&gt; list.into_iter().rev().for_each(|elt| <span class="self">self</span>.walk_next(elt)),
+                Ipld::Map(map) =&gt; map.into_values().rev().for_each(|elt| <span class="self">self</span>.walk_next(elt)),
+                other =&gt; <span class="kw">return </span><span class="prelude-val">Some</span>(other),
+            }
+        }
+        <span class="prelude-val">None
+    </span>}
+}
 
 <span class="kw">enum </span>Task {
     <span class="comment">// Yield the block, don&#39;t visit it.
     </span>Emit(Cid),
     <span class="comment">// Visit all the elements, recursively.
-    </span>Iterate(Ipld),
+    </span>Iterate(DfsIter),
 }
 
 <span class="macro">pin_project! </span>{
@@ -589,52 +695,36 @@
 
         <span class="kw">let </span>stateroot_limit = <span class="kw-2">*</span>this.stateroot_limit;
         <span class="kw">loop </span>{
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(ipld) = this.dfs.pop_front() {
-                <span class="kw">match </span>ipld {
+            <span class="kw">while let </span><span class="prelude-val">Some</span>(task) = this.dfs.front_mut() {
+                <span class="kw">match </span>task {
                     Emit(cid) =&gt; {
-                        <span class="kw">let </span>result = this.db.get(<span class="kw-2">&amp;</span>cid);
-
-                        <span class="kw">let </span>result = result.and_then(|val| {
-                            <span class="kw">let </span>block = val.ok_or(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key&quot;</span>))<span class="question-mark">?</span>;
-                            <span class="prelude-val">Ok</span>((cid, block))
-                        });
-
-                        <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(result));
+                        <span class="kw">let </span>cid = <span class="kw-2">*</span>cid;
+                        <span class="kw">let </span>data = this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>.ok_or(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key&quot;</span>))<span class="question-mark">?</span>;
+                        this.dfs.pop_front();
+                        <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((cid, data))));
                     }
-                    Iterate(Ipld::Null) =&gt; {}
-                    Iterate(Ipld::Bool(<span class="kw">_</span>)) =&gt; {}
-                    Iterate(Ipld::Integer(<span class="kw">_</span>)) =&gt; {}
-                    Iterate(Ipld::Float(<span class="kw">_</span>)) =&gt; {}
-                    Iterate(Ipld::String(<span class="kw">_</span>)) =&gt; {}
-                    Iterate(Ipld::Bytes(<span class="kw">_</span>)) =&gt; {}
-                    Iterate(Ipld::List(list)) =&gt; list
-                        .into_iter()
-                        .rev()
-                        .for_each(|elt| this.dfs.push_front(Iterate(elt))),
-                    Iterate(Ipld::Map(map)) =&gt; map
-                        .into_values()
-                        .rev()
-                        .for_each(|elt| this.dfs.push_front(Iterate(elt))),
-                    <span class="comment">// The link traversal implementation assumes there are three types of encoding:
-                    // 1. DAG_CBOR: needs to be reachable, so we add it to the queue and load.
-                    // 2. IPLD_RAW: WASM blocks, for example. Need to be loaded, but not traversed.
-                    // 3. _: ignore all other links
-                    </span>Iterate(Ipld::Link(cid)) =&gt; {
-                        <span class="comment">// Don&#39;t revisit what&#39;s already been visited.
-                        </span><span class="kw">if </span>should_save_block_to_snapshot(cid) &amp;&amp; this.seen.insert(cid) {
-                            <span class="kw">let </span>result = this.db.get(<span class="kw-2">&amp;</span>cid);
+                    Iterate(dfs_iter) =&gt; {
+                        <span class="kw">while let </span><span class="prelude-val">Some</span>(ipld) = dfs_iter.next() {
+                            <span class="kw">if let </span>Ipld::Link(cid) = ipld {
+                                <span class="comment">// The link traversal implementation assumes there are three types of encoding:
+                                // 1. DAG_CBOR: needs to be reachable, so we add it to the queue and load.
+                                // 2. IPLD_RAW: WASM blocks, for example. Need to be loaded, but not traversed.
+                                // 3. _: ignore all other links
+                                // Don&#39;t revisit what&#39;s already been visited.
+                                </span><span class="kw">if </span>should_save_block_to_snapshot(cid) &amp;&amp; this.seen.insert(cid) {
+                                    <span class="kw">let </span>data =
+                                        this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>.ok_or(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key&quot;</span>))<span class="question-mark">?</span>;
 
-                            <span class="kw">let </span>result = result.and_then(|val| {
-                                <span class="kw">let </span>block = val.ok_or(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key&quot;</span>))<span class="question-mark">?</span>;
-                                <span class="kw">if </span>cid.codec() == fvm_ipld_encoding::DAG_CBOR {
-                                    <span class="kw">let </span>ipld: Ipld = from_slice(<span class="kw-2">&amp;</span>block)<span class="question-mark">?</span>;
-                                    this.dfs.push_front(Iterate(ipld));
+                                    <span class="kw">if </span>cid.codec() == fvm_ipld_encoding::DAG_CBOR {
+                                        <span class="kw">let </span>ipld: Ipld = from_slice(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
+                                        dfs_iter.walk_next(ipld);
+                                    }
+
+                                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>((cid, data))));
                                 }
-                                <span class="prelude-val">Ok</span>((cid, block))
-                            });
-
-                            <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(result));
+                            }
                         }
+                        this.dfs.pop_front();
                     }
                 }
             }
@@ -656,7 +746,8 @@
 
                     <span class="comment">// Process block messages.
                     </span><span class="kw">if </span>block.epoch() &gt; stateroot_limit {
-                        this.dfs.push_back(Iterate(Ipld::Link(<span class="kw-2">*</span>block.messages())));
+                        this.dfs
+                            .push_back(Iterate(DfsIter::from(<span class="kw-2">*</span>block.messages())));
                     }
 
                     <span class="comment">// Visit the block if it&#39;s within required depth. And a special case for `0`
@@ -664,7 +755,8 @@
                     </span><span class="kw">if </span>block.epoch() == <span class="number">0 </span>|| block.epoch() &gt; stateroot_limit {
                         <span class="comment">// NOTE: In the original `walk_snapshot` implementation we walk the dag
                         // immediately. Which is what we do here as well, but using a queue.
-                        </span>this.dfs.push_back(Iterate(Ipld::Link(<span class="kw-2">*</span>block.state_root())));
+                        </span>this.dfs
+                            .push_back(Iterate(DfsIter::from(<span class="kw-2">*</span>block.state_root())));
                     }
                 }
             } <span class="kw">else </span>{
