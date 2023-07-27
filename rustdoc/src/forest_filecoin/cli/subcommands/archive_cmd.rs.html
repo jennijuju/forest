@@ -382,12 +382,6 @@
 <a href="#382" id="382">382</a>
 <a href="#383" id="383">383</a>
 <a href="#384" id="384">384</a>
-<a href="#385" id="385">385</a>
-<a href="#386" id="386">386</a>
-<a href="#387" id="387">387</a>
-<a href="#388" id="388">388</a>
-<a href="#389" id="389">389</a>
-<a href="#390" id="390">390</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -659,19 +653,13 @@
             </span><span class="kw">let </span>may_skip =
                 lowest_stateroot_epoch != tipset.epoch() &amp;&amp; lowest_message_epoch != tipset.epoch();
             <span class="kw">if </span>may_skip {
-                <span class="kw">match </span>tipset.genesis(<span class="kw-2">&amp;</span>store).ok() {
-                    <span class="prelude-val">Some</span>(genesis_block) =&gt; {
-                        <span class="kw">if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
-                            network = <span class="string">&quot;calibnet&quot;</span>.into();
-                        } <span class="kw">else if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
-                            network = <span class="string">&quot;mainnet&quot;</span>.into();
-                        }
-                        <span class="kw">break</span>;
-                    }
-                    <span class="prelude-val">None </span>=&gt; {
-                        <span class="kw">break</span>;
-                    }
+                <span class="kw">let </span>genesis_block = tipset.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+                <span class="kw">if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
+                    network = <span class="string">&quot;calibnet&quot;</span>.into();
+                } <span class="kw">else if </span>genesis_block.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
+                    network = <span class="string">&quot;mainnet&quot;</span>.into();
                 }
+                <span class="kw">break</span>;
             }
         }
 
