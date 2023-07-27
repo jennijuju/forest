@@ -20,10 +20,13 @@
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">mod </span>cid_hashset;
+</span><span class="kw">mod </span>cid_hashmap;
+<span class="kw">mod </span>cid_hashset;
 <span class="kw">pub mod </span>json;
 <span class="kw">pub mod </span>selector;
 <span class="kw">pub mod </span>util;
@@ -32,6 +35,7 @@
 <span class="kw">pub use </span>libipld_core::ipld::Ipld;
 <span class="kw">pub use </span>util::<span class="kw-2">*</span>;
 
+<span class="kw">pub use </span><span class="self">self</span>::cid_hashmap::CidHashMap;
 <span class="kw">pub use </span><span class="self">self</span>::cid_hashset::CidHashSet;
 
 <span class="kw">pub use </span>libipld_core::serde::{from_ipld, to_ipld};

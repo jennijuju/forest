@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Ipld"],"fn":["from_ipld","to_ipld"],"mod":["cid_hashset","json","selector","util"],"struct":["Path"]};
+window.SIDEBAR_ITEMS = {"enum":["Ipld"],"fn":["from_ipld","to_ipld"],"mod":["cid_hashmap","cid_hashset","json","selector","util"],"struct":["Path"]};

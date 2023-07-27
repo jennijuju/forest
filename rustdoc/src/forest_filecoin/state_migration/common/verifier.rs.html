@@ -22,15 +22,13 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashMap;
 <span class="kw">use </span><span class="kw">crate</span>::shim::state_tree::StateTree;
-<span class="kw">use </span>ahash::HashMap;
-<span class="kw">use </span>cid::Cid;
 
 <span class="kw">use </span><span class="kw">super</span>::Migrator;
 
@@ -40,7 +38,7 @@
     <span class="kw">fn </span>verify_migration(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         store: <span class="kw-2">&amp;</span>BS,
-        migrations: <span class="kw-2">&amp;</span>HashMap&lt;Cid, Migrator&lt;BS&gt;&gt;,
+        migrations: <span class="kw-2">&amp;</span>CidHashMap&lt;Migrator&lt;BS&gt;&gt;,
         actors_in: <span class="kw-2">&amp;</span>StateTree&lt;BS&gt;,
     ) -&gt; anyhow::Result&lt;()&gt;;
 }
