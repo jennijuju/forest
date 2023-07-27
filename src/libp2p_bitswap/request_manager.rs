@@ -119,9 +119,13 @@ impl BitswapRequestManager {
     }
 
     fn query_block_from_peer(&self, cid: Cid, peer: PeerId) -> anyhow::Result<()> {
-        let block_request = BitswapRequest::new_block(cid).send_dont_have(false);
-        println!("Querying block {:?} from peer {:?}", cid, peer);
-        Ok(self.outbound_request_tx.send((peer, block_request))?)
+        //let have_request = BitswapRequest::new_have(cid).send_dont_have(false);
+        //self.outbound_request_tx.send((peer, have_request))?;
+
+        //let block_request = BitswapRequest::new_block(cid).send_dont_have(false);
+        //println!("Querying block {:?} from peer {:?}", cid, peer);
+        //Ok(self.outbound_request_tx.send((peer, block_request))?)
+        Ok(())
     }
 
     fn get_block_sync(
