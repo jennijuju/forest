@@ -266,9 +266,6 @@
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -294,7 +291,6 @@
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>sha2::Sha256;
 <span class="kw">use </span>tokio::sync::Mutex;
-<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_message&lt;DB&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
@@ -352,23 +348,21 @@
             .tipset_by_height(epoch, head, ResolveNullTipset::TakeOlder)<span class="question-mark">?</span>;
 
     <span class="kw">match if </span>dry_run {
-        <span class="kw">crate</span>::chain::export::&lt;<span class="kw">_</span>, Sha256&gt;(
+        <span class="kw">crate</span>::chain::export::&lt;Sha256&gt;(
             <span class="kw-2">&amp;</span>data.chain_store.db,
             <span class="kw-2">&amp;</span>start_ts,
             recent_roots,
             VoidAsyncWriter,
-            <span class="bool-val">true</span>, <span class="comment">// `compressed` is always on
-            </span>skip_checksum,
+            skip_checksum,
         )
         .<span class="kw">await
     </span>} <span class="kw">else </span>{
         <span class="kw">let </span>file = tokio::fs::File::create(<span class="kw-2">&amp;</span>output_path).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">crate</span>::chain::export::&lt;<span class="kw">_</span>, Sha256&gt;(
+        <span class="kw">crate</span>::chain::export::&lt;Sha256&gt;(
             <span class="kw-2">&amp;</span>data.chain_store.db,
             <span class="kw-2">&amp;</span>start_ts,
             recent_roots,
-            file.compat(),
-            <span class="bool-val">true</span>,
+            file,
             skip_checksum,
         )
         .<span class="kw">await

@@ -193,19 +193,13 @@
 <a href="#193" id="193">193</a>
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{pin::Pin, task::Poll};
 
-<span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>digest::{Digest, Output};
-<span class="kw">use </span>futures::AsyncWriteExt;
-<span class="kw">use </span>futures::{io::BufWriter, AsyncWrite};
 <span class="kw">use </span>pin_project_lite::pin_project;
+<span class="kw">use </span>tokio::io::{AsyncWrite, AsyncWriteExt, BufWriter};
 
 <span class="macro">pin_project! </span>{
     <span class="doccomment">/// Wrapper `AsyncWriter` implementation that calculates the optional checksum on the fly.
@@ -219,10 +213,9 @@
 }
 
 <span class="doccomment">/// Trait marking the object that is collecting a kind of a checksum.
-</span><span class="attr">#[async_trait]
 </span><span class="kw">pub trait </span>Checksum&lt;D: Digest&gt; {
     <span class="doccomment">/// Return the checksum and resets the internal hasher.
-    </span><span class="kw">async fn </span>finalize(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; std::io::Result&lt;<span class="prelude-ty">Option</span>&lt;Output&lt;D&gt;&gt;&gt;;
+    </span><span class="kw">fn </span>finalize(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; std::io::Result&lt;<span class="prelude-ty">Option</span>&lt;Output&lt;D&gt;&gt;&gt;;
 }
 
 <span class="kw">impl</span>&lt;D: Digest, W: AsyncWriteExt&gt; AsyncWrite <span class="kw">for </span>AsyncWriterWithChecksum&lt;D, W&gt; {
@@ -251,17 +244,16 @@
         <span class="self">self</span>.project().inner.poll_flush(cx)
     }
 
-    <span class="kw">fn </span>poll_close(
+    <span class="kw">fn </span>poll_shutdown(
         <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
         cx: <span class="kw-2">&amp;mut </span>std::task::Context&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; Poll&lt;std::io::Result&lt;()&gt;&gt; {
-        <span class="self">self</span>.project().inner.poll_close(cx)
+        <span class="self">self</span>.project().inner.poll_shutdown(cx)
     }
 }
 
-<span class="attr">#[async_trait]
-</span><span class="kw">impl</span>&lt;D: Digest + Send, W: AsyncWriteExt + Send&gt; Checksum&lt;D&gt; <span class="kw">for </span>AsyncWriterWithChecksum&lt;D, W&gt; {
-    <span class="kw">async fn </span>finalize(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; std::io::Result&lt;<span class="prelude-ty">Option</span>&lt;Output&lt;D&gt;&gt;&gt; {
+<span class="kw">impl</span>&lt;D: Digest, W: AsyncWriteExt&gt; Checksum&lt;D&gt; <span class="kw">for </span>AsyncWriterWithChecksum&lt;D, W&gt; {
+    <span class="kw">fn </span>finalize(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; std::io::Result&lt;<span class="prelude-ty">Option</span>&lt;Output&lt;D&gt;&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(hasher) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.hasher {
             <span class="kw">let </span>hasher = std::mem::replace(hasher, D::new());
             <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(hasher.finalize()))
@@ -304,10 +296,10 @@
         std::task::Poll::Ready(<span class="prelude-val">Ok</span>(()))
     }
 
-    <span class="kw">fn </span>poll_close(
+    <span class="kw">fn </span>poll_shutdown(
         <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
         _cx: <span class="kw-2">&amp;mut </span>std::task::Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), std::io::Error&gt;&gt; {
+    ) -&gt; Poll&lt;std::io::Result&lt;()&gt;&gt; {
         std::task::Poll::Ready(<span class="prelude-val">Ok</span>(()))
     }
 }
@@ -315,16 +307,16 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
     <span class="kw">use </span>anyhow::ensure;
-    <span class="kw">use </span>futures::{io::BufWriter, AsyncWriteExt};
     <span class="kw">use </span>rand::{rngs::OsRng, RngCore};
     <span class="kw">use </span>sha2::{Sha256, Sha512};
+    <span class="kw">use </span>tokio::io::{AsyncWriteExt, BufWriter};
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>file_writer_fs_buf_writer() -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>temp_file_path = tempfile::Builder::new().tempfile()<span class="question-mark">?</span>;
-        <span class="kw">let </span>temp_file = async_fs::File::create(temp_file_path.path()).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>temp_file = tokio::fs::File::create(temp_file_path.path()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>temp_file_writer =
             AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(BufWriter::new(temp_file), <span class="bool-val">true</span>);
         <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1024 </span>{
@@ -334,9 +326,9 @@
         }
 
         temp_file_writer.flush().<span class="kw">await</span><span class="question-mark">?</span>;
-        temp_file_writer.close().<span class="kw">await</span><span class="question-mark">?</span>;
+        temp_file_writer.shutdown().<span class="kw">await</span><span class="question-mark">?</span>;
 
-        <span class="kw">let </span>checksum = temp_file_writer.finalize().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>checksum = temp_file_writer.finalize()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>file_hash = {
             <span class="kw">let </span><span class="kw-2">mut </span>hasher = Sha256::default();
@@ -368,7 +360,7 @@
 
             <span class="macro">assert_eq!</span>(
                 <span class="string">&quot;3386191dc5c285074c3827452f4e3b685e3253f5b9ca7c4c2bb3f44d1263aef1&quot;</span>,
-                <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize().<span class="kw">await</span><span class="question-mark">?</span>.unwrap())
+                <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize()<span class="question-mark">?</span>.unwrap())
             );
         }
 
@@ -382,7 +374,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>writer = AsyncWriterWithChecksum::&lt;Sha512, <span class="kw">_</span>&gt;::new(writer, <span class="bool-val">true</span>);
         <span class="macro">assert_eq!</span>(
             <span class="string">&quot;cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e&quot;</span>,
-            <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize().<span class="kw">await</span><span class="question-mark">?</span>.unwrap())
+            <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize()<span class="question-mark">?</span>.unwrap())
         );
         <span class="prelude-val">Ok</span>(())
     }
@@ -392,7 +384,7 @@
         <span class="kw">let </span>buffer = Vec::new();
         <span class="kw">let </span>writer = BufWriter::new(buffer);
         <span class="kw">let </span><span class="kw-2">mut </span>writer = AsyncWriterWithChecksum::&lt;Sha512, <span class="kw">_</span>&gt;::new(writer, <span class="bool-val">false</span>);
-        <span class="macro">ensure!</span>(writer.finalize().<span class="kw">await</span><span class="question-mark">?</span>.is_none());
+        <span class="macro">ensure!</span>(writer.finalize()<span class="question-mark">?</span>.is_none());
         <span class="prelude-val">Ok</span>(())
     }
 }

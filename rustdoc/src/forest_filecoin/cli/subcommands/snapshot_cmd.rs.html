@@ -448,6 +448,8 @@
 <a href="#448" id="448">448</a>
 <a href="#449" id="449">449</a>
 <a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -469,6 +471,7 @@
 <span class="kw">use </span>anyhow::{bail, Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
+<span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>human_repr::HumanCount;
 <span class="kw">use </span>std::path::{Path, PathBuf};
@@ -558,6 +561,7 @@
                         chain_name,
                         Utc::now().date_naive(),
                         epoch,
+                        <span class="bool-val">true</span>,
                     )),
                     <span class="bool-val">false </span>=&gt; output_path.clone(),
                 };
@@ -657,7 +661,7 @@
                 <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
                     frame_size,
                     compression_level,
-                    block_stream,
+                    block_stream.map_err(anyhow::Error::from),
                 );
                 <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, roots, frames).<span class="kw">await</span><span class="question-mark">?</span>;
                 dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;

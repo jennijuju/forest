@@ -434,6 +434,40 @@
 <a href="#434" id="434">434</a>
 <a href="#435" id="435">435</a>
 <a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -476,7 +510,13 @@
 <span class="doccomment">/// Create a filename in the &quot;full&quot; format. See [`parse`].
 </span><span class="comment">// Common between export, and [`fetch`].
 // Keep in sync with the CLI documentation for the `snapshot` sub-command.
-</span><span class="kw">pub fn </span>filename(vendor: <span class="kw">impl </span>Display, chain: <span class="kw">impl </span>Display, date: NaiveDate, height: i64) -&gt; String {
+</span><span class="kw">pub fn </span>filename(
+    vendor: <span class="kw">impl </span>Display,
+    chain: <span class="kw">impl </span>Display,
+    date: NaiveDate,
+    height: i64,
+    forest_format: bool,
+) -&gt; String {
     <span class="kw">let </span>vendor = vendor.to_string();
     <span class="kw">let </span>chain = chain.to_string();
     ParsedFilename::Full {
@@ -484,6 +524,7 @@
         chain: <span class="kw-2">&amp;</span>chain,
         date,
         height,
+        forest_format,
     }
     .to_string()
 }
@@ -496,10 +537,10 @@
     vendor: TrustedVendor,
 ) -&gt; anyhow::Result&lt;PathBuf&gt; {
     <span class="kw">let </span>(_len, url) = peek(vendor, chain).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>(date, height) = ParsedFilename::parse_url(<span class="kw-2">&amp;</span>url)
+    <span class="kw">let </span>(date, height, forest_format) = ParsedFilename::parse_url(<span class="kw-2">&amp;</span>url)
         .context(<span class="string">&quot;unexpected url format&quot;</span>)<span class="question-mark">?
-        </span>.date_and_height();
-    <span class="kw">let </span>filename = filename(vendor, chain, date, height);
+        </span>.date_and_height_and_forest();
+    <span class="kw">let </span>filename = filename(vendor, chain, date, height, forest_format);
 
     <span class="kw">match </span>download_aria2c(<span class="kw-2">&amp;</span>url, directory, <span class="kw-2">&amp;</span>filename).<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(path) =&gt; <span class="prelude-val">Ok</span>(path),
@@ -668,6 +709,7 @@
             chain: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str,
             date: NaiveDate,
             height: i64,
+            forest_format: bool,
         },
     }
 
@@ -683,19 +725,26 @@
                     chain,
                     date,
                     height,
+                    forest_format,
                 } =&gt; f.write_fmt(<span class="macro">format_args!</span>(
-                    <span class="string">&quot;{vendor}_snapshot_{chain}_{}_height_{height}.car.zst&quot;</span>,
-                    date.format(<span class="string">&quot;%Y-%m-%d&quot;</span>)
+                    <span class="string">&quot;{vendor}_snapshot_{chain}_{}_height_{height}{}.car.zst&quot;</span>,
+                    date.format(<span class="string">&quot;%Y-%m-%d&quot;</span>),
+                    <span class="kw">if </span><span class="kw-2">*</span>forest_format { <span class="string">&quot;.forest&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;&quot; </span>}
                 )),
             }
         }
     }
 
     <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ParsedFilename&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">pub fn </span>date_and_height(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (NaiveDate, i64) {
+        <span class="kw">pub fn </span>date_and_height_and_forest(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (NaiveDate, i64, bool) {
             <span class="kw">match </span><span class="self">self </span>{
-                ParsedFilename::Short { date, height, .. } =&gt; (<span class="kw-2">*</span>date, <span class="kw-2">*</span>height),
-                ParsedFilename::Full { date, height, .. } =&gt; (<span class="kw-2">*</span>date, <span class="kw-2">*</span>height),
+                ParsedFilename::Short { date, height, .. } =&gt; (<span class="kw-2">*</span>date, <span class="kw-2">*</span>height, <span class="bool-val">false</span>),
+                ParsedFilename::Full {
+                    date,
+                    height,
+                    forest_format,
+                    ..
+                } =&gt; (<span class="kw-2">*</span>date, <span class="kw-2">*</span>height, <span class="kw-2">*</span>forest_format),
             }
         }
 
@@ -746,7 +795,7 @@
     }
 
     <span class="kw">fn </span>full(input: <span class="kw-2">&amp;</span>str) -&gt; nom::IResult&lt;<span class="kw-2">&amp;</span>str, ParsedFilename&gt; {
-        <span class="kw">let </span>(rest, (vendor, _snapshot_, chain, <span class="kw">_</span>, date, _height_, height, _car_zst)) =
+        <span class="kw">let </span>(rest, (vendor, _snapshot_, chain, <span class="kw">_</span>, date, _height_, height, car_zst)) =
             tuple((
                 take_until(<span class="string">&quot;_snapshot_&quot;</span>),
                 tag(<span class="string">&quot;_snapshot_&quot;</span>),
@@ -755,7 +804,7 @@
                 ymd(<span class="string">&quot;-&quot;</span>),
                 tag(<span class="string">&quot;_height_&quot;</span>),
                 number,
-                tag(<span class="string">&quot;.car.zst&quot;</span>),
+                alt((tag(<span class="string">&quot;.car.zst&quot;</span>), tag(<span class="string">&quot;.forest.car.zst&quot;</span>))),
             ))(input)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>((
             rest,
@@ -764,6 +813,7 @@
                 chain,
                 date,
                 height,
+                forest_format: car_zst == <span class="string">&quot;.forest.car.zst&quot;</span>,
             },
         ))
     }
@@ -825,12 +875,14 @@
                 month: u32,
                 day: u32,
                 height: i64,
+                forest_format: bool,
             ) -&gt; <span class="self">Self </span>{
                 <span class="self">Self</span>::Full {
                     vendor,
                     chain,
                     date: NaiveDate::from_ymd_opt(year, month, day).unwrap(),
                     height,
+                    forest_format,
                 }
             }
         }
@@ -838,11 +890,19 @@
         <span class="kw">for </span>(text, value) <span class="kw">in </span>[
             (
                 <span class="string">&quot;forest_snapshot_mainnet_2023-05-30_height_2905376.car.zst&quot;</span>,
-                ParsedFilename::full(<span class="string">&quot;forest&quot;</span>, <span class="string">&quot;mainnet&quot;</span>, <span class="number">2023</span>, <span class="number">5</span>, <span class="number">30</span>, <span class="number">2905376</span>),
+                ParsedFilename::full(<span class="string">&quot;forest&quot;</span>, <span class="string">&quot;mainnet&quot;</span>, <span class="number">2023</span>, <span class="number">5</span>, <span class="number">30</span>, <span class="number">2905376</span>, <span class="bool-val">false</span>),
             ),
             (
                 <span class="string">&quot;forest_snapshot_calibnet_2023-05-30_height_604419.car.zst&quot;</span>,
-                ParsedFilename::full(<span class="string">&quot;forest&quot;</span>, <span class="string">&quot;calibnet&quot;</span>, <span class="number">2023</span>, <span class="number">5</span>, <span class="number">30</span>, <span class="number">604419</span>),
+                ParsedFilename::full(<span class="string">&quot;forest&quot;</span>, <span class="string">&quot;calibnet&quot;</span>, <span class="number">2023</span>, <span class="number">5</span>, <span class="number">30</span>, <span class="number">604419</span>, <span class="bool-val">false</span>),
+            ),
+            (
+                <span class="string">&quot;forest_snapshot_mainnet_2023-05-30_height_2905376.forest.car.zst&quot;</span>,
+                ParsedFilename::full(<span class="string">&quot;forest&quot;</span>, <span class="string">&quot;mainnet&quot;</span>, <span class="number">2023</span>, <span class="number">5</span>, <span class="number">30</span>, <span class="number">2905376</span>, <span class="bool-val">true</span>),
+            ),
+            (
+                <span class="string">&quot;forest_snapshot_calibnet_2023-05-30_height_604419.forest.car.zst&quot;</span>,
+                ParsedFilename::full(<span class="string">&quot;forest&quot;</span>, <span class="string">&quot;calibnet&quot;</span>, <span class="number">2023</span>, <span class="number">5</span>, <span class="number">30</span>, <span class="number">604419</span>, <span class="bool-val">true</span>),
             ),
             (
                 <span class="string">&quot;2905920_2023_05_30T22_00_00Z.car.zst&quot;</span>,
@@ -854,11 +914,19 @@
             ),
             (
                 <span class="string">&quot;filecoin_snapshot_calibnet_2023-06-13_height_643680.car.zst&quot;</span>,
-                ParsedFilename::full(<span class="string">&quot;filecoin&quot;</span>, <span class="string">&quot;calibnet&quot;</span>, <span class="number">2023</span>, <span class="number">6</span>, <span class="number">13</span>, <span class="number">643680</span>),
+                ParsedFilename::full(<span class="string">&quot;filecoin&quot;</span>, <span class="string">&quot;calibnet&quot;</span>, <span class="number">2023</span>, <span class="number">6</span>, <span class="number">13</span>, <span class="number">643680</span>, <span class="bool-val">false</span>),
             ),
             (
                 <span class="string">&quot;venus_snapshot_pineconenet_2045-01-01_height_2.car.zst&quot;</span>,
-                ParsedFilename::full(<span class="string">&quot;venus&quot;</span>, <span class="string">&quot;pineconenet&quot;</span>, <span class="number">2045</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>),
+                ParsedFilename::full(<span class="string">&quot;venus&quot;</span>, <span class="string">&quot;pineconenet&quot;</span>, <span class="number">2045</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="bool-val">false</span>),
+            ),
+            (
+                <span class="string">&quot;filecoin_snapshot_calibnet_2023-06-13_height_643680.forest.car.zst&quot;</span>,
+                ParsedFilename::full(<span class="string">&quot;filecoin&quot;</span>, <span class="string">&quot;calibnet&quot;</span>, <span class="number">2023</span>, <span class="number">6</span>, <span class="number">13</span>, <span class="number">643680</span>, <span class="bool-val">true</span>),
+            ),
+            (
+                <span class="string">&quot;venus_snapshot_pineconenet_2045-01-01_height_2.forest.car.zst&quot;</span>,
+                ParsedFilename::full(<span class="string">&quot;venus&quot;</span>, <span class="string">&quot;pineconenet&quot;</span>, <span class="number">2045</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="bool-val">true</span>),
             ),
         ] {
             <span class="macro">assert_eq!</span>(

@@ -426,6 +426,9 @@
 <a href="#426" id="426">426</a>
 <a href="#427" id="427">427</a>
 <a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -620,8 +623,8 @@
     <span class="kw">pub async fn </span>write(
         sink: <span class="kw-2">&amp;mut </span>(<span class="kw">impl </span>AsyncWrite + Unpin),
         roots: Vec&lt;Cid&gt;,
-        <span class="kw-2">mut </span>stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = io::Error&gt; + Unpin,
-    ) -&gt; io::Result&lt;()&gt; {
+        <span class="kw-2">mut </span>stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = anyhow::Error&gt; + Unpin,
+    ) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">0</span>;
 
         <span class="comment">// Write CARv1 header
@@ -667,8 +670,8 @@
     </span><span class="kw">pub fn </span>compress_stream(
         zstd_frame_size_tripwire: usize,
         zstd_compression_level: u16,
-        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= Block, Error = io::Error&gt;,
-    ) -&gt; <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = io::Error&gt; {
+        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= Block, Error = anyhow::Error&gt;,
+    ) -&gt; <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = anyhow::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>encoder_store = new_encoder(zstd_compression_level);
         <span class="kw">let </span><span class="kw-2">mut </span>frame_cids = <span class="macro">vec!</span>[];
 
@@ -678,7 +681,10 @@
                 <span class="prelude-val">Err</span>(e) =&gt; {
                     <span class="kw">let </span>dummy_error =
                         io::Error::new(io::ErrorKind::Other, <span class="string">&quot;Error already consumed.&quot;</span>);
-                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(std::mem::replace(e, dummy_error))));
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(anyhow::Error::from(std::mem::replace(
+                        e,
+                        dummy_error,
+                    )))));
                 }
                 <span class="prelude-val">Ok</span>(encoder) =&gt; encoder,
             };
