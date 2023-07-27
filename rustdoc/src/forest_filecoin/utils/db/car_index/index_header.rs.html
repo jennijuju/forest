@@ -66,6 +66,7 @@
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::io::{Read, <span class="prelude-ty">Result</span>};
@@ -85,7 +86,8 @@
 
 <span class="kw">impl </span>IndexHeader {
     <span class="kw">pub const </span>SIZE: usize = <span class="number">32</span>;
-    <span class="kw">pub const </span>MAGIC_NUMBER: u64 = <span class="number">0xdeadbeef</span>;
+    <span class="comment">// 0xdeadbeef + 0 used a different hash algorithm
+    </span><span class="kw">pub const </span>MAGIC_NUMBER: u64 = <span class="number">0xdeadbeef </span>+ <span class="number">1</span>;
 
     <span class="kw">pub fn </span>read(reader: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>Read) -&gt; <span class="prelude-ty">Result</span>&lt;IndexHeader&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>buffer = [<span class="number">0</span>; <span class="self">Self</span>::SIZE];
