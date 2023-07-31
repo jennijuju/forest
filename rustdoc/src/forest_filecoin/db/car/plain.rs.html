@@ -420,16 +420,52 @@
 <a href="#420" id="420">420</a>
 <a href="#421" id="421">421</a>
 <a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="doccomment">//! # Varint frames
 //!
-//! CARs are made of concatenations of _varint frames_. Each varint frame is a
-//! concatenation of the _body length_ as an
-//! [varint](https://docs.rs/integer-encoding/4.0.0/integer_encoding/trait.VarInt.html),
-//! and the _frame body_ itself. [`crate::utils::encoding::uvibytes::UviBytes`] can be
-//! used to read frames piecewise into memory.
+//! CARs are made of concatenations of _varint frames_. Each varint frame is a concatenation of the
+//! _body length_ as an
+//! [varint](https://docs.rs/integer-encoding/4.0.0/integer_encoding/trait.VarInt.html), and the
+//! _frame body_ itself. [`crate::utils::encoding::uvibytes::UviBytes`] can be used to read frames
+//! piecewise into memory.
 //!
 //! ```text
 //!        varint frame
@@ -446,9 +482,11 @@
 //!
 //! # CARv1 layout and seeking
 //!
-//! The first varint frame is a _header frame_, where the frame body is a [`CarHeader`] encoded using [`ipld_dagcbor`](serde_ipld_dagcbor).
+//! The first varint frame is a _header frame_, where the frame body is a [`CarHeader`] encoded
+//! using [`ipld_dagcbor`](serde_ipld_dagcbor).
 //!
-//! Subsequent varint frames are _block frames_, where the frame body is a concatenation of a [`Cid`] and the _block data_ addressed by that CID.
+//! Subsequent varint frames are _block frames_, where the frame body is a concatenation of a
+//! [`Cid`] and the _block data_ addressed by that CID.
 //!
 //! ```text
 //! block frame ►│
@@ -465,18 +503,23 @@
 //! ```
 //!
 //! ## Block ordering
-//! &gt; _... a filecoin-deterministic car-file is currently implementation-defined as containing all DAG-forming blocks in first-seen order, as a result of a depth-first DAG traversal starting from a single root._
+//! &gt; _... a filecoin-deterministic car-file is currently implementation-defined as containing all
+//! &gt; DAG-forming blocks in first-seen order, as a result of a depth-first DAG traversal starting
+//! &gt; from a single root._
 //! - [CAR documentation](https://ipld.io/specs/transport/car/carv1/#determinism)
 //!
 //! # Future work
-//! - [`fadvise`](https://linux.die.net/man/2/posix_fadvise)-based APIs to pre-fetch parts of the file, to improve random access performance.
+//! - [`fadvise`](https://linux.die.net/man/2/posix_fadvise)-based APIs to pre-fetch parts of the
+//!   file, to improve random access performance.
 //! - Use an inner [`Blockstore`] for writes.
 //! - Use safe arithmetic for all operations - a malicious frame shouldn&#39;t cause a crash.
-//! - Theoretically, file-backed blockstores should be clonable (or even [`Sync`]) with very low overhead, so that multiple threads could perform operations concurrently.
+//! - Theoretically, file-backed blockstores should be clonable (or even [`Sync`]) with very low
+//!   overhead, so that multiple threads could perform operations concurrently.
 //! - CARv2 support
 //! - A wrapper that abstracts over car formats for reading.
 
-</span><span class="kw">use </span>ahash::HashMapExt <span class="kw">as _</span>;
+</span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
+<span class="kw">use </span>ahash::HashMapExt <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
@@ -497,9 +540,11 @@
 
 <span class="doccomment">/// **Note that all operations on this store are blocking**.
 ///
-/// It can often be time, memory, or disk prohibitive to read large snapshots into a database like [`ParityDb`](crate::db::parity_db::ParityDb).
+/// It can often be time, memory, or disk prohibitive to read large snapshots into a database like
+/// [`ParityDb`](crate::db::parity_db::ParityDb).
 ///
-/// This is an implementer of [`Blockstore`] that simply wraps an uncompressed [CARv1 file](https://ipld.io/specs/transport/car/carv1).
+/// This is an implementer of [`Blockstore`] that simply wraps an uncompressed [CARv1
+/// file](https://ipld.io/specs/transport/car/carv1).
 ///
 /// On creation, [`PlainCar`] builds an in-memory index of the [`Cid`]s in the file,
 /// and their offsets into that file.
@@ -509,8 +554,9 @@
 ///
 /// Writes for new blocks (which don&#39;t exist in the CAR already) are currently cached in-memory.
 ///
-/// Random-access performance is expected to be poor, as the OS will have to load separate parts of the file from disk, and flush it for each read.
-/// However, (near) linear access should be pretty good, as file chunks will be pre-fetched.
+/// Random-access performance is expected to be poor, as the OS will have to load separate parts of
+/// the file from disk, and flush it for each read. However, (near) linear access should be pretty
+/// good, as file chunks will be pre-fetched.
 ///
 /// See [module documentation](mod@self) for more.
 </span><span class="kw">pub struct </span>PlainCar&lt;ReaderT&gt; {
@@ -518,12 +564,10 @@
     </span>inner: Mutex&lt;PlainCarInner&lt;ReaderT&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;ReaderT&gt; PlainCar&lt;ReaderT&gt;
-<span class="kw">where
-    </span>ReaderT: Read + Seek,
-{
+<span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::CarReader&gt; PlainCar&lt;ReaderT&gt; {
     <span class="doccomment">/// To be correct:
-    /// - `reader` must read immutable data. e.g if it is a file, it should be [`flock`](https://linux.die.net/man/2/flock)ed.
+    /// - `reader` must read immutable data. e.g if it is a file, it should be
+    ///   [`flock`](https://linux.die.net/man/2/flock)ed.
     ///   [`Blockstore`] API calls may panic if this is not upheld.
     </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;debug&quot;</span>, skip_all)]
     </span><span class="kw">pub fn </span>new(<span class="kw-2">mut </span>reader: ReaderT) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
@@ -562,10 +606,38 @@
         <span class="self">self</span>.inner.lock().roots.clone()
     }
 
+    <span class="kw">pub fn </span>heaviest_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Tipset&gt; {
+        Tipset::load_required(<span class="self">self</span>, <span class="kw-2">&amp;</span>TipsetKeys::new(<span class="self">self</span>.roots()))
+    }
+
     <span class="doccomment">/// In an arbitrary order
     </span><span class="attr">#[cfg(test)]
     </span><span class="kw">pub fn </span>cids(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Cid&gt; {
         <span class="self">self</span>.inner.lock().index.keys().cloned().collect()
+    }
+
+    <span class="kw">pub fn </span>into_dyn(<span class="self">self</span>) -&gt; PlainCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::CarReader&gt;&gt; {
+        <span class="kw">let </span>PlainCarInner {
+            reader,
+            write_cache,
+            index,
+            roots,
+        } = <span class="self">self</span>.inner.into_inner();
+        PlainCar {
+            inner: Mutex::new(PlainCarInner {
+                reader: Box::new(reader),
+                write_cache,
+                index,
+                roots,
+            }),
+        }
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt; <span class="kw">for </span>PlainCar&lt;std::io::Cursor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt;&gt; {
+    <span class="kw">type </span>Error = io::Error;
+    <span class="kw">fn </span>try_from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
+        PlainCar::new(std::io::Cursor::new(bytes))
     }
 }
 

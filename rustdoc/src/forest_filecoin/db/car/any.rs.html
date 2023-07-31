@@ -103,11 +103,80 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
-</span><span class="kw">use </span>cid::Cid;
+
+</span><span class="doccomment">//! There are three different CAR formats: `.car`, `.car.zst` and
+//! `.forest.car.zst`. [`AnyCar`] identifies the format by inspecting the CAR
+//! header and the first key-value block, and picks the appropriate block store
+//! (either [`super::ForestCar`] or [`super::PlainCar`]).
+//!
+//! CARv2 is not supported yet.
+
+</span><span class="kw">use super</span>::{CacheKey, ZstdFrameCache};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>std::io::{Cursor, Error, ErrorKind, Read, <span class="prelude-ty">Result</span>, Seek};
+<span class="kw">use </span>std::path::PathBuf;
+<span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">pub enum </span>AnyCar&lt;ReaderT&gt; {
     Plain(<span class="kw">super</span>::PlainCar&lt;ReaderT&gt;),
@@ -115,16 +184,21 @@
     Memory(<span class="kw">super</span>::PlainCar&lt;Cursor&lt;Vec&lt;u8&gt;&gt;&gt;),
 }
 
-<span class="kw">impl</span>&lt;ReaderT: Read + Seek&gt; AnyCar&lt;ReaderT&gt; {
-    <span class="kw">pub fn </span>new(mk_reader: <span class="kw">impl </span>Fn() -&gt; <span class="prelude-ty">Result</span>&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(forest_car) = <span class="kw">super</span>::ForestCar::new(mk_reader.clone()) {
+<span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::CarReader&gt; AnyCar&lt;ReaderT&gt; {
+    <span class="doccomment">/// Open an archive. May be formatted as `.car`, `.car.zst` or
+    /// `.forest.car.zst`. This call may block for an indeterminate amount of
+    /// time while data is decoded and indexed.
+    </span><span class="kw">pub fn </span>new(mk_reader: <span class="kw">impl </span><span class="kw">super</span>::forest::ReaderGen&lt;ReaderT&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>plain_reader = mk_reader();
+        <span class="kw">let </span>zstd_reader = mk_reader();
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(forest_car) = <span class="kw">super</span>::ForestCar::new(mk_reader) {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Forest(forest_car));
         }
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(plain_car) = <span class="kw">super</span>::PlainCar::new(mk_reader()<span class="question-mark">?</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(plain_car) = <span class="kw">super</span>::PlainCar::new(plain_reader<span class="question-mark">?</span>) {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Plain(plain_car));
         }
         <span class="comment">// Maybe use a tempfile for this in the future.
-        </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(decompressed) = zstd::stream::decode_all(mk_reader()<span class="question-mark">?</span>) {
+        </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(decompressed) = zstd::stream::decode_all(zstd_reader<span class="question-mark">?</span>) {
             <span class="kw">let </span>mem_reader = Cursor::new(decompressed);
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(mem_car) = <span class="kw">super</span>::PlainCar::new(mem_reader) {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Memory(mem_car));
@@ -136,20 +210,58 @@
         ))
     }
 
-    <span class="kw">pub fn </span>roots(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Cid&gt; {
+    <span class="doccomment">/// Filecoin archives are tagged with the heaviest tipset. This call may
+    /// fail if the archive is corrupt or if it is not a Filecoin archive.
+    </span><span class="kw">pub fn </span>heaviest_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Tipset&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            AnyCar::Forest(forest) =&gt; forest.roots(),
-            AnyCar::Plain(plain) =&gt; plain.roots(),
-            AnyCar::Memory(mem) =&gt; mem.roots(),
+            AnyCar::Forest(forest) =&gt; forest.heaviest_tipset(),
+            AnyCar::Plain(plain) =&gt; plain.heaviest_tipset(),
+            AnyCar::Memory(mem) =&gt; mem.heaviest_tipset(),
         }
     }
 
-    <span class="kw">pub fn </span>variant(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+    <span class="doccomment">/// Return the identified CAR format variant. There are three variants:
+    /// `CARv1`, `CARv1.zst` and `ForestCARv1.zst`.
+    </span><span class="kw">pub fn </span>variant(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
         <span class="kw">match </span><span class="self">self </span>{
             AnyCar::Forest(<span class="kw">_</span>) =&gt; <span class="string">&quot;ForestCARv1.zst&quot;</span>,
             AnyCar::Plain(<span class="kw">_</span>) =&gt; <span class="string">&quot;CARv1&quot;</span>,
             AnyCar::Memory(<span class="kw">_</span>) =&gt; <span class="string">&quot;CARv1.zst&quot;</span>,
         }
+    }
+
+    <span class="doccomment">/// Discard reader type and replace with dynamic trait object.
+    </span><span class="kw">pub fn </span>into_dyn(<span class="self">self</span>) -&gt; AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::CarReader&gt;&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            AnyCar::Forest(f) =&gt; AnyCar::Forest(f.into_dyn()),
+            AnyCar::Plain(p) =&gt; AnyCar::Plain(p.into_dyn()),
+            AnyCar::Memory(m) =&gt; AnyCar::Memory(m),
+        }
+    }
+
+    <span class="doccomment">/// Set the z-frame cache of the inner CAR reader.
+    </span><span class="kw">pub fn </span>with_cache(<span class="self">self</span>, cache: Arc&lt;Mutex&lt;ZstdFrameCache&gt;&gt;, key: CacheKey) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span><span class="self">self </span>{
+            AnyCar::Forest(f) =&gt; AnyCar::Forest(f.with_cache(cache, key)),
+            AnyCar::Plain(p) =&gt; AnyCar::Plain(p),
+            AnyCar::Memory(m) =&gt; AnyCar::Memory(m),
+        }
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt; <span class="kw">for </span>AnyCar&lt;std::io::Cursor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt;&gt; {
+    <span class="kw">type </span>Error = std::io::Error;
+    <span class="kw">fn </span>try_from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]) -&gt; std::io::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="prelude-val">Ok</span>(AnyCar::Plain(<span class="kw">super</span>::PlainCar::new(std::io::Cursor::new(
+            bytes,
+        ))<span class="question-mark">?</span>))
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;PathBuf&gt; <span class="kw">for </span>AnyCar&lt;std::fs::File&gt; {
+    <span class="kw">type </span>Error = std::io::Error;
+    <span class="kw">fn </span>try_from(path: PathBuf) -&gt; std::io::Result&lt;<span class="self">Self</span>&gt; {
+        AnyCar::new(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>path))
     }
 }
 

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["any","forest","plain"]};
+window.SIDEBAR_ITEMS = {"fn":["size_of_entry"],"mod":["any","forest","many","plain"],"struct":["ZstdFrameCache"],"trait":["CarReader"],"type":["CacheKey"]};

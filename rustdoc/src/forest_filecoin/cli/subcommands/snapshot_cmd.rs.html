@@ -486,22 +486,16 @@
 <a href="#486" id="486">486</a>
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
-<a href="#489" id="489">489</a>
-<a href="#490" id="490">490</a>
-<a href="#491" id="491">491</a>
-<a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
-<a href="#494" id="494">494</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset, TipsetKeys};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset};
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ChainIndex;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::daemon::bundle::load_actor_bundles;
-<span class="kw">use </span><span class="kw">crate</span>::db::car::AnyCar;
+<span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::fil_cns::composition <span class="kw">as </span>cns;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{recurse_links_hash, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
@@ -564,7 +558,8 @@
         </span><span class="attr">#[arg(long, default_value_t = <span class="number">60</span>)]
         </span>check_stateroots: u32,
         <span class="doccomment">/// Path to a snapshot CAR, which may be zstd compressed
-        </span>snapshot: PathBuf,
+        </span><span class="attr">#[arg(required = <span class="bool-val">true</span>)]
+        </span>snapshot_files: Vec&lt;PathBuf&gt;,
     },
     <span class="doccomment">/// Make this snapshot suitable for use as a compressed car-backed blockstore.
     </span>Compress {
@@ -685,11 +680,11 @@
                 check_links,
                 check_network,
                 check_stateroots,
-                snapshot,
+                snapshot_files,
             } =&gt; {
-                <span class="kw">let </span>store = AnyCar::new(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>snapshot))<span class="question-mark">?</span>;
+                <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;
                 validate_with_blockstore(
-                    store.roots(),
+                    store.heaviest_tipset()<span class="question-mark">?</span>,
                     Arc::new(store),
                     check_links,
                     check_network,
@@ -802,7 +797,7 @@
 //     Verifying network identity:    ❌ wrong!
 //   Error: Expected mainnet but found calibnet
 </span><span class="kw">async fn </span>validate_with_blockstore&lt;BlockstoreT&gt;(
-    roots: Vec&lt;Cid&gt;,
+    root: Tipset,
     store: Arc&lt;BlockstoreT&gt;,
     check_links: u32,
     check_network: <span class="prelude-ty">Option</span>&lt;NetworkChain&gt;,
@@ -811,16 +806,12 @@
 <span class="kw">where
     </span>BlockstoreT: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">let </span>tipset_key = TipsetKeys::new(roots);
-    <span class="kw">let </span>store_clone = Arc::clone(<span class="kw-2">&amp;</span>store);
-    <span class="kw">let </span>ts = Tipset::load(<span class="kw-2">&amp;</span>store_clone, <span class="kw-2">&amp;</span>tipset_key)<span class="question-mark">?</span>.context(<span class="string">&quot;missing root tipset&quot;</span>)<span class="question-mark">?</span>;
-
     <span class="kw">if </span>check_links != <span class="number">0 </span>{
-        validate_ipld_links(ts.clone(), <span class="kw-2">&amp;</span>store, check_links).<span class="kw">await</span><span class="question-mark">?</span>;
+        validate_ipld_links(root.clone(), <span class="kw-2">&amp;</span>store, check_links).<span class="kw">await</span><span class="question-mark">?</span>;
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(expected_network) = <span class="kw-2">&amp;</span>check_network {
-        <span class="kw">let </span>actual_network = query_network(ts.clone(), <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        <span class="kw">let </span>actual_network = query_network(<span class="kw-2">&amp;</span>root, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
         <span class="comment">// Somewhat silly use of a spinner but this makes the checks line up nicely.
         </span><span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Verifying network identity:&quot;</span>);
         <span class="kw">if </span>expected_network != <span class="kw-2">&amp;</span>actual_network {
@@ -834,8 +825,8 @@
     <span class="kw">if </span>check_stateroots != <span class="number">0 </span>{
         <span class="kw">let </span>network = check_network
             .map(anyhow::Ok)
-            .unwrap_or_else(|| query_network(ts.clone(), <span class="kw-2">&amp;</span>store))<span class="question-mark">?</span>;
-        validate_stateroots(ts, <span class="kw-2">&amp;</span>store, network, check_stateroots).<span class="kw">await</span><span class="question-mark">?</span>;
+            .unwrap_or_else(|| query_network(<span class="kw-2">&amp;</span>root, <span class="kw-2">&amp;</span>store))<span class="question-mark">?</span>;
+        validate_stateroots(root, <span class="kw-2">&amp;</span>store, network, check_stateroots).<span class="kw">await</span><span class="question-mark">?</span>;
     }
 
     <span class="macro">println!</span>(<span class="string">&quot;Snapshot is valid&quot;</span>);
@@ -884,10 +875,7 @@
 // Forest keeps a list of known tipsets for each network. Finding a known tipset
 // short-circuits the search for the genesis block. If no genesis block can be
 // found or if the genesis block is unrecognizable, an error is returned.
-</span><span class="kw">fn </span>query_network&lt;DB&gt;(ts: Tipset, db: <span class="kw-2">&amp;</span>DB) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt;
-<span class="kw">where
-    </span>DB: Blockstore + Send + Sync + Clone + <span class="lifetime">&#39;static</span>,
-{
+</span><span class="kw">fn </span>query_network(ts: <span class="kw-2">&amp;</span>Tipset, db: <span class="kw">impl </span>Blockstore) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt; {
     <span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Identifying genesis block:&quot;</span>).with_finish(
         indicatif::ProgressFinish::AbandonWithMessage(<span class="string">&quot;✅ found!&quot;</span>.into()),
     );

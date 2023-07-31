@@ -416,13 +416,6 @@
 <a href="#416" id="416">416</a>
 <a href="#417" id="417">417</a>
 <a href="#418" id="418">418</a>
-<a href="#419" id="419">419</a>
-<a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -451,16 +444,16 @@
 //!
 //! Additional reading: [`crate::db::car::plain`]
 
-</span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::chain::index::{ChainIndex, ResolveNullTipset};
-<span class="kw">use </span><span class="kw">crate</span>::chain::ChainEpochDelta;
+</span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+<span class="kw">use </span><span class="kw">crate</span>::chain::{
+    index::{ChainIndex, ResolveNullTipset},
+    ChainEpochDelta,
+};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
-<span class="kw">use </span><span class="kw">crate</span>::db::car::AnyCar;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::stream_graph;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
+<span class="kw">use </span><span class="kw">crate</span>::db::car::{AnyCar, CarReader, ManyCar};
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
-<span class="kw">use </span><span class="kw">crate</span>::shim::clock::EPOCH_DURATION_SECONDS;
-<span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY};
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY, EPOCH_DURATION_SECONDS};
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDateTime;
 <span class="kw">use </span>clap::Subcommand;
@@ -469,7 +462,6 @@
 <span class="kw">use </span>indicatif::ProgressIterator;
 <span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>sha2::Sha256;
-<span class="kw">use </span>std::io::{<span class="self">self</span>, Read, Seek};
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>tracing::info;
@@ -484,8 +476,8 @@
     <span class="doccomment">/// Trim a snapshot of the chain and write it to `&lt;output_path&gt;`
     </span>Export {
         <span class="doccomment">/// Snapshot input path. Currently supports only `.car` file format.
-        </span><span class="attr">#[arg(index = <span class="number">1</span>)]
-        </span>input_path: PathBuf,
+        </span><span class="attr">#[arg(required = <span class="bool-val">true</span>)]
+        </span>snapshot_files: Vec&lt;PathBuf&gt;,
         <span class="doccomment">/// Snapshot output filename or directory. Defaults to
         /// `./forest_snapshot_{chain}_{year}-{month}-{day}_height_{epoch}.car.zst`.
         </span><span class="attr">#[arg(short, long, default_value = <span class="string">&quot;.&quot;</span>, verbatim_doc_comment)]
@@ -504,7 +496,8 @@
     <span class="doccomment">/// Print block headers at 30 day interval for a snapshot file
     </span>Checkpoints {
         <span class="doccomment">/// Path to snapshot file.
-        </span>snapshot: PathBuf,
+        </span><span class="attr">#[arg(required = <span class="bool-val">true</span>)]
+        </span>snapshot_files: Vec&lt;PathBuf&gt;,
     },
 }
 
@@ -512,26 +505,31 @@
     <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Info { snapshot } =&gt; {
-                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, ArchiveInfo::from_file(snapshot)<span class="question-mark">?</span>);
+                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, ArchiveInfo::from_store(AnyCar::try_from(snapshot)<span class="question-mark">?</span>)<span class="question-mark">?</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Export {
-                input_path,
+                snapshot_files,
                 output_path,
                 epoch,
                 depth,
                 diff,
             } =&gt; {
-                <span class="macro">info!</span>(
-                    <span class="string">&quot;indexing a car-backed store using snapshot: {}&quot;</span>,
-                    input_path.to_str().unwrap_or_default()
-                );
+                <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>reader = <span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>input_path);
-
-                do_export(reader, output_path, epoch, depth, diff).<span class="kw">await
+                do_export(
+                    <span class="kw-2">&amp;</span>store,
+                    store.heaviest_tipset()<span class="question-mark">?</span>,
+                    output_path,
+                    epoch,
+                    depth,
+                    diff,
+                )
+                .<span class="kw">await
             </span>}
-            <span class="self">Self</span>::Checkpoints { snapshot } =&gt; print_checkpoints(snapshot),
+            <span class="self">Self</span>::Checkpoints {
+                snapshot_files: snapshot,
+            } =&gt; print_checkpoints(snapshot),
         }
     }
 }
@@ -561,17 +559,15 @@
     }
 }
 
-<span class="kw">async fn </span>do_export&lt;ReaderT: Read + Seek + Send + Sync&gt;(
-    reader: <span class="kw">impl </span>Fn() -&gt; io::Result&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>,
+<span class="kw">async fn </span>do_export(
+    store: <span class="kw">impl </span>Blockstore,
+    root: Tipset,
     output_path: PathBuf,
     epoch_option: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     depth: ChainEpochDelta,
     diff: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
 ) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>store = Arc::new(AnyCar::new(reader).context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>);
-
-    <span class="kw">let </span>index = ChainIndex::new(store.clone());
-    <span class="kw">let </span>ts = index.load_tipset(<span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = Arc::new(root);
 
     <span class="kw">let </span>genesis = ts.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
     <span class="kw">let </span>network = <span class="kw">if </span>genesis.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
@@ -593,6 +589,8 @@
     }
 
     <span class="macro">info!</span>(<span class="string">&quot;looking up a tipset by epoch: {}&quot;</span>, epoch);
+
+    <span class="kw">let </span>index = ChainIndex::new(<span class="kw-2">&amp;</span>store);
 
     <span class="kw">let </span>ts = index
         .tipset_by_height(epoch, ts, ResolveNullTipset::TakeOlder)
@@ -651,30 +649,17 @@
 }
 
 <span class="kw">impl </span>ArchiveInfo {
-    <span class="comment">// Scan a CAR file to identify which network it belongs to and how many
-    // tipsets/messages are available. Progress is rendered to stdout.
-    </span><span class="kw">fn </span>from_file(path: PathBuf) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::from_reader(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>path))
-    }
-
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is rendered to stdout.
-    </span><span class="kw">fn </span>from_reader&lt;ReaderT: Read + Seek&gt;(
-        reader: <span class="kw">impl </span>Fn() -&gt; io::Result&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>,
-    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::from_reader_with(reader, <span class="bool-val">true</span>)
+    </span><span class="kw">fn </span>from_store(store: AnyCar&lt;<span class="kw">impl </span>CarReader&gt;) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="self">Self</span>::from_store_with(store, <span class="bool-val">true</span>)
     }
 
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is optionally rendered to
     // stdout.
-    </span><span class="kw">fn </span>from_reader_with&lt;ReaderT: Read + Seek&gt;(
-        reader: <span class="kw">impl </span>Fn() -&gt; io::Result&lt;ReaderT&gt; + Clone + <span class="lifetime">&#39;static</span>,
-        progress: bool,
-    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>store = AnyCar::new(reader)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>root = Tipset::load_required(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
+    </span><span class="kw">fn </span>from_store_with(store: AnyCar&lt;<span class="kw">impl </span>CarReader&gt;, progress: bool) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>root = store.heaviest_tipset()<span class="question-mark">?</span>;
         <span class="kw">let </span>root_epoch = root.epoch();
 
         <span class="kw">let </span>tipsets = root.clone().chain(<span class="kw-2">&amp;</span>store);
@@ -748,10 +733,9 @@
 
 <span class="comment">// Print a mapping of epochs to block headers in yaml format. This mapping can
 // be used by Forest to quickly identify tipsets.
-</span><span class="kw">fn </span>print_checkpoints(snapshot: PathBuf) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>store = AnyCar::new(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>snapshot))
-        .context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>;
-    <span class="kw">let </span>root = Tipset::load_required(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>TipsetKeys::new(store.roots()))<span class="question-mark">?</span>;
+</span><span class="kw">fn </span>print_checkpoints(snapshot_files: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>store = ManyCar::try_from(snapshot_files).context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>root = store.heaviest_tipset()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>genesis = root.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
     <span class="kw">let </span>chain_name = <span class="kw">if </span>genesis.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
@@ -796,8 +780,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>archive_info_calibnet() {
-        <span class="kw">let </span>info = ArchiveInfo::from_reader_with(
-            || <span class="prelude-val">Ok</span>(std::io::Cursor::new(calibnet::DEFAULT_GENESIS)),
+        <span class="kw">let </span>info = ArchiveInfo::from_store_with(
+            AnyCar::try_from(calibnet::DEFAULT_GENESIS).unwrap(),
             <span class="bool-val">false</span>,
         )
         .unwrap();
@@ -807,8 +791,8 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>archive_info_mainnet() {
-        <span class="kw">let </span>info = ArchiveInfo::from_reader_with(
-            || <span class="prelude-val">Ok</span>(std::io::Cursor::new(mainnet::DEFAULT_GENESIS)),
+        <span class="kw">let </span>info = ArchiveInfo::from_store_with(
+            AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap(),
             <span class="bool-val">false</span>,
         )
         .unwrap();
@@ -816,17 +800,19 @@
         <span class="macro">assert_eq!</span>(info.epoch, <span class="number">0</span>);
     }
 
-    <span class="kw">fn </span>genesis_timestamp(reader: <span class="kw">impl </span>Read + Seek) -&gt; u64 {
-        <span class="kw">let </span>db = <span class="kw">crate</span>::db::car::PlainCar::new(reader).unwrap();
-        <span class="kw">let </span>ts = Tipset::load_required(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>TipsetKeys::new(db.roots())).unwrap();
+    <span class="kw">fn </span>genesis_timestamp(genesis_car: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]) -&gt; u64 {
+        <span class="kw">let </span>db = <span class="kw">crate</span>::db::car::PlainCar::try_from(genesis_car).unwrap();
+        <span class="kw">let </span>ts = db.heaviest_tipset().unwrap();
         ts.genesis(<span class="kw-2">&amp;</span>db).unwrap().timestamp()
     }
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>export() {
         <span class="kw">let </span>output_path = TempDir::new().unwrap();
+        <span class="kw">let </span>store = AnyCar::try_from(calibnet::DEFAULT_GENESIS).unwrap();
         do_export(
-            || <span class="prelude-val">Ok</span>(std::io::Cursor::new(calibnet::DEFAULT_GENESIS)),
+            <span class="kw-2">&amp;</span>store,
+            store.heaviest_tipset().unwrap(),
             output_path.path().into(),
             <span class="prelude-val">Some</span>(<span class="number">0</span>),
             <span class="number">1</span>,
@@ -836,7 +822,7 @@
         </span>.unwrap();
         <span class="kw">let </span>file = tokio::fs::File::open(build_output_path(
             NetworkChain::Calibnet.to_string(),
-            genesis_timestamp(std::io::Cursor::new(calibnet::DEFAULT_GENESIS)),
+            genesis_timestamp(calibnet::DEFAULT_GENESIS),
             <span class="number">0</span>,
             output_path.path().into(),
         ))
