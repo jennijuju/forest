@@ -437,7 +437,7 @@ pub mod net_api {
     pub type NetDisconnectResult = ();
 
     pub const NET_QUERY: &str = "Filecoin.NetQuery";
-    pub type NetQueryParams = (String, String);
+    pub type NetQueryParams = String;
     pub type NetQueryResult = ();
 }
 

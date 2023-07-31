@@ -30,8 +30,6 @@ pub enum NetCommands {
     Query {
         /// Peer ID to query
         peer_id: String,
-        /// Cid to query
-        cid: String,
     },
 }
 
@@ -118,9 +116,9 @@ impl NetCommands {
                 println!("disconnect {id}: success");
                 Ok(())
             }
-            Self::Query { peer_id, cid } => {
+            Self::Query { peer_id} => {
                 net_query(
-                    (peer_id.to_owned(), cid.to_owned()),
+                    peer_id.to_owned(),
                     &config.client.rpc_token,
                 )
                 .await

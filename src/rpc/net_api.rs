@@ -4,7 +4,6 @@
 use std::str::FromStr;
 use std::time::Duration;
 
-use crate::chain::index::ResolveNullTipset;
 use crate::libp2p::chain_exchange::ChainExchangeRequest;
 use crate::libp2p::{NetRPCMethods, NetworkMessage, PeerId};
 use crate::rpc_api::{
@@ -104,7 +103,7 @@ pub(in crate::rpc) async fn net_query<DB: Blockstore + Clone + Send + Sync + 'st
     data: Data<RPCState<DB>>,
     Params(params): Params<NetQueryParams>,
 ) -> Result<NetDisconnectResult, JsonRpcError> {
-    let (id, _cid) = params;
+    let id = params;
     let peer_id = PeerId::from_str(&id)?;
 
     const MAX_CONCURRENT_REQUESTS: usize = 200;
