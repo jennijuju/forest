@@ -312,13 +312,6 @@
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
 <a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -334,7 +327,6 @@
 <span class="kw">use </span>libp2p::Multiaddr;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>strum_macros::Display;
-<span class="kw">use </span>url::Url;
 
 <span class="kw">mod </span>drand;
 
@@ -449,17 +441,11 @@
     }
 }
 
-<span class="attr">#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-</span><span class="kw">pub struct </span>ActorBundleInfo {
-    <span class="kw">pub </span>manifest: Cid,
-    <span class="kw">pub </span>url: Url,
-}
-
 <span class="attr">#[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>HeightInfo {
     <span class="kw">pub </span>height: Height,
     <span class="kw">pub </span>epoch: ChainEpoch,
-    <span class="kw">pub </span>bundle: <span class="prelude-ty">Option</span>&lt;ActorBundleInfo&gt;,
+    <span class="kw">pub </span>bundle: <span class="prelude-ty">Option</span>&lt;Cid&gt;,
 }
 
 <span class="kw">pub fn </span>sort_by_epoch(height_info_slice: <span class="kw-2">&amp;</span>[HeightInfo]) -&gt; Vec&lt;HeightInfo&gt; {

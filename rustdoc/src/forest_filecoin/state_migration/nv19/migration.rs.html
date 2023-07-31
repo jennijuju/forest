@@ -101,7 +101,6 @@
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -183,10 +182,9 @@
         .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;no height info for network version NV19&quot;</span>))<span class="question-mark">?
         </span>.bundle
         .as_ref()
-        .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;no bundle info for network version NV19&quot;</span>))<span class="question-mark">?
-        </span>.manifest;
+        .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;no bundle info for network version NV19&quot;</span>))<span class="question-mark">?</span>;
 
-    blockstore.get(<span class="kw-2">&amp;</span>new_manifest_cid)<span class="question-mark">?</span>.ok_or_else(|| {
+    blockstore.get(new_manifest_cid)<span class="question-mark">?</span>.ok_or_else(|| {
         <span class="macro">anyhow!</span>(
             <span class="string">&quot;manifest for network version NV19 not found in blockstore: {}&quot;</span>,
             new_manifest_cid
@@ -197,7 +195,7 @@
     </span><span class="kw">let </span>verifier = Arc::new(Verifier::default());
 
     <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier));
-    migration.add_nv19_migrations(blockstore.clone(), state, <span class="kw-2">&amp;</span>new_manifest_cid)<span class="question-mark">?</span>;
+    migration.add_nv19_migrations(blockstore.clone(), state, new_manifest_cid)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>actors_in = StateTree::new_from_root(blockstore.clone(), state)<span class="question-mark">?</span>;
     <span class="kw">let </span>actors_out = StateTree::new(blockstore.clone(), StateTreeVersion::V5)<span class="question-mark">?</span>;

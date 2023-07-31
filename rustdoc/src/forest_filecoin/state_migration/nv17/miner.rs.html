@@ -1510,7 +1510,7 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>chain_config = ChainConfig::calibnet();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(bundle) = <span class="kw-2">&amp;mut </span>chain_config.height_infos[Height::Shark <span class="kw">as </span>usize].bundle {
-            bundle.manifest = new_manifest_cid;
+            <span class="kw-2">*</span>bundle = new_manifest_cid;
         }
         <span class="kw">let </span>new_state_cid = <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>tree_root, <span class="number">200</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>actors_out_state_root: StateRoot = store.get_cbor(<span class="kw-2">&amp;</span>new_state_cid)<span class="question-mark">?</span>.unwrap();
@@ -1543,7 +1543,7 @@
         <span class="kw">let </span>(new_manifest_cid, _new_manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/9/&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>chain_config = ChainConfig::calibnet();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(bundle) = <span class="kw-2">&amp;mut </span>chain_config.height_infos[Height::Shark <span class="kw">as </span>usize].bundle {
-            bundle.manifest = new_manifest_cid;
+            <span class="kw-2">*</span>bundle = new_manifest_cid;
         }
         <span class="kw">let </span>new_state_cid =
             <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>state_tree_old_root, <span class="number">200</span>)<span class="question-mark">?</span>;

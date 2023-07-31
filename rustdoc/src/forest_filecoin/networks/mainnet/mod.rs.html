@@ -172,25 +172,19 @@
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
-<a href="#175" id="175">175</a>
-<a href="#176" id="176">176</a>
-<a href="#177" id="177">177</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>libp2p::Multiaddr;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::str::FromStr;
-<span class="kw">use </span>url::Url;
 
 <span class="kw">use super</span>::{
     drand::{DRAND_INCENTINET, DRAND_MAINNET},
     parse_bootstrap_peers, DrandPoint, Height, HeightInfo,
 };
-<span class="kw">use </span><span class="kw">crate</span>::networks::ActorBundleInfo;
 
 <span class="kw">const </span>SMOKE_HEIGHT: ChainEpoch = <span class="number">51000</span>;
 
@@ -212,125 +206,125 @@
 <span class="comment">// https://github.com/ethereum-lists/chains/blob/4731f6713c6fc2bf2ae727388642954a6545b3a9/_data/chains/eip155-314.json
 </span><span class="kw">pub const </span>ETH_CHAIN_ID: u64 = <span class="number">314</span>;
 
-<span class="macro">lazy_static! </span>{
 <span class="doccomment">/// Height epochs.
-</span><span class="kw">pub static </span><span class="kw-2">ref </span>HEIGHT_INFOS: [HeightInfo; <span class="number">21</span>] = [
-    HeightInfo {
-        height: Height::Breeze,
-        epoch: <span class="number">41_280</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Smoke,
-        epoch: SMOKE_HEIGHT,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Ignition,
-        epoch: <span class="number">94_000</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::ActorsV2,
-        epoch: <span class="number">138_720</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Tape,
-        epoch: <span class="number">140_760</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Liftoff,
-        epoch: <span class="number">148_888</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Kumquat,
-        epoch: <span class="number">170_000</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Calico,
-        epoch: <span class="number">265_200</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Persian,
-        epoch: <span class="number">272_400</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Orange,
-        epoch: <span class="number">336_458</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Trust,
-        epoch: <span class="number">550_321</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Norwegian,
-        epoch: <span class="number">665_280</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Turbo,
-        epoch: <span class="number">712_320</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Hyperdrive,
-        epoch: <span class="number">892_800</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Chocolate,
-        epoch: <span class="number">1_231_620</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::OhSnap,
-        epoch: <span class="number">1_594_680</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Skyr,
-        epoch: <span class="number">1_960_320</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Shark,
-        epoch: <span class="number">2_383_680</span>,
-        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaceb6j6666h36xnhksu3ww4kxb6e25niayfgkdnifaqi6m6ooc66i6i&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-mainnet.car&quot;</span>).unwrap()
-        })
-    },
-    HeightInfo {
-        height: Height::Hygge,
-        epoch: <span class="number">2_683_348</span>,
-        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacecsuyf7mmvrhkx2evng5gnz5canlnz2fdlzu2lvcgptiq2pzuovos&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0/builtin-actors-mainnet.car&quot;</span>).unwrap()
-    }),
-    },
-    HeightInfo {
-        height: Height::Lightning,
-        epoch: <span class="number">2_809_800</span>,
-        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacecnhaiwcrpyjvzl4uv4q3jzoif26okl3m66q3cijp3dfwlcxwztwo&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0/builtin-actors-mainnet.car&quot;</span>).unwrap()
-    }),
-    },
-    HeightInfo {
-        height: Height::Thunder,
-        epoch: <span class="number">2_809_800 </span>+ LIGHTNING_ROLLOVER_PERIOD,
-        bundle: <span class="prelude-val">None</span>,
-    },
-];
-}
+</span><span class="kw">pub static </span>HEIGHT_INFOS: Lazy&lt;[HeightInfo; <span class="number">21</span>]&gt; = Lazy::new(|| {
+    [
+        HeightInfo {
+            height: Height::Breeze,
+            epoch: <span class="number">41_280</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Smoke,
+            epoch: SMOKE_HEIGHT,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Ignition,
+            epoch: <span class="number">94_000</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::ActorsV2,
+            epoch: <span class="number">138_720</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Tape,
+            epoch: <span class="number">140_760</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Liftoff,
+            epoch: <span class="number">148_888</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Kumquat,
+            epoch: <span class="number">170_000</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Calico,
+            epoch: <span class="number">265_200</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Persian,
+            epoch: <span class="number">272_400</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Orange,
+            epoch: <span class="number">336_458</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Trust,
+            epoch: <span class="number">550_321</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Norwegian,
+            epoch: <span class="number">665_280</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Turbo,
+            epoch: <span class="number">712_320</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Hyperdrive,
+            epoch: <span class="number">892_800</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Chocolate,
+            epoch: <span class="number">1_231_620</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::OhSnap,
+            epoch: <span class="number">1_594_680</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Skyr,
+            epoch: <span class="number">1_960_320</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Shark,
+            epoch: <span class="number">2_383_680</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzaceb6j6666h36xnhksu3ww4kxb6e25niayfgkdnifaqi6m6ooc66i6i&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::Hygge,
+            epoch: <span class="number">2_683_348</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzacecsuyf7mmvrhkx2evng5gnz5canlnz2fdlzu2lvcgptiq2pzuovos&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::Lightning,
+            epoch: <span class="number">2_809_800</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzacecnhaiwcrpyjvzl4uv4q3jzoif26okl3m66q3cijp3dfwlcxwztwo&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::Thunder,
+            epoch: <span class="number">2_809_800 </span>+ LIGHTNING_ROLLOVER_PERIOD,
+            bundle: <span class="prelude-val">None</span>,
+        },
+    ]
+});
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>DRAND_SCHEDULE: [DrandPoint&lt;<span class="lifetime">&#39;static</span>&gt;; <span class="number">2</span>] = [
     DrandPoint {

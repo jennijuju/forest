@@ -163,21 +163,15 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
-<a href="#166" id="166">166</a>
-<a href="#167" id="167">167</a>
-<a href="#168" id="168">168</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>libp2p::Multiaddr;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>std::str::FromStr;
-<span class="kw">use </span>url::Url;
 
 <span class="kw">use super</span>::{drand::DRAND_MAINNET, parse_bootstrap_peers, DrandPoint, Height, HeightInfo};
-<span class="kw">use </span><span class="kw">crate</span>::networks::ActorBundleInfo;
 
 <span class="doccomment">/// Default genesis car file bytes.
 </span><span class="kw">pub const </span>DEFAULT_GENESIS: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">&quot;genesis.car&quot;</span>);
@@ -200,125 +194,125 @@
 <span class="comment">// https://github.com/ethereum-lists/chains/blob/4731f6713c6fc2bf2ae727388642954a6545b3a9/_data/chains/eip155-314159.json
 </span><span class="kw">pub const </span>ETH_CHAIN_ID: u64 = <span class="number">314159</span>;
 
-<span class="macro">lazy_static! </span>{
 <span class="doccomment">/// Height epochs.
-</span><span class="kw">pub static </span><span class="kw-2">ref </span>HEIGHT_INFOS: [HeightInfo; <span class="number">21</span>] = [
-    HeightInfo {
-        height: Height::Breeze,
-        epoch: -<span class="number">1</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Smoke,
-        epoch: -<span class="number">2</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Ignition,
-        epoch: -<span class="number">3</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::ActorsV2,
-        epoch: <span class="number">30</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Tape,
-        epoch: <span class="number">60</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Liftoff,
-        epoch: -<span class="number">5</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Kumquat,
-        epoch: <span class="number">90</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Calico,
-        epoch: <span class="number">120</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Persian,
-        epoch: <span class="number">130</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Orange,
-        epoch: <span class="number">300</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Trust,
-        epoch: <span class="number">330</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Norwegian,
-        epoch: <span class="number">360</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Turbo,
-        epoch: <span class="number">390</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Hyperdrive,
-        epoch: <span class="number">420</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Chocolate,
-        epoch: <span class="number">450</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::OhSnap,
-        epoch: <span class="number">480</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Skyr,
-        epoch: <span class="number">510</span>,
-        bundle: <span class="prelude-val">None</span>,
-    },
-    HeightInfo {
-        height: Height::Shark,
-        epoch: <span class="number">16_800</span>,
-        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedbedgynklc4dgpyxippkxmba2mgtw7ecntoneclsvvl4klqwuyyy&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-calibrationnet.car&quot;</span>).unwrap()
-        })
-    },
-    HeightInfo {
-        height: Height::Hygge,
-        epoch: <span class="number">322_354</span>,
-        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0-rc.1/builtin-actors-calibrationnet.car&quot;</span>).unwrap()
-        })
-    },
-    HeightInfo {
-        height: Height::Lightning,
-        epoch: LIGHTNING_EPOCH,
-        bundle: <span class="prelude-val">Some</span>(ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedhuowetjy2h4cxnijz2l64h4mzpk5m256oywp4evarpono3cjhco&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0-rc2/builtin-actors-calibrationnet.car&quot;</span>).unwrap()
-        }),
-    },
-    HeightInfo {
-        height: Height::Thunder,
-        epoch: LIGHTNING_EPOCH + LIGHTNING_ROLLOVER_PERIOD,
-        bundle: <span class="prelude-val">None</span>,
-    },
-];
-}
+</span><span class="kw">pub static </span>HEIGHT_INFOS: Lazy&lt;[HeightInfo; <span class="number">21</span>]&gt; = Lazy::new(|| {
+    [
+        HeightInfo {
+            height: Height::Breeze,
+            epoch: -<span class="number">1</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Smoke,
+            epoch: -<span class="number">2</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Ignition,
+            epoch: -<span class="number">3</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::ActorsV2,
+            epoch: <span class="number">30</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Tape,
+            epoch: <span class="number">60</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Liftoff,
+            epoch: -<span class="number">5</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Kumquat,
+            epoch: <span class="number">90</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Calico,
+            epoch: <span class="number">120</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Persian,
+            epoch: <span class="number">130</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Orange,
+            epoch: <span class="number">300</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Trust,
+            epoch: <span class="number">330</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Norwegian,
+            epoch: <span class="number">360</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Turbo,
+            epoch: <span class="number">390</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Hyperdrive,
+            epoch: <span class="number">420</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Chocolate,
+            epoch: <span class="number">450</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::OhSnap,
+            epoch: <span class="number">480</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Skyr,
+            epoch: <span class="number">510</span>,
+            bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Shark,
+            epoch: <span class="number">16_800</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzacedbedgynklc4dgpyxippkxmba2mgtw7ecntoneclsvvl4klqwuyyy&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::Hygge,
+            epoch: <span class="number">322_354</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::Lightning,
+            epoch: LIGHTNING_EPOCH,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzacedhuowetjy2h4cxnijz2l64h4mzpk5m256oywp4evarpono3cjhco&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::Thunder,
+            epoch: LIGHTNING_EPOCH + LIGHTNING_ROLLOVER_PERIOD,
+            bundle: <span class="prelude-val">None</span>,
+        },
+    ]
+});
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>DRAND_SCHEDULE: [DrandPoint&lt;<span class="lifetime">&#39;static</span>&gt;; <span class="number">1</span>] = [DrandPoint {
     height: <span class="number">0</span>,

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["get_actors_bundle","load_bundles"]};
+window.SIDEBAR_ITEMS = {"fn":["load_actor_bundles"]};

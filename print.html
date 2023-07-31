@@ -1307,8 +1307,8 @@ Lotus team if we find potential issues in their implementation.</li>
 <h4 id="import-the-actor-bundle"><a class="header" href="#import-the-actor-bundle">Import the actor bundle</a></h4>
 <p>The first step is to import the actor bundle into Forest. This is done by:</p>
 <ul>
-<li>adding the bundle to the <code>HeightInfos</code> struct in the network definitions files
-(e.g.,
+<li>adding the bundle cid to the <code>HeightInfos</code> struct in the network definitions
+files (e.g.,
 <a href="https://github.com/ChainSafe/forest/blob/main/src/networks/calibnet/mod.rs">calibnet</a>).</li>
 </ul>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -1316,10 +1316,18 @@ Lotus team if we find potential issues in their implementation.</li>
 </span>HeightInfo {
     height: Height::Hygge,
     epoch: 322_354,
-    bundle: Some(ActorBundleInfo {
-        manifest: Cid::try_from(&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot;).unwrap(),
-        url: Url::parse(&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0-rc.1/builtin-actors-calibrationnet.car&quot;).unwrap()
-})
+    bundle: Some(Cid::try_from(&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot;).unwrap()),
+}
+<span class="boring">}</span></code></pre></pre>
+<ul>
+<li>adding the bundle cid and url to the <code>ACTOR_BUNDLES</code> in the <code>src/mod.rs</code>.</li>
+</ul>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>ActorBundleInfo{
+    manifest: Cid::try_from(&quot;bafy2bzacedbedgynklc4dgpyxippkxmba2mgtw7ecntoneclsvvl4klqwuyyy&quot;).unwrap(),
+    url: Url::parse(&quot;https://forest-continuous-integration.fra1.cdn.digitaloceanspaces.com/builtin-actors/calibnet/Shark.car&quot;).unwrap(),
+},
 <span class="boring">}</span></code></pre></pre>
 <h3 id="implement-the-migration"><a class="header" href="#implement-the-migration">Implement the migration</a></h3>
 <p>The next step is to implement the migration itself. In this guide, we will take

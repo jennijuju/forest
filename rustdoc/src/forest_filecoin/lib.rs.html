@@ -88,6 +88,11 @@
 <a href="#88" id="88">88</a>
 <a href="#89" id="89">89</a>
 <a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -126,6 +131,7 @@
 <span class="kw">mod </span>message;
 <span class="kw">mod </span>message_pool;
 <span class="kw">mod </span>metrics;
+<span class="kw">mod </span>r#mod;
 <span class="kw">mod </span>networks;
 <span class="kw">mod </span>rpc;
 <span class="kw">mod </span>rpc_api;
@@ -137,6 +143,10 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test_utils;
 <span class="kw">mod </span>utils;
+
+<span class="kw">pub mod </span>build {
+    <span class="kw">pub use super</span>::r#mod::<span class="kw-2">*</span>;
+}
 
 <span class="doccomment">/// These items are semver-exempt, and exist for forest author use only
 </span><span class="comment">// We want to have doctests, but don&#39;t want our internals to be public because:

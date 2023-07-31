@@ -178,7 +178,6 @@
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
 <a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -327,17 +326,16 @@
         .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;no height info for network version NV17&quot;</span>))<span class="question-mark">?
         </span>.bundle
         .as_ref()
-        .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;no bundle info for network version NV17&quot;</span>))<span class="question-mark">?
-        </span>.manifest;
+        .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;no bundle info for network version NV17&quot;</span>))<span class="question-mark">?</span>;
 
-    blockstore.get(<span class="kw-2">&amp;</span>new_manifest_cid)<span class="question-mark">?</span>.ok_or_else(|| {
+    blockstore.get(new_manifest_cid)<span class="question-mark">?</span>.ok_or_else(|| {
         <span class="macro">anyhow!</span>(
             <span class="string">&quot;manifest for network version NV17 not found in blockstore: {}&quot;</span>,
             new_manifest_cid
         )
     })<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>blockstore, <span class="kw-2">&amp;</span>new_manifest_cid)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>blockstore, new_manifest_cid)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>actors_in = StateTree::new_from_root(blockstore.clone(), state)<span class="question-mark">?</span>;
 
