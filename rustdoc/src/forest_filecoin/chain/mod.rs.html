@@ -43,13 +43,15 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">pub mod </span>store;
 <span class="kw">mod </span>weight;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::forest;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::stream_chain;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::{AsyncWriterWithChecksum, Checksum};
 <span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>digest::Digest;
@@ -63,6 +65,7 @@
     tipset: <span class="kw-2">&amp;</span>Tipset,
     lookup_depth: ChainEpochDelta,
     writer: <span class="kw">impl </span>AsyncWrite + Unpin,
+    seen: CidHashSet,
     skip_checksum: bool,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;digest::Output&lt;D&gt;&gt;, Error&gt; {
     <span class="kw">let </span>stateroot_lookup_limit = tipset.epoch() - lookup_depth;
@@ -73,7 +76,8 @@
 
     <span class="comment">// Stream stateroots in range stateroot_lookup_limit..=tipset.epoch(). Also
     // stream all block headers until genesis.
-    </span><span class="kw">let </span>blocks = stream_chain(<span class="kw-2">&amp;</span>db, tipset.clone().chain(<span class="kw-2">&amp;</span>db), stateroot_lookup_limit);
+    </span><span class="kw">let </span>blocks =
+        stream_chain(<span class="kw-2">&amp;</span>db, tipset.clone().chain(<span class="kw-2">&amp;</span>db), stateroot_lookup_limit).with_seen(seen);
 
     <span class="comment">// Encode Ipld key-value pairs in zstd frames
     </span><span class="kw">let </span>frames = forest::Encoder::compress_stream(<span class="number">8000usize</span>.next_power_of_two(), <span class="number">3</span>, blocks);

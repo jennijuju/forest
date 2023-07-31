@@ -402,6 +402,27 @@
 <a href="#402" id="402">402</a>
 <a href="#403" id="403">403</a>
 <a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -435,12 +456,15 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainEpochDelta;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::AnyCar;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::stream_graph;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::EPOCH_DURATION_SECONDS;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY};
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDateTime;
 <span class="kw">use </span>clap::Subcommand;
+<span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>indicatif::ProgressIterator;
 <span class="kw">use </span>itertools::Itertools;
@@ -473,6 +497,9 @@
         <span class="doccomment">/// How many state-roots to include. Lower limit is 900 for `calibnet` and `mainnet`.
         </span><span class="attr">#[arg(short, long, default_value_t = <span class="number">2000</span>)]
         </span>depth: ChainEpochDelta,
+        <span class="doccomment">/// Do not include any values reachable from epoch-diff.
+        </span><span class="attr">#[arg(short, long)]
+        </span>diff: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
     },
     <span class="doccomment">/// Print block headers at 30 day interval for a snapshot file
     </span>Checkpoints {
@@ -493,6 +520,7 @@
                 output_path,
                 epoch,
                 depth,
+                diff,
             } =&gt; {
                 <span class="macro">info!</span>(
                     <span class="string">&quot;indexing a car-backed store using snapshot: {}&quot;</span>,
@@ -501,7 +529,7 @@
 
                 <span class="kw">let </span>reader = <span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>input_path);
 
-                do_export(reader, output_path, epoch, depth).<span class="kw">await
+                do_export(reader, output_path, epoch, depth, diff).<span class="kw">await
             </span>}
             <span class="self">Self</span>::Checkpoints { snapshot } =&gt; print_checkpoints(snapshot),
         }
@@ -538,6 +566,7 @@
     output_path: PathBuf,
     epoch_option: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     depth: ChainEpochDelta,
+    diff: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
 ) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>store = Arc::new(AnyCar::new(reader).context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>);
 
@@ -569,6 +598,18 @@
         .tipset_by_height(epoch, ts, ResolveNullTipset::TakeOlder)
         .context(<span class="string">&quot;unable to get a tipset at given height&quot;</span>)<span class="question-mark">?</span>;
 
+    <span class="kw">let </span>seen = <span class="kw">if let </span><span class="prelude-val">Some</span>(diff) = diff {
+        <span class="kw">let </span>diff_ts: Arc&lt;Tipset&gt; = index
+            .tipset_by_height(diff, ts.clone(), ResolveNullTipset::TakeOlder)
+            .context(<span class="string">&quot;diff epoch must be smaller than target epoch&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>diff_ts: <span class="kw-2">&amp;</span>Tipset = <span class="kw-2">&amp;</span>diff_ts;
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = stream_graph(<span class="kw-2">&amp;</span>store, diff_ts.clone().chain(<span class="kw-2">&amp;</span>store));
+        <span class="kw">while </span>stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.is_some() {}
+        stream.into_seen()
+    } <span class="kw">else </span>{
+        CidHashSet::default()
+    };
+
     <span class="kw">let </span>output_path =
         build_output_path(network.to_string(), genesis.timestamp(), epoch, output_path);
 
@@ -584,7 +625,7 @@
         output_path.to_str().unwrap_or_default()
     );
 
-    <span class="kw">crate</span>::chain::export::&lt;Sha256&gt;(store, <span class="kw-2">&amp;</span>ts, depth, writer, <span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">crate</span>::chain::export::&lt;Sha256&gt;(store, <span class="kw-2">&amp;</span>ts, depth, writer, seen, <span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }
@@ -789,6 +830,7 @@
             output_path.path().into(),
             <span class="prelude-val">Some</span>(<span class="number">0</span>),
             <span class="number">1</span>,
+            <span class="prelude-val">None</span>,
         )
         .<span class="kw">await
         </span>.unwrap();

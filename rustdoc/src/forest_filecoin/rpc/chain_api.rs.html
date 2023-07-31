@@ -266,6 +266,9 @@
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -277,6 +280,7 @@
     BlockHeader, Tipset,
 };
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::json::{cid::CidJson, message::json::MessageJson};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     chain_api::<span class="kw-2">*</span>,
@@ -353,6 +357,7 @@
             <span class="kw-2">&amp;</span>start_ts,
             recent_roots,
             VoidAsyncWriter,
+            CidHashSet::default(),
             skip_checksum,
         )
         .<span class="kw">await
@@ -363,6 +368,7 @@
             <span class="kw-2">&amp;</span>start_ts,
             recent_roots,
             file,
+            CidHashSet::default(),
             skip_checksum,
         )
         .<span class="kw">await
