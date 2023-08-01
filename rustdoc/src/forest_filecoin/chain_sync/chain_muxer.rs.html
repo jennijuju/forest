@@ -985,6 +985,8 @@
 <a href="#985" id="985">985</a>
 <a href="#986" id="986">986</a>
 <a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1060,11 +1062,13 @@
 
 <span class="doccomment">/// Structure that defines syncing configuration options
 </span><span class="attr">#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>SyncConfig {
     <span class="doccomment">/// Request window length for tipsets during chain exchange
     </span><span class="kw">pub </span>req_window: i64,
     <span class="doccomment">/// Sample size of tipsets to acquire before determining what the network
     /// head is
+    </span><span class="attr">#[cfg_attr(test, arbitrary(gen(|g| u32::arbitrary(g) <span class="kw">as _</span>)))]
     </span><span class="kw">pub </span>tipset_sample_size: usize,
 }
 

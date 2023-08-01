@@ -22,15 +22,6 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
-<a href="#26" id="26">26</a>
-<a href="#27" id="27">27</a>
-<a href="#28" id="28">28</a>
-<a href="#29" id="29">29</a>
-<a href="#30" id="30">30</a>
-<a href="#31" id="31">31</a>
-<a href="#32" id="32">32</a>
-<a href="#33" id="33">33</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span><span class="kw">super</span>::Hash;
@@ -38,6 +29,7 @@
 <span class="kw">pub type </span>FrameOffset = u64;
 
 <span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>KeyValuePair {
     <span class="kw">pub </span>hash: Hash,
     <span class="kw">pub </span>value: FrameOffset,
@@ -52,16 +44,6 @@
     <span class="comment">// Walking distance between `at` and the optimal location of `hash`
     </span><span class="kw">pub fn </span>distance(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u64, len: u64) -&gt; u64 {
         <span class="self">self</span>.hash.distance(at, len)
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>KeyValuePair {
-    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        KeyValuePair {
-            hash: Hash::from(u64::arbitrary(g)),
-            value: FrameOffset::arbitrary(g),
-        }
     }
 }
 </code></pre></div></section></main></body></html>

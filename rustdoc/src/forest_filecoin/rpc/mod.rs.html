@@ -145,6 +145,7 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -268,6 +269,7 @@
             <span class="comment">// Net API
             </span>.with_method(NET_ADDRS_LISTEN, net_api::net_addrs_listen::&lt;DB&gt;)
             .with_method(NET_PEERS, net_api::net_peers::&lt;DB&gt;)
+            .with_method(NET_INFO, net_api::net_info::&lt;DB&gt;)
             .with_method(NET_CONNECT, net_api::net_connect::&lt;DB&gt;)
             .with_method(NET_DISCONNECT, net_api::net_disconnect::&lt;DB&gt;)
             <span class="comment">// DB API

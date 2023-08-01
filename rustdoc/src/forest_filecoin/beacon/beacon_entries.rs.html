@@ -124,15 +124,6 @@
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a>
-<a href="#134" id="134">134</a>
-<a href="#135" id="135">135</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -143,7 +134,8 @@
 /// The entry contains the round, or epoch as well as the BLS signature for that
 /// round of randomness.
 /// This beacon entry is stored on chain in the block header.
-</span><span class="attr">#[derive(Clone, Debug, Default, Eq, PartialEq, Deserialize_tuple, Serialize_tuple)]
+</span><span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
+#[derive(Clone, Debug, Default, Eq, PartialEq, Deserialize_tuple, Serialize_tuple)]
 </span><span class="kw">pub struct </span>BeaconEntry {
     round: u64,
     <span class="attr">#[serde(with = <span class="string">&quot;serde_byte_array&quot;</span>)]
@@ -161,16 +153,6 @@
     <span class="doccomment">/// The signature of message `H(prev_round, prev_round.data, round)`.
     </span><span class="kw">pub fn </span>data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.data
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>BeaconEntry {
-    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        BeaconEntry {
-            round: u64::arbitrary(g),
-            data: Vec::arbitrary(g),
-        }
     }
 }
 

@@ -833,6 +833,12 @@
 <a href="#833" id="833">833</a>
 <a href="#834" id="834">834</a>
 <a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -841,12 +847,12 @@
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::GossipBlock;
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{
     request_manager::BitswapRequestManager, BitswapStoreRead, BitswapStoreReadWrite,
 };
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
+<span class="kw">use crate</span>::{blocks::GossipBlock, rpc_api::net_api::NetInfoResult};
 <span class="kw">use </span>ahash::{HashMap, HashSet};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
@@ -1005,6 +1011,7 @@
 </span><span class="kw">pub enum </span>NetRPCMethods {
     AddrsListen(OneShotSender&lt;(PeerId, HashSet&lt;Multiaddr&gt;)&gt;),
     Peers(OneShotSender&lt;HashMap&lt;PeerId, HashSet&lt;Multiaddr&gt;&gt;&gt;),
+    Info(OneShotSender&lt;NetInfoResult&gt;),
     Connect(OneShotSender&lt;bool&gt;, PeerId, HashSet&lt;Multiaddr&gt;),
     Disconnect(OneShotSender&lt;()&gt;, PeerId),
 }
@@ -1269,6 +1276,11 @@
             NetRPCMethods::Peers(response_channel) =&gt; {
                 <span class="kw">let </span>peer_addresses = swarm.behaviour_mut().peer_addresses();
                 <span class="kw">if </span>response_channel.send(peer_addresses.clone()).is_err() {
+                    <span class="macro">warn!</span>(<span class="string">&quot;Failed to get Libp2p peers&quot;</span>);
+                }
+            }
+            NetRPCMethods::Info(response_channel) =&gt; {
+                <span class="kw">if </span>response_channel.send(swarm.network_info().into()).is_err() {
                     <span class="macro">warn!</span>(<span class="string">&quot;Failed to get Libp2p peers&quot;</span>);
                 }
             }

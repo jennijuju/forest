@@ -94,6 +94,18 @@
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -147,6 +159,18 @@
         .collect();
 
     <span class="prelude-val">Ok</span>(connections)
+}
+
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_info&lt;DB: Blockstore&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;NetInfoResult, JsonRpcError&gt; {
+    <span class="kw">let </span>(tx, rx) = oneshot::channel();
+    <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
+        method: NetRPCMethods::Info(tx),
+    };
+
+    data.network_send.send_async(req).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(rx.<span class="kw">await</span><span class="question-mark">?</span>)
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_connect&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(

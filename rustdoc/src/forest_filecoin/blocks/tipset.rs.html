@@ -729,13 +729,6 @@
 <a href="#729" id="729">729</a>
 <a href="#730" id="730">730</a>
 <a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
-<a href="#735" id="735">735</a>
-<a href="#736" id="736">736</a>
-<a href="#737" id="737">737</a>
-<a href="#738" id="738">738</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -761,6 +754,7 @@
 /// are *not* maintained in the same order as the canonical iteration order of
 /// blocks in a tipset (which is by ticket)
 </span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>TipsetKeys {
     <span class="kw">pub </span>cids: Vec&lt;Cid&gt;,
@@ -1281,14 +1275,6 @@
         tipset_keys_json::TipsetKeysJson,
         Tipset, TipsetKeys,
     };
-
-    <span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TipsetKeys {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-            <span class="self">Self </span>{
-                cids: Vec::arbitrary(g),
-            }
-        }
-    }
 
     <span class="attr">#[quickcheck]
     </span><span class="kw">fn </span>tipset_keys_roundtrip(tipset_keys: TipsetKeys) {

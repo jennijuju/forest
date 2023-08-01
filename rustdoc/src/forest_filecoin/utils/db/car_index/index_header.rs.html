@@ -56,22 +56,12 @@
 <a href="#56" id="56">56</a>
 <a href="#57" id="57">57</a>
 <a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
-<a href="#60" id="60">60</a>
-<a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::io::{Read, <span class="prelude-ty">Result</span>};
 
 <span class="attr">#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>IndexHeader {
     <span class="comment">// Version number
     </span><span class="kw">pub </span>magic_number: u64,
@@ -117,19 +107,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>quickcheck::{Arbitrary, Gen};
     <span class="kw">use </span>quickcheck_macros::quickcheck;
-
-    <span class="kw">impl </span>Arbitrary <span class="kw">for </span>IndexHeader {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; IndexHeader {
-            IndexHeader {
-                magic_number: u64::arbitrary(g),
-                longest_distance: u64::arbitrary(g),
-                collisions: u64::arbitrary(g),
-                buckets: u64::arbitrary(g),
-            }
-        }
-    }
 
     <span class="attr">#[quickcheck]
     </span><span class="kw">fn </span>index_header_roundtrip(header: IndexHeader) {

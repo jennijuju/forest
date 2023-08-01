@@ -298,30 +298,6 @@
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
-<a href="#311" id="311">311</a>
-<a href="#312" id="312">312</a>
-<a href="#313" id="313">313</a>
-<a href="#314" id="314">314</a>
-<a href="#315" id="315">315</a>
-<a href="#316" id="316">316</a>
-<a href="#317" id="317">317</a>
-<a href="#318" id="318">318</a>
-<a href="#319" id="319">319</a>
-<a href="#320" id="320">320</a>
-<a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -339,6 +315,7 @@
 
 <span class="doccomment">/// Current state of the `ChainSyncer` using the `ChainExchange` protocol.
 </span><span class="attr">#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub enum </span>SyncStage {
     <span class="doccomment">/// Idle state.
     </span>Idle,
@@ -350,27 +327,14 @@
     </span>Messages,
     <span class="doccomment">/// `ChainSync` completed and is following chain.
     </span>Complete,
-    <span class="doccomment">/// Error has occurred while syncing.
+    <span class="attr">#[cfg_attr(test, arbitrary(skip))]
+    </span><span class="doccomment">/// Error has occurred while syncing.
     </span>Error,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>SyncStage {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>::Headers
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>SyncStage {
-    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        <span class="kw-2">*</span>g.choose(<span class="kw-2">&amp;</span>[
-            SyncStage::Idle,
-            SyncStage::Headers,
-            SyncStage::PersistHeaders,
-            SyncStage::Messages,
-            SyncStage::Complete,
-        ])
-        .unwrap()
     }
 }
 
@@ -419,6 +383,7 @@
 <span class="doccomment">/// State of the node&#39;s syncing process.
 /// This state is different from the general state of the `ChainSync` process.
 </span><span class="attr">#[derive(Clone, Debug, Default, PartialEq)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>SyncState {
     base: <span class="prelude-ty">Option</span>&lt;Arc&lt;Tipset&gt;&gt;,
     target: <span class="prelude-ty">Option</span>&lt;Arc&lt;Tipset&gt;&gt;,
@@ -426,31 +391,18 @@
     stage: SyncStage,
     epoch: ChainEpoch,
 
-    start: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
-    end: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
+    <span class="attr">#[cfg_attr(test, arbitrary(gen(maybe_epoch0)))]
+    </span>start: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
+    <span class="attr">#[cfg_attr(test, arbitrary(gen(maybe_epoch0)))]
+    </span>end: <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt;,
     message: String,
 }
 
 <span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>SyncState {
-    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        SyncState {
-            base: Option::arbitrary(g),
-            target: Option::arbitrary(g),
-            stage: SyncStage::arbitrary(g),
-            epoch: ChainEpoch::arbitrary(g),
-            start: <span class="kw">if </span>bool::arbitrary(g) {
-                <span class="prelude-val">None
-            </span>} <span class="kw">else </span>{
-                <span class="prelude-val">Some</span>(Utc.timestamp_nanos(<span class="number">0</span>))
-            },
-            end: <span class="kw">if </span>bool::arbitrary(g) {
-                <span class="prelude-val">None
-            </span>} <span class="kw">else </span>{
-                <span class="prelude-val">Some</span>(Utc.timestamp_nanos(<span class="number">0</span>))
-            },
-            message: String::arbitrary(g),
-        }
+</span><span class="kw">fn </span>maybe_epoch0(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="prelude-ty">Option</span>&lt;DateTime&lt;Utc&gt;&gt; {
+    <span class="kw">match </span>quickcheck::Arbitrary::arbitrary(g) {
+        <span class="bool-val">true </span>=&gt; <span class="prelude-val">None</span>,
+        <span class="bool-val">false </span>=&gt; <span class="prelude-val">Some</span>(Utc.timestamp_nanos(<span class="number">0</span>)),
     }
 }
 

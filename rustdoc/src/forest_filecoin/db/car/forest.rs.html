@@ -490,14 +490,6 @@
 <a href="#490" id="490">490</a>
 <a href="#491" id="491">491</a>
 <a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
-<a href="#494" id="494">494</a>
-<a href="#495" id="495">495</a>
-<a href="#496" id="496">496</a>
-<a href="#497" id="497">497</a>
-<a href="#498" id="498">498</a>
-<a href="#499" id="499">499</a>
-<a href="#500" id="500">500</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -885,6 +877,7 @@
 }
 
 <span class="attr">#[derive(Debug, Clone, Eq, PartialEq)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">struct </span>ForestCarFooter {
     index: u64,
 }
@@ -920,17 +913,8 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>futures::executor::block_on;
-    <span class="kw">use </span>quickcheck::{Arbitrary, Gen};
     <span class="kw">use </span>quickcheck_macros::quickcheck;
     <span class="kw">use </span>std::io::Cursor;
-
-    <span class="kw">impl </span>Arbitrary <span class="kw">for </span>ForestCarFooter {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; <span class="self">Self </span>{
-            ForestCarFooter {
-                index: u64::arbitrary(g),
-            }
-        }
-    }
 
     <span class="kw">fn </span>mk_encoded_car(
         zstd_frame_size_tripwire: usize,

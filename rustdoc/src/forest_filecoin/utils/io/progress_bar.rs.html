@@ -120,17 +120,6 @@
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
-<a href="#131" id="131">131</a>
-<a href="#132" id="132">132</a>
-<a href="#133" id="133">133</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 // JANK(aatifsyed): I don&#39;t really understand why this module exists, a lot of
@@ -145,6 +134,7 @@
 <span class="attr">#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 #[derive(Default)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub enum </span>ProgressBarVisibility {
     Always,
     <span class="attr">#[default]
@@ -250,18 +240,6 @@
 <span class="kw">impl </span>Drop <span class="kw">for </span>ProgressBar {
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.finish()
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>ProgressBarVisibility {
-    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        <span class="kw-2">*</span>g.choose(<span class="kw-2">&amp;</span>[
-            ProgressBarVisibility::Always,
-            ProgressBarVisibility::Auto,
-            ProgressBarVisibility::Never,
-        ])
-        .unwrap()
     }
 }
 </code></pre></div></section></main></body></html>
