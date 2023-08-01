@@ -276,7 +276,7 @@
     Params(params): Params&lt;GasEstimateFeeCapParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateFeeCapResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(MessageJson(msg), max_queue_blks, TipsetKeysJson(tsk)) = params;
 
@@ -290,7 +290,7 @@
     _tsk: TipsetKeys,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>ts = data.state_manager.chain_store().heaviest_tipset();
 
@@ -312,7 +312,7 @@
     Params(params): Params&lt;GasEstimateGasPremiumParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateGasPremiumResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(nblocksincl, AddressJson(_sender), _gas_limit, TipsetKeysJson(_tsk)) = params;
     estimate_gas_premium::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, nblocksincl)
@@ -325,7 +325,7 @@
     <span class="kw-2">mut </span>nblocksincl: u64,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">if </span>nblocksincl == <span class="number">0 </span>{
         nblocksincl = <span class="number">1</span>;
@@ -411,7 +411,7 @@
     Params(params): Params&lt;GasEstimateGasLimitParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateGasLimitResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>(MessageJson(msg), TipsetKeysJson(tsk)) = params;
     estimate_gas_limit::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, msg, tsk).<span class="kw">await
@@ -423,7 +423,7 @@
     <span class="kw">_</span>: TipsetKeys,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;i64, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>msg = msg;
     msg.set_gas_limit(BLOCK_GAS_LIMIT);
@@ -465,7 +465,7 @@
     Params(params): Params&lt;GasEstimateMessageGasParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;GasEstimateMessageGasResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>(MessageJson(msg), spec, TipsetKeysJson(tsk)) = params;
     estimate_message_gas::&lt;DB&gt;(<span class="kw-2">&amp;</span>data, msg, spec, tsk)
@@ -480,7 +480,7 @@
     tsk: TipsetKeys,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Message, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>msg = msg;
     <span class="kw">if </span>msg.gas_limit == <span class="number">0 </span>{

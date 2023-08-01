@@ -1308,6 +1308,8 @@
 <a href="#1308" id="1308">1308</a>
 <a href="#1309" id="1309">1309</a>
 <a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1520,7 +1522,7 @@
 
 <span class="kw">impl</span>&lt;DB&gt; StateManager&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">pub fn </span>new(
         cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
@@ -1652,7 +1654,12 @@
 
         <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
     }
+}
 
+<span class="kw">impl</span>&lt;DB&gt; StateManager&lt;DB&gt;
+<span class="kw">where
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
+{
     <span class="doccomment">/// Returns the pair of (parent state root, message receipt root). This will
     /// either be cached or will be calculated and fill the cache. Tipset
     /// state for a given tipset is guaranteed not to be computed twice.
@@ -2082,10 +2089,7 @@
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
         msg_cid: Cid,
         confidence: i64,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="prelude-ty">Option</span>&lt;Arc&lt;Tipset&gt;&gt;, <span class="prelude-ty">Option</span>&lt;Receipt&gt;), Error&gt;
-    <span class="kw">where
-        </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
-    {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(<span class="prelude-ty">Option</span>&lt;Arc&lt;Tipset&gt;&gt;, <span class="prelude-ty">Option</span>&lt;Receipt&gt;), Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>subscriber = <span class="self">self</span>.cs.publisher().subscribe();
         <span class="kw">let </span>(sender, <span class="kw-2">mut </span>receiver) = oneshot::channel::&lt;()&gt;();
         <span class="kw">let </span>message = <span class="kw">crate</span>::chain::get_chain_message(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>msg_cid)

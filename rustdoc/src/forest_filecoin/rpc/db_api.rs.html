@@ -21,7 +21,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>db_gc&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>db_gc&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(<span class="kw">_</span>): Params&lt;DBGCParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;DBGCResult, JsonRpcError&gt; {

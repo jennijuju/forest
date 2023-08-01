@@ -301,7 +301,7 @@
     Params(params): Params&lt;ChainGetMessageParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetMessageResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(CidJson(msg_cid),) = params;
     <span class="kw">let </span>ret: Message = data
@@ -324,7 +324,7 @@
     }): Params&lt;ChainExportParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainExportResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="macro">lazy_static::lazy_static! </span>{
         <span class="kw">static </span><span class="kw-2">ref </span>LOCK: Mutex&lt;()&gt; = Mutex::new(());
@@ -383,7 +383,7 @@
     Params(params): Params&lt;ChainReadObjParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainReadObjResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(CidJson(obj_cid),) = params;
     <span class="kw">let </span>ret = data
@@ -399,7 +399,7 @@
     Params(params): Params&lt;ChainHasObjParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainHasObjResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(CidJson(obj_cid),) = params;
     <span class="prelude-val">Ok</span>(data.state_manager.blockstore().get(<span class="kw-2">&amp;</span>obj_cid)<span class="question-mark">?</span>.is_some())
@@ -410,7 +410,7 @@
     Params(params): Params&lt;ChainGetBlockMessagesParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetBlockMessagesResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(CidJson(blk_cid),) = params;
     <span class="kw">let </span>blk: BlockHeader = data
@@ -444,7 +444,7 @@
     Params(params): Params&lt;ChainGetTipsetByHeightParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipsetByHeightResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(height, tsk) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
@@ -460,7 +460,7 @@
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetGenesisResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>genesis = data.state_manager.chain_store().genesis();
     <span class="kw">let </span>gen_ts = Arc::new(Tipset::from(genesis));
@@ -471,7 +471,7 @@
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainHeadResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>heaviest = data.state_manager.chain_store().heaviest_tipset();
     <span class="prelude-val">Ok</span>(TipsetJson(heaviest))
@@ -482,7 +482,7 @@
     Params(params): Params&lt;ChainGetBlockParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetBlockResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(CidJson(blk_cid),) = params;
     <span class="kw">let </span>blk: BlockHeader = data
@@ -498,7 +498,7 @@
     Params(params): Params&lt;ChainGetTipSetParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipSetResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
@@ -509,7 +509,7 @@
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetNameResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="prelude-val">Ok</span>(data.state_manager.chain_config().network.to_string())
 }
@@ -521,7 +521,7 @@
     Params(params): Params&lt;ChainSetHeadParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainSetHeadResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>(params,) = params;
     <span class="kw">let </span>new_head = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>;

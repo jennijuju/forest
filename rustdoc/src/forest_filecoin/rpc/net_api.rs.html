@@ -122,7 +122,7 @@
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>tracing::error;
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_addrs_listen&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_addrs_listen&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetAddrsListenResult, JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
@@ -139,7 +139,7 @@
     })
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_peers&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_peers&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetPeersResult, JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
@@ -173,7 +173,7 @@
     <span class="prelude-val">Ok</span>(rx.<span class="kw">await</span><span class="question-mark">?</span>)
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_connect&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_connect&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;NetConnectParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetConnectResult, JsonRpcError&gt; {
@@ -197,7 +197,7 @@
     }
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_disconnect&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_disconnect&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;NetDisconnectParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetDisconnectResult, JsonRpcError&gt; {
