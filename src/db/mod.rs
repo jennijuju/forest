@@ -11,6 +11,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 pub mod car;
 
+pub mod blockstore_pool;
 pub mod rolling;
 
 pub mod setting_keys {

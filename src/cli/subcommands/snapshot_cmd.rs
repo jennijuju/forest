@@ -7,6 +7,7 @@ use crate::chain::index::ChainIndex;
 use crate::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 use crate::cli_shared::snapshot::{self, TrustedVendor};
 use crate::daemon::bundle::load_actor_bundles;
+use crate::db::blockstore_pool::BlockstorePool;
 use crate::db::car::ManyCar;
 use crate::fil_cns::composition as cns;
 use crate::ipld::{recurse_links_hash, CidHashSet};
@@ -206,9 +207,11 @@ impl SnapshotCommands {
                 check_stateroots,
                 snapshot_files,
             } => {
-                let store = ManyCar::try_from(snapshot_files)?;
+                let many_car = ManyCar::try_from(snapshot_files)?;
+                let heaviest_tipset = many_car.heaviest_tipset()?;
+                let store = BlockstorePool::new(Arc::new(many_car), 50);
                 validate_with_blockstore(
-                    store.heaviest_tipset()?,
+                    heaviest_tipset,
                     Arc::new(store),
                     check_links,
                     check_network,
