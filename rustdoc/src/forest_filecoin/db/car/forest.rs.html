@@ -541,7 +541,7 @@
 </span><span class="kw">use super</span>::{CacheKey, ZstdFrameCache};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::plain::write_skip_frame_header_async;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_index::{CarIndex, CarIndexBuilder, FrameOffset};
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_index::{CarIndex, CarIndexBuilder, FrameOffset, Hash};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarHeader};
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::uvibytes::UviBytes;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
@@ -772,10 +772,10 @@
         offset += header_len;
 
         <span class="comment">// Write seekable zstd and collect a mapping of CIDs to frame_offset+data_offset.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>cid_map = ahash::HashMap::new();
+        </span><span class="kw">let </span><span class="kw-2">mut </span>cid_map = HashMap::new();
         <span class="kw">while let </span><span class="prelude-val">Some</span>((cids, zstd_frame)) = stream.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
             <span class="kw">for </span>cid <span class="kw">in </span>cids {
-                cid_map.insert(cid, offset <span class="kw">as </span>FrameOffset);
+                cid_map.insert(Hash::from(cid), offset <span class="kw">as </span>FrameOffset);
             }
             sink.write_all(<span class="kw-2">&amp;</span>zstd_frame).<span class="kw">await</span><span class="question-mark">?</span>;
             offset += zstd_frame.len();

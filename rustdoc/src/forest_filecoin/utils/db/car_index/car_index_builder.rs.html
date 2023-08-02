@@ -142,17 +142,9 @@
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use super</span>::{FrameOffset, Hash, IndexHeader, KeyValuePair, Slot};
-<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>tokio::io::{AsyncWrite, AsyncWriteExt <span class="kw">as _</span>};
 
 <span class="attr">#[derive(Debug)]
@@ -177,13 +169,7 @@
     }
 
     <span class="comment">// Construct a new index builder that maps `Cid` to `FrameOffset`.
-    </span><span class="kw">pub fn </span>new(values: <span class="kw">impl </span>ExactSizeIterator&lt;Item = (Cid, FrameOffset)&gt;) -&gt; CarIndexBuilder {
-        <span class="self">Self</span>::new_raw(values.map(|(cid, value)| (Hash::from(cid), value)))
-    }
-
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>new_raw(
-        values: <span class="kw">impl </span>ExactSizeIterator&lt;Item = (Hash, FrameOffset)&gt;,
-    ) -&gt; CarIndexBuilder {
+    </span><span class="kw">pub fn </span>new(values: <span class="kw">impl </span>ExactSizeIterator&lt;Item = (Hash, FrameOffset)&gt;) -&gt; CarIndexBuilder {
         <span class="kw">let </span>size = <span class="self">Self</span>::capacity_at(values.len());
         <span class="kw">let </span><span class="kw-2">mut </span>vec = Vec::with_capacity(size);
         vec.resize(size, Slot::Empty);
