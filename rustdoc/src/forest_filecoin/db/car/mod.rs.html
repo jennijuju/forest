@@ -115,8 +115,8 @@
 }
 
 <span class="kw">impl </span>ZstdFrameCache {
-    <span class="comment">// 2 GiB
-    </span><span class="kw">pub const </span>DEFAULT_SIZE: usize = <span class="number">2 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>;
+    <span class="comment">// 1 GiB
+    </span><span class="kw">pub const </span>DEFAULT_SIZE: usize = <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>;
 
     <span class="kw">pub fn </span>new(max_size: usize) -&gt; <span class="self">Self </span>{
         ZstdFrameCache {
