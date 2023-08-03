@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["forest","forest_cli","forest_filecoin"];
+window.ALL_CRATES = ["forest","forest_cli","forest_filecoin","forest_tool"];
