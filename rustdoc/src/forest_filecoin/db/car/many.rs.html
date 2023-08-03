@@ -132,6 +132,9 @@
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -149,7 +152,6 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>parking_lot::Mutex;
-<span class="kw">use </span>rayon::prelude::{IntoParallelRefIterator, ParallelIterator};
 <span class="kw">use </span>std::{io, path::PathBuf, sync::Arc};
 
 <span class="kw">pub struct </span>ManyCar&lt;WriterT = MemoryDB&gt; {
@@ -218,11 +220,15 @@
 
 <span class="kw">impl</span>&lt;WriterT: Blockstore&gt; Blockstore <span class="kw">for </span>ManyCar&lt;WriterT&gt; {
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {
-        <span class="self">self</span>.read_only
-            .par_iter()
-            .find_map_any(|reader| reader.get(k).transpose())
-            .or_else(|| <span class="self">self</span>.writer.get(k).transpose())
-            .transpose()
+        <span class="comment">// Theoretically it should be easily parallelizable with `rayon`.
+        // In practice, there is a massive performance loss when providing
+        // more than a single reader.
+        </span><span class="kw">for </span>reader <span class="kw">in </span><span class="self">self</span>.read_only.iter() {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(val) = reader.get(k)<span class="question-mark">? </span>{
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(val));
+            }
+        }
+        <span class="self">self</span>.writer.get(k)
     }
 
     <span class="kw">fn </span>put_keyed(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid, block: <span class="kw-2">&amp;</span>[u8]) -&gt; anyhow::Result&lt;()&gt; {
