@@ -988,9 +988,6 @@
 <a href="#988" id="988">988</a>
 <a href="#989" id="989">989</a>
 <a href="#990" id="990">990</a>
-<a href="#991" id="991">991</a>
-<a href="#992" id="992">992</a>
-<a href="#993" id="993">993</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1153,7 +1150,7 @@
 
 <span class="kw">impl</span>&lt;DB, M, C&gt; ChainMuxer&lt;DB, M, C&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     M: Provider + Sync + Send + <span class="lifetime">&#39;static</span>,
     C: Consensus,
 {
@@ -1170,11 +1167,8 @@
         tipset_receiver: flume::Receiver&lt;Arc&lt;Tipset&gt;&gt;,
         cfg: SyncConfig,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ChainMuxerError&lt;C&gt;&gt; {
-        <span class="kw">let </span>network = SyncNetworkContext::new(
-            network_send,
-            peer_manager,
-            state_manager.blockstore().clone(),
-        );
+        <span class="kw">let </span>network =
+            SyncNetworkContext::new(network_send, peer_manager, state_manager.blockstore_owned());
 
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
             state: ChainMuxerState::Idle,
@@ -1838,7 +1832,7 @@
 
 <span class="kw">impl</span>&lt;DB, M, C&gt; Future <span class="kw">for </span>ChainMuxer&lt;DB, M, C&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     M: Provider + Sync + Send + <span class="lifetime">&#39;static</span>,
     C: Consensus,
 {

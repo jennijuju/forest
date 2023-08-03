@@ -196,7 +196,7 @@
     shutdown_send: Sender&lt;()&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), JSONRPCError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">use </span>auth_api::<span class="kw-2">*</span>;
     <span class="kw">use </span>chain_api::<span class="kw-2">*</span>;

@@ -503,7 +503,7 @@
 /// * Timestamps
 /// * Elections and Proof-of-SpaceTime, Beacon values
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::fil_cns) <span class="kw">async fn </span>validate_block&lt;
-    DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     B: Beacon,
 &gt;(
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
@@ -673,7 +673,7 @@
 
 <span class="comment">// Check that the miner power can be loaded.
 // Doesn&#39;t check that the miner actually has any power.
-</span><span class="kw">fn </span>validate_miner&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+</span><span class="kw">fn </span>validate_miner&lt;DB: Blockstore&gt;(
     state_manager: <span class="kw-2">&amp;</span>StateManager&lt;DB&gt;,
     miner_addr: <span class="kw-2">&amp;</span>Address,
     tipset_state: <span class="kw-2">&amp;</span>Cid,
@@ -697,7 +697,7 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">fn </span>validate_winner_election&lt;DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">fn </span>validate_winner_election&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
     header: <span class="kw-2">&amp;</span>BlockHeader,
     base_tipset: <span class="kw-2">&amp;</span>Tipset,
     lookback_tipset: <span class="kw-2">&amp;</span>Tipset,
@@ -807,7 +807,7 @@
     verify_bls_sig(evrf, rand, worker).map_err(FilecoinConsensusError::VrfValidation)
 }
 
-<span class="kw">fn </span>verify_winning_post_proof&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>&gt;(
+<span class="kw">fn </span>verify_winning_post_proof&lt;DB: Blockstore&gt;(
     state_manager: <span class="kw-2">&amp;</span>StateManager&lt;DB&gt;,
     network_version: NetworkVersion,
     header: <span class="kw-2">&amp;</span>BlockHeader,

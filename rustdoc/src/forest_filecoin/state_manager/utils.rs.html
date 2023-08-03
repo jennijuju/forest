@@ -263,7 +263,7 @@
 
 <span class="kw">impl</span>&lt;DB&gt; StateManager&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
 {
     <span class="doccomment">/// Retrieves and generates a vector of sector info for the winning `PoSt`
     /// verification.

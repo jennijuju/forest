@@ -907,12 +907,12 @@
 // for the last 1100 epochs.
 </span><span class="kw">async fn </span>validate_stateroots&lt;DB&gt;(
     ts: Tipset,
-    db: <span class="kw-2">&amp;</span>DB,
+    db: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;,
     network: NetworkChain,
     epochs: u32,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync + Clone + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>chain_config = Arc::new(ChainConfig::from_chain(<span class="kw-2">&amp;</span>network));
     <span class="kw">let </span>genesis = ts.genesis(db)<span class="question-mark">?</span>;

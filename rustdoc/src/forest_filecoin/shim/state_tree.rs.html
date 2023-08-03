@@ -331,9 +331,17 @@
 <a href="#331" id="331">331</a>
 <a href="#332" id="332">332</a>
 <a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
-</span><span class="kw">use </span>std::ops::{Deref, DerefMut};
+</span><span class="kw">use </span>std::{
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 
 <span class="kw">use </span>anyhow::{bail, Context};
 <span class="kw">use </span>cid::Cid;
@@ -424,16 +432,17 @@
 /// Not all the inner methods are implemented, only those that are needed. Feel
 /// free to add those when necessary.
 </span><span class="kw">pub enum </span>StateTree&lt;S&gt; {
-    V2(StateTreeV2&lt;S&gt;),
-    V3(StateTreeV3&lt;S&gt;),
+    V2(StateTreeV2&lt;Arc&lt;S&gt;&gt;),
+    V3(StateTreeV3&lt;Arc&lt;S&gt;&gt;),
 }
 
 <span class="kw">impl</span>&lt;S&gt; StateTree&lt;S&gt;
 <span class="kw">where
-    </span>S: Blockstore + Clone,
+    </span>S: Blockstore,
 {
     <span class="doccomment">/// Constructor for a HAMT state tree given an IPLD store
     </span><span class="kw">pub fn </span>new(store: S, version: StateTreeVersion) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>store = Arc::new(store);
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new(store.clone(), version.try_into()<span class="question-mark">?</span>) {
             <span class="prelude-val">Ok</span>(StateTree::V3(st))
         } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new(store, version.try_into()<span class="question-mark">?</span>) {
@@ -444,6 +453,7 @@
     }
 
     <span class="kw">pub fn </span>new_from_root(store: S, c: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>store = Arc::new(store);
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new_from_root(store.clone(), c) {
             <span class="prelude-val">Ok</span>(StateTree::V3(st))
         } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new_from_root(store, c) {

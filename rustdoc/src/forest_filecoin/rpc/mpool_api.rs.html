@@ -170,7 +170,7 @@
     Params(params): Params&lt;MpoolPendingParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPendingResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>(CidJsonVec(cid_vec),) = params;
     <span class="kw">let </span>tsk = TipsetKeys::new(cid_vec);
@@ -229,7 +229,7 @@
     Params(params): Params&lt;MpoolPushParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>(SignedMessageJson(smsg),) = params;
 
@@ -244,7 +244,7 @@
     Params(params): Params&lt;MpoolPushMessageParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushMessageResult, JsonRpcError&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>(MessageJson(umsg), spec) = params;
 

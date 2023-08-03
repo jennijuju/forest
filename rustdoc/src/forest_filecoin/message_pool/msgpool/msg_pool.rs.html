@@ -641,6 +641,11 @@
 <a href="#641" id="641">641</a>
 <a href="#642" id="642">642</a>
 <a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
+<a href="#645" id="645">645</a>
+<a href="#646" id="646">646</a>
+<a href="#647" id="647">647</a>
+<a href="#648" id="648">648</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -807,131 +812,8 @@
 
 <span class="kw">impl</span>&lt;T&gt; MessagePool&lt;T&gt;
 <span class="kw">where
-    </span>T: Provider + std::marker::Send + std::marker::Sync + <span class="lifetime">&#39;static</span>,
+    </span>T: Provider,
 {
-    <span class="doccomment">/// Creates a new `MessagePool` instance.
-    </span><span class="kw">pub fn </span>new(
-        api: T,
-        network_name: String,
-        network_sender: flume::Sender&lt;NetworkMessage&gt;,
-        config: MpoolConfig,
-        chain_config: Arc&lt;ChainConfig&gt;,
-        services: <span class="kw-2">&amp;mut </span>JoinSet&lt;anyhow::Result&lt;()&gt;&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;MessagePool&lt;T&gt;, Error&gt;
-    <span class="kw">where
-        </span>T: Provider,
-    {
-        <span class="kw">let </span>local_addrs = Arc::new(SyncRwLock::new(Vec::new()));
-        <span class="kw">let </span>pending = Arc::new(SyncRwLock::new(HashMap::new()));
-        <span class="kw">let </span>tipset = Arc::new(Mutex::new(api.get_heaviest_tipset()));
-        <span class="kw">let </span>bls_sig_cache = Arc::new(Mutex::new(LruCache::new(BLS_SIG_CACHE_SIZE)));
-        <span class="kw">let </span>sig_val_cache = Arc::new(Mutex::new(LruCache::new(SIG_VAL_CACHE_SIZE)));
-        <span class="kw">let </span>local_msgs = Arc::new(SyncRwLock::new(HashSet::new()));
-        <span class="kw">let </span>republished = Arc::new(SyncRwLock::new(HashSet::new()));
-        <span class="kw">let </span>block_delay = chain_config.block_delay_secs;
-
-        <span class="kw">let </span>(repub_trigger, repub_trigger_rx) = flume::bounded::&lt;()&gt;(<span class="number">4</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>mp = MessagePool {
-            local_addrs,
-            pending,
-            cur_tipset: tipset,
-            api: Arc::new(api),
-            min_gas_price: Default::default(),
-            max_tx_pool_size: <span class="number">5000</span>,
-            network_name,
-            bls_sig_cache,
-            sig_val_cache,
-            local_msgs,
-            republished,
-            config,
-            network_sender,
-            repub_trigger,
-            chain_config: Arc::clone(<span class="kw-2">&amp;</span>chain_config),
-        };
-
-        mp.load_local()<span class="question-mark">?</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>subscriber = mp.api.subscribe_head_changes();
-
-        <span class="kw">let </span>api = mp.api.clone();
-        <span class="kw">let </span>bls_sig_cache = mp.bls_sig_cache.clone();
-        <span class="kw">let </span>pending = mp.pending.clone();
-        <span class="kw">let </span>republished = mp.republished.clone();
-
-        <span class="kw">let </span>cur_tipset = mp.cur_tipset.clone();
-        <span class="kw">let </span>repub_trigger = Arc::new(mp.repub_trigger.clone());
-
-        <span class="comment">// Reacts to new HeadChanges
-        </span>services.spawn(<span class="kw">async move </span>{
-            <span class="kw">loop </span>{
-                <span class="kw">match </span>subscriber.recv().<span class="kw">await </span>{
-                    <span class="prelude-val">Ok</span>(ts) =&gt; {
-                        <span class="kw">let </span>(cur, rev, app) = <span class="kw">match </span>ts {
-                            HeadChange::Apply(tipset) =&gt; (
-                                cur_tipset.clone(),
-                                Vec::new(),
-                                <span class="macro">vec!</span>[tipset.as_ref().clone()],
-                            ),
-                        };
-                        head_change(
-                            api.as_ref(),
-                            bls_sig_cache.as_ref(),
-                            repub_trigger.clone(),
-                            republished.as_ref(),
-                            pending.as_ref(),
-                            cur.as_ref(),
-                            rev,
-                            app,
-                        )
-                        .<span class="kw">await
-                        </span>.context(<span class="string">&quot;Error changing head&quot;</span>)<span class="question-mark">?</span>;
-                    }
-                    <span class="prelude-val">Err</span>(RecvError::Lagged(e)) =&gt; {
-                        <span class="macro">warn!</span>(<span class="string">&quot;Head change subscriber lagged: skipping {} events&quot;</span>, e);
-                    }
-                    <span class="prelude-val">Err</span>(RecvError::Closed) =&gt; {
-                        <span class="kw">break </span><span class="prelude-val">Ok</span>(());
-                    }
-                }
-            }
-        });
-
-        <span class="kw">let </span>api = mp.api.clone();
-        <span class="kw">let </span>pending = mp.pending.clone();
-        <span class="kw">let </span>cur_tipset = mp.cur_tipset.clone();
-        <span class="kw">let </span>republished = mp.republished.clone();
-        <span class="kw">let </span>local_addrs = mp.local_addrs.clone();
-        <span class="kw">let </span>network_sender = Arc::new(mp.network_sender.clone());
-        <span class="kw">let </span>network_name = mp.network_name.clone();
-        <span class="kw">let </span>republish_interval = <span class="number">10 </span>* block_delay + chain_config.propagation_delay_secs;
-        <span class="comment">// Reacts to republishing requests
-        </span>services.spawn(<span class="kw">async move </span>{
-            <span class="kw">let </span><span class="kw-2">mut </span>repub_trigger_rx = repub_trigger_rx.stream();
-            <span class="kw">let </span><span class="kw-2">mut </span>interval = interval(Duration::from_secs(republish_interval));
-            <span class="kw">loop </span>{
-                <span class="macro">tokio::select! </span>{
-                    <span class="kw">_ </span>= interval.tick() =&gt; (),
-                    <span class="kw">_ </span>= repub_trigger_rx.next() =&gt; (),
-                }
-                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = republish_pending_messages(
-                    api.as_ref(),
-                    network_sender.as_ref(),
-                    network_name.as_ref(),
-                    pending.as_ref(),
-                    cur_tipset.as_ref(),
-                    republished.as_ref(),
-                    local_addrs.as_ref(),
-                    <span class="kw-2">&amp;</span>chain_config,
-                )
-                .<span class="kw">await
-                </span>{
-                    <span class="macro">warn!</span>(<span class="string">&quot;Failed to republish pending messages: {}&quot;</span>, e.to_string());
-                }
-            }
-        });
-        <span class="prelude-val">Ok</span>(mp)
-    }
-
     <span class="doccomment">/// Add a signed message to the pool and its address.
     </span><span class="kw">fn </span>add_local(<span class="kw-2">&amp;</span><span class="self">self</span>, m: SignedMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="self">self</span>.local_addrs.write().push(m.from());
@@ -1187,6 +1069,134 @@
         };
 
         select_messages_for_block(<span class="self">self</span>.api.as_ref(), <span class="self">self</span>.chain_config.as_ref(), base, pending)
+    }
+}
+
+<span class="kw">impl</span>&lt;T&gt; MessagePool&lt;T&gt;
+<span class="kw">where
+    </span>T: Provider + Send + Sync + <span class="lifetime">&#39;static</span>,
+{
+    <span class="doccomment">/// Creates a new `MessagePool` instance.
+    </span><span class="kw">pub fn </span>new(
+        api: T,
+        network_name: String,
+        network_sender: flume::Sender&lt;NetworkMessage&gt;,
+        config: MpoolConfig,
+        chain_config: Arc&lt;ChainConfig&gt;,
+        services: <span class="kw-2">&amp;mut </span>JoinSet&lt;anyhow::Result&lt;()&gt;&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;MessagePool&lt;T&gt;, Error&gt;
+    <span class="kw">where
+        </span>T: Provider,
+    {
+        <span class="kw">let </span>local_addrs = Arc::new(SyncRwLock::new(Vec::new()));
+        <span class="kw">let </span>pending = Arc::new(SyncRwLock::new(HashMap::new()));
+        <span class="kw">let </span>tipset = Arc::new(Mutex::new(api.get_heaviest_tipset()));
+        <span class="kw">let </span>bls_sig_cache = Arc::new(Mutex::new(LruCache::new(BLS_SIG_CACHE_SIZE)));
+        <span class="kw">let </span>sig_val_cache = Arc::new(Mutex::new(LruCache::new(SIG_VAL_CACHE_SIZE)));
+        <span class="kw">let </span>local_msgs = Arc::new(SyncRwLock::new(HashSet::new()));
+        <span class="kw">let </span>republished = Arc::new(SyncRwLock::new(HashSet::new()));
+        <span class="kw">let </span>block_delay = chain_config.block_delay_secs;
+
+        <span class="kw">let </span>(repub_trigger, repub_trigger_rx) = flume::bounded::&lt;()&gt;(<span class="number">4</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>mp = MessagePool {
+            local_addrs,
+            pending,
+            cur_tipset: tipset,
+            api: Arc::new(api),
+            min_gas_price: Default::default(),
+            max_tx_pool_size: <span class="number">5000</span>,
+            network_name,
+            bls_sig_cache,
+            sig_val_cache,
+            local_msgs,
+            republished,
+            config,
+            network_sender,
+            repub_trigger,
+            chain_config: Arc::clone(<span class="kw-2">&amp;</span>chain_config),
+        };
+
+        mp.load_local()<span class="question-mark">?</span>;
+
+        <span class="kw">let </span><span class="kw-2">mut </span>subscriber = mp.api.subscribe_head_changes();
+
+        <span class="kw">let </span>api = mp.api.clone();
+        <span class="kw">let </span>bls_sig_cache = mp.bls_sig_cache.clone();
+        <span class="kw">let </span>pending = mp.pending.clone();
+        <span class="kw">let </span>republished = mp.republished.clone();
+
+        <span class="kw">let </span>cur_tipset = mp.cur_tipset.clone();
+        <span class="kw">let </span>repub_trigger = Arc::new(mp.repub_trigger.clone());
+
+        <span class="comment">// Reacts to new HeadChanges
+        </span>services.spawn(<span class="kw">async move </span>{
+            <span class="kw">loop </span>{
+                <span class="kw">match </span>subscriber.recv().<span class="kw">await </span>{
+                    <span class="prelude-val">Ok</span>(ts) =&gt; {
+                        <span class="kw">let </span>(cur, rev, app) = <span class="kw">match </span>ts {
+                            HeadChange::Apply(tipset) =&gt; (
+                                cur_tipset.clone(),
+                                Vec::new(),
+                                <span class="macro">vec!</span>[tipset.as_ref().clone()],
+                            ),
+                        };
+                        head_change(
+                            api.as_ref(),
+                            bls_sig_cache.as_ref(),
+                            repub_trigger.clone(),
+                            republished.as_ref(),
+                            pending.as_ref(),
+                            cur.as_ref(),
+                            rev,
+                            app,
+                        )
+                        .<span class="kw">await
+                        </span>.context(<span class="string">&quot;Error changing head&quot;</span>)<span class="question-mark">?</span>;
+                    }
+                    <span class="prelude-val">Err</span>(RecvError::Lagged(e)) =&gt; {
+                        <span class="macro">warn!</span>(<span class="string">&quot;Head change subscriber lagged: skipping {} events&quot;</span>, e);
+                    }
+                    <span class="prelude-val">Err</span>(RecvError::Closed) =&gt; {
+                        <span class="kw">break </span><span class="prelude-val">Ok</span>(());
+                    }
+                }
+            }
+        });
+
+        <span class="kw">let </span>api = mp.api.clone();
+        <span class="kw">let </span>pending = mp.pending.clone();
+        <span class="kw">let </span>cur_tipset = mp.cur_tipset.clone();
+        <span class="kw">let </span>republished = mp.republished.clone();
+        <span class="kw">let </span>local_addrs = mp.local_addrs.clone();
+        <span class="kw">let </span>network_sender = Arc::new(mp.network_sender.clone());
+        <span class="kw">let </span>network_name = mp.network_name.clone();
+        <span class="kw">let </span>republish_interval = <span class="number">10 </span>* block_delay + chain_config.propagation_delay_secs;
+        <span class="comment">// Reacts to republishing requests
+        </span>services.spawn(<span class="kw">async move </span>{
+            <span class="kw">let </span><span class="kw-2">mut </span>repub_trigger_rx = repub_trigger_rx.stream();
+            <span class="kw">let </span><span class="kw-2">mut </span>interval = interval(Duration::from_secs(republish_interval));
+            <span class="kw">loop </span>{
+                <span class="macro">tokio::select! </span>{
+                    <span class="kw">_ </span>= interval.tick() =&gt; (),
+                    <span class="kw">_ </span>= repub_trigger_rx.next() =&gt; (),
+                }
+                <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = republish_pending_messages(
+                    api.as_ref(),
+                    network_sender.as_ref(),
+                    network_name.as_ref(),
+                    pending.as_ref(),
+                    cur_tipset.as_ref(),
+                    republished.as_ref(),
+                    local_addrs.as_ref(),
+                    <span class="kw-2">&amp;</span>chain_config,
+                )
+                .<span class="kw">await
+                </span>{
+                    <span class="macro">warn!</span>(<span class="string">&quot;Failed to republish pending messages: {}&quot;</span>, e.to_string());
+                }
+            }
+        });
+        <span class="prelude-val">Ok</span>(mp)
     }
 }
 

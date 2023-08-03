@@ -72,7 +72,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;Address, anyhow::Error&gt;
 <span class="kw">where
     </span>BS: Blockstore,
-    S: Blockstore + Clone,
+    S: Blockstore,
 {
     <span class="kw">if </span>addr.protocol() == Protocol::BLS
         || addr.protocol() == Protocol::Secp256k1

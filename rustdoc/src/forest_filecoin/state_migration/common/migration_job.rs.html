@@ -87,7 +87,7 @@
     <span class="kw">pub </span>actor_migration: Arc&lt;<span class="kw">dyn </span>ActorMigration&lt;BS&gt;&gt;,
 }
 
-<span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; MigrationJob&lt;BS&gt; {
+<span class="kw">impl</span>&lt;BS: Blockstore&gt; MigrationJob&lt;BS&gt; {
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::state_migration) <span class="kw">fn </span>run(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         store: BS,

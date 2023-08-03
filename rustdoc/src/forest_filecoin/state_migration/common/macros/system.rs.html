@@ -86,7 +86,7 @@
             <span class="kw">use </span><span class="macro-nonterminal">$crate::state_migration::common</span>::<span class="kw-2">*</span>;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::utils::db::CborStoreExt</span>;
 
-            <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>system_migrator&lt;BS: Blockstore + Clone + Send + Sync&gt;(
+            <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>system_migrator&lt;BS: Blockstore&gt;(
                 new_manifest: <span class="kw-2">&amp;</span>Manifest,
             ) -&gt; Arc&lt;<span class="kw">dyn </span>ActorMigration&lt;BS&gt; + Send + Sync&gt; {
                 Arc::new(SystemMigrator {
@@ -100,7 +100,7 @@
                 new_code_cid: Cid,
             }
 
-            <span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; ActorMigration&lt;BS&gt; <span class="kw">for </span>SystemMigrator {
+            <span class="kw">impl</span>&lt;BS: Blockstore&gt; ActorMigration&lt;BS&gt; <span class="kw">for </span>SystemMigrator {
                 <span class="kw">fn </span>migrate_state(
                     <span class="kw-2">&amp;</span><span class="self">self</span>,
                     store: BS,

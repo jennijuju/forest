@@ -1924,7 +1924,7 @@
 
 <span class="kw">impl</span>&lt;DB, C&gt; TipsetProcessor&lt;DB, C&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     C: Consensus,
 {
     <span class="attr">#[allow(clippy::too_many_arguments)]
@@ -2012,7 +2012,7 @@
 
 <span class="kw">impl</span>&lt;DB, C&gt; Future <span class="kw">for </span>TipsetProcessor&lt;DB, C&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     C: Consensus,
 {
     <span class="kw">type </span>Output = <span class="prelude-ty">Result</span>&lt;(), TipsetProcessorError&lt;C&gt;&gt;;
@@ -2300,7 +2300,7 @@
 
 <span class="kw">impl</span>&lt;DB, C&gt; TipsetRangeSyncer&lt;DB, C&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     C: Consensus,
 {
     <span class="attr">#[allow(clippy::too_many_arguments)]
@@ -2424,7 +2424,7 @@
 /// messages going forward on the chain and validate each extension. Finally set
 /// the proposed head as the heaviest tipset.
 </span><span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">fn </span>sync_tipset_range&lt;DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">fn </span>sync_tipset_range&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     proposed_head: Arc&lt;Tipset&gt;,
     current_head: Arc&lt;Tipset&gt;,
     tracker: <span class="kw">crate</span>::chain_sync::chain_muxer::WorkerState,
@@ -2512,7 +2512,7 @@
 <span class="doccomment">/// Download headers between the proposed head and the current one available
 /// locally. If they turn out to be on different forks, download more headers up
 /// to a certain limit to try to find a common ancestor.
-</span><span class="kw">async fn </span>sync_headers_in_reverse&lt;DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">async fn </span>sync_headers_in_reverse&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     tracker: <span class="kw">crate</span>::chain_sync::chain_muxer::WorkerState,
     tipset_range_length: u64,
     proposed_head: Arc&lt;Tipset&gt;,
@@ -2629,7 +2629,7 @@
 }
 
 <span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">fn </span>sync_tipset&lt;DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">fn </span>sync_tipset&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     proposed_head: Arc&lt;Tipset&gt;,
     consensus: Arc&lt;C&gt;,
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
@@ -2742,7 +2742,7 @@
 /// `BlockStore`, or download them from the network, then validate the full
 /// tipset on each epoch.
 </span><span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">async fn </span>sync_messages_check_state&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">async fn </span>sync_messages_check_state&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     tracker: <span class="kw">crate</span>::chain_sync::chain_muxer::WorkerState,
     consensus: Arc&lt;C&gt;,
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
@@ -2793,7 +2793,7 @@
 /// executed), adding the successful ones to the tipset tracker, and the failed
 /// ones to the bad block cache, depending on strategy. Any bad block fails
 /// validation.
-</span><span class="kw">async fn </span>validate_tipset&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">async fn </span>validate_tipset&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     consensus: Arc&lt;C&gt;,
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
     chainstore: <span class="kw-2">&amp;</span>ChainStore&lt;DB&gt;,
@@ -2877,7 +2877,7 @@
 /// * Checking that the messages in the block correspond to the agreed upon
 ///   total ordering
 /// * That the block is a deterministic derivative of the underlying consensus
-</span><span class="kw">async fn </span>validate_block&lt;DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">async fn </span>validate_block&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     consensus: Arc&lt;C&gt;,
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
     block: Arc&lt;Block&gt;,
@@ -2948,7 +2948,7 @@
     <span class="comment">// Base fee check
     </span><span class="kw">let </span>smoke_height = state_manager.chain_config().epoch(Height::Smoke);
     <span class="kw">let </span>v_base_tipset = Arc::clone(<span class="kw-2">&amp;</span>base_tipset);
-    <span class="kw">let </span>v_block_store = state_manager.blockstore().clone();
+    <span class="kw">let </span>v_block_store = state_manager.blockstore_owned();
     <span class="kw">let </span>v_block = Arc::clone(<span class="kw-2">&amp;</span>block);
     validations.push(tokio::task::spawn_blocking(<span class="kw">move </span>|| {
         <span class="kw">let </span>_timer = metrics::BLOCK_VALIDATION_TASKS_TIME
@@ -2968,7 +2968,7 @@
     }));
 
     <span class="comment">// Parent weight calculation check
-    </span><span class="kw">let </span>v_block_store = state_manager.blockstore().clone();
+    </span><span class="kw">let </span>v_block_store = state_manager.blockstore_owned();
     <span class="kw">let </span>v_base_tipset = Arc::clone(<span class="kw-2">&amp;</span>base_tipset);
     <span class="kw">let </span>weight = header.weight().clone();
     validations.push(tokio::task::spawn_blocking(<span class="kw">move </span>|| {
@@ -3064,7 +3064,7 @@
 ///
 /// NB: This loads/computes the state resulting from the execution of the parent
 /// tipset.
-</span><span class="kw">async fn </span>check_block_messages&lt;DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
+</span><span class="kw">async fn </span>check_block_messages&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>, C: Consensus&gt;(
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
     block: Arc&lt;Block&gt;,
     base_tipset: Arc&lt;Tipset&gt;,

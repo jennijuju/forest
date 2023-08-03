@@ -274,7 +274,7 @@
     state_manager: <span class="kw-2">&amp;</span>StateManager&lt;BS&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;String, anyhow::Error&gt;
 <span class="kw">where
-    </span>BS: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>BS: Blockstore,
 {
     <span class="comment">// Get network name from genesis state.
     </span><span class="kw">let </span>network_name = state_manager
@@ -311,7 +311,7 @@
     buffer_size: BufferSize,
 ) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="macro">info!</span>(<span class="string">&quot;Importing chain from snapshot at: {path}&quot;</span>);
     <span class="comment">// start import
@@ -319,7 +319,7 @@
     <span class="kw">let </span>reader = net::decompress_if_needed(net::reader(path).<span class="kw">await</span><span class="question-mark">?</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>(cids, n_records) = load_and_retrieve_header(
-        sm.blockstore().clone(),
+        sm.blockstore_owned(),
         reader.compat(),
         skip_load,
         chunk_size,

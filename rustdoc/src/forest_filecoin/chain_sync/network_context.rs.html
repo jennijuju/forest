@@ -556,10 +556,10 @@
     <span class="doccomment">/// Manages peers to send requests to and updates request stats for the
     /// respective peers.
     </span>peer_manager: Arc&lt;PeerManager&gt;,
-    db: Box&lt;DB&gt;,
+    db: Arc&lt;DB&gt;,
 }
 
-<span class="kw">impl</span>&lt;DB: Clone&gt; Clone <span class="kw">for </span>SyncNetworkContext&lt;DB&gt; {
+<span class="kw">impl</span>&lt;DB&gt; Clone <span class="kw">for </span>SyncNetworkContext&lt;DB&gt; {
     <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             network_send: <span class="self">self</span>.network_send.clone(),
@@ -619,12 +619,12 @@
     <span class="kw">pub fn </span>new(
         network_send: flume::Sender&lt;NetworkMessage&gt;,
         peer_manager: Arc&lt;PeerManager&gt;,
-        db: DB,
+        db: Arc&lt;DB&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             network_send,
             peer_manager,
-            db: Box::new(db),
+            db,
         }
     }
 

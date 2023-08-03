@@ -57,7 +57,7 @@
     _services: <span class="kw-2">&amp;mut </span>JoinSet&lt;anyhow::Result&lt;()&gt;&gt;,
 ) -&gt; anyhow::Result&lt;FullConsensus&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore,
     MP: MessagePoolApi + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>consensus = FilecoinConsensus::new(state_manager.beacon_schedule());

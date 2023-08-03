@@ -130,6 +130,7 @@
 <a href="#130" id="130">130</a>
 <a href="#131" id="131">131</a>
 <a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -141,6 +142,7 @@
 <span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>prometheus::core::{AtomicU64, GenericCounterVec, Opts};
 <span class="kw">use </span>prometheus::{Encoder, TextEncoder};
+<span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::{net::TcpListener, path::PathBuf};
 <span class="kw">use </span>tokio::sync::RwLock;
 <span class="kw">use </span>tracing::warn;
@@ -156,10 +158,10 @@
 <span class="kw">pub async fn </span>init_prometheus&lt;DB&gt;(
     prometheus_listener: TcpListener,
     db_directory: PathBuf,
-    db: DB,
+    db: Arc&lt;DB&gt;,
 ) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
-    </span>DB: DBStatistics + Sync + Send + Clone + <span class="lifetime">&#39;static</span>,
+    </span>DB: DBStatistics + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>registry = prometheus::default_registry();
 
@@ -205,10 +207,10 @@
 
 <span class="attr">#[allow(clippy::unused_async)]
 </span><span class="kw">async fn </span>collect_db_metrics&lt;DB&gt;(
-    axum::extract::State(db): axum::extract::State&lt;DB&gt;,
+    axum::extract::State(db): axum::extract::State&lt;Arc&lt;DB&gt;&gt;,
 ) -&gt; <span class="kw">impl </span>IntoResponse
 <span class="kw">where
-    </span>DB: DBStatistics + Sync + Send + Clone + <span class="lifetime">&#39;static</span>,
+    </span>DB: DBStatistics,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>metrics = <span class="string">&quot;# DB statistics:\n&quot;</span>.to_owned();
     <span class="kw">if let </span><span class="prelude-val">Some</span>(db_stats) = db.get_statistics() {

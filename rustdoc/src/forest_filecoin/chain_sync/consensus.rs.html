@@ -217,7 +217,7 @@
         block: Arc&lt;Block&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), NonEmpty&lt;<span class="self">Self</span>::Error&gt;&gt;
     <span class="kw">where
-        </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>;
+        </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>;
 }
 
 <span class="doccomment">/// Helper function to collect errors from async validations.
@@ -285,7 +285,7 @@
         services: <span class="kw-2">&amp;mut </span>JoinSet&lt;anyhow::Result&lt;()&gt;&gt;,
     ) -&gt; anyhow::Result&lt;()&gt;
     <span class="kw">where
-        </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+        </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
         MP: MessagePoolApi + Sync + Send + <span class="lifetime">&#39;static</span>;
 }
 
@@ -313,7 +313,7 @@
         base: <span class="kw-2">&amp;</span>Tipset,
     ) -&gt; anyhow::Result&lt;Vec&lt;Cow&lt;SignedMessage&gt;&gt;&gt;
     <span class="kw">where
-        </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>;
+        </span>DB: Blockstore;
 }
 
 <span class="kw">impl</span>&lt;P&gt; MessagePoolApi <span class="kw">for </span>MessagePool&lt;P&gt;
@@ -326,7 +326,7 @@
         base: <span class="kw-2">&amp;</span>Tipset,
     ) -&gt; anyhow::Result&lt;Vec&lt;Cow&lt;SignedMessage&gt;&gt;&gt;
     <span class="kw">where
-        </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+        </span>DB: Blockstore,
     {
         <span class="self">self</span>.select_messages_for_block(base)
             .map_err(|e| e.into())

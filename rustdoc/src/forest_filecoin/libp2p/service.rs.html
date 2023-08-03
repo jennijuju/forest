@@ -1032,7 +1032,7 @@
 
 <span class="kw">impl</span>&lt;DB&gt; Libp2pService&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + BitswapStoreReadWrite + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + BitswapStoreReadWrite + Sync + Send + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">pub fn </span>new(
         config: Libp2pConfig,
@@ -1523,7 +1523,7 @@
         ChainExchangeResponse,
     )&gt;,
 ) <span class="kw">where
-    </span>DB: Blockstore + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">match </span>ce_event {
         request_response::Event::Message { peer, message } =&gt; {
@@ -1544,7 +1544,7 @@
                         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = cx_response_tx.send((
                             request_id,
                             channel,
-                            make_chain_exchange_response(db.as_ref(), <span class="kw-2">&amp;</span>request),
+                            make_chain_exchange_response(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>request),
                         )) {
                             <span class="macro">debug!</span>(<span class="string">&quot;Failed to send ChainExchangeResponse: {e:?}&quot;</span>);
                         }
@@ -1609,7 +1609,7 @@
     pubsub_block_str: <span class="kw-2">&amp;</span>str,
     pubsub_msg_str: <span class="kw-2">&amp;</span>str,
 ) <span class="kw">where
-    </span>DB: Blockstore + BitswapStoreRead + Clone + Sync + Send + <span class="lifetime">&#39;static</span>,
+    </span>DB: Blockstore + BitswapStoreRead + Sync + Send + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">match </span>event {
         ForestBehaviourEvent::Discovery(discovery_out) =&gt; {
