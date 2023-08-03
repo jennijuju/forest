@@ -144,17 +144,99 @@
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::stream_graph;
+</span><span class="kw">use </span><span class="kw">crate</span>::chain::{
+    index::{ChainIndex, ResolveNullTipset},
+    ChainEpochDelta,
+};
+<span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, stream_graph};
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
 <span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
 <span class="kw">use </span>indicatif::{ProgressBar, ProgressStyle};
+<span class="kw">use </span>std::ops::Deref;
 <span class="kw">use </span>std::path::PathBuf;
+<span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>tokio::{
     fs::File,
     io::{AsyncWrite, AsyncWriteExt, BufReader},
@@ -184,6 +266,24 @@
         </span><span class="attr">#[arg(long, default_value_t = <span class="number">8000usize</span>.next_power_of_two())]
         </span>frame_size: usize,
     },
+    <span class="doccomment">/// Exporting a `.forest.car.zst` file from HEAD
+    </span>Export {
+        <span class="doccomment">/// Snapshot input files (`.car.`, `.car.zst`, `.forest.car.zst`)
+        </span><span class="attr">#[arg(required = <span class="bool-val">true</span>)]
+        </span>snapshot_files: Vec&lt;PathBuf&gt;,
+        <span class="attr">#[arg(long, default_value_t = <span class="number">3</span>)]
+        </span>compression_level: u16,
+        <span class="doccomment">/// End zstd frames after they exceed this length
+        </span><span class="attr">#[arg(long, default_value_t = <span class="number">8000usize</span>.next_power_of_two())]
+        </span>frame_size: usize,
+        <span class="doccomment">/// Latest epoch that has to be exported for this snapshot, the upper bound. This value
+        /// cannot be greater than the latest epoch available in the input snapshot.
+        </span><span class="attr">#[arg(short, long)]
+        </span>epoch: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
+        <span class="doccomment">/// How many state-roots to include. Lower limit is 900 for `calibnet` and `mainnet`.
+        </span><span class="attr">#[arg(short, long, default_value_t = <span class="number">2000</span>)]
+        </span>depth: ChainEpochDelta,
+    },
 }
 
 <span class="kw">impl </span>BenchmarkCommands {
@@ -198,6 +298,16 @@
                 compression_level,
                 frame_size,
             } =&gt; benchmark_forest_encoding(snapshot_file, compression_level, frame_size).<span class="kw">await</span>,
+            <span class="self">Self</span>::Export {
+                snapshot_files,
+                compression_level,
+                frame_size,
+                epoch,
+                depth,
+            } =&gt; {
+                benchmark_exporting(snapshot_files, compression_level, frame_size, epoch, depth)
+                    .<span class="kw">await
+            </span>}
         }
     }
 }
@@ -254,6 +364,46 @@
         block_stream.map_err(anyhow::Error::from),
     );
     <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, roots, frames).<span class="kw">await</span><span class="question-mark">?</span>;
+    dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="comment">// Exporting combines a graph traversal with ForestCAR.zst encoding. Ideally, it
+// should be no lower than `min(benchmark_graph_traversal,
+// benchmark_forest_encoding)`.
+</span><span class="kw">async fn </span>benchmark_exporting(
+    input: Vec&lt;PathBuf&gt;,
+    compression_level: u16,
+    frame_size: usize,
+    epoch: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
+    depth: ChainEpochDelta,
+) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">let </span>store = open_store(input)<span class="question-mark">?</span>;
+    <span class="kw">let </span>heaviest = store.heaviest_tipset()<span class="question-mark">?</span>;
+    <span class="kw">let </span>idx = ChainIndex::new(<span class="kw-2">&amp;</span>store);
+    <span class="kw">let </span>ts = idx.tipset_by_height(
+        epoch.unwrap_or(heaviest.epoch()),
+        Arc::new(heaviest),
+        ResolveNullTipset::TakeOlder,
+    )<span class="question-mark">?</span>;
+    <span class="comment">// We don&#39;t do any sanity checking for &#39;depth&#39;. The output is discarded so
+    // there&#39;s no need.
+    </span><span class="kw">let </span>stateroot_lookup_limit = ts.epoch() - depth;
+
+    <span class="kw">let </span><span class="kw-2">mut </span>dest = indicatif_sink(<span class="string">&quot;exported&quot;</span>);
+
+    <span class="kw">let </span>blocks = stream_chain(
+        <span class="kw-2">&amp;</span>store,
+        ts.deref().clone().chain(<span class="kw-2">&amp;</span>store),
+        stateroot_lookup_limit,
+    );
+
+    <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
+        frame_size,
+        compression_level,
+        blocks.map_err(anyhow::Error::from),
+    );
+    <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, ts.key().cids.clone(), frames).<span class="kw">await</span><span class="question-mark">?</span>;
     dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
