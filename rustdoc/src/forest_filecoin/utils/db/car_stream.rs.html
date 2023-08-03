@@ -184,6 +184,8 @@
 <a href="#184" id="184">184</a>
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
@@ -276,13 +278,15 @@
         } <span class="kw">else </span>{
             reader.seek(SeekFrom::Start(start_position)).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span><span class="kw-2">mut </span>zstd = ZstdDecoder::new(reader);
+            zstd.multiple_members(<span class="bool-val">true</span>);
             <span class="kw">if let </span><span class="prelude-val">Some</span>(header) = read_header(<span class="kw-2">&amp;mut </span>zstd).<span class="kw">await </span>{
                 <span class="kw">let </span><span class="kw-2">mut </span>reader = zstd.into_inner();
 
                 reset_bufread(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>;
 
                 reader.seek(SeekFrom::Start(start_position)).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="kw">let </span>zstd = ZstdDecoder::new(reader);
+                <span class="kw">let </span><span class="kw-2">mut </span>zstd = ZstdDecoder::new(reader);
+                zstd.multiple_members(<span class="bool-val">true</span>);
                 <span class="kw">let </span><span class="kw-2">mut </span>framed_reader = FramedRead::new(Either::Right(zstd), UviBytes::default());
                 <span class="kw">let _ </span>= framed_reader.next().<span class="kw">await</span>;
                 <span class="prelude-val">Ok</span>(CarStream {
