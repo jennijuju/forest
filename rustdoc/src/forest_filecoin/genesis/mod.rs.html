@@ -215,8 +215,6 @@
 <a href="#215" id="215">215</a>
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -333,9 +331,7 @@
         stopwatch.elapsed().as_secs()
     );
     <span class="kw">if let </span><span class="prelude-val">Some</span>(n_records) = n_records {
-        <span class="kw">let </span><span class="kw-2">mut </span>meta = sm.chain_store().file_backed_chain_meta().lock();
-        meta.inner_mut().estimated_reachable_records = n_records;
-        meta.sync()<span class="question-mark">?</span>;
+        sm.chain_store().set_estimated_records(n_records <span class="kw">as </span>u64)<span class="question-mark">?</span>;
     }
 
     <span class="kw">let </span>ts = sm.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(cids))<span class="question-mark">?</span>;

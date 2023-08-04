@@ -112,7 +112,7 @@
 </span><span class="kw">impl </span>MpoolConfig {
     <span class="doccomment">/// Saves message pool `config` to the database, to easily reload.
     </span><span class="kw">pub fn </span>save_config&lt;DB: SettingsStore&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, store: <span class="kw-2">&amp;</span>DB) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-        store.write_bin(MPOOL_CONFIG_KEY, fvm_ipld_encoding::to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>)<span class="question-mark">?</span>)
+        store.write_bin(MPOOL_CONFIG_KEY, <span class="kw-2">&amp;</span>fvm_ipld_encoding::to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>)<span class="question-mark">?</span>)
     }
 
     <span class="doccomment">/// Returns the low limit capacity of messages to allocate.

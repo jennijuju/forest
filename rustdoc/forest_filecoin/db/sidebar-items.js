@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["car","db_engine","memory","metrics","parity_db","parity_db_config","rolling"],"trait":["DBStatistics","SettingsStore"]};
+window.SIDEBAR_ITEMS = {"mod":["car","db_engine","memory","metrics","parity_db","parity_db_config","rolling","setting_keys"],"trait":["DBStatistics","SettingsStore","SettingsStoreExt"]};

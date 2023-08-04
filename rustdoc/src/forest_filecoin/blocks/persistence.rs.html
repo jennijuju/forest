@@ -69,7 +69,7 @@
     </span><span class="kw">fn </span>tipset_keys_round_trip() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>path = Path::new(<span class="string">&quot;src/blocks/tests/calibnet/HEAD&quot;</span>);
         <span class="kw">let </span>obj1: FileBacked&lt;TipsetKeys&gt; =
-            FileBacked::load_from_file_or_create(path.into(), Default::default, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+            FileBacked::load_from_file_or_create(path.into(), Default::default)<span class="question-mark">?</span>;
         <span class="kw">let </span>serialized = obj1.inner().serialize()<span class="question-mark">?</span>;
         <span class="kw">let </span>deserialized = TipsetKeys::deserialize(<span class="kw-2">&amp;</span>serialized)<span class="question-mark">?</span>;
 
