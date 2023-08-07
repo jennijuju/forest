@@ -66,14 +66,12 @@
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::time::Duration;
 
-<span class="kw">use crate</span>::{db::SettingsStore, shim::address::Address};
-<span class="kw">use </span>fvm_ipld_encoding::from_slice;
+<span class="kw">use crate</span>::{db::SettingsStore, shim::address::Address, utils::encoding::from_slice_with_fallback};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">const </span>MPOOL_CONFIG_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/mpool/config&quot;</span>;
@@ -131,7 +129,7 @@
     /// default.
     </span><span class="kw">pub fn </span>load_config&lt;DB: SettingsStore&gt;(store: <span class="kw-2">&amp;</span>DB) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
         <span class="kw">match </span>store.read_bin(MPOOL_CONFIG_KEY)<span class="question-mark">? </span>{
-            <span class="prelude-val">Some</span>(v) =&gt; <span class="prelude-val">Ok</span>(from_slice(<span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>),
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="prelude-val">Ok</span>(from_slice_with_fallback(<span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>),
             <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(Default::default()),
         }
     }

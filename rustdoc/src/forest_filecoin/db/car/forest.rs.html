@@ -490,6 +490,8 @@
 <a href="#490" id="490">490</a>
 <a href="#491" id="491">491</a>
 <a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -543,13 +545,14 @@
 <span class="kw">use </span><span class="kw">crate</span>::db::car::plain::write_skip_frame_header_async;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_index::{CarIndex, CarIndexBuilder, FrameOffset, Hash};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarHeader};
+<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::uvibytes::UviBytes;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>bytes::{buf::Writer, BufMut <span class="kw">as _</span>, Bytes, BytesMut};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::{Stream, TryStream, TryStreamExt <span class="kw">as _</span>};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::{from_slice, to_vec};
+<span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::task::Poll;
@@ -608,7 +611,8 @@
         <span class="kw">let </span>block_frame = UviBytes::default()
             .decode(<span class="kw-2">&amp;mut </span>header_zstd_frame)<span class="question-mark">?
             </span>.ok_or(invalid_data(<span class="string">&quot;malformed uvibytes&quot;</span>))<span class="question-mark">?</span>;
-        <span class="kw">let </span>header = from_slice::&lt;CarHeader&gt;(<span class="kw-2">&amp;</span>block_frame)<span class="question-mark">?</span>;
+        <span class="kw">let </span>header = from_slice_with_fallback::&lt;CarHeader&gt;(<span class="kw-2">&amp;</span>block_frame)
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>index = CarIndex::open(mk_reader()<span class="question-mark">?</span>, footer.index)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(ForestCar {

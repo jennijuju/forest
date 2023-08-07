@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["from_reader","from_slice","is_indefinite"],"macro":["deserialize_type"],"mod":["cbor4ii_nonpub"],"struct":["Accessor","CidDeserializer","Deserializer","EnumAccessor"]};

@@ -988,6 +988,7 @@
 <a href="#988" id="988">988</a>
 <a href="#989" id="989">989</a>
 <a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1930,6 +1931,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
     <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, message::Message};
     <span class="kw">use </span><span class="kw">crate</span>::test_utils::construct_messages;
+    <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
     <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
     <span class="kw">use </span>cid::Cid;
 
@@ -1954,9 +1956,9 @@
     </span><span class="kw">fn </span>empty_msg_meta_vector() {
         <span class="kw">let </span>blockstore = MemoryDB::default();
         <span class="kw">let </span>usm: Vec&lt;Message&gt; =
-            fvm_ipld_encoding::from_slice(<span class="kw-2">&amp;</span>BASE64_STANDARD.decode(<span class="string">&quot;gA==&quot;</span>).unwrap()).unwrap();
+            from_slice_with_fallback(<span class="kw-2">&amp;</span>BASE64_STANDARD.decode(<span class="string">&quot;gA==&quot;</span>).unwrap()).unwrap();
         <span class="kw">let </span>sm: Vec&lt;SignedMessage&gt; =
-            fvm_ipld_encoding::from_slice(<span class="kw-2">&amp;</span>BASE64_STANDARD.decode(<span class="string">&quot;gA==&quot;</span>).unwrap()).unwrap();
+            from_slice_with_fallback(<span class="kw-2">&amp;</span>BASE64_STANDARD.decode(<span class="string">&quot;gA==&quot;</span>).unwrap()).unwrap();
 
         <span class="macro">assert_eq!</span>(
             TipsetValidator::compute_msg_root(<span class="kw-2">&amp;</span>blockstore, <span class="kw-2">&amp;</span>usm, <span class="kw-2">&amp;</span>sm)

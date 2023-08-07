@@ -847,12 +847,12 @@
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{
     request_manager::BitswapRequestManager, BitswapStoreRead, BitswapStoreReadWrite,
 };
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
 <span class="kw">use crate</span>::{blocks::GossipBlock, rpc_api::net_api::NetInfoResult};
+<span class="kw">use crate</span>::{chain::ChainStore, utils::encoding::from_slice_with_fallback};
 <span class="kw">use </span>ahash::{HashMap, HashSet};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
@@ -1342,7 +1342,7 @@
         <span class="kw">let </span>message = message.data;
         <span class="macro">trace!</span>(<span class="string">&quot;Got a Gossip Message from {:?}&quot;</span>, source);
         <span class="kw">if </span>topic == pubsub_block_str {
-            <span class="kw">match </span>fvm_ipld_encoding::from_slice::&lt;GossipBlock&gt;(<span class="kw-2">&amp;</span>message) {
+            <span class="kw">match </span>from_slice_with_fallback::&lt;GossipBlock&gt;(<span class="kw-2">&amp;</span>message) {
                 <span class="prelude-val">Ok</span>(b) =&gt; {
                     emit_event(
                         network_sender_out,
@@ -1358,7 +1358,7 @@
                 }
             }
         } <span class="kw">else if </span>topic == pubsub_msg_str {
-            <span class="kw">match </span>fvm_ipld_encoding::from_slice::&lt;SignedMessage&gt;(<span class="kw-2">&amp;</span>message) {
+            <span class="kw">match </span>from_slice_with_fallback::&lt;SignedMessage&gt;(<span class="kw-2">&amp;</span>message) {
                 <span class="prelude-val">Ok</span>(m) =&gt; {
                     emit_event(
                         network_sender_out,

@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"forest_filecoin":[]
+"forest_filecoin":[["impl&lt;'de, 'a, R: Read&lt;'de&gt;&gt; <a class=\"trait\" href=\"forest_filecoin/utils/encoding/de/trait.MapAccess.html\" title=\"trait forest_filecoin::utils::encoding::de::MapAccess\">MapAccess</a>&lt;'de&gt; for <a class=\"struct\" href=\"forest_filecoin/utils/encoding/fallback_de_ipld_dagcbor/struct.Accessor.html\" title=\"struct forest_filecoin::utils::encoding::fallback_de_ipld_dagcbor::Accessor\">Accessor</a>&lt;'a, R&gt;"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

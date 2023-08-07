@@ -383,6 +383,7 @@
     state_tree::StateTree,
     version::NetworkVersion,
 };
+<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm2::externs::{Consensus, Externs, Rand};
@@ -390,7 +391,6 @@
     tracking::{BSStats, TrackingBlockstore},
     Blockstore,
 };
-<span class="kw">use </span>fvm_ipld_encoding::from_slice;
 <span class="kw">use </span>fvm_shared2::{
     address::Address,
     clock::ChainEpoch,
@@ -539,8 +539,8 @@
                 h2
             );
         };
-        <span class="kw">let </span>bh_1 = from_slice::&lt;BlockHeader&gt;(h1)<span class="question-mark">?</span>;
-        <span class="kw">let </span>bh_2 = from_slice::&lt;BlockHeader&gt;(h2)<span class="question-mark">?</span>;
+        <span class="kw">let </span>bh_1 = from_slice_with_fallback::&lt;BlockHeader&gt;(h1)<span class="question-mark">?</span>;
+        <span class="kw">let </span>bh_2 = from_slice_with_fallback::&lt;BlockHeader&gt;(h2)<span class="question-mark">?</span>;
 
         <span class="kw">if </span>bh_1.cid() == bh_2.cid() {
             <span class="macro">bail!</span>(<span class="string">&quot;no consensus fault: submitted blocks are the same&quot;</span>);
@@ -587,7 +587,7 @@
         // Specifically, since A is of lower height, it must be that B was mined
         // omitting A from its tipset
         </span><span class="kw">if </span>!extra.is_empty() {
-            <span class="kw">let </span>bh_3 = from_slice::&lt;BlockHeader&gt;(extra)<span class="question-mark">?</span>;
+            <span class="kw">let </span>bh_3 = from_slice_with_fallback::&lt;BlockHeader&gt;(extra)<span class="question-mark">?</span>;
             <span class="kw">if </span>bh_1.parents() == bh_3.parents()
                 &amp;&amp; bh_1.epoch() == bh_3.epoch()
                 &amp;&amp; bh_2.parents().cids().contains(bh_3.cid())
