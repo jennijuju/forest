@@ -418,13 +418,6 @@
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
-<a href="#421" id="421">421</a>
-<a href="#422" id="422">422</a>
-<a href="#423" id="423">423</a>
-<a href="#424" id="424">424</a>
-<a href="#425" id="425">425</a>
-<a href="#426" id="426">426</a>
-<a href="#427" id="427">427</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -525,16 +518,8 @@
                 diff,
             } =&gt; {
                 <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;
-
-                do_export(
-                    <span class="kw-2">&amp;</span>store,
-                    store.heaviest_tipset()<span class="question-mark">?</span>,
-                    output_path,
-                    epoch,
-                    depth,
-                    diff,
-                )
-                .<span class="kw">await
+                <span class="kw">let </span>heaviest_tipset = store.heaviest_tipset()<span class="question-mark">?</span>;
+                do_export(store, heaviest_tipset, output_path, epoch, depth, diff).<span class="kw">await
             </span>}
             <span class="self">Self</span>::Checkpoints {
                 snapshot_files: snapshot,
@@ -569,7 +554,7 @@
 }
 
 <span class="kw">async fn </span>do_export(
-    store: <span class="kw">impl </span>Blockstore,
+    store: <span class="kw">impl </span>Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
     root: Tipset,
     output_path: PathBuf,
     epoch_option: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
@@ -828,9 +813,10 @@
     </span><span class="kw">async fn </span>export() {
         <span class="kw">let </span>output_path = TempDir::new().unwrap();
         <span class="kw">let </span>store = AnyCar::try_from(calibnet::DEFAULT_GENESIS).unwrap();
+        <span class="kw">let </span>heaviest_tipset = store.heaviest_tipset().unwrap();
         do_export(
-            <span class="kw-2">&amp;</span>store,
-            store.heaviest_tipset().unwrap(),
+            store,
+            heaviest_tipset,
             output_path.path().into(),
             <span class="prelude-val">Some</span>(<span class="number">0</span>),
             <span class="number">1</span>,

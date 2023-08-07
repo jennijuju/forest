@@ -219,6 +219,7 @@
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -230,6 +231,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, stream_graph};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
+<span class="kw">use </span><span class="kw">crate</span>::utils::stream::par_buffer;
 <span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
@@ -361,7 +363,7 @@
     <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
         frame_size,
         compression_level,
-        block_stream.map_err(anyhow::Error::from),
+        par_buffer(<span class="number">1024</span>, block_stream.map_err(anyhow::Error::from)),
     );
     <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, roots, frames).<span class="kw">await</span><span class="question-mark">?</span>;
     dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;
@@ -378,7 +380,7 @@
     epoch: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     depth: ChainEpochDelta,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>store = open_store(input)<span class="question-mark">?</span>;
+    <span class="kw">let </span>store = Arc::new(open_store(input)<span class="question-mark">?</span>);
     <span class="kw">let </span>heaviest = store.heaviest_tipset()<span class="question-mark">?</span>;
     <span class="kw">let </span>idx = ChainIndex::new(<span class="kw-2">&amp;</span>store);
     <span class="kw">let </span>ts = idx.tipset_by_height(
@@ -393,15 +395,15 @@
     <span class="kw">let </span><span class="kw-2">mut </span>dest = indicatif_sink(<span class="string">&quot;exported&quot;</span>);
 
     <span class="kw">let </span>blocks = stream_chain(
-        <span class="kw-2">&amp;</span>store,
-        ts.deref().clone().chain(<span class="kw-2">&amp;</span>store),
+        Arc::clone(<span class="kw-2">&amp;</span>store),
+        ts.deref().clone().chain(Arc::clone(<span class="kw-2">&amp;</span>store)),
         stateroot_lookup_limit,
     );
 
     <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
         frame_size,
         compression_level,
-        blocks.map_err(anyhow::Error::from),
+        par_buffer(<span class="number">1024</span>, blocks.map_err(anyhow::Error::from)),
     );
     <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, ts.key().cids.clone(), frames).<span class="kw">await</span><span class="question-mark">?</span>;
     dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;
