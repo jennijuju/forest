@@ -345,6 +345,73 @@ information Usage: <code>forest-cli sync status</code> Permissions: Read</p>
 Usage: <code>forest-cli sync check-bad -c &lt;block cid&gt;</code> Permissions: Read</p>
 <p>Mark Bad Mark a block as bad, the syncer will never sync this block Usage:
 <code>forest-cli sync mark-bad -c &lt;block cid&gt;</code> Permissions: Admin</p>
+<h2 id="message-pool"><a class="header" href="#message-pool">Message Pool</a></h2>
+<p>The Message Pool (mpool) is the component of forest that handles pending
+messages that have reached the node for inclusion in the chain.</p>
+<h3 id="display-the-list-of-all-pending-messages"><a class="header" href="#display-the-list-of-all-pending-messages">Display the list of all pending messages</a></h3>
+<p>Usage: <code>forest-cli mpool pending</code></p>
+<p>Example:</p>
+<pre><code>{
+  &quot;Message&quot;: {
+    &quot;Version&quot;: 0,
+    &quot;To&quot;: &quot;t01491&quot;,
+    &quot;From&quot;: &quot;t3sg27lp6xgz3fb7db7t4x4lhmsf3dgu73mj5sodkshh64ftr6dzkrfxrowroon2cr2f3vkumsi4schkpfyvea&quot;,
+    &quot;Nonce&quot;: 14704,
+    &quot;Value&quot;: &quot;0&quot;,
+    &quot;GasLimit&quot;: 31073678,
+    &quot;GasFeeCap&quot;: &quot;100507&quot;,
+    &quot;GasPremium&quot;: &quot;99453&quot;,
+    &quot;Method&quot;: 6,
+    &quot;Params&quot;: &quot;iggZG3DYKlgpAAGC4gOB6AIgRRHJtEnHDx51h/M46ebVUjTD1kowbg+8uWOSrQnQYWwaAAaPXIAaAB45DvQAAAA=&quot;,
+    &quot;CID&quot;: {
+      &quot;/&quot;: &quot;bafy2bzaceacz2f5k5pcjhzvodhpgin2phycgk2magezaxxp7wcqrjvobbtj5w&quot;
+    }
+  },
+  &quot;Signature&quot;: {
+    &quot;Type&quot;: 2,
+    &quot;Data&quot;: &quot;hcBY3OATkjMBRly96aViP2CR0R68dqnmlB1k6g2C2EXfe7+AsCN7bF4+M5bA6SecCsP2Fx+NwYkpGBi1CFGon5U9bqilMIiXxuK0mIrNO0d6UocCBGi/IVZwW2K4hT9N&quot;
+  },
+  &quot;CID&quot;: {
+    &quot;/&quot;: &quot;bafy2bzaceacz2f5k5pcjhzvodhpgin2phycgk2magezaxxp7wcqrjvobbtj5w&quot;
+  }
+}
+</code></pre>
+<h3 id="display-the-cids-of-pending-messages"><a class="header" href="#display-the-cids-of-pending-messages">Display the CIDs of pending messages</a></h3>
+<p>Usage: <code>forest-cli mpool pending --cids</code></p>
+<h3 id="display-the-locally-published-messages-only"><a class="header" href="#display-the-locally-published-messages-only">Display the locally published messages only</a></h3>
+<p>Usage: <code>forest-cli mpool pending --local</code></p>
+<h3 id="display-the-list-of-all-pending-messages-originating-from-a-given-address"><a class="header" href="#display-the-list-of-all-pending-messages-originating-from-a-given-address">Display the list of all pending messages originating from a given address</a></h3>
+<p>Usage: <code>forest-cli mpool pending --from &lt;address&gt;</code></p>
+<h3 id="display-the-list-of-all-pending-messages-going-to-a-given-address"><a class="header" href="#display-the-list-of-all-pending-messages-going-to-a-given-address">Display the list of all pending messages going to a given address</a></h3>
+<p>Usage: <code>forest-cli mpool pending --to &lt;address&gt;</code></p>
+<p>You can retrieve statistics about the current messages in the pool.</p>
+<h3 id="display-statistics-of-all-pending-messages"><a class="header" href="#display-statistics-of-all-pending-messages">Display statistics of all pending messages</a></h3>
+<p>Usage: <code>forest-cli mpool stat</code></p>
+<p>Example:</p>
+<pre><code>t3ub2uupkvfwp7zckda2songtluquirgxnooocjfifq6qesxre4igoc3u62njgvmmgnyccmowshbmrolkuni7a: Nonce past: 3, cur: 0, future: 1; FeeCap cur: 0, min-60: 0, gasLimit: 186447391
+t3wikyuoalsqxathxey5jcsiowhbmy5o2ip6l4lvpna2rjxjd7micrgmlppjmwwcsnll7xgqzhlqqs6j4xk3oa: Nonce past: 1, cur: 0, future: 0; FeeCap cur: 0, min-60: 0, gasLimit: 66357410
+t3wt6c4wla5egncjsgq67lsu4wzu4xtnbeskgupty7udysbiqkr4sw6inqli2nazks2ypwwnmlahtkzd4ghjja: Nonce past: 1, cur: 0, future: 0; FeeCap cur: 0, min-60: 0, gasLimit: 44752713
+-----
+total: Nonce past: 5, cur: 0, future: 1; FeeCap cur: 0, min-60: 0, gasLimit: 297557514
+</code></pre>
+<p>The <code>Nonce past</code>, <code>cur</code> (current) and <code>future</code> metrics indicate for each sending
+account actor (the first address) how its message nonces are comparing
+relatively to its own nonce.</p>
+<p>A positive <code>past</code> number indicates messages that have been mined but that are
+still present in the message pool and/or messages that could not get included in
+a block. A positive <code>cur</code> number indicates all messages that are waiting to be
+included in a block. A high number here could mean that the network is enduring
+some congestion (if those messages are yours, you need to pay attention to the
+different fees you are using and adjust them). A positive <code>future</code> number means
+either that your forest node is not fully synced yet or if you are in sync that
+some messages are using a too small nonce.</p>
+<p>The <code>FeeCap cur</code> and <code>min-60</code> indicate how many messages from the sending
+account actor have their basefee below to the current tipset basefee and the
+minimum basefee found in the last 60 tipsets, respectively (use
+<code>--basefee-lookback</code> flag to change the number of lookback tipsets).</p>
+<p>The <code>gasLimit</code> value indicates the sum of <code>gasLimit</code> of all messages from each
+sending actor.</p>
+<p>The final <code>total</code> line is the accumulated sum of each metric for all messages.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="configuration"><a class="header" href="#configuration">Configuration</a></h1>
 <p>The <code>forest</code> process has a set of configurable values which determine the
 behavior of the node. All values can be set through process flags or through a

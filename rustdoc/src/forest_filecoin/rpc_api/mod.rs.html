@@ -520,6 +520,15 @@
 <a href="#520" id="520">520</a>
 <a href="#521" id="521">521</a>
 <a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
+<a href="#526" id="526">526</a>
+<a href="#527" id="527">527</a>
+<a href="#528" id="528">528</a>
+<a href="#529" id="529">529</a>
+<a href="#530" id="530">530</a>
+<a href="#531" id="531">531</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">/// In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -567,6 +576,7 @@
     access.insert(chain_api::CHAIN_GET_TIPSET, Access::Read);
     access.insert(chain_api::CHAIN_GET_NAME, Access::Read);
     access.insert(chain_api::CHAIN_SET_HEAD, Access::Admin);
+    access.insert(chain_api::CHAIN_GET_MIN_BASE_FEE, Access::Admin);
 
     <span class="comment">// Message Pool API
     </span>access.insert(mpool_api::MPOOL_PENDING, Access::Read);
@@ -594,6 +604,7 @@
     <span class="comment">// State API
     </span>access.insert(state_api::STATE_CALL, Access::Read);
     access.insert(state_api::STATE_REPLAY, Access::Read);
+    access.insert(state_api::STATE_GET_ACTOR, Access::Read);
     access.insert(state_api::STATE_MARKET_BALANCE, Access::Read);
     access.insert(state_api::STATE_MARKET_DEALS, Access::Read);
     access.insert(state_api::STATE_GET_RECEIPT, Access::Read);
@@ -747,6 +758,10 @@
     <span class="kw">pub const </span>CHAIN_SET_HEAD: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainSetHead&quot;</span>;
     <span class="kw">pub type </span>ChainSetHeadParams = (TipsetKeys,);
     <span class="kw">pub type </span>ChainSetHeadResult = ();
+
+    <span class="kw">pub const </span>CHAIN_GET_MIN_BASE_FEE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetMinBaseFee&quot;</span>;
+    <span class="kw">pub type </span>ChainGetMinBaseFeeParams = (u32,);
+    <span class="kw">pub type </span>ChainGetMinBaseFeeResult = String;
 }
 
 <span class="doccomment">/// Message Pool API
@@ -756,13 +771,11 @@
         message::json::MessageJson,
         signed_message::json::SignedMessageJson,
     };
-    <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
-
     <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::MessageSendSpec;
 
     <span class="kw">pub const </span>MPOOL_PENDING: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.MpoolPending&quot;</span>;
     <span class="kw">pub type </span>MpoolPendingParams = (CidJsonVec,);
-    <span class="kw">pub type </span>MpoolPendingResult = Vec&lt;SignedMessage&gt;;
+    <span class="kw">pub type </span>MpoolPendingResult = Vec&lt;SignedMessageJson&gt;;
 
     <span class="kw">pub const </span>MPOOL_PUSH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.MpoolPush&quot;</span>;
     <span class="kw">pub type </span>MpoolPushParams = (SignedMessageJson,);
@@ -846,6 +859,7 @@
     <span class="kw">use </span>std::path::PathBuf;
 
     <span class="kw">use </span><span class="kw">crate</span>::blocks::tipset_keys_json::TipsetKeysJson;
+    <span class="kw">use </span><span class="kw">crate</span>::json::actor_state::json::ActorStateJson;
     <span class="kw">use </span><span class="kw">crate</span>::json::{
         address::json::AddressJson, cid::CidJson, message::json::MessageJson,
         message_receipt::json::ReceiptJson,
@@ -872,6 +886,10 @@
     <span class="kw">pub const </span>STATE_NETWORK_VERSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateNetworkVersion&quot;</span>;
     <span class="kw">pub type </span>StateNetworkVersionParams = (TipsetKeysJson,);
     <span class="kw">pub type </span>StateNetworkVersionResult = NetworkVersion;
+
+    <span class="kw">pub const </span>STATE_GET_ACTOR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetActor&quot;</span>;
+    <span class="kw">pub type </span>StateGetActorParams = (AddressJson, TipsetKeysJson);
+    <span class="kw">pub type </span>StateGetActorResult = <span class="prelude-ty">Option</span>&lt;ActorStateJson&gt;;
 
     <span class="kw">pub const </span>STATE_MARKET_BALANCE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMarketBalance&quot;</span>;
     <span class="kw">pub type </span>StateMarketBalanceParams = (AddressJson, TipsetKeysJson);

@@ -64,6 +64,13 @@
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -129,5 +136,12 @@
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainSetHeadResult, Error&gt; {
     call(CHAIN_SET_HEAD, params, auth_token).<span class="kw">await
+</span>}
+
+<span class="kw">pub async fn </span>chain_get_min_base_fee(
+    params: ChainGetMinBaseFeeParams,
+    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetMinBaseFeeResult, Error&gt; {
+    call(CHAIN_GET_MIN_BASE_FEE, params, auth_token).<span class="kw">await
 </span>}
 </code></pre></div></section></main></body></html>

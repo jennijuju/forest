@@ -269,6 +269,27 @@
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -539,5 +560,26 @@
         .chain_store()
         .set_heaviest_tipset(new_head)
         .map_err(Into::into)
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>chain_get_min_base_fee&lt;DB&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
+    Params(params): Params&lt;ChainGetMinBaseFeeParams&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetMinBaseFeeResult, JsonRpcError&gt;
+<span class="kw">where
+    </span>DB: Blockstore,
+{
+    <span class="kw">let </span>(basefee_lookback,) = params;
+    <span class="kw">let </span><span class="kw-2">mut </span>current = data.state_manager.chain_store().heaviest_tipset();
+    <span class="kw">let </span><span class="kw-2">mut </span>min_base_fee = current.blocks()[<span class="number">0</span>].parent_base_fee().clone();
+
+    <span class="kw">for _ in </span><span class="number">0</span>..basefee_lookback {
+        <span class="kw">let </span>parents = current.blocks()[<span class="number">0</span>].parents();
+        current = data.state_manager.chain_store().tipset_from_keys(parents)<span class="question-mark">?</span>;
+
+        min_base_fee = min_base_fee.min(current.blocks()[<span class="number">0</span>].parent_base_fee().to_owned());
+    }
+
+    <span class="prelude-val">Ok</span>(min_base_fee.atto().to_string())
 }
 </code></pre></div></section></main></body></html>

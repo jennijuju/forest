@@ -143,6 +143,7 @@
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -184,13 +185,13 @@
     }
 
     <span class="kw">if </span>mpts.epoch() &gt; ts.epoch() {
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(pending);
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(pending.into_iter().map(SignedMessageJson::from).collect());
     }
 
     <span class="kw">loop </span>{
         <span class="kw">if </span>mpts.epoch() == ts.epoch() {
             <span class="kw">if </span>mpts == ts {
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(pending);
+                <span class="kw">break</span>;
             }
 
             <span class="comment">// mpts has different blocks than ts
@@ -213,7 +214,7 @@
         }
 
         <span class="kw">if </span>mpts.epoch() &gt;= ts.epoch() {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(pending);
+            <span class="kw">break</span>;
         }
 
         ts = data
@@ -221,6 +222,7 @@
             .chain_store()
             .tipset_from_keys(ts.parents())<span class="question-mark">?</span>;
     }
+    <span class="prelude-val">Ok</span>(pending.into_iter().map(SignedMessageJson::from).collect())
 }
 
 <span class="doccomment">/// Add `SignedMessage` to `mpool`, return message CID

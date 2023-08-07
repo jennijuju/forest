@@ -120,6 +120,18 @@
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -128,6 +140,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::HeadChange;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, SignedMessage};
+<span class="kw">use </span><span class="kw">crate</span>::message_pool::msg_pool::{
+    MAX_ACTOR_PENDING_MESSAGES, MAX_UNTRUSTED_ACTOR_PENDING_MESSAGES,
+};
 <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
@@ -171,6 +186,14 @@
     </span><span class="kw">fn </span>load_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt;;
     <span class="doccomment">/// Computes the base fee
     </span><span class="kw">fn </span>chain_compute_base_fee(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, Error&gt;;
+    <span class="comment">// Get max number of messages per actor in the pool
+    </span><span class="kw">fn </span>max_actor_pending_messages(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        MAX_ACTOR_PENDING_MESSAGES
+    }
+    <span class="comment">// Get max number of messages per actor in the pool for untrusted sources
+    </span><span class="kw">fn </span>max_untrusted_actor_pending_messages(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+        MAX_UNTRUSTED_ACTOR_PENDING_MESSAGES
+    }
 }
 
 <span class="doccomment">/// This is the default Provider implementation that will be used for the
@@ -235,6 +258,7 @@
     <span class="kw">fn </span>load_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.sm.chain_store().tipset_from_keys(tsk)<span class="question-mark">?</span>)
     }
+
     <span class="kw">fn </span>chain_compute_base_fee(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, Error&gt; {
         <span class="kw">let </span>smoke_height = <span class="self">self</span>.sm.chain_config().epoch(Height::Smoke);
         <span class="kw">crate</span>::chain::compute_base_fee(<span class="self">self</span>.sm.blockstore(), ts, smoke_height)

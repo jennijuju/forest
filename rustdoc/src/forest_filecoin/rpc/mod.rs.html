@@ -146,6 +146,10 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -227,6 +231,10 @@
             .with_method(CHAIN_GET_BLOCK, chain_api::chain_get_block::&lt;DB&gt;)
             .with_method(CHAIN_GET_NAME, chain_api::chain_get_name::&lt;DB&gt;)
             .with_method(CHAIN_SET_HEAD, chain_api::chain_set_head::&lt;DB&gt;)
+            .with_method(
+                CHAIN_GET_MIN_BASE_FEE,
+                chain_api::chain_get_min_base_fee::&lt;DB&gt;,
+            )
             <span class="comment">// Message Pool API
             </span>.with_method(MPOOL_PENDING, mpool_pending::&lt;DB&gt;)
             .with_method(MPOOL_PUSH, mpool_push::&lt;DB&gt;)
@@ -251,7 +259,7 @@
             .with_method(STATE_REPLAY, state_replay::&lt;DB&gt;)
             .with_method(STATE_NETWORK_NAME, state_network_name::&lt;DB&gt;)
             .with_method(STATE_NETWORK_VERSION, state_get_network_version::&lt;DB&gt;)
-            .with_method(STATE_REPLAY, state_replay::&lt;DB&gt;)
+            .with_method(STATE_GET_ACTOR, state_get_actor::&lt;DB&gt;)
             .with_method(STATE_MARKET_BALANCE, state_market_balance::&lt;DB&gt;)
             .with_method(STATE_MARKET_DEALS, state_market_deals::&lt;DB&gt;)
             .with_method(STATE_GET_RECEIPT, state_get_receipt::&lt;DB&gt;)

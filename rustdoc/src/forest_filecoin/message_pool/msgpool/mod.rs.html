@@ -945,6 +945,42 @@
 <a href="#945" id="945">945</a>
 <a href="#946" id="946">946</a>
 <a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1287,6 +1323,42 @@
         msg_chain::{create_message_chains, Chains},
         msg_pool::MessagePool,
     };
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_per_actor_limit() {
+        <span class="kw">let </span>keystore = KeyStore::new(KeyStoreConfig::Memory).unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>wallet = Wallet::new(keystore);
+        <span class="kw">let </span>sender = wallet.generate_addr(SignatureType::Secp256k1).unwrap();
+        <span class="kw">let </span>target = wallet.generate_addr(SignatureType::Secp256k1).unwrap();
+        <span class="kw">let </span>tma = TestApi::with_max_actor_pending_messages(<span class="number">200</span>);
+        tma.set_state_sequence(<span class="kw-2">&amp;</span>sender, <span class="number">0</span>);
+
+        <span class="kw">let </span>(tx, _rx) = flume::bounded(<span class="number">50</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();
+        <span class="kw">let </span>mpool = MessagePool::new(
+            tma,
+            <span class="string">&quot;mptest&quot;</span>.to_string(),
+            tx,
+            Default::default(),
+            Arc::default(),
+            <span class="kw-2">&amp;mut </span>services,
+        )
+        .unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>smsg_vec = Vec::new();
+        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..(mpool.api.max_actor_pending_messages() + <span class="number">1</span>) {
+            <span class="kw">let </span>msg = create_smsg(<span class="kw-2">&amp;</span>target, <span class="kw-2">&amp;</span>sender, wallet.borrow_mut(), i, <span class="number">1000000</span>, <span class="number">1</span>);
+            smsg_vec.push(msg);
+        }
+
+        <span class="kw">let </span>(last, body) = smsg_vec.split_last().unwrap();
+        <span class="kw">for </span>smsg <span class="kw">in </span>body {
+            mpool.add(smsg.clone()).unwrap();
+        }
+        <span class="macro">assert_eq!</span>(
+            mpool.add(last.clone()),
+            <span class="prelude-val">Err</span>(Error::TooManyPendingMessages(sender.to_string(), <span class="bool-val">true</span>))
+        );
+    }
 
     <span class="kw">pub fn </span>create_smsg(
         to: <span class="kw-2">&amp;</span>Address,

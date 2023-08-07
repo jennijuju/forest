@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["state_fetch_root"]};
+window.SIDEBAR_ITEMS = {"fn":["state_fetch_root","state_get_actor"]};

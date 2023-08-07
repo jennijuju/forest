@@ -646,6 +646,42 @@
 <a href="#646" id="646">646</a>
 <a href="#647" id="647">647</a>
 <a href="#648" id="648">648</a>
+<a href="#649" id="649">649</a>
+<a href="#650" id="650">650</a>
+<a href="#651" id="651">651</a>
+<a href="#652" id="652">652</a>
+<a href="#653" id="653">653</a>
+<a href="#654" id="654">654</a>
+<a href="#655" id="655">655</a>
+<a href="#656" id="656">656</a>
+<a href="#657" id="657">657</a>
+<a href="#658" id="658">658</a>
+<a href="#659" id="659">659</a>
+<a href="#660" id="660">660</a>
+<a href="#661" id="661">661</a>
+<a href="#662" id="662">662</a>
+<a href="#663" id="663">663</a>
+<a href="#664" id="664">664</a>
+<a href="#665" id="665">665</a>
+<a href="#666" id="666">666</a>
+<a href="#667" id="667">667</a>
+<a href="#668" id="668">668</a>
+<a href="#669" id="669">669</a>
+<a href="#670" id="670">670</a>
+<a href="#671" id="671">671</a>
+<a href="#672" id="672">672</a>
+<a href="#673" id="673">673</a>
+<a href="#674" id="674">674</a>
+<a href="#675" id="675">675</a>
+<a href="#676" id="676">676</a>
+<a href="#677" id="677">677</a>
+<a href="#678" id="678">678</a>
+<a href="#679" id="679">679</a>
+<a href="#680" id="680">680</a>
+<a href="#681" id="681">681</a>
+<a href="#682" id="682">682</a>
+<a href="#683" id="683">683</a>
+<a href="#684" id="684">684</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -698,6 +734,9 @@
 </span><span class="kw">const </span>BLS_SIG_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">40000usize</span>);
 <span class="kw">const </span>SIG_VAL_CACHE_SIZE: NonZeroUsize = <span class="macro">nonzero!</span>(<span class="number">32000usize</span>);
 
+<span class="kw">pub const </span>MAX_ACTOR_PENDING_MESSAGES: u64 = <span class="number">1000</span>;
+<span class="kw">pub const </span>MAX_UNTRUSTED_ACTOR_PENDING_MESSAGES: u64 = <span class="number">10</span>;
+
 <span class="doccomment">/// Simple structure that contains a hash-map of messages where k: a message
 /// from address, v: a message which corresponds to that address.
 </span><span class="attr">#[derive(Clone, Default, Debug)]
@@ -718,10 +757,39 @@
 
     <span class="doccomment">/// Add a signed message to the `MsgSet`. Increase `next_sequence` if the
     /// message has a sequence greater than any existing message sequence.
-    </span><span class="kw">pub fn </span>add(<span class="kw-2">&amp;mut </span><span class="self">self</span>, m: SignedMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
+    /// Use this method when pushing a message coming from trusted sources.
+    </span><span class="kw">pub fn </span>add_trusted&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, api: <span class="kw-2">&amp;</span>T, m: SignedMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
+    <span class="kw">where
+        </span>T: Provider,
+    {
+        <span class="self">self</span>.add(api, m, <span class="bool-val">true</span>)
+    }
+
+    <span class="doccomment">/// Add a signed message to the `MsgSet`. Increase `next_sequence` if the
+    /// message has a sequence greater than any existing message sequence.
+    /// Use this method when pushing a message coming from untrusted sources.
+    </span><span class="attr">#[allow(dead_code)]
+    </span><span class="kw">pub fn </span>add_untrusted&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, api: <span class="kw-2">&amp;</span>T, m: SignedMessage) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
+    <span class="kw">where
+        </span>T: Provider,
+    {
+        <span class="self">self</span>.add(api, m, <span class="bool-val">false</span>)
+    }
+
+    <span class="kw">fn </span>add&lt;T&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, api: <span class="kw-2">&amp;</span>T, m: SignedMessage, trusted: bool) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
+    <span class="kw">where
+        </span>T: Provider,
+    {
+        <span class="kw">let </span>max_actor_pending_messages = <span class="kw">if </span>trusted {
+            api.max_actor_pending_messages()
+        } <span class="kw">else </span>{
+            api.max_untrusted_actor_pending_messages()
+        };
+
         <span class="kw">if </span><span class="self">self</span>.msgs.is_empty() || m.sequence() &gt;= <span class="self">self</span>.next_sequence {
             <span class="self">self</span>.next_sequence = m.sequence() + <span class="number">1</span>;
         }
+
         <span class="kw">if let </span><span class="prelude-val">Some</span>(exms) = <span class="self">self</span>.msgs.get(<span class="kw-2">&amp;</span>m.sequence()) {
             <span class="kw">if </span>m.cid()<span class="question-mark">? </span>!= exms.cid()<span class="question-mark">? </span>{
                 <span class="kw">let </span>premium = <span class="kw-2">&amp;</span>exms.message().gas_premium;
@@ -734,6 +802,13 @@
             } <span class="kw">else </span>{
                 <span class="kw">return </span><span class="prelude-val">Err</span>(Error::DuplicateSequence);
             }
+        }
+
+        <span class="kw">if </span><span class="self">self</span>.msgs.len() <span class="kw">as </span>u64 &gt;= max_actor_pending_messages {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(Error::TooManyPendingMessages(
+                m.message.from().to_string(),
+                trusted,
+            ));
         }
         <span class="kw">if </span><span class="self">self</span>.msgs.insert(m.sequence(), m).is_none() {
             metrics::MPOOL_MESSAGE_TOTAL.inc();
@@ -787,8 +862,6 @@
     <span class="doccomment">/// The minimum gas price needed for executing the transaction based on
     /// number of included blocks
     </span><span class="kw">pub </span>min_gas_price: BigInt,
-    <span class="doccomment">/// This is max number of messages in the pool.
-    </span><span class="kw">pub </span>max_tx_pool_size: i64,
     <span class="comment">// TODO
     </span><span class="kw">pub </span>network_name: String,
     <span class="doccomment">/// Sender half to send messages to other components
@@ -1104,7 +1177,6 @@
             cur_tipset: tipset,
             api: Arc::new(api),
             min_gas_price: Default::default(),
-            max_tx_pool_size: <span class="number">5000</span>,
             network_name,
             bls_sig_cache,
             sig_val_cache,
@@ -1234,11 +1306,11 @@
     <span class="kw">let </span><span class="kw-2">mut </span>pending = pending.write();
     <span class="kw">let </span>msett = pending.get_mut(<span class="kw-2">&amp;</span>msg.from());
     <span class="kw">match </span>msett {
-        <span class="prelude-val">Some</span>(mset) =&gt; mset.add(msg)<span class="question-mark">?</span>,
+        <span class="prelude-val">Some</span>(mset) =&gt; mset.add_trusted(api, msg)<span class="question-mark">?</span>,
         <span class="prelude-val">None </span>=&gt; {
             <span class="kw">let </span><span class="kw-2">mut </span>mset = MsgSet::new(sequence);
             <span class="kw">let </span>from = msg.from();
-            mset.add(msg)<span class="question-mark">?</span>;
+            mset.add_trusted(api, msg)<span class="question-mark">?</span>;
             pending.insert(from, mset);
         }
     }

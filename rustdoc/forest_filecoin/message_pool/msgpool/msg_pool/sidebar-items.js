@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BLS_SIG_CACHE_SIZE","BRANCHES","SIG_VAL_CACHE_SIZE"],"fn":["add_helper","remove","verify_msg_before_add"],"static":["CALLSITE"],"struct":["MessagePool","MsgSet"]};
+window.SIDEBAR_ITEMS = {"constant":["BLS_SIG_CACHE_SIZE","BRANCHES","MAX_ACTOR_PENDING_MESSAGES","MAX_UNTRUSTED_ACTOR_PENDING_MESSAGES","SIG_VAL_CACHE_SIZE"],"fn":["add_helper","remove","verify_msg_before_add"],"static":["CALLSITE"],"struct":["MessagePool","MsgSet"]};

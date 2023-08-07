@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["MpoolCommands"]};
+window.SIDEBAR_ITEMS = {"enum":["MpoolCommands"],"fn":["compute_stats","filter_messages","get_actor_sequence","print_stats","to_addr"],"struct":["MpStat"],"type":["StatBucket"]};
