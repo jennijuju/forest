@@ -418,6 +418,9 @@
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
 <a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -452,7 +455,7 @@
     ChainEpochDelta,
 };
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
-<span class="kw">use </span><span class="kw">crate</span>::db::car::{AnyCar, CarReader, ManyCar};
+<span class="kw">use </span><span class="kw">crate</span>::db::car::{AnyCar, ManyCar, RandomAccessFileReader};
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY, EPOCH_DURATION_SECONDS};
@@ -654,14 +657,17 @@
 <span class="kw">impl </span>ArchiveInfo {
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is rendered to stdout.
-    </span><span class="kw">fn </span>from_store(store: AnyCar&lt;<span class="kw">impl </span>CarReader&gt;) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>from_store(store: AnyCar&lt;<span class="kw">impl </span>RandomAccessFileReader&gt;) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::from_store_with(store, <span class="bool-val">true</span>)
     }
 
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is optionally rendered to
     // stdout.
-    </span><span class="kw">fn </span>from_store_with(store: AnyCar&lt;<span class="kw">impl </span>CarReader&gt;, progress: bool) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>from_store_with(
+        store: AnyCar&lt;<span class="kw">impl </span>RandomAccessFileReader&gt;,
+        progress: bool,
+    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>root = store.heaviest_tipset()<span class="question-mark">?</span>;
         <span class="kw">let </span>root_epoch = root.epoch();
 

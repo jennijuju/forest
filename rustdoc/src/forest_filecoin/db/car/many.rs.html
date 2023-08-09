@@ -135,6 +135,7 @@
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -148,6 +149,7 @@
 </span><span class="kw">use super</span>::{AnyCar, ZstdFrameCache};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::random_access::RandomAccessFile;
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -156,7 +158,7 @@
 
 <span class="kw">pub struct </span>ManyCar&lt;WriterT = MemoryDB&gt; {
     shared_cache: Arc&lt;Mutex&lt;ZstdFrameCache&gt;&gt;,
-    read_only: Vec&lt;AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::CarReader&gt;&gt;&gt;,
+    read_only: Vec&lt;AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::RandomAccessFileReader&gt;&gt;&gt;,
     writer: WriterT,
 }
 
@@ -171,7 +173,7 @@
 }
 
 <span class="kw">impl</span>&lt;WriterT&gt; ManyCar&lt;WriterT&gt; {
-    <span class="kw">pub fn </span>read_only&lt;ReaderT: <span class="kw">super</span>::CarReader&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, any_car: AnyCar&lt;ReaderT&gt;) {
+    <span class="kw">pub fn </span>read_only&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, any_car: AnyCar&lt;ReaderT&gt;) {
         <span class="kw">let </span>key = <span class="self">self</span>.read_only.len() <span class="kw">as </span>u64;
         <span class="self">self</span>.read_only.push(
             any_car
@@ -182,7 +184,7 @@
 
     <span class="kw">pub fn </span>read_only_files(<span class="kw-2">&amp;mut </span><span class="self">self</span>, files: <span class="kw">impl </span>Iterator&lt;Item = PathBuf&gt;) -&gt; io::Result&lt;()&gt; {
         <span class="kw">for </span>file <span class="kw">in </span>files {
-            <span class="kw">let </span>car = AnyCar::new(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>file))<span class="question-mark">?</span>;
+            <span class="kw">let </span>car = AnyCar::new(RandomAccessFile::open(file)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
             <span class="self">self</span>.read_only(car);
         }
         <span class="prelude-val">Ok</span>(())
@@ -201,7 +203,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::CarReader&gt; From&lt;AnyCar&lt;ReaderT&gt;&gt; <span class="kw">for </span>ManyCar&lt;MemoryDB&gt; {
+<span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt; From&lt;AnyCar&lt;ReaderT&gt;&gt; <span class="kw">for </span>ManyCar&lt;MemoryDB&gt; {
     <span class="kw">fn </span>from(any_car: AnyCar&lt;ReaderT&gt;) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::new();
         many_car.read_only(any_car);

@@ -156,9 +156,6 @@
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
-<a href="#161" id="161">161</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -171,38 +168,40 @@
 
 </span><span class="kw">use super</span>::{CacheKey, ZstdFrameCache};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::random_access::RandomAccessFile;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>parking_lot::Mutex;
-<span class="kw">use </span>std::io::{Cursor, Error, ErrorKind, Read, <span class="prelude-ty">Result</span>, Seek};
+<span class="kw">use </span>positioned_io::ReadAt;
+<span class="kw">use </span>std::io::{Error, ErrorKind, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">pub enum </span>AnyCar&lt;ReaderT&gt; {
     Plain(<span class="kw">super</span>::PlainCar&lt;ReaderT&gt;),
     Forest(<span class="kw">super</span>::ForestCar&lt;ReaderT&gt;),
-    Memory(<span class="kw">super</span>::PlainCar&lt;Cursor&lt;Vec&lt;u8&gt;&gt;&gt;),
+    Memory(<span class="kw">super</span>::PlainCar&lt;Vec&lt;u8&gt;&gt;),
 }
 
-<span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::CarReader&gt; AnyCar&lt;ReaderT&gt; {
+<span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt; AnyCar&lt;ReaderT&gt; {
     <span class="doccomment">/// Open an archive. May be formatted as `.car`, `.car.zst` or
     /// `.forest.car.zst`. This call may block for an indeterminate amount of
     /// time while data is decoded and indexed.
-    </span><span class="kw">pub fn </span>new(mk_reader: <span class="kw">impl </span><span class="kw">super</span>::forest::ReaderGen&lt;ReaderT&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>plain_reader = mk_reader();
-        <span class="kw">let </span>zstd_reader = mk_reader();
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(forest_car) = <span class="kw">super</span>::ForestCar::new(mk_reader) {
+    </span><span class="kw">pub fn </span>new(reader: ReaderT) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span><span class="kw">super</span>::ForestCar::is_valid(<span class="kw-2">&amp;</span>reader) {
+            <span class="kw">let </span>forest_car = <span class="kw">super</span>::ForestCar::new(reader)<span class="question-mark">?</span>;
             <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Forest(forest_car));
         }
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(plain_car) = <span class="kw">super</span>::PlainCar::new(plain_reader<span class="question-mark">?</span>) {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Plain(plain_car));
-        }
+
         <span class="comment">// Maybe use a tempfile for this in the future.
-        </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(decompressed) = zstd::stream::decode_all(zstd_reader<span class="question-mark">?</span>) {
-            <span class="kw">let </span>mem_reader = Cursor::new(decompressed);
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(mem_car) = <span class="kw">super</span>::PlainCar::new(mem_reader) {
+        </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(decompressed) = zstd::stream::decode_all(positioned_io::Cursor::new(<span class="kw-2">&amp;</span>reader)) {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(mem_car) = <span class="kw">super</span>::PlainCar::new(decompressed) {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Memory(mem_car));
             }
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(plain_car) = <span class="kw">super</span>::PlainCar::new(reader) {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(AnyCar::Plain(plain_car));
         }
         <span class="prelude-val">Err</span>(Error::new(
             ErrorKind::InvalidData,
@@ -231,7 +230,7 @@
     }
 
     <span class="doccomment">/// Discard reader type and replace with dynamic trait object.
-    </span><span class="kw">pub fn </span>into_dyn(<span class="self">self</span>) -&gt; AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::CarReader&gt;&gt; {
+    </span><span class="kw">pub fn </span>into_dyn(<span class="self">self</span>) -&gt; AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::RandomAccessFileReader&gt;&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             AnyCar::Forest(f) =&gt; AnyCar::Forest(f.into_dyn()),
             AnyCar::Plain(p) =&gt; AnyCar::Plain(p.into_dyn()),
@@ -249,25 +248,23 @@
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt; <span class="kw">for </span>AnyCar&lt;std::io::Cursor&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt;&gt; {
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt; <span class="kw">for </span>AnyCar&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]&gt; {
     <span class="kw">type </span>Error = std::io::Error;
     <span class="kw">fn </span>try_from(bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8]) -&gt; std::io::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="prelude-val">Ok</span>(AnyCar::Plain(<span class="kw">super</span>::PlainCar::new(std::io::Cursor::new(
-            bytes,
-        ))<span class="question-mark">?</span>))
+        <span class="prelude-val">Ok</span>(AnyCar::Plain(<span class="kw">super</span>::PlainCar::new(bytes)<span class="question-mark">?</span>))
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;PathBuf&gt; <span class="kw">for </span>AnyCar&lt;std::fs::File&gt; {
+<span class="kw">impl </span>TryFrom&lt;PathBuf&gt; <span class="kw">for </span>AnyCar&lt;RandomAccessFile&gt; {
     <span class="kw">type </span>Error = std::io::Error;
     <span class="kw">fn </span>try_from(path: PathBuf) -&gt; std::io::Result&lt;<span class="self">Self</span>&gt; {
-        AnyCar::new(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>path))
+        AnyCar::new(RandomAccessFile::open(path)<span class="question-mark">?</span>)
     }
 }
 
 <span class="kw">impl</span>&lt;ReaderT&gt; Blockstore <span class="kw">for </span>AnyCar&lt;ReaderT&gt;
 <span class="kw">where
-    </span>ReaderT: Read + Seek,
+    </span>ReaderT: ReadAt,
 {
     <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {
         <span class="kw">match </span><span class="self">self </span>{
@@ -290,33 +287,30 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet};
-    <span class="kw">use </span>std::io::Cursor;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>forest_any_load_calibnet() {
-        <span class="kw">let </span>forest_car = AnyCar::new(<span class="kw">move </span>|| <span class="prelude-val">Ok</span>(Cursor::new(calibnet::DEFAULT_GENESIS))).unwrap();
+        <span class="kw">let </span>forest_car = AnyCar::new(calibnet::DEFAULT_GENESIS).unwrap();
         <span class="macro">assert!</span>(forest_car.has(<span class="kw-2">&amp;</span>calibnet::GENESIS_CID).unwrap());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>forest_any_load_calibnet_zstd() {
-        <span class="kw">let </span>forest_car =
-            AnyCar::new(<span class="kw">move </span>|| <span class="prelude-val">Ok</span>(Cursor::new(zstd::encode_all(calibnet::DEFAULT_GENESIS, <span class="number">3</span>)<span class="question-mark">?</span>)))
-                .unwrap();
+        <span class="kw">let </span>data = zstd::encode_all(calibnet::DEFAULT_GENESIS, <span class="number">3</span>).unwrap();
+        <span class="kw">let </span>forest_car = AnyCar::new(data).unwrap();
         <span class="macro">assert!</span>(forest_car.has(<span class="kw-2">&amp;</span>calibnet::GENESIS_CID).unwrap());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>forest_any_load_mainnet() {
-        <span class="kw">let </span>forest_car = AnyCar::new(<span class="kw">move </span>|| <span class="prelude-val">Ok</span>(Cursor::new(mainnet::DEFAULT_GENESIS))).unwrap();
+        <span class="kw">let </span>forest_car = AnyCar::new(mainnet::DEFAULT_GENESIS).unwrap();
         <span class="macro">assert!</span>(forest_car.has(<span class="kw-2">&amp;</span>mainnet::GENESIS_CID).unwrap());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>forest_any_load_mainnet_zstd() {
-        <span class="kw">let </span>forest_car =
-            AnyCar::new(<span class="kw">move </span>|| <span class="prelude-val">Ok</span>(Cursor::new(zstd::encode_all(mainnet::DEFAULT_GENESIS, <span class="number">3</span>)<span class="question-mark">?</span>)))
-                .unwrap();
+        <span class="kw">let </span>data = zstd::encode_all(mainnet::DEFAULT_GENESIS, <span class="number">3</span>).unwrap();
+        <span class="kw">let </span>forest_car = AnyCar::new(data).unwrap();
         <span class="macro">assert!</span>(forest_car.has(<span class="kw-2">&amp;</span>mainnet::GENESIS_CID).unwrap());
     }
 }

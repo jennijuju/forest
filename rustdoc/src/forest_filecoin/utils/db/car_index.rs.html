@@ -297,8 +297,9 @@
 <span class="kw">use </span>slot::Slot;
 
 <span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>positioned_io::{Cursor, ReadAt};
 <span class="kw">use </span>smallvec::{smallvec, SmallVec};
-<span class="kw">use </span>std::io::{Error, ErrorKind, Read, <span class="prelude-ty">Result</span>, Seek, SeekFrom};
+<span class="kw">use </span>std::io::{Error, ErrorKind, <span class="prelude-ty">Result</span>};
 
 <span class="kw">pub struct </span>CarIndex&lt;ReaderT&gt; {
     <span class="kw">pub </span>reader: ReaderT,
@@ -306,12 +307,11 @@
     <span class="kw">pub </span>header: IndexHeader,
 }
 
-<span class="kw">impl</span>&lt;ReaderT: Read + Seek&gt; CarIndex&lt;ReaderT&gt; {
+<span class="kw">impl</span>&lt;ReaderT: ReadAt&gt; CarIndex&lt;ReaderT&gt; {
     <span class="doccomment">/// `O(1)` Open a reader as a mapping from CIDs to frame positions in a
     /// compressed content-addressable archive.
-    </span><span class="kw">pub fn </span>open(<span class="kw-2">mut </span>reader: ReaderT, offset: u64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        reader.seek(SeekFrom::Start(offset))<span class="question-mark">?</span>;
-        <span class="kw">let </span>header = IndexHeader::read(<span class="kw-2">&amp;mut </span>reader)<span class="question-mark">?</span>;
+    </span><span class="kw">pub fn </span>open(reader: ReaderT, offset: u64) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>header = IndexHeader::read(<span class="kw-2">&amp;</span>reader, offset)<span class="question-mark">?</span>;
         <span class="kw">if </span>header.magic_number != IndexHeader::MAGIC_NUMBER {
             <span class="prelude-val">Err</span>(Error::new(
                 ErrorKind::InvalidData,
@@ -332,30 +332,30 @@
 
     <span class="doccomment">/// `O(1)` Look up possible `BlockPosition`s for a `Cid`. Does not allocate
     /// unless 2 or more CIDs have collided.
-    </span><span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;mut </span><span class="self">self</span>, key: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;SmallVec&lt;[FrameOffset; <span class="number">1</span>]&gt;&gt; {
+    </span><span class="kw">pub fn </span>lookup(<span class="kw-2">&amp;</span><span class="self">self</span>, key: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;SmallVec&lt;[FrameOffset; <span class="number">1</span>]&gt;&gt; {
         <span class="self">self</span>.lookup_internal(Hash::from(key))
     }
 
     <span class="attr">#[cfg(any(test, feature = <span class="string">&quot;benchmark-private&quot;</span>))]
-    </span><span class="kw">pub fn </span>lookup_hash(<span class="kw-2">&amp;mut </span><span class="self">self</span>, hash: Hash) -&gt; <span class="prelude-ty">Result</span>&lt;SmallVec&lt;[FrameOffset; <span class="number">1</span>]&gt;&gt; {
+    </span><span class="kw">pub fn </span>lookup_hash(<span class="kw-2">&amp;</span><span class="self">self</span>, hash: Hash) -&gt; <span class="prelude-ty">Result</span>&lt;SmallVec&lt;[FrameOffset; <span class="number">1</span>]&gt;&gt; {
         <span class="self">self</span>.lookup_internal(hash)
     }
 
     <span class="comment">// Jump to bucket offset and scan downstream. All key-value pairs with the
     // right key are guaranteed to appear before we encounter an empty slot.
-    </span><span class="kw">fn </span>lookup_internal(<span class="kw-2">&amp;mut </span><span class="self">self</span>, hash: Hash) -&gt; <span class="prelude-ty">Result</span>&lt;SmallVec&lt;[FrameOffset; <span class="number">1</span>]&gt;&gt; {
+    </span><span class="kw">fn </span>lookup_internal(<span class="kw-2">&amp;</span><span class="self">self</span>, hash: Hash) -&gt; <span class="prelude-ty">Result</span>&lt;SmallVec&lt;[FrameOffset; <span class="number">1</span>]&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>limit = <span class="self">self</span>.header.longest_distance;
-        <span class="self">self</span>.reader.seek(SeekFrom::Start(
-            <span class="self">self</span>.offset + hash.bucket(<span class="self">self</span>.header.buckets) * Slot::SIZE <span class="kw">as </span>u64,
-        ))<span class="question-mark">?</span>;
-        <span class="kw">while let </span>Slot::Full(entry) = Slot::read(<span class="kw-2">&amp;mut </span><span class="self">self</span>.reader)<span class="question-mark">? </span>{
+
+        <span class="kw">let </span>offset = <span class="self">self</span>.offset + hash.bucket(<span class="self">self</span>.header.buckets) * Slot::SIZE <span class="kw">as </span>u64;
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = Cursor::new_pos(<span class="kw-2">&amp;</span><span class="self">self</span>.reader, offset);
+        <span class="kw">while let </span>Slot::Full(entry) = Slot::read(<span class="kw-2">&amp;mut </span>cursor)<span class="question-mark">? </span>{
             <span class="kw">if </span>entry.hash == hash {
                 <span class="kw">let </span><span class="kw-2">mut </span>ret = <span class="macro">smallvec!</span>[entry.value];
                 <span class="comment">// The entries are sorted. Once we&#39;ve found a matching
                 // key, all duplicate hash keys will be right next to
                 // it. Note that it&#39;s extremely rare for hashes to
                 // collide.
-                </span><span class="kw">while let </span><span class="prelude-val">Some</span>(value) = Slot::read_with_hash(<span class="kw-2">&amp;mut </span><span class="self">self</span>.reader, hash)<span class="question-mark">? </span>{
+                </span><span class="kw">while let </span><span class="prelude-val">Some</span>(value) = Slot::read_with_hash(<span class="kw-2">&amp;mut </span>cursor, hash)<span class="question-mark">? </span>{
                     ret.push(value);
                 }
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(ret);
@@ -371,8 +371,8 @@
     }
 
     <span class="doccomment">/// Gets a mutable reference to the underlying reader.
-    </span><span class="kw">pub fn </span>get_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>ReaderT {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.reader
+    </span><span class="kw">pub fn </span>reader(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ReaderT {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.reader
     }
 
     <span class="kw">pub fn </span>map_reader&lt;V&gt;(<span class="self">self</span>, f: <span class="kw">impl </span>FnOnce(ReaderT) -&gt; V) -&gt; CarIndex&lt;V&gt; {
