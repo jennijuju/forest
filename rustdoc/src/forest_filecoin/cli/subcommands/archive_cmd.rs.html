@@ -421,6 +421,29 @@
 <a href="#421" id="421">421</a>
 <a href="#422" id="422">422</a>
 <a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -494,9 +517,13 @@
         <span class="doccomment">/// How many state-roots to include. Lower limit is 900 for `calibnet` and `mainnet`.
         </span><span class="attr">#[arg(short, long, default_value_t = <span class="number">2000</span>)]
         </span>depth: ChainEpochDelta,
-        <span class="doccomment">/// Do not include any values reachable from epoch-diff.
+        <span class="doccomment">/// Do not include any values reachable from this epoch.
         </span><span class="attr">#[arg(short, long)]
-        </span>diff: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
+        </span>diff: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
+        <span class="doccomment">/// How many state-roots to include when computing the diff set. All
+        /// state-roots are included if this flag is not set.
+        </span><span class="attr">#[arg(short, long)]
+        </span>diff_depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
     },
     <span class="doccomment">/// Print block headers at 30 day interval for a snapshot file
     </span>Checkpoints {
@@ -519,10 +546,20 @@
                 epoch,
                 depth,
                 diff,
+                diff_depth,
             } =&gt; {
                 <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;
                 <span class="kw">let </span>heaviest_tipset = store.heaviest_tipset()<span class="question-mark">?</span>;
-                do_export(store, heaviest_tipset, output_path, epoch, depth, diff).<span class="kw">await
+                do_export(
+                    store,
+                    heaviest_tipset,
+                    output_path,
+                    epoch,
+                    depth,
+                    diff,
+                    diff_depth,
+                )
+                .<span class="kw">await
             </span>}
             <span class="self">Self</span>::Checkpoints {
                 snapshot_files: snapshot,
@@ -562,7 +599,8 @@
     output_path: PathBuf,
     epoch_option: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     depth: ChainEpochDelta,
-    diff: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
+    diff: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
+    diff_depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
 ) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>ts = Arc::new(root);
 
@@ -598,7 +636,14 @@
             .tipset_by_height(diff, ts.clone(), ResolveNullTipset::TakeOlder)
             .context(<span class="string">&quot;diff epoch must be smaller than target epoch&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>diff_ts: <span class="kw-2">&amp;</span>Tipset = <span class="kw-2">&amp;</span>diff_ts;
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = stream_graph(<span class="kw-2">&amp;</span>store, diff_ts.clone().chain(<span class="kw-2">&amp;</span>store));
+        <span class="kw">let </span>diff_limit = diff_depth.map(|depth| diff_ts.epoch() - depth).unwrap_or(<span class="number">0</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = stream_graph(
+            <span class="kw-2">&amp;</span>store,
+            diff_ts
+                .clone()
+                .chain(<span class="kw-2">&amp;</span>store)
+                .take_while(|tipset| tipset.epoch() &gt;= diff_limit),
+        );
         <span class="kw">while </span>stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.is_some() {}
         stream.into_seen()
     } <span class="kw">else </span>{
@@ -826,6 +871,7 @@
             output_path.path().into(),
             <span class="prelude-val">Some</span>(<span class="number">0</span>),
             <span class="number">1</span>,
+            <span class="prelude-val">None</span>,
             <span class="prelude-val">None</span>,
         )
         .<span class="kw">await
