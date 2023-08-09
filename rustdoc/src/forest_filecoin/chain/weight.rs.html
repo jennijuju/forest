@@ -16,11 +16,15 @@
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
 <a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
+
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>num::BigInt;
+<span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">pub type </span>Weight = BigInt;
 
@@ -30,7 +34,7 @@
 /// a `Nakamoto` style consensus.
 </span><span class="kw">pub trait </span>Scale {
     <span class="doccomment">/// Calculate the weight of a tipset.
-    </span><span class="kw">fn </span>weight&lt;DB&gt;(db: <span class="kw-2">&amp;</span>DB, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Weight, anyhow::Error&gt;
+    </span><span class="kw">fn </span>weight&lt;DB&gt;(db: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Weight, anyhow::Error&gt;
     <span class="kw">where
         </span>DB: Blockstore;
 }

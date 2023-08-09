@@ -1555,7 +1555,7 @@
 
     <span class="doccomment">/// Gets actor from given [`Cid`], if it exists.
     </span><span class="kw">pub fn </span>get_actor(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address, state_cid: Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorState&gt;&gt; {
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>state_cid)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore_owned(), <span class="kw-2">&amp;</span>state_cid)<span class="question-mark">?</span>;
         state.get_actor(addr)
     }
 
@@ -1606,7 +1606,7 @@
         state_cid: Cid,
         addr: <span class="kw-2">&amp;</span>Address,
     ) -&gt; anyhow::Result&lt;Address, Error&gt; {
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>state_cid)
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore_owned(), <span class="kw-2">&amp;</span>state_cid)
             .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>act = state
@@ -2021,7 +2021,7 @@
             <span class="kw">if </span>current.epoch() == <span class="number">0 </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>);
             }
-            <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore(), current.parent_state())
+            <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore_owned(), current.parent_state())
                 .map_err(|e| Error::State(e.to_string()))<span class="question-mark">?</span>;
 
             <span class="kw">if let </span><span class="prelude-val">Some</span>(actor_state) = state
@@ -2217,12 +2217,12 @@
 
     <span class="doccomment">/// Returns a BLS public key from provided address
     </span><span class="kw">pub fn </span>get_bls_public_key(
-        db: <span class="kw-2">&amp;</span>DB,
+        db: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;,
         addr: <span class="kw-2">&amp;</span>Address,
         state_cid: Cid,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;[u8; BLS_PUB_LEN], Error&gt; {
-        <span class="kw">let </span>state =
-            StateTree::new_from_root(db, <span class="kw-2">&amp;</span>state_cid).map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(Arc::clone(db), <span class="kw-2">&amp;</span>state_cid)
+            .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
         <span class="kw">let </span>kaddr = resolve_to_key_addr(<span class="kw-2">&amp;</span>state, db, addr)
             .map_err(|e| <span class="macro">format!</span>(<span class="string">&quot;Failed to resolve key address, error: {e}&quot;</span>))<span class="question-mark">?</span>;
 
@@ -2236,7 +2236,7 @@
 
     <span class="doccomment">/// Looks up ID [Address] from the state at the given [Tipset].
     </span><span class="kw">pub fn </span>lookup_id(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Address&gt;, Error&gt; {
-        <span class="kw">let </span>state_tree = StateTree::new_from_root(<span class="self">self</span>.blockstore(), ts.parent_state())
+        <span class="kw">let </span>state_tree = StateTree::new_from_root(<span class="self">self</span>.blockstore_owned(), ts.parent_state())
             .map_err(|e| e.to_string())<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(state_tree
             .lookup_id(addr)
@@ -2299,14 +2299,14 @@
 
         <span class="comment">// First try to resolve the actor in the parent state, so we don&#39;t have to
         // compute anything.
-        </span><span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore(), ts.parent_state())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore_owned(), ts.parent_state())<span class="question-mark">?</span>;
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(addr) = resolve_to_key_addr(<span class="kw-2">&amp;</span>state, <span class="self">self</span>.blockstore(), addr) {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(addr);
         }
 
         <span class="comment">// If that fails, compute the tip-set and try again.
         </span><span class="kw">let </span>(st, <span class="kw">_</span>) = <span class="self">self</span>.tipset_state(ts).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span>st)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(<span class="self">self</span>.blockstore_owned(), <span class="kw-2">&amp;</span>st)<span class="question-mark">?</span>;
 
         resolve_to_key_addr(<span class="kw-2">&amp;</span>state, <span class="self">self</span>.blockstore(), addr)
     }

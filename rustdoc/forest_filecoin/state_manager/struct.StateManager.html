@@ -141,7 +141,7 @@ backwards in the chain to see if this has already happened. It
 guarantees that the message has been on chain for at least
 confidence epochs without being reverted before returning.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.get_bls_public_key" class="method"><a class="srclink rightside" href="../../src/forest_filecoin/state_manager/mod.rs.html#907-923">source</a><h4 class="code-header">pub fn <a href="#method.get_bls_public_key" class="fn">get_bls_public_key</a>(
-    db: <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;DB</a>,
+    db: &amp;<a class="struct" href="https://doc.rust-lang.org/nightly/alloc/sync/struct.Arc.html" title="struct alloc::sync::Arc">Arc</a>&lt;DB&gt;,
     addr: &amp;<a class="struct" href="../shim/address/struct.Address.html" title="struct forest_filecoin::shim::address::Address">Address</a>,
     state_cid: Cid
 ) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;[<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a>; <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.array.html">48</a>], <a class="enum" href="errors/enum.Error.html" title="enum forest_filecoin::state_manager::errors::Error">Error</a>&gt;</h4></section></summary><div class="docblock"><p>Returns a BLS public key from provided address</p>

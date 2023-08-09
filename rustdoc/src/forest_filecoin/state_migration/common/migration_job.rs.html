@@ -90,7 +90,7 @@
 <span class="kw">impl</span>&lt;BS: Blockstore&gt; MigrationJob&lt;BS&gt; {
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::state_migration) <span class="kw">fn </span>run(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        store: BS,
+        store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
         prior_epoch: ChainEpoch,
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;MigrationJobOutput&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(result) = <span class="self">self

@@ -299,6 +299,7 @@
 <a href="#299" id="299">299</a>
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -307,6 +308,7 @@
 <span class="kw">use </span>std::{
     fmt::Write <span class="kw">as </span>FmtWrite,
     io::{stdout, Write},
+    sync::Arc,
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::json::{IpldJson, IpldJsonRef};
@@ -354,11 +356,11 @@
 }
 
 <span class="kw">fn </span>root_to_state_map&lt;BS: Blockstore&gt;(
-    bs: <span class="kw-2">&amp;</span>BS,
+    bs: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
     root: <span class="kw-2">&amp;</span>Cid,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;HashMap&lt;Address, ActorState&gt;, anyhow::Error&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>actors = HashMap::default();
-    <span class="kw">let </span>state_tree = StateTree::new_from_root(bs, root)<span class="question-mark">?</span>;
+    <span class="kw">let </span>state_tree = StateTree::new_from_root(bs.clone(), root)<span class="question-mark">?</span>;
     state_tree.for_each(|addr: Address, actor: <span class="kw-2">&amp;</span>ActorState| {
         actors.insert(addr, actor.clone());
         <span class="prelude-val">Ok</span>(())
@@ -372,7 +374,7 @@
 /// This function will only print the actors that are added, removed, or changed
 /// so it can be used on large state trees.
 </span><span class="kw">fn </span>try_print_actor_states&lt;BS: Blockstore&gt;(
-    bs: <span class="kw-2">&amp;</span>BS,
+    bs: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
     root: <span class="kw-2">&amp;</span>Cid,
     expected_root: <span class="kw-2">&amp;</span>Cid,
     depth: <span class="prelude-ty">Option</span>&lt;u64&gt;,
@@ -382,7 +384,7 @@
     </span><span class="kw">let </span><span class="kw-2">mut </span>e_state = root_to_state_map(bs, expected_root)<span class="question-mark">?</span>;
 
     <span class="comment">// Compare state with expected
-    </span><span class="kw">let </span>state_tree = StateTree::new_from_root(bs, root)<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>state_tree = StateTree::new_from_root(bs.clone(), root)<span class="question-mark">?</span>;
 
     state_tree.for_each(|addr: Address, actor| {
         <span class="kw">let </span>calc_pp = pp_actor_state(bs, actor, depth)<span class="question-mark">?</span>;
@@ -491,7 +493,7 @@
 <span class="doccomment">/// Prints a diff of the resolved state tree.
 /// If the actor&#39;s HAMT cannot be loaded, base IPLD resolution is given.
 </span><span class="kw">pub fn </span>print_state_diff&lt;BS&gt;(
-    bs: <span class="kw-2">&amp;</span>BS,
+    bs: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
     root: <span class="kw-2">&amp;</span>Cid,
     expected_root: <span class="kw-2">&amp;</span>Cid,
     depth: <span class="prelude-ty">Option</span>&lt;u64&gt;,

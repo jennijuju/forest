@@ -267,7 +267,7 @@
 
 <span class="kw">impl</span>&lt;DB&gt; ChainRand&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync,
+    </span>DB: Blockstore,
 {
     <span class="kw">pub fn </span>new(
         chain_config: Arc&lt;ChainConfig&gt;,
@@ -422,7 +422,7 @@
 
 <span class="kw">impl</span>&lt;DB&gt; Rand <span class="kw">for </span>ChainRand&lt;DB&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync,
+    </span>DB: Blockstore,
 {
     <span class="kw">fn </span>get_chain_randomness(
         <span class="kw-2">&amp;</span><span class="self">self</span>,

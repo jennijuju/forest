@@ -350,7 +350,7 @@
             .chain_store()
             .tipset_from_keys(ts.parents())<span class="question-mark">?</span>;
         blocks += pts.blocks().len();
-        <span class="kw">let </span>msgs = <span class="kw">crate</span>::chain::messages_for_tipset(data.state_manager.blockstore(), <span class="kw-2">&amp;</span>pts)<span class="question-mark">?</span>;
+        <span class="kw">let </span>msgs = <span class="kw">crate</span>::chain::messages_for_tipset(data.state_manager.blockstore_owned(), <span class="kw-2">&amp;</span>pts)<span class="question-mark">?</span>;
 
         prices.append(
             <span class="kw-2">&amp;mut </span>msgs

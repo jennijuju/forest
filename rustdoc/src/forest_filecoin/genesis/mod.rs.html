@@ -246,7 +246,7 @@
     db: <span class="kw-2">&amp;</span>DB,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;BlockHeader, anyhow::Error&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Send + Sync,
+    </span>DB: Blockstore,
 {
     <span class="kw">let </span>genesis = <span class="kw">match </span>genesis_fp {
         <span class="prelude-val">Some</span>(path) =&gt; {
@@ -284,7 +284,7 @@
 <span class="kw">async fn </span>process_car&lt;R, BS&gt;(reader: R, db: <span class="kw-2">&amp;</span>BS) -&gt; <span class="prelude-ty">Result</span>&lt;BlockHeader, anyhow::Error&gt;
 <span class="kw">where
     </span>R: AsyncRead + Send + Unpin,
-    BS: Blockstore + Send + Sync,
+    BS: Blockstore,
 {
     <span class="comment">// Load genesis state into the database and get the Cid
     </span><span class="kw">let </span>genesis_cids: Vec&lt;Cid&gt; = load_car(db, reader).<span class="kw">await</span><span class="question-mark">?</span>;

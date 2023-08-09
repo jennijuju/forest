@@ -479,7 +479,7 @@
         }
 
         <span class="kw">let </span>prev_root = <span class="self">self</span>.get_lookback_tipset_state_root_for_round(height)<span class="question-mark">?</span>;
-        <span class="kw">let </span>lb_state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db, <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>lb_state = StateTree::new_from_root(Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db), <span class="kw-2">&amp;</span>prev_root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>actor = lb_state
             .get_actor(miner_addr)<span class="question-mark">?
@@ -491,7 +491,7 @@
 
         <span class="kw">let </span>worker = ms.info(<span class="kw-2">&amp;</span>tbs)<span class="question-mark">?</span>.worker.into();
 
-        <span class="kw">let </span>state = StateTree::new_from_root(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db, <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = StateTree::new_from_root(Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_index.db), <span class="kw-2">&amp;</span><span class="self">self</span>.root)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>addr = resolve_to_key_addr(<span class="kw-2">&amp;</span>state, <span class="kw-2">&amp;</span>tbs, <span class="kw-2">&amp;</span>worker)<span class="question-mark">?</span>;
 

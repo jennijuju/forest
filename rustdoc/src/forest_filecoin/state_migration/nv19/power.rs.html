@@ -86,7 +86,6 @@
 <a href="#86" id="86">86</a>
 <a href="#87" id="87">87</a>
 <a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -122,7 +121,7 @@
 </span><span class="kw">impl</span>&lt;BS: Blockstore&gt; ActorMigration&lt;BS&gt; <span class="kw">for </span>PowerMigrator {
     <span class="kw">fn </span>migrate_state(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        store: BS,
+        store: <span class="kw-2">&amp;</span>BS,
         input: ActorMigrationInput,
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt; {
         <span class="kw">let </span>in_state: StateV10 = store
@@ -131,10 +130,9 @@
 
         <span class="kw">let </span>in_claims = make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>in_state.claims, <span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>empty_claims = make_empty_map::&lt;BS, ()&gt;(<span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH).flush()<span class="question-mark">?</span>;
+        <span class="kw">let </span>empty_claims = make_empty_map::&lt;BS, ()&gt;(store, HAMT_BIT_WIDTH).flush()<span class="question-mark">?</span>;
 
-        <span class="kw">let </span><span class="kw-2">mut </span>out_claims =
-            make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>empty_claims, <span class="kw-2">&amp;</span>store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>out_claims = make_map_with_root_and_bitwidth(<span class="kw-2">&amp;</span>empty_claims, store, HAMT_BIT_WIDTH)<span class="question-mark">?</span>;
 
         in_claims.for_each(|key, claim: <span class="kw-2">&amp;</span>ClaimV10| {
             <span class="kw">let </span>new_proof_type = convert_window_post_proof_v1_to_v1p1(claim.window_post_proof_type)

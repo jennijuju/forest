@@ -198,7 +198,7 @@
 }
 
 <span class="kw">impl</span>&lt;B&gt; Scale <span class="kw">for </span>FilecoinConsensus&lt;B&gt; {
-    <span class="kw">fn </span>weight&lt;DB&gt;(db: <span class="kw-2">&amp;</span>DB, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Weight, anyhow::Error&gt;
+    <span class="kw">fn </span>weight&lt;DB&gt;(db: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Weight, anyhow::Error&gt;
     <span class="kw">where
         </span>DB: Blockstore,
     {

@@ -3077,12 +3077,9 @@
     // check block message and signatures in them
     </span><span class="kw">let </span><span class="kw-2">mut </span>pub_keys = Vec::new();
     <span class="kw">let </span><span class="kw-2">mut </span>cids = Vec::new();
+    <span class="kw">let </span>db = state_manager.blockstore_owned();
     <span class="kw">for </span>m <span class="kw">in </span>block.bls_msgs() {
-        <span class="kw">let </span>pk = StateManager::get_bls_public_key(
-            state_manager.blockstore(),
-            <span class="kw-2">&amp;</span>m.from,
-            <span class="kw-2">*</span>base_tipset.parent_state(),
-        )<span class="question-mark">?</span>;
+        <span class="kw">let </span>pk = StateManager::get_bls_public_key(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>m.from, <span class="kw-2">*</span>base_tipset.parent_state())<span class="question-mark">?</span>;
         pub_keys.push(pk);
         cids.push(m.cid().unwrap().to_bytes());
     }
@@ -3115,7 +3112,7 @@
     <span class="comment">// Check messages for validity
     </span><span class="kw">let </span><span class="kw-2">mut </span>check_msg = |msg: <span class="kw-2">&amp;</span>Message,
                          account_sequences: <span class="kw-2">&amp;mut </span>HashMap&lt;Address, u64&gt;,
-                         tree: <span class="kw-2">&amp;</span>StateTree&lt;<span class="kw-2">&amp;</span>DB&gt;|
+                         tree: <span class="kw-2">&amp;</span>StateTree&lt;DB&gt;|
      -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
         <span class="comment">// Phase 1: Syntactic validation
         </span><span class="kw">let </span>min_gas = price_list.on_chain_message(to_vec(msg).unwrap().len());
@@ -3159,16 +3156,16 @@
     };
 
     <span class="kw">let </span><span class="kw-2">mut </span>account_sequences: HashMap&lt;Address, u64&gt; = HashMap::default();
-    <span class="kw">let </span>block_store = state_manager.blockstore();
     <span class="kw">let </span>(state_root, <span class="kw">_</span>) = state_manager
         .tipset_state(<span class="kw-2">&amp;</span>base_tipset)
         .<span class="kw">await
         </span>.map_err(|e| TipsetRangeSyncerError::Calculation(<span class="macro">format!</span>(<span class="string">&quot;Could not update state: {e}&quot;</span>)))<span class="question-mark">?</span>;
-    <span class="kw">let </span>tree = StateTree::new_from_root(block_store, <span class="kw-2">&amp;</span>state_root).map_err(|e| {
-        TipsetRangeSyncerError::Calculation(<span class="macro">format!</span>(
-            <span class="string">&quot;Could not load from new state root in state manager: {e}&quot;
-        </span>))
-    })<span class="question-mark">?</span>;
+    <span class="kw">let </span>tree =
+        StateTree::new_from_root(state_manager.blockstore_owned(), <span class="kw-2">&amp;</span>state_root).map_err(|e| {
+            TipsetRangeSyncerError::Calculation(<span class="macro">format!</span>(
+                <span class="string">&quot;Could not load from new state root in state manager: {e}&quot;
+            </span>))
+        })<span class="question-mark">?</span>;
 
     <span class="comment">// Check validity for BLS messages
     </span><span class="kw">for </span>(i, msg) <span class="kw">in </span>block.bls_msgs().iter().enumerate() {
@@ -3198,9 +3195,12 @@
     }
 
     <span class="comment">// Validate message root from header matches message root
-    </span><span class="kw">let </span>msg_root =
-        TipsetValidator::compute_msg_root(block_store, block.bls_msgs(), block.secp_msgs())
-            .map_err(|err| TipsetRangeSyncerError::ComputingMessageRoot(err.to_string()))<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>msg_root = TipsetValidator::compute_msg_root(
+        state_manager.blockstore(),
+        block.bls_msgs(),
+        block.secp_msgs(),
+    )
+    .map_err(|err| TipsetRangeSyncerError::ComputingMessageRoot(err.to_string()))<span class="question-mark">?</span>;
     <span class="kw">if </span>block.header().messages() != <span class="kw-2">&amp;</span>msg_root {
         <span class="kw">return </span><span class="prelude-val">Err</span>(TipsetRangeSyncerError::BlockMessageRootInvalid(
             <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, block.header().messages()),

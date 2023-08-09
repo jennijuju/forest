@@ -258,10 +258,14 @@
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
 <a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::chain::<span class="kw-2">*</span>;
+</span><span class="kw">use </span>std::sync::Arc;
+
+<span class="kw">use </span><span class="kw">crate</span>::chain::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
@@ -326,10 +330,10 @@
     </span><span class="kw">pub fn </span>get_circulating_supply&lt;DB: Blockstore&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         height: ChainEpoch,
-        db: <span class="kw-2">&amp;</span>DB,
+        db: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;,
         root: <span class="kw-2">&amp;</span>Cid,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, anyhow::Error&gt; {
-        <span class="kw">let </span>state_tree = StateTree::new_from_root(db, root)<span class="question-mark">?</span>;
+        <span class="kw">let </span>state_tree = StateTree::new_from_root(Arc::clone(db), root)<span class="question-mark">?</span>;
         <span class="kw">let </span>fil_vested = get_fil_vested(<span class="self">self</span>, height);
         <span class="kw">let </span>fil_mined = get_fil_mined(<span class="kw-2">&amp;</span>state_tree)<span class="question-mark">?</span>;
         <span class="kw">let </span>fil_burnt = get_fil_burnt(<span class="kw-2">&amp;</span>state_tree)<span class="question-mark">?</span>;

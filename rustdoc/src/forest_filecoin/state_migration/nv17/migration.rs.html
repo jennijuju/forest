@@ -177,7 +177,6 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -205,10 +204,10 @@
     verifreg_market::VerifregMarketPostMigrator, SystemStateOld,
 };
 
-<span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; StateMigration&lt;BS&gt; {
+<span class="kw">impl</span>&lt;BS: Blockstore + Send + Sync&gt; StateMigration&lt;BS&gt; {
     <span class="kw">pub fn </span>add_nv17_migrations(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        store: BS,
+        store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
         actors_in: <span class="kw-2">&amp;mut </span>StateTree&lt;BS&gt;,
         new_manifest: <span class="kw-2">&amp;</span>Manifest,
         prior_epoch: ChainEpoch,
@@ -270,7 +269,7 @@
             <span class="kw-2">*</span>miner_v8_actor_code,
             miner::miner_migrator(
                 <span class="kw-2">*</span>miner_v9_actor_code,
-                <span class="kw-2">&amp;</span>store,
+                store,
                 market_state_v8.proposals,
                 chain_config,
             )<span class="question-mark">?</span>,
@@ -313,12 +312,12 @@
 <span class="doccomment">/// Runs the migration for `NV17`. Returns the new state root.
 </span><span class="kw">pub fn </span>run_migration&lt;DB&gt;(
     chain_config: <span class="kw-2">&amp;</span>ChainConfig,
-    blockstore: <span class="kw-2">&amp;</span>DB,
+    blockstore: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;,
     state: <span class="kw-2">&amp;</span>Cid,
     epoch: ChainEpoch,
 ) -&gt; anyhow::Result&lt;Cid&gt;
 <span class="kw">where
-    </span>DB: Blockstore + Clone + Send + Sync,
+    </span>DB: Blockstore + Send + Sync,
 {
     <span class="kw">let </span>new_manifest_cid = chain_config
         .height_infos
@@ -344,7 +343,7 @@
 
     <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier));
     migration.add_nv17_migrations(
-        blockstore.clone(),
+        blockstore,
         <span class="kw-2">&amp;mut </span>actors_in,
         <span class="kw-2">&amp;</span>new_manifest,
         epoch,
@@ -353,8 +352,7 @@
 
     <span class="kw">let </span>actors_out = StateTree::new(blockstore.clone(), StateTreeVersion::V4)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>new_state =
-        migration.migrate_state_tree(blockstore.clone(), epoch, actors_in, actors_out)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_state = migration.migrate_state_tree(blockstore, epoch, actors_in, actors_out)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(new_state)
 }

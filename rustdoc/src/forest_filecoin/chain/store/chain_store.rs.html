@@ -846,9 +846,9 @@
         </span>S: Scale,
     {
         <span class="comment">// Calculate heaviest weight before matching to avoid deadlock with mutex
-        </span><span class="kw">let </span>heaviest_weight = S::weight(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>heaviest_weight = S::weight(<span class="kw-2">&amp;</span><span class="self">self</span>.db, <span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset())<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>new_weight = S::weight(<span class="self">self</span>.blockstore(), ts.as_ref())<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_weight = S::weight(<span class="kw-2">&amp;</span><span class="self">self</span>.db, ts.as_ref())<span class="question-mark">?</span>;
         <span class="kw">let </span>curr_weight = heaviest_weight;
 
         <span class="kw">if </span>new_weight &gt; curr_weight {
@@ -1094,17 +1094,17 @@
 }
 
 <span class="doccomment">/// Given a tipset this function will return all unique messages in that tipset.
-</span><span class="kw">pub fn </span>messages_for_tipset&lt;DB&gt;(db: <span class="kw-2">&amp;</span>DB, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;ChainMessage&gt;, Error&gt;
+</span><span class="kw">pub fn </span>messages_for_tipset&lt;DB&gt;(db: Arc&lt;DB&gt;, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;ChainMessage&gt;, Error&gt;
 <span class="kw">where
     </span>DB: Blockstore,
 {
     <span class="kw">let </span><span class="kw-2">mut </span>applied: HashMap&lt;Address, u64&gt; = HashMap::new();
     <span class="kw">let </span><span class="kw-2">mut </span>balances: HashMap&lt;Address, TokenAmount&gt; = HashMap::new();
-    <span class="kw">let </span>state = StateTree::new_from_root(db, ts.parent_state())<span class="question-mark">?</span>;
+    <span class="kw">let </span>state = StateTree::new_from_root(Arc::clone(<span class="kw-2">&amp;</span>db), ts.parent_state())<span class="question-mark">?</span>;
 
     <span class="comment">// message to get all messages for block_header into a single iterator
     </span><span class="kw">let </span><span class="kw-2">mut </span>get_message_for_block_header = |b: <span class="kw-2">&amp;</span>BlockHeader| -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;ChainMessage&gt;, Error&gt; {
-        <span class="kw">let </span>(unsigned, signed) = block_messages(db, b)<span class="question-mark">?</span>;
+        <span class="kw">let </span>(unsigned, signed) = block_messages(<span class="kw-2">&amp;</span>db, b)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>messages = Vec::with_capacity(unsigned.len() + signed.len());
         <span class="kw">let </span>unsigned_box = unsigned.into_iter().map(ChainMessage::Unsigned);
         <span class="kw">let </span>signed_box = signed.into_iter().map(ChainMessage::Signed);

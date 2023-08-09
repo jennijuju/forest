@@ -113,7 +113,7 @@
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::state_migration) <span class="kw">trait </span>ActorMigration&lt;BS: Blockstore&gt; {
     <span class="kw">fn </span>migrate_state(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        store: BS,
+        store: <span class="kw-2">&amp;</span>BS,
         input: ActorMigrationInput,
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt;;
 }

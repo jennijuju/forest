@@ -100,7 +100,6 @@
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -121,10 +120,10 @@
 <span class="kw">use super</span>::{miner, power, system, verifier::Verifier, SystemStateOld};
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::common::{migrators::nil_migrator, StateMigration};
 
-<span class="kw">impl</span>&lt;BS: Blockstore + Clone + Send + Sync&gt; StateMigration&lt;BS&gt; {
+<span class="kw">impl</span>&lt;BS: Blockstore&gt; StateMigration&lt;BS&gt; {
     <span class="kw">pub fn </span>add_nv19_migrations(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        store: BS,
+        store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
         state: <span class="kw-2">&amp;</span>Cid,
         new_manifest: <span class="kw-2">&amp;</span>Cid,
     ) -&gt; anyhow::Result&lt;()&gt; {
@@ -169,12 +168,12 @@
 <span class="doccomment">/// Runs the migration for `NV19`. Returns the new state root.
 </span><span class="kw">pub fn </span>run_migration&lt;DB&gt;(
     chain_config: <span class="kw-2">&amp;</span>ChainConfig,
-    blockstore: <span class="kw-2">&amp;</span>DB,
+    blockstore: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;,
     state: <span class="kw-2">&amp;</span>Cid,
     epoch: ChainEpoch,
 ) -&gt; anyhow::Result&lt;Cid&gt;
 <span class="kw">where
-    </span>DB: <span class="lifetime">&#39;static </span>+ Blockstore + Clone + Send + Sync,
+    </span>DB: Blockstore + Send + Sync,
 {
     <span class="kw">let </span>new_manifest_cid = chain_config
         .height_infos
@@ -195,12 +194,11 @@
     </span><span class="kw">let </span>verifier = Arc::new(Verifier::default());
 
     <span class="kw">let </span><span class="kw-2">mut </span>migration = StateMigration::&lt;DB&gt;::new(<span class="prelude-val">Some</span>(verifier));
-    migration.add_nv19_migrations(blockstore.clone(), state, new_manifest_cid)<span class="question-mark">?</span>;
+    migration.add_nv19_migrations(blockstore, state, new_manifest_cid)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>actors_in = StateTree::new_from_root(blockstore.clone(), state)<span class="question-mark">?</span>;
     <span class="kw">let </span>actors_out = StateTree::new(blockstore.clone(), StateTreeVersion::V5)<span class="question-mark">?</span>;
-    <span class="kw">let </span>new_state =
-        migration.migrate_state_tree(blockstore.clone(), epoch, actors_in, actors_out)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_state = migration.migrate_state_tree(blockstore, epoch, actors_in, actors_out)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(new_state)
 }

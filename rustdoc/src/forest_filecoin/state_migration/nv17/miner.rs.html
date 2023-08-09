@@ -957,12 +957,12 @@
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>miner_migrator&lt;BS&gt;(
     out_code: Cid,
-    store: <span class="kw-2">&amp;</span>BS,
+    store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
     market_proposals: Cid,
     chain_config: <span class="kw-2">&amp;</span>ChainConfig,
 ) -&gt; anyhow::Result&lt;Arc&lt;<span class="kw">dyn </span>ActorMigration&lt;BS&gt; + Send + Sync&gt;&gt;
 <span class="kw">where
-    </span>BS: Blockstore + Clone + Send + Sync,
+    </span>BS: Blockstore + Send + Sync,
 {
     <span class="kw">let </span>empty_deadline_v8: fil_actor_miner_state::v8::Deadline =
         fil_actor_miner_state::v8::Deadline::new(store)<span class="question-mark">?</span>;
@@ -1002,11 +1002,11 @@
 
 <span class="kw">impl</span>&lt;BS&gt; ActorMigration&lt;BS&gt; <span class="kw">for </span>MinerMigrator
 <span class="kw">where
-    </span>BS: Blockstore + Clone + Send + Sync,
+    </span>BS: Blockstore + Send + Sync,
 {
     <span class="kw">fn </span>migrate_state(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        store: BS,
+        store: <span class="kw-2">&amp;</span>BS,
         input: ActorMigrationInput,
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>cache: HashMap&lt;String, Cid&gt; = Default::default();
@@ -1309,7 +1309,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_nv17_miner_migration() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>store = <span class="kw">crate</span>::db::MemoryDB::default();
+        <span class="kw">let </span>store = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
         <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
         <span class="kw">let </span>system_actor_old = state_tree_old
             .get_actor(<span class="kw-2">&amp;</span>fil_actor_interface::system::ADDRESS.into())<span class="question-mark">?
@@ -1526,7 +1526,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_fip0029_miner_migration() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>store = <span class="kw">crate</span>::db::MemoryDB::default();
+        <span class="kw">let </span>store = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
         <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
         <span class="kw">let </span>addr = Address::new_id(<span class="number">10000</span>);
         <span class="kw">let </span>worker_addr = Address::new_id(<span class="number">20000</span>);
@@ -1556,7 +1556,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>make_input_tree&lt;BS: Blockstore + Clone&gt;(store: BS) -&gt; <span class="prelude-ty">Result</span>&lt;(StateTree&lt;BS&gt;, Manifest)&gt; {
+    <span class="kw">fn </span>make_input_tree&lt;BS: Blockstore&gt;(store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(StateTree&lt;BS&gt;, Manifest)&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>tree = StateTree::new(store.clone(), StateTreeVersion::V4)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(_manifest_cid, manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/8/&quot;</span>)<span class="question-mark">?</span>;
@@ -1697,7 +1697,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>verifreg_state =
             fil_actor_verifreg_state::v8::State::new(<span class="kw-2">&amp;</span>store, verifreg_root.into())<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>verified_clients = fil_actors_shared::v8::make_empty_map::&lt;BS, BigInt&gt;(
-            <span class="kw-2">&amp;</span>store,
+            store,
             fil_actors_shared::v8::builtin::HAMT_BIT_WIDTH,
         );
         <span class="comment">// verified_clients is not set in the original go tests
@@ -1756,7 +1756,7 @@
         <span class="prelude-val">Ok</span>((tree, manifest))
     }
 
-    <span class="kw">fn </span>init_actor&lt;BS: Blockstore + Clone&gt;(
+    <span class="kw">fn </span>init_actor&lt;BS: Blockstore&gt;(
         tree: <span class="kw-2">&amp;mut </span>StateTree&lt;BS&gt;,
         state: Cid,
         code: Cid,
