@@ -486,6 +486,18 @@
 <a href="#486" id="486">486</a>
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -534,6 +546,9 @@
         <span class="doccomment">/// Tipset to start the export from, default is the chain head
         </span><span class="attr">#[arg(short, long)]
         </span>tipset: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+        <span class="doccomment">/// How many state-roots to include. Lower limit is 900 for `calibnet` and `mainnet`.
+        </span><span class="attr">#[arg(short, long)]
+        </span>depth: <span class="prelude-ty">Option</span>&lt;<span class="kw">crate</span>::chain::ChainEpochDelta&gt;,
     },
 
     <span class="doccomment">/// Fetches the most recent snapshot from a trusted, pre-defined location.
@@ -590,6 +605,7 @@
                 skip_checksum,
                 dry_run,
                 tipset,
+                depth,
             } =&gt; {
                 <span class="kw">let </span>chain_head = <span class="kw">match </span>chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(head) =&gt; head.<span class="number">0</span>,
@@ -618,12 +634,20 @@
 
                 <span class="kw">let </span>params = ChainExportParams {
                     epoch,
-                    recent_roots: config.chain.recent_state_roots,
+                    recent_roots: depth.unwrap_or(config.chain.recent_state_roots),
                     output_path: temp_path.to_path_buf(),
                     tipset_keys: TipsetKeysJson(chain_head.key().clone()),
                     skip_checksum,
                     dry_run,
                 };
+
+                <span class="kw">let </span>finality = config.chain.policy.chain_finality.min(epoch);
+                <span class="kw">if </span>params.recent_roots &lt; finality {
+                    <span class="macro">bail!</span>(
+                        <span class="string">&quot;For {}, depth has to be at least {finality}.&quot;</span>,
+                        config.chain.network
+                    );
+                }
 
                 <span class="kw">let </span>handle = tokio::spawn({
                     <span class="kw">let </span>tmp_file = temp_path.to_owned();
