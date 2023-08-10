@@ -364,6 +364,17 @@
 <a href="#364" id="364">364</a>
 <a href="#365" id="365">365</a>
 <a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -426,6 +437,8 @@
                         <span class="comment">// explicitly disable preimage for settings column
                         // othewise we are not able to overwrite entries
                         </span>preimage: <span class="bool-val">false</span>,
+                        <span class="comment">// This is needed for key retrieval.
+                        </span>btree_index: <span class="bool-val">true</span>,
                         compression,
                         ..Default::default()
                     },
@@ -519,6 +532,15 @@
             .get_size(DbColumn::Settings <span class="kw">as </span>u8, key.as_bytes())
             .map(|size| size.is_some())
             .context(<span class="string">&quot;error checking if key exists&quot;</span>)
+    }
+
+    <span class="kw">fn </span>setting_keys(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Vec&lt;String&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>iter = <span class="self">self</span>.db.iter(DbColumn::Settings <span class="kw">as </span>u8)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>keys = <span class="macro">vec!</span>[];
+        <span class="kw">while let </span><span class="prelude-val">Some</span>((key, <span class="kw">_</span>)) = iter.next()<span class="question-mark">? </span>{
+            keys.push(String::from_utf8(key)<span class="question-mark">?</span>);
+        }
+        <span class="prelude-val">Ok</span>(keys)
     }
 }
 
