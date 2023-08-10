@@ -282,6 +282,25 @@
 <a href="#282" id="282">282</a>
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -401,8 +420,25 @@
     }
 }
 
-<span class="attr">#[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PartialEq)]
+<span class="attr">#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Clone,
+    Debug,
+    PartialEq,
+    derive_more::From,
+    derive_more::Into,
+)]
 </span><span class="kw">pub struct </span>RegisteredPoStProof(RegisteredPoStProofV3);
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>RegisteredPoStProof {
+    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
+        <span class="comment">// RegisteredPoStProofV3: ::arbitrary::Arbitrary
+        // RegisteredPoStProofV3: !::quickcheck::Arbitrary
+        </span><span class="self">Self</span>(RegisteredPoStProofV3::from(i64::arbitrary(g)))
+    }
+}
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>RegisteredPoStProof {
     <span class="kw">type </span>Target = RegisteredPoStProofV3;
@@ -416,12 +452,6 @@
 
     <span class="kw">fn </span>try_from(value: RegisteredPoStProof) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
         value.<span class="number">0</span>.try_into().map_err(|e: String| <span class="macro">anyhow::anyhow!</span>(e))
-    }
-}
-
-<span class="kw">impl </span>From&lt;RegisteredPoStProofV3&gt; <span class="kw">for </span>RegisteredPoStProof {
-    <span class="kw">fn </span>from(value: RegisteredPoStProofV3) -&gt; <span class="self">Self </span>{
-        RegisteredPoStProof(value)
     }
 }
 
@@ -497,7 +527,15 @@
     }
 }
 
-<span class="attr">#[derive(serde::Serialize, serde::Deserialize, Clone, Debug, PartialEq)]
+<span class="attr">#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Clone,
+    Debug,
+    PartialEq,
+    derive_more::From,
+    derive_more::Into,
+)]
 #[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>PoStProof(PoStProofV3);
 

@@ -24,6 +24,8 @@
 <a href="#24" id="24">24</a>
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -35,6 +37,7 @@
 <span class="kw">pub mod </span>persistence;
 <span class="kw">pub mod </span>ticket;
 <span class="kw">pub mod </span>tipset;
+<span class="kw">mod </span>vrf_proof;
 
 <span class="kw">pub use </span>block::<span class="kw-2">*</span>;
 <span class="kw">pub use </span>election_proof::ElectionProof;
@@ -43,6 +46,7 @@
 <span class="kw">pub use </span>header::BlockHeader;
 <span class="kw">pub use </span>ticket::Ticket;
 <span class="kw">pub use </span>tipset::<span class="kw-2">*</span>;
+<span class="kw">pub use </span>vrf_proof::VRFProof;
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {

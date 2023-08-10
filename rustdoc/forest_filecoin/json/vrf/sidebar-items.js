@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["json"],"struct":["VRFProof"]};
+window.SIDEBAR_ITEMS = {"mod":["json"]};

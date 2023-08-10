@@ -65,6 +65,11 @@
 <a href="#65" id="65">65</a>
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -75,6 +80,7 @@
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>parking_lot::RwLock;
 
 <span class="kw">use </span><span class="kw">super</span>::SettingsStore;
@@ -99,6 +105,10 @@
 
     <span class="kw">fn </span>exists(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;bool&gt; {
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.settings_db.read().contains_key(key))
+    }
+
+    <span class="kw">fn </span>setting_keys(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Vec&lt;String&gt;&gt; {
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.settings_db.read().keys().cloned().collect_vec())
     }
 }
 

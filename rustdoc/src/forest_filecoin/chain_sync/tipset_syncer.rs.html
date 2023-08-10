@@ -3272,8 +3272,8 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
+    <span class="kw">use </span><span class="kw">crate</span>::blocks::VRFProof;
     <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, ElectionProof, Ticket, Tipset};
-    <span class="kw">use </span><span class="kw">crate</span>::json::vrf::VRFProof;
     <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
     <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>num_bigint::BigInt;
