@@ -66,21 +66,15 @@
 <a href="#66" id="66">66</a>
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::time::Duration;
 
-<span class="kw">use crate</span>::{
-    db::{setting_keys::MPOOL_CONFIG_KEY, SettingsStore},
-    shim::address::Address,
-    utils::encoding::from_slice_with_fallback,
-};
+<span class="kw">use crate</span>::{db::SettingsStore, shim::address::Address, utils::encoding::from_slice_with_fallback};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
+<span class="kw">const </span>MPOOL_CONFIG_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/mpool/config&quot;</span>;
 <span class="kw">const </span>SIZE_LIMIT_LOW: i64 = <span class="number">20000</span>;
 <span class="kw">const </span>SIZE_LIMIT_HIGH: i64 = <span class="number">30000</span>;
 <span class="kw">const </span>PRUNE_COOLDOWN: Duration = Duration::from_secs(<span class="number">60</span>); <span class="comment">// 1 minute
