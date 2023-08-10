@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"derive":["Multihash"],"enum":["Keypair","Protocol"],"mod":["behaviour","chain_exchange","config","discovery","ed25519","gossip_params","hello","keypair","metrics","peer_manager","rpc","service"],"struct":["Multiaddr","PeerId"],"type":["Multihash"]};
+window.SIDEBAR_ITEMS = {"derive":["Multihash"],"enum":["Protocol"],"mod":["behaviour","chain_exchange","config","discovery","ed25519","gossip_params","hello","keypair","metrics","peer_manager","rpc","service"],"struct":["Keypair","Multiaddr","PeerId"],"type":["Multihash"]};
