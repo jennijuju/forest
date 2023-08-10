@@ -344,11 +344,10 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
-<a href="#347" id="347">347</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{path::PathBuf, sync::Arc};
+</span><span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span><span class="kw">super</span>::SettingsStore;
 
@@ -418,9 +417,8 @@
     }
 }
 
-<span class="attr">#[derive(Clone)]
-</span><span class="kw">pub struct </span>ParityDb {
-    <span class="kw">pub </span>db: Arc&lt;parity_db::Db&gt;,
+<span class="kw">pub struct </span>ParityDb {
+    <span class="kw">pub </span>db: parity_db::Db,
     statistics_enabled: bool,
 }
 
@@ -440,7 +438,7 @@
     <span class="kw">pub fn </span>open(path: <span class="kw">impl </span>Into&lt;PathBuf&gt;, config: <span class="kw-2">&amp;</span>ParityDbConfig) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>opts = <span class="self">Self</span>::to_options(path.into(), config);
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-            db: Arc::new(Db::open_or_create(<span class="kw-2">&amp;</span>opts)<span class="question-mark">?</span>),
+            db: Db::open_or_create(<span class="kw-2">&amp;</span>opts)<span class="question-mark">?</span>,
             statistics_enabled: opts.stats,
         })
     }

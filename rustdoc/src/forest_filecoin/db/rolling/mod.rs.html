@@ -72,27 +72,27 @@
     sync::Arc,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::file_backed_obj::FileBacked;
 <span class="kw">use </span>parking_lot::RwLock;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>tracing::{info, warn};
 
+<span class="kw">use </span><span class="kw">super</span>::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::db::db_engine::{open_db, Db, DbConfig};
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::file_backed_obj::FileBacked;
 
 <span class="doccomment">/// This DB wrapper is specially designed for supporting the concurrent,
 /// semi-space GC algorithm that is implemented in [`DbGarbageCollector`],
 /// containing a reference to the `old` DB space and a reference to the
 /// `current` DB space. Both underlying key-vale DB are supposed to contain only
 /// block data as value and its content-addressed CID as key
-</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>RollingDB {
-    db_root: Arc&lt;PathBuf&gt;,
-    db_config: Arc&lt;DbConfig&gt;,
-    db_index: Arc&lt;RwLock&lt;FileBacked&lt;DbIndex&gt;&gt;&gt;,
+    db_root: PathBuf,
+    db_config: DbConfig,
+    db_index: RwLock&lt;FileBacked&lt;DbIndex&gt;&gt;,
     <span class="doccomment">/// The current writable DB
-    </span>current: Arc&lt;RwLock&lt;Db&gt;&gt;,
+    </span>current: RwLock&lt;Arc&lt;Db&gt;&gt;,
     <span class="doccomment">/// The old writable DB
-    </span>old: Arc&lt;RwLock&lt;Db&gt;&gt;,
+    </span>old: RwLock&lt;Arc&lt;Db&gt;&gt;,
 }
 
 <span class="attr">#[derive(Debug, Default, Serialize, Deserialize)]

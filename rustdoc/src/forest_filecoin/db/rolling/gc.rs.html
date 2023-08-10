@@ -283,6 +283,16 @@
 <a href="#283" id="283">283</a>
 <a href="#284" id="284">284</a>
 <a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -373,7 +383,7 @@
 <span class="kw">where
     </span>F: Fn() -&gt; Tipset + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    db: RollingDB,
+    db: Arc&lt;ManyCar&lt;Arc&lt;RollingDB&gt;&gt;&gt;,
     get_tipset: F,
     chain_finality: i64,
     recent_state_roots: i64,
@@ -387,7 +397,12 @@
 <span class="kw">where
     </span>F: Fn() -&gt; Tipset + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">pub fn </span>new(db: RollingDB, chain_finality: i64, recent_state_roots: i64, get_tipset: F) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(
+        db: Arc&lt;ManyCar&lt;Arc&lt;RollingDB&gt;&gt;&gt;,
+        chain_finality: i64,
+        recent_state_roots: i64,
+        get_tipset: F,
+    ) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>(gc_tx, gc_rx) = flume::unbounded();
 
         <span class="self">Self </span>{
@@ -429,8 +444,8 @@
             }
 
             <span class="kw">if let </span>(<span class="prelude-val">Ok</span>(total_size), <span class="prelude-val">Ok</span>(current_size), last_reachable_bytes) = (
-                <span class="self">self</span>.db.total_size_in_bytes(),
-                <span class="self">self</span>.db.current_size_in_bytes(),
+                <span class="self">self</span>.db.writer().total_size_in_bytes(),
+                <span class="self">self</span>.db.writer().current_size_in_bytes(),
                 <span class="self">self</span>.last_reachable_bytes.load(atomic::Ordering::Relaxed),
             ) {
                 <span class="kw">let </span>should_collect = <span class="kw">if </span>last_reachable_bytes &gt; <span class="number">0 </span>{
@@ -487,7 +502,7 @@
     </span><span class="kw">async fn </span>collect_once(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>tipset = (<span class="self">self</span>.get_tipset)();
 
-        <span class="kw">if </span><span class="self">self</span>.db.current_creation_epoch() + <span class="self">self</span>.chain_finality &gt;= tipset.epoch() {
+        <span class="kw">if </span><span class="self">self</span>.db.writer().current_creation_epoch() + <span class="self">self</span>.chain_finality &gt;= tipset.epoch() {
             <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Cancelling GC: the old DB space contains unfinalized chain parts&quot;</span>);
         }
 
@@ -505,10 +520,10 @@
         </span><span class="kw">const </span>BUFFER_CAPCITY_BYTES: usize = <span class="number">128 </span>* <span class="number">1024 </span>* <span class="number">1024</span>;
         <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">100</span>);
         <span class="kw">let </span>write_task = tokio::spawn({
-            <span class="kw">let </span>db = db.current();
+            <span class="kw">let </span>db = db.writer().current();
             <span class="kw">async move </span>{ db.buffered_write(rx, BUFFER_CAPCITY_BYTES).<span class="kw">await </span>}
         });
-        <span class="kw">let </span>estimated_reachable_records = <span class="self">self</span>.db.read_obj(ESTIMATED_RECORDS_KEY)<span class="question-mark">?</span>;
+        <span class="kw">let </span>estimated_reachable_records = <span class="self">self</span>.db.writer().read_obj(ESTIMATED_RECORDS_KEY)<span class="question-mark">?</span>;
         <span class="kw">let </span>n_records = walk_snapshot(
             <span class="kw-2">&amp;</span>tipset,
             <span class="self">self</span>.recent_state_roots,
@@ -522,10 +537,13 @@
                         </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Cid {cid} not found in blockstore&quot;</span>))<span class="question-mark">?</span>;
 
                     <span class="kw">let </span>pair = (cid, block.clone());
-                    reachable_bytes
-                        .fetch_add(DB_KEY_BYTES + pair.<span class="number">1</span>.len(), atomic::Ordering::Relaxed);
-                    <span class="kw">if </span>!db.current().has(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
-                        tx.send_async(pair).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">if </span>db.writer().has(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
+                        reachable_bytes
+                            .fetch_add(DB_KEY_BYTES + pair.<span class="number">1</span>.len(), atomic::Ordering::Relaxed);
+
+                        <span class="kw">if </span>!db.writer().current().has(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
+                            tx.send_async(pair).<span class="kw">await</span><span class="question-mark">?</span>;
+                        }
                     }
 
                     <span class="prelude-val">Ok</span>(block)
@@ -538,7 +556,9 @@
         .<span class="kw">await</span><span class="question-mark">?</span>;
         drop(tx);
 
-        <span class="self">self</span>.db.write_obj(ESTIMATED_RECORDS_KEY, <span class="kw-2">&amp;</span>n_records)<span class="question-mark">?</span>;
+        <span class="self">self</span>.db
+            .writer()
+            .write_obj(ESTIMATED_RECORDS_KEY, <span class="kw-2">&amp;</span>n_records)<span class="question-mark">?</span>;
 
         write_task.<span class="kw">await</span><span class="question-mark">??</span>;
 
@@ -546,14 +566,14 @@
         <span class="self">self</span>.last_reachable_bytes
             .store(reachable_bytes <span class="kw">as _</span>, atomic::Ordering::Relaxed);
         <span class="macro">info!</span>(
-            <span class="string">&quot;Garbage collection finished at epoch {}, took {}s, reachable data size: {}&quot;</span>,
+            <span class="string">&quot;Garbage collection finished at epoch {}, took {}s, paritydb reachable data size: {}&quot;</span>,
             tipset.epoch(),
             (Utc::now() - start).num_seconds(),
             reachable_bytes.human_count_bytes(),
         );
 
         <span class="comment">// Use the latest head here
-        </span><span class="self">self</span>.db.next_current((<span class="self">self</span>.get_tipset)().epoch())<span class="question-mark">?</span>;
+        </span><span class="self">self</span>.db.writer().next_current((<span class="self">self</span>.get_tipset)().epoch())<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(())
     }

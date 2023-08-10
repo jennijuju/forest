@@ -136,6 +136,35 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -147,9 +176,10 @@
 //! A single z-frame cache is shared between all read-only stores.
 
 </span><span class="kw">use super</span>::{AnyCar, ZstdFrameCache};
-<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
+<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::BitswapStoreReadWrite;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::random_access::RandomAccessFile;
+<span class="kw">use crate</span>::{blocks::Tipset, libp2p_bitswap::BitswapStoreRead};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -162,13 +192,23 @@
     writer: WriterT,
 }
 
-<span class="kw">impl </span>ManyCar {
-    <span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
+<span class="kw">impl</span>&lt;WriterT&gt; ManyCar&lt;WriterT&gt; {
+    <span class="kw">pub fn </span>new(writer: WriterT) -&gt; <span class="self">Self </span>{
         ManyCar {
             shared_cache: Arc::new(Mutex::new(ZstdFrameCache::default())),
             read_only: Vec::new(),
-            writer: MemoryDB::default(),
+            writer,
         }
+    }
+
+    <span class="kw">pub fn </span>writer(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>WriterT {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.writer
+    }
+}
+
+<span class="kw">impl</span>&lt;WriterT: Default&gt; Default <span class="kw">for </span>ManyCar&lt;WriterT&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::new(Default::default())
     }
 }
 
@@ -205,7 +245,7 @@
 
 <span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt; From&lt;AnyCar&lt;ReaderT&gt;&gt; <span class="kw">for </span>ManyCar&lt;MemoryDB&gt; {
     <span class="kw">fn </span>from(any_car: AnyCar&lt;ReaderT&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::default();
         many_car.read_only(any_car);
         many_car
     }
@@ -214,7 +254,7 @@
 <span class="kw">impl </span>TryFrom&lt;Vec&lt;PathBuf&gt;&gt; <span class="kw">for </span>ManyCar&lt;MemoryDB&gt; {
     <span class="kw">type </span>Error = io::Error;
     <span class="kw">fn </span>try_from(files: Vec&lt;PathBuf&gt;) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::default();
         many_car.read_only_files(files.into_iter())<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(many_car)
     }
@@ -238,6 +278,24 @@
     }
 }
 
+<span class="kw">impl</span>&lt;WriterT: BitswapStoreRead + Blockstore&gt; BitswapStoreRead <span class="kw">for </span>ManyCar&lt;WriterT&gt; {
+    <span class="kw">fn </span>contains(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;bool&gt; {
+        Blockstore::has(<span class="self">self</span>, cid)
+    }
+
+    <span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {
+        Blockstore::get(<span class="self">self</span>, cid)
+    }
+}
+
+<span class="kw">impl</span>&lt;WriterT: BitswapStoreReadWrite + Blockstore&gt; BitswapStoreReadWrite <span class="kw">for </span>ManyCar&lt;WriterT&gt; {
+    <span class="kw">type </span>Params = libipld::DefaultParams;
+
+    <span class="kw">fn </span>insert(<span class="kw-2">&amp;</span><span class="self">self</span>, block: <span class="kw-2">&amp;</span>libipld::Block&lt;<span class="self">Self</span>::Params&gt;) -&gt; anyhow::Result&lt;()&gt; {
+        Blockstore::put_keyed(<span class="self">self</span>, block.cid(), block.data())
+    }
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">super</span>::<span class="kw">super</span>::AnyCar;
@@ -246,13 +304,13 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>many_car_empty() {
-        <span class="kw">let </span>many = ManyCar::new();
+        <span class="kw">let </span>many = ManyCar::new(MemoryDB::default());
         <span class="macro">assert!</span>(many.heaviest_tipset().is_err());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>many_car_idempotent() {
-        <span class="kw">let </span><span class="kw-2">mut </span>many = ManyCar::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>many = ManyCar::new(MemoryDB::default());
         many.read_only(AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap());
         many.read_only(AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap());
         <span class="macro">assert_eq!</span>(

@@ -68,14 +68,10 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::sync::Arc;
-
-<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
+</span><span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
 <span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>cid::Cid;
@@ -85,10 +81,10 @@
 
 <span class="kw">use </span><span class="kw">super</span>::SettingsStore;
 
-<span class="attr">#[derive(Debug, Default, Clone)]
+<span class="attr">#[derive(Debug, Default)]
 </span><span class="kw">pub struct </span>MemoryDB {
-    blockchain_db: Arc&lt;RwLock&lt;HashMap&lt;Vec&lt;u8&gt;, Vec&lt;u8&gt;&gt;&gt;&gt;,
-    settings_db: Arc&lt;RwLock&lt;HashMap&lt;String, Vec&lt;u8&gt;&gt;&gt;&gt;,
+    blockchain_db: RwLock&lt;HashMap&lt;Vec&lt;u8&gt;, Vec&lt;u8&gt;&gt;&gt;,
+    settings_db: RwLock&lt;HashMap&lt;String, Vec&lt;u8&gt;&gt;&gt;,
 }
 
 <span class="kw">impl </span>SettingsStore <span class="kw">for </span>MemoryDB {

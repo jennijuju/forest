@@ -783,6 +783,7 @@
 <a href="#783" id="783">783</a>
 <a href="#784" id="784">784</a>
 <a href="#785" id="785">785</a>
+<a href="#786" id="786">786</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -798,6 +799,7 @@
     cli::{CliOpts, Config},
     snapshot,
 };
+<span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::db::{
     db_engine::{db_root, open_proxy_db},
     rolling::DbGarbageCollector,
@@ -936,10 +938,10 @@
     <span class="kw">let </span>keystore = Arc::new(RwLock::new(keystore));
 
     <span class="kw">let </span>chain_data_path = chain_path(<span class="kw-2">&amp;</span>config);
-    <span class="kw">let </span>db = Arc::new(open_proxy_db(
+    <span class="kw">let </span>db = Arc::new(ManyCar::new(Arc::new(open_proxy_db(
         db_root(<span class="kw-2">&amp;</span>chain_data_path),
         config.db_config().clone(),
-    )<span class="question-mark">?</span>);
+    )<span class="question-mark">?</span>)));
 
     <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();
 
@@ -961,7 +963,7 @@
             config.client.metrics_address
         );
         <span class="kw">let </span>db_directory = <span class="kw">crate</span>::db::db_engine::db_root(<span class="kw-2">&amp;</span>chain_path(<span class="kw-2">&amp;</span>config));
-        <span class="kw">let </span>db = db.clone();
+        <span class="kw">let </span>db = db.writer().clone();
         services.spawn(<span class="kw">async </span>{
             <span class="kw">crate</span>::metrics::init_prometheus(prometheus_listener, db_directory, db)
                 .<span class="kw">await
@@ -982,7 +984,7 @@
     <span class="comment">// Initialize ChainStore
     </span><span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
         Arc::clone(<span class="kw-2">&amp;</span>db),
-        db.clone(),
+        db.writer().clone(),
         config.chain.clone(),
         genesis_header.clone(),
     )<span class="question-mark">?</span>);
@@ -992,7 +994,7 @@
         <span class="kw">let </span>chain_store = chain_store.clone();
         <span class="kw">let </span>get_tipset = <span class="kw">move </span>|| chain_store.heaviest_tipset().as_ref().clone();
         Arc::new(DbGarbageCollector::new(
-            db.as_ref().clone(),
+            db,
             config.chain.policy.chain_finality,
             config.chain.recent_state_roots,
             get_tipset,
@@ -1068,7 +1070,7 @@
         provider,
         network_name.clone(),
         network_send.clone(),
-        MpoolConfig::load_config(db.as_ref())<span class="question-mark">?</span>,
+        MpoolConfig::load_config(db.writer().as_ref())<span class="question-mark">?</span>,
         state_manager.chain_config(),
         <span class="kw-2">&amp;mut </span>services,
     )<span class="question-mark">?</span>;
@@ -1166,7 +1168,7 @@
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>config.client.snapshot_path {
         <span class="kw">let </span>stopwatch = time::Instant::now();
-        import_chain::&lt;<span class="kw">_</span>&gt;(
+        import_chain(
             <span class="kw-2">&amp;</span>state_manager,
             <span class="kw-2">&amp;</span>path.display().to_string(),
             config.client.skip_load,
@@ -1528,7 +1530,7 @@
             genesis_header,
         )<span class="question-mark">?</span>);
         <span class="kw">let </span>sm = Arc::new(StateManager::new(cs, chain_config)<span class="question-mark">?</span>);
-        import_chain::&lt;<span class="kw">_</span>&gt;(
+        import_chain(
             <span class="kw-2">&amp;</span>sm,
             file_path,
             <span class="bool-val">false</span>,
@@ -1555,7 +1557,7 @@
             genesis_header,
         )<span class="question-mark">?</span>);
         <span class="kw">let </span>sm = Arc::new(StateManager::new(cs, chain_config)<span class="question-mark">?</span>);
-        import_chain::&lt;<span class="kw">_</span>&gt;(
+        import_chain(
             <span class="kw-2">&amp;</span>sm,
             <span class="string">&quot;test-snapshots/chain4.car&quot;</span>,
             <span class="bool-val">false</span>,
