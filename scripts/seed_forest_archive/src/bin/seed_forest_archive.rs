@@ -25,14 +25,17 @@ fn main() -> Result<()> {
     println!("Highest epoch: {highest_epoch}");
     let mut rng = rand::thread_rng();
     let mut store = Store::new(snapshots.clone());
+    let mut round = 0;
     loop {
         let mut threads = vec![];
 
-        let round = rng.gen::<ChainEpoch>() % max_round;
+        // let round = rng.gen::<ChainEpoch>() % max_round;
         println!("Round {round}");
         let epoch = round * EPOCH_STEP;
         let initial_range = RangeInclusive::new(epoch.saturating_sub(2000), epoch);
 
+        round += 1;
+        
         if !has_lite_snapshot(epoch)? {
             store.get_range(&initial_range)?;
             let lite_snapshot = forest::export(epoch, store.files())?;
