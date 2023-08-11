@@ -784,6 +784,28 @@
 <a href="#784" id="784">784</a>
 <a href="#785" id="785">785</a>
 <a href="#786" id="786">786</a>
+<a href="#787" id="787">787</a>
+<a href="#788" id="788">788</a>
+<a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
+<a href="#803" id="803">803</a>
+<a href="#804" id="804">804</a>
+<a href="#805" id="805">805</a>
+<a href="#806" id="806">806</a>
+<a href="#807" id="807">807</a>
+<a href="#808" id="808">808</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -879,6 +901,27 @@
         .map_err(|err| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{err}&quot;</span>))
 }
 
+<span class="doccomment">/// Increase the file descriptor limit to a reasonable number.
+/// This prevents the node from failing if the default soft limit is too low.
+/// Note that the value is only increased, never decreased.
+</span><span class="kw">fn </span>maybe_increase_fd_limit() -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">static </span>DESIRED_SOFT_LIMIT: u64 = <span class="number">8192</span>;
+    <span class="kw">let </span>(soft_before, <span class="kw">_</span>) = rlimit::Resource::NOFILE.get()<span class="question-mark">?</span>;
+
+    <span class="kw">let </span>soft_after = rlimit::increase_nofile_limit(DESIRED_SOFT_LIMIT)<span class="question-mark">?</span>;
+    <span class="kw">if </span>soft_before &lt; soft_after {
+        <span class="macro">debug!</span>(<span class="string">&quot;Increased file descriptor limit from {soft_before} to {soft_after}&quot;</span>);
+    }
+    <span class="kw">if </span>soft_after &lt; DESIRED_SOFT_LIMIT {
+        <span class="macro">warn!</span>(
+            <span class="string">&quot;File descriptor limit is too low: {soft_after} &lt; {DESIRED_SOFT_LIMIT}. \
+            You may encounter &#39;too many open files&#39; errors.&quot;</span>,
+        );
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}
+
 <span class="comment">// Start the daemon and abort if we&#39;re interrupted by ctrl-c, SIGTERM, or `forest-cli shutdown`.
 </span><span class="kw">pub async fn </span>start_interruptable(opts: CliOpts, config: Config) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>terminate = signal(SignalKind::terminate())<span class="question-mark">?</span>;
@@ -917,6 +960,7 @@
         <span class="string">&quot;Starting Forest daemon, version {}&quot;</span>,
         FOREST_VERSION_STRING.as_str()
     );
+    maybe_increase_fd_limit()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>start_time = chrono::Utc::now();
     <span class="kw">let </span>path: PathBuf = config.client.data_dir.join(<span class="string">&quot;libp2p&quot;</span>);
