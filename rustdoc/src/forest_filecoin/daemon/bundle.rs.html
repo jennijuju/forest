@@ -30,7 +30,6 @@
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
-<a href="#33" id="33">33</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -39,8 +38,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
 <span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;Vec&lt;Cid&gt;&gt; {
-    <span class="kw">pub const </span>ACTOR_BUNDLES_CAR_ZST: <span class="kw-2">&amp;</span>[u8] =
-        <span class="macro">include_bytes!</span>(<span class="macro">concat!</span>(<span class="macro">env!</span>(<span class="string">&quot;OUT_DIR&quot;</span>), <span class="string">&quot;/actor_bundles.car.zst&quot;</span>));
+    <span class="kw">pub const </span>ACTOR_BUNDLES_CAR_ZST: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">&quot;../../assets/actor_bundles.car.zst&quot;</span>);
 
     <span class="prelude-val">Ok</span>(fvm_ipld_car::load_car(
         db,
