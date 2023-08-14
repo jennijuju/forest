@@ -7,6 +7,12 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "Rust Filecoin implementation."
 
+[patch.crates-io]
+fvm3 = { package = "fvm", default-features = false, git = "https://github.com/sudo-shashank/ref-fvm.git", branch = "shashank/v3.5", features = ["arb"] }
+fvm_shared3 = { package = "fvm_shared", git = "https://github.com/sudo-shashank/ref-fvm.git", branch = "shashank/v3.5", features = ["testing", "proofs"] }
+fvm_ipld_blockstore = { git = "https://github.com/sudo-shashank/ref-fvm.git", branch = "shashank/v3.5" }
+fvm_ipld_encoding = { git = "https://github.com/sudo-shashank/ref-fvm.git", branch = "shashank/v3.5" }
+
 [dependencies]
 ahash = "0.8"
 anes = "0.1.6"
