@@ -117,14 +117,6 @@
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
 <a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -132,27 +124,19 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
-<span class="doccomment">/// Similar to the `CidHashMap` implementation, `FrozenCids` optimizes storage of
-/// CIDs that would normally be stored as a vector of CIDs. The `V1 DAG-CBOR Blake2b-256`
-/// variant (which can be stored in 32 bytes vs 96 bytes for a `Cid`
-/// type) is `+99.99%` of all CIDs, so very few CIDs need to be stored in the
-/// `Generic(Box&lt;Cid&gt;)` variant of `CidVariant`.
+<span class="doccomment">/// A wrapper around `Box&lt;[CidVariant]&gt;` with a [`Cid`]-friendly API:
+/// - Uses [`CidVariant`] over [`Cid`] to save memory on common CIDs - see docs for that type for more
+/// - Uses `Box&lt;[...]&gt;`, over `Vec&lt;...&gt;` avoiding vector overallocation
 ///
-/// We use `Box&lt;[...]&gt;` to save memory, avoiding vector overallocation.
+/// There will be MANY small collections of [`FrozenCids`] over the codebase, so these space savings matter
 </span><span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
-#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Serialize, Deserialize, Default)]
 </span><span class="kw">pub struct </span>FrozenCids(
     <span class="attr">#[cfg_attr(test, arbitrary(gen(
-    |g| Box::new([CidVariant::arbitrary(g)]</span>))
-))]
-    Box&lt;[CidVariant]&gt;,
+        |g| Vec::arbitrary(g).into_boxed_slice()
+    )))]
+    </span>Box&lt;[CidVariant]&gt;,
 );
-
-<span class="kw">impl </span>Default <span class="kw">for </span>FrozenCids {
-    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        FrozenCids(Box::new([]))
-    }
-}
 
 <span class="kw">pub struct </span>Iter&lt;<span class="lifetime">&#39;a</span>&gt; {
     cids: std::slice::Iter&lt;<span class="lifetime">&#39;a</span>, CidVariant&gt;,
