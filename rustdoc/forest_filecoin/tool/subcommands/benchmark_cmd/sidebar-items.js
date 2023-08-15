@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["BenchmarkCommands"],"fn":["benchmark_car_streaming","benchmark_exporting","benchmark_forest_encoding","benchmark_graph_traversal","indicatif_sink","open_store"],"static":["DEFAULT_VALUE"]};
+window.SIDEBAR_ITEMS = {"enum":["BenchmarkCommands"],"fn":["benchmark_car_streaming","benchmark_car_streaming_inspect","benchmark_exporting","benchmark_forest_encoding","benchmark_graph_traversal","indicatif_sink","open_store"],"static":["DEFAULT_VALUE"]};
