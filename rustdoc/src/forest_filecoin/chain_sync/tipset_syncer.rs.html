@@ -1660,8 +1660,6 @@
 <a href="#1660" id="1660">1660</a>
 <a href="#1661" id="1661">1661</a>
 <a href="#1662" id="1662">1662</a>
-<a href="#1663" id="1663">1663</a>
-<a href="#1664" id="1664">1664</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2546,7 +2544,7 @@
         }
         <span class="comment">// Attempt to load the parent tipset from local store
         </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(tipset) = chain_store.tipset_from_keys(oldest_parent.parents()) {
-            parent_blocks.extend_from_slice(tipset.cids());
+            parent_blocks.extend(tipset.cids());
             parent_tipsets.push(tipset);
             <span class="kw">continue</span>;
         }
@@ -2565,7 +2563,7 @@
                 <span class="kw">break </span><span class="lifetime">&#39;sync</span>;
             }
             validate_tipset_against_cache(bad_block_cache, tipset.key(), <span class="kw-2">&amp;</span>parent_blocks)<span class="question-mark">?</span>;
-            parent_blocks.extend_from_slice(tipset.cids());
+            parent_blocks.extend(tipset.cids());
             tracker.write().set_epoch(tipset.epoch());
             parent_tipsets.push(tipset);
         }
@@ -2600,7 +2598,7 @@
                 // iterator is immediately dropped
                 </span><span class="kw">let </span><span class="kw-2">mut </span>fork_tipsets = fork_tipsets;
                 fork_tipsets.drain((i + <span class="number">1</span>)..);
-                parent_tipsets.extend_from_slice(<span class="kw-2">&amp;</span>fork_tipsets);
+                parent_tipsets.extend(fork_tipsets);
                 <span class="kw">break</span>;
             }
 
@@ -3257,14 +3255,12 @@
     tipset: <span class="kw-2">&amp;</span>TipsetKeys,
     descendant_blocks: <span class="kw-2">&amp;</span>[Cid],
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&lt;C&gt;&gt; {
-    <span class="kw">for </span>cid <span class="kw">in </span>tipset.cids() {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(reason) = bad_block_cache.get(cid) {
+    <span class="kw">for </span>cid <span class="kw">in </span><span class="kw-2">&amp;</span>tipset.cids {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(reason) = bad_block_cache.get(<span class="kw-2">&amp;</span>cid) {
             <span class="kw">for </span>block_cid <span class="kw">in </span>descendant_blocks {
                 bad_block_cache.put(<span class="kw-2">*</span>block_cid, <span class="macro">format!</span>(<span class="string">&quot;chain contained {cid}&quot;</span>));
             }
-            <span class="kw">return </span><span class="prelude-val">Err</span>(TipsetRangeSyncerError::TipsetRangeWithBadBlock(
-                <span class="kw-2">*</span>cid, reason,
-            ));
+            <span class="kw">return </span><span class="prelude-val">Err</span>(TipsetRangeSyncerError::TipsetRangeWithBadBlock(cid, reason));
         }
     }
     <span class="prelude-val">Ok</span>(())

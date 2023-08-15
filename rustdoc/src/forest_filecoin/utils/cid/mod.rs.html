@@ -122,14 +122,65 @@
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
 <a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>cid::{
-    multihash::{Code, MultihashDigest},
+    multihash::{<span class="self">self</span>, Code, Code::Blake2b256, MultihashDigest},
     Cid, Version,
 };
 <span class="kw">use </span>fvm_ipld_encoding::{Error, DAG_CBOR};
+<span class="attr">#[cfg(test)]
+</span><span class="kw">use </span>quickcheck::Arbitrary;
+<span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 <span class="doccomment">/// Extension methods for constructing `dag-cbor` [Cid]
 </span><span class="kw">pub trait </span>CidCborExt {
@@ -152,30 +203,75 @@
 
 <span class="kw">pub const </span>BLAKE2B256_SIZE: usize = <span class="number">32</span>;
 
-<span class="comment">// `CidVariant` is an enumeration of known CID types that are used in the Filecoin blockchain. CIDs
-// contain a significant amount of static data (such as version, codec, hash identifier, hash
-// length). This static data represented by a single tag in the enum.
-//
-// Nearly all Filecoin CIDs are V1, DagCbor encoded, and hashed with Blake2b256 (which has a hash
-// length of 256bits). Naively representing such a CID requires 96 bytes but `CidVariant` does it in
-// only 40 bytes. If other types of CID become popular, they can be added to the CidVariant
-// structure.
+<span class="doccomment">/// `CidVariant` is an enumeration of known CID types that are used in the Filecoin blockchain. CIDs
+/// contain a significant amount of static data (such as version, codec, hash identifier, hash
+/// length). This static data represented by a single tag in the `enum`.
+///
+/// Nearly all Filecoin CIDs are `V1`,`DagCbor` encoded, and hashed with `Blake2b256` (which has a hash
+/// length of 256 bits). Naively representing such a CID requires 96 bytes but `CidVariant` does it in
+/// only 40 bytes. If other types of CID become popular, they can be added to the `CidVariant`
+/// structure.
+///
+/// The `Generic` variant is used for CIDs that do not fit into the other variants.
+/// These variants are used for optimizing storage of CIDs in the `FrozenCids` structure.
+</span><span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 </span><span class="kw">pub enum </span>CidVariant {
-    V1DagCborBlake2b([u8; BLAKE2B256_SIZE]),
+    Generic(Box&lt;Cid&gt;),
+    V1DagCborBlake2b(
+        <span class="attr">#[cfg_attr(test, arbitrary(gen(|g: <span class="kw-2">&amp;mut </span>quickcheck::Gen| std::array::from_fn(|_ix| Arbitrary::arbitrary(g)))))]
+         </span>[u8; BLAKE2B256_SIZE],
+    ),
 }
 
-<span class="kw">impl </span>TryFrom&lt;Cid&gt; <span class="kw">for </span>CidVariant {
-    <span class="kw">type </span>Error = ();
-    <span class="kw">fn </span>try_from(cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+<span class="kw">impl </span>Serialize <span class="kw">for </span>CidVariant {
+    <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
+    <span class="kw">where
+        </span>S: Serializer,
+    {
+        Cid::from(<span class="self">self</span>).serialize(serializer)
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>CidVariant {
+    <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
+    <span class="kw">where
+        </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+    {
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>::from(Cid::deserialize(deserializer)<span class="question-mark">?</span>))
+    }
+}
+
+<span class="kw">impl </span>From&lt;Cid&gt; <span class="kw">for </span>CidVariant {
+    <span class="kw">fn </span>from(cid: Cid) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span>cid.version() == Version::V1 &amp;&amp; cid.codec() == DAG_CBOR {
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(small_hash) = cid.hash().resize() {
                 <span class="kw">let </span>(code, bytes, size) = small_hash.into_inner();
                 <span class="kw">if </span>code == u64::from(Code::Blake2b256) &amp;&amp; size <span class="kw">as </span>usize == BLAKE2B256_SIZE {
-                    <span class="kw">return </span><span class="prelude-val">Ok</span>(CidVariant::V1DagCborBlake2b(bytes));
+                    <span class="kw">return </span>CidVariant::V1DagCborBlake2b(bytes);
                 }
             }
         }
-        <span class="prelude-val">Err</span>(())
+        CidVariant::Generic(Box::new(cid))
+    }
+}
+
+<span class="kw">impl </span>From&lt;CidVariant&gt; <span class="kw">for </span>Cid {
+    <span class="kw">fn </span>from(variant: CidVariant) -&gt; <span class="self">Self </span>{
+        Cid::from(<span class="kw-2">&amp;</span>variant)
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>CidVariant&gt; <span class="kw">for </span>Cid {
+    <span class="kw">fn </span>from(variant: <span class="kw-2">&amp;</span>CidVariant) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>variant {
+            CidVariant::Generic(cid) =&gt; <span class="kw-2">**</span>cid,
+            CidVariant::V1DagCborBlake2b(digest) =&gt; Cid::new_v1(
+                DAG_CBOR,
+                multihash::Multihash::wrap(Blake2b256.into(), digest)
+                    .expect(<span class="string">&quot;failed to convert Blake2b digest to V1 DAG-CBOR Blake2b CID&quot;</span>),
+            ),
+        }
     }
 }
 

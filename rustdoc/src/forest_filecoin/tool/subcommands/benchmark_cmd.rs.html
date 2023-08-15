@@ -220,6 +220,8 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -233,6 +235,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
 <span class="kw">use </span><span class="kw">crate</span>::utils::stream::par_buffer;
 <span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
 <span class="kw">use </span>indicatif::{ProgressBar, ProgressStyle};
@@ -405,7 +408,8 @@
         compression_level,
         par_buffer(<span class="number">1024</span>, blocks.map_err(anyhow::Error::from)),
     );
-    <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, ts.key().cids.clone(), frames).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, Vec::&lt;Cid&gt;::from(<span class="kw-2">&amp;</span>ts.key().cids), frames)
+        .<span class="kw">await</span><span class="question-mark">?</span>;
     dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }

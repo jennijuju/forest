@@ -633,8 +633,8 @@
             <span class="kw">let </span>bh_3 = from_slice_with_fallback::&lt;BlockHeader&gt;(extra)<span class="question-mark">?</span>;
             <span class="kw">if </span>bh_1.parents() == bh_3.parents()
                 &amp;&amp; bh_1.epoch() == bh_3.epoch()
-                &amp;&amp; bh_2.parents().cids().contains(bh_3.cid())
-                &amp;&amp; !bh_2.parents().cids().contains(bh_1.cid())
+                &amp;&amp; bh_2.parents().cids.contains(<span class="kw-2">*</span>bh_3.cid())
+                &amp;&amp; !bh_2.parents().cids.contains(<span class="kw-2">*</span>bh_1.cid())
             {
                 fault_type = <span class="prelude-val">Some</span>(ConsensusFaultType::ParentGrinding);
             }

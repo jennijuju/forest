@@ -197,6 +197,8 @@
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
 <a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -296,7 +298,7 @@
             .unwrap();
 
         <span class="kw">let </span>cs_arc = Arc::new(
-            ChainStore::new(db.clone(), db, chain_config.clone(), genesis_header.clone()).unwrap(),
+            ChainStore::new(db.clone(), db, chain_config.clone(), genesis_header).unwrap(),
         );
 
         <span class="kw">let </span>state_manager = Arc::new(StateManager::new(cs_arc.clone(), chain_config).unwrap());
@@ -309,10 +311,12 @@
             <span class="kw">let </span>header = from_slice_with_fallback::&lt;BlockHeader&gt;(<span class="kw-2">&amp;</span>bz).unwrap();
             <span class="kw">let </span>ts = Tipset::from(header);
             <span class="kw">let </span>db = cs_for_test.blockstore();
-            <span class="kw">let </span>tsk = ts.key().cids.clone();
-            cs_for_test.set_heaviest_tipset(Arc::new(ts)).unwrap();
+            <span class="kw">let </span>tsk = ts.key();
+            cs_for_test
+                .set_heaviest_tipset(Arc::new(ts.clone()))
+                .unwrap();
 
-            <span class="kw">for </span>i <span class="kw">in </span>tsk {
+            <span class="kw">for </span>i <span class="kw">in </span>tsk.cids.into_iter() {
                 <span class="kw">let </span>bz2 = bz.clone();
                 db.put_keyed(<span class="kw-2">&amp;</span>i, <span class="kw-2">&amp;</span>bz2).unwrap();
             }

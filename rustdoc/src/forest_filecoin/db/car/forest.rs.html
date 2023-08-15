@@ -599,7 +599,7 @@
     }
 
     <span class="kw">pub fn </span>heaviest_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Tipset&gt; {
-        Tipset::load_required(<span class="self">self</span>, <span class="kw-2">&amp;</span>TipsetKeys::new(<span class="self">self</span>.roots()))
+        Tipset::load_required(<span class="self">self</span>, <span class="kw-2">&amp;</span>TipsetKeys::from(<span class="self">self</span>.roots()))
     }
 
     <span class="kw">pub fn </span>into_dyn(<span class="self">self</span>) -&gt; ForestCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::RandomAccessFileReader&gt;&gt; {

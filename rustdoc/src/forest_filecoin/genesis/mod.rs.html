@@ -334,7 +334,7 @@
         sm.chain_store().set_estimated_records(n_records <span class="kw">as </span>u64)<span class="question-mark">?</span>;
     }
 
-    <span class="kw">let </span>ts = sm.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::new(cids))<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = sm.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::from(cids))<span class="question-mark">?</span>;
 
     <span class="kw">if </span>!skip_load {
         <span class="kw">let </span>gb = sm.chain_store().chain_index.tipset_by_height(

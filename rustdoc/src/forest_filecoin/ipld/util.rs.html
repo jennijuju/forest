@@ -551,7 +551,7 @@
     </span><span class="kw">let </span>wp = WithProgressRaw::new(message, estimated_total_records);
 
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
-    <span class="kw">let </span><span class="kw-2">mut </span>blocks_to_walk: VecDeque&lt;Cid&gt; = tipset.cids().to_vec().into();
+    <span class="kw">let </span><span class="kw-2">mut </span>blocks_to_walk: VecDeque&lt;Cid&gt; = tipset.cids().into();
     <span class="kw">let </span><span class="kw-2">mut </span>current_min_height = tipset.epoch();
     <span class="kw">let </span>incl_roots_epoch = tipset.epoch() - recent_roots;
 
@@ -594,12 +594,12 @@
         }
 
         <span class="kw">if </span>h.epoch() &gt; <span class="number">0 </span>{
-            <span class="kw">for </span>p <span class="kw">in </span>h.parents().cids() {
-                blocks_to_walk.push_back(<span class="kw-2">*</span>p);
+            <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>h.parents().cids {
+                blocks_to_walk.push_back(p);
             }
         } <span class="kw">else </span>{
-            <span class="kw">for </span>p <span class="kw">in </span>h.parents().cids() {
-                load_block(<span class="kw-2">*</span>p).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>h.parents().cids {
+                load_block(p).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
 
@@ -816,8 +816,8 @@
 
                         <span class="kw">if </span>block.epoch() == <span class="number">0 </span>{
                             <span class="comment">// The genesis block has some kind of dummy parent that needs to be emitted.
-                            </span><span class="kw">for </span>p <span class="kw">in </span>block.parents().cids() {
-                                this.dfs.push_back(Emit(<span class="kw-2">*</span>p));
+                            </span><span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>block.parents().cids {
+                                this.dfs.push_back(Emit(p));
                             }
                         }
 
