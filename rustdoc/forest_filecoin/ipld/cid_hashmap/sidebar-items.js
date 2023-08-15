@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["CidHashMap"]};
+window.SIDEBAR_ITEMS = {"struct":["CidHashMap","IntoIter"]};
