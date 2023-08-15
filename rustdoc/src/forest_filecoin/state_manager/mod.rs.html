@@ -1310,6 +1310,7 @@
 <a href="#1310" id="1310">1310</a>
 <a href="#1311" id="1311">1311</a>
 <a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1329,6 +1330,7 @@
     index::{ChainIndex, ResolveNullTipset},
     ChainStore, HeadChange,
 };
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::BlockMessages;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, ExecutionContext, VM};
 <span class="kw">use </span><span class="kw">crate</span>::json::message_receipt;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
@@ -2608,7 +2610,7 @@
         }
     }
 
-    <span class="kw">let </span>block_messages = ChainStore::block_msgs_for_tipset(<span class="kw-2">&amp;</span>chain_index.db, <span class="kw-2">&amp;</span>tipset)
+    <span class="kw">let </span>block_messages = BlockMessages::for_tipset(<span class="kw-2">&amp;</span>chain_index.db, <span class="kw-2">&amp;</span>tipset)
         .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>vm = create_vm(parent_state, epoch, tipset.min_timestamp())<span class="question-mark">?</span>;
