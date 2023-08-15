@@ -201,50 +201,26 @@
 <a href="#201" id="201">201</a>
 <a href="#202" id="202">202</a>
 <a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::path::PathBuf;
-<span class="kw">use </span>std::pin::pin;
 
-<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
-<span class="kw">use </span>futures::{AsyncRead, Stream, StreamExt, TryStreamExt};
-<span class="kw">use </span>fvm_ipld_car::CarHeader;
-<span class="kw">use </span>fvm_ipld_car::CarReader;
+<span class="kw">use </span>futures::{Stream, StreamExt, TryStreamExt};
 <span class="kw">use </span>itertools::Itertools;
+<span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncSeek, AsyncWriteExt};
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
-
-<span class="kw">type </span>BlockPair = (Cid, Vec&lt;u8&gt;);
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarStream};
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>CarCommands {
     Concat {
-        <span class="doccomment">/// A list of `.car` file paths
+        <span class="doccomment">/// A list of CAR file paths. A CAR file can be a plain CAR, a zstd compressed CAR
+        /// or a `.forest.car.zst` file
         </span>car_files: Vec&lt;PathBuf&gt;,
-        <span class="doccomment">/// The output `.car` file path
+        <span class="doccomment">/// The output `.forest.car.zst` file path
         </span><span class="attr">#[arg(short, long)]
         </span>output: PathBuf,
     },
@@ -254,60 +230,48 @@
     <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Concat { car_files, output } =&gt; {
-                <span class="kw">let </span>readers: Vec&lt;<span class="kw">_</span>&gt; = futures::stream::iter(car_files)
-                    .then(async_fs::File::open)
-                    .map_ok(futures::io::BufReader::new)
-                    .map_err(fvm_ipld_car::Error::from)
-                    .and_then(CarReader::new)
+                <span class="kw">let </span>car_streams: Vec&lt;<span class="kw">_</span>&gt; = futures::stream::iter(car_files)
+                    .then(tokio::fs::File::open)
+                    .map_ok(tokio::io::BufReader::new)
+                    .and_then(CarStream::new)
                     .try_collect()
                     .<span class="kw">await</span><span class="question-mark">?</span>;
 
-                <span class="kw">let </span>all_roots = readers
+                <span class="kw">let </span>all_roots = car_streams
                     .iter()
                     .flat_map(|it| it.header.roots.iter())
                     .unique()
                     .cloned()
                     .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-                <span class="kw">let </span>car_writer = CarHeader::from(all_roots);
-                <span class="kw">let </span><span class="kw-2">mut </span>output_file =
-                    futures::io::BufWriter::new(async_fs::File::create(output).<span class="kw">await</span><span class="question-mark">?</span>);
-
-                car_writer
-                    .write_stream_async(
-                        <span class="kw-2">&amp;mut </span>output_file,
-                        <span class="kw-2">&amp;mut </span><span class="macro">pin!</span>(dedup_block_stream(merge_car_readers(readers))),
-                    )
-                    .<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
+                    <span class="number">8000_usize</span>.next_power_of_two(),
+                    zstd::DEFAULT_COMPRESSION_LEVEL <span class="kw">as _</span>,
+                    dedup_block_stream(merge_car_streams(car_streams)).map_err(anyhow::Error::from),
+                );
+                <span class="kw">let </span><span class="kw-2">mut </span>writer = tokio::io::BufWriter::new(tokio::fs::File::create(<span class="kw-2">&amp;</span>output).<span class="kw">await</span><span class="question-mark">?</span>);
+                <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>writer, all_roots, frames).<span class="kw">await</span><span class="question-mark">?</span>;
+                writer.flush().<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="kw">fn </span>read_car_as_stream&lt;R&gt;(reader: CarReader&lt;R&gt;) -&gt; <span class="kw">impl </span>Stream&lt;Item = BlockPair&gt;
+<span class="kw">fn </span>merge_car_streams&lt;R&gt;(
+    car_streams: Vec&lt;CarStream&lt;R&gt;&gt;,
+) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt;
 <span class="kw">where
-    </span>R: AsyncRead + Send + Unpin,
+    </span>R: AsyncSeek + AsyncBufRead + Unpin,
 {
-    futures::stream::unfold(reader, <span class="kw">move </span>|<span class="kw-2">mut </span>reader| <span class="kw">async </span>{
-        reader
-            .next_block()
-            .<span class="kw">await
-            </span>.expect(<span class="string">&quot;Failed to call CarReader::next_block&quot;</span>)
-            .map(|b| ((b.cid, b.data), reader))
-    })
+    futures::stream::iter(car_streams).flatten()
 }
 
-<span class="kw">fn </span>merge_car_readers&lt;R&gt;(readers: Vec&lt;CarReader&lt;R&gt;&gt;) -&gt; <span class="kw">impl </span>Stream&lt;Item = BlockPair&gt;
-<span class="kw">where
-    </span>R: AsyncRead + Send + Unpin,
-{
-    futures::stream::iter(readers).flat_map(read_car_as_stream)
-}
-
-<span class="kw">fn </span>dedup_block_stream(stream: <span class="kw">impl </span>Stream&lt;Item = BlockPair&gt;) -&gt; <span class="kw">impl </span>Stream&lt;Item = BlockPair&gt; {
+<span class="kw">fn </span>dedup_block_stream(
+    stream: <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt;,
+) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
-    stream.filter(<span class="kw">move </span>|(cid, _data)| futures::future::ready(seen.insert(<span class="kw-2">*</span>cid)))
+    stream.try_filter(<span class="kw">move </span>|Block { cid, data: <span class="kw">_ </span>}| futures::future::ready(seen.insert(<span class="kw-2">*</span>cid)))
 }
 
 <span class="attr">#[cfg(test)]
@@ -318,7 +282,6 @@
     <span class="kw">use </span>cid::multihash::MultihashDigest;
     <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>futures::executor::{block_on, block_on_stream};
-    <span class="kw">use </span>fvm_ipld_car::Block;
     <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
     <span class="kw">use </span>pretty_assertions::assert_eq;
     <span class="kw">use </span>quickcheck::Arbitrary;
@@ -334,24 +297,26 @@
     }
 
     <span class="kw">impl </span>Blocks {
-        <span class="kw">async fn </span>into_car_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
-            <span class="comment">// Dummy root
-            </span><span class="kw">let </span>writer = CarHeader::from(<span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>].cid]);
-            <span class="kw">let </span><span class="kw-2">mut </span>car = <span class="macro">vec!</span>[];
-            <span class="kw">let </span><span class="kw-2">mut </span>stream = <span class="macro">pin!</span>(futures::stream::iter(<span class="self">self</span>.<span class="number">0</span>).map(|b| (b.cid, b.data)));
-            writer
-                .write_stream_async(<span class="kw-2">&amp;mut </span>car, <span class="kw-2">&amp;mut </span>stream)
+        <span class="kw">async fn </span>into_forest_car_zst_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
+            <span class="kw">let </span>roots = <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>].cid];
+            <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
+                <span class="number">8000_usize</span>.next_power_of_two(),
+                zstd::DEFAULT_COMPRESSION_LEVEL <span class="kw">as _</span>,
+                <span class="self">self</span>.into_stream().map_err(anyhow::Error::from),
+            );
+            <span class="kw">let </span><span class="kw-2">mut </span>writer = <span class="macro">vec!</span>[];
+            <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>writer, roots, frames)
                 .<span class="kw">await
                 </span>.unwrap();
-            car
+            writer
         }
 
-        <span class="kw">fn </span>into_stream(<span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = BlockPair&gt; {
-            futures::stream::iter(<span class="self">self</span>.<span class="number">0</span>.into_iter().map(|b| (b.cid, b.data)))
+        <span class="kw">fn </span>into_stream(<span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt; {
+            futures::stream::iter(<span class="self">self</span>.<span class="number">0</span>).map(<span class="prelude-val">Ok</span>)
         }
 
         <span class="doccomment">/// Implicit clone is performed inside to simplify caller code
-        </span><span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = BlockPair&gt; {
+        </span><span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt; {
             <span class="self">self</span>.clone().into_stream()
         }
     }
@@ -378,14 +343,10 @@
     <span class="attr">#[quickcheck]
     </span><span class="kw">fn </span>blocks_roundtrip(blocks: Blocks) -&gt; anyhow::Result&lt;()&gt; {
         block_on(<span class="kw">async move </span>{
-            <span class="kw">let </span>car = blocks.into_car_bytes().<span class="kw">await</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>reader = CarReader::new(car.as_slice()).<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>blocks2 = <span class="macro">vec!</span>[];
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(b) = reader.next_block().<span class="kw">await</span><span class="question-mark">? </span>{
-                blocks2.push(b);
-            }
-            <span class="kw">let </span>blocks2 = Blocks(blocks2);
-            <span class="kw">let </span>car2 = blocks2.into_car_bytes().<span class="kw">await</span>;
+            <span class="kw">let </span>car = blocks.into_forest_car_zst_bytes().<span class="kw">await</span>;
+            <span class="kw">let </span>reader = CarStream::new(std::io::Cursor::new(<span class="kw-2">&amp;</span>car)).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>blocks2 = Blocks(reader.try_collect().<span class="kw">await</span><span class="question-mark">?</span>);
+            <span class="kw">let </span>car2 = blocks2.into_forest_car_zst_bytes().<span class="kw">await</span>;
 
             <span class="macro">assert_eq!</span>(car, car2);
 
@@ -414,7 +375,7 @@
     <span class="kw">fn </span>dedup_block_stream_wrapper(a: <span class="kw-2">&amp;</span>Blocks, b: <span class="kw-2">&amp;</span>Blocks) -&gt; HashSet&lt;Cid&gt; {
         <span class="kw">let </span>blocks: Vec&lt;Cid&gt; =
             block_on_stream(dedup_block_stream(a.to_stream().chain(b.to_stream())))
-                .map(|(cid, <span class="kw">_</span>)| cid)
+                .map(|block| block.unwrap().cid)
                 .collect();
 
         <span class="comment">// Ensure `dedup_block_stream` works properly
@@ -428,17 +389,14 @@
         <span class="kw">let </span>cid_union = HashSet::from_iter(HashSet::from(<span class="kw-2">&amp;</span>a).union(<span class="kw-2">&amp;</span>HashSet::from(<span class="kw-2">&amp;</span>b)).cloned());
 
         block_on(<span class="kw">async move </span>{
-            <span class="kw">let </span>car_a = a.into_car_bytes().<span class="kw">await</span>;
-            <span class="kw">let </span>car_b = b.into_car_bytes().<span class="kw">await</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>deduped = <span class="macro">pin!</span>(dedup_block_stream(merge_car_readers(<span class="macro">vec!</span>[
-                CarReader::new(car_a.as_slice()).<span class="kw">await</span><span class="question-mark">?</span>,
-                CarReader::new(car_b.as_slice()).<span class="kw">await</span><span class="question-mark">?</span>,
-            ])));
+            <span class="kw">let </span>car_a = std::io::Cursor::new(a.into_forest_car_zst_bytes().<span class="kw">await</span>);
+            <span class="kw">let </span>car_b = std::io::Cursor::new(b.into_forest_car_zst_bytes().<span class="kw">await</span>);
+            <span class="kw">let </span>deduped = dedup_block_stream(merge_car_streams(<span class="macro">vec!</span>[
+                CarStream::new(car_a).<span class="kw">await</span><span class="question-mark">?</span>,
+                CarStream::new(car_b).<span class="kw">await</span><span class="question-mark">?</span>,
+            ]));
 
-            <span class="kw">let </span><span class="kw-2">mut </span>cid_union2 = HashSet::default();
-            <span class="kw">while let </span><span class="prelude-val">Some</span>((cid, <span class="kw">_</span>)) = deduped.next().<span class="kw">await </span>{
-                cid_union2.insert(cid);
-            }
+            <span class="kw">let </span>cid_union2: HashSet&lt;Cid&gt; = deduped.map_ok(|block| block.cid).try_collect().<span class="kw">await</span><span class="question-mark">?</span>;
 
             <span class="macro">assert_eq!</span>(cid_union, cid_union2);
 
