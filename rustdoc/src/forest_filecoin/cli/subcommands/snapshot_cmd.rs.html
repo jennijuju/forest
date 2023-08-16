@@ -496,8 +496,6 @@
 <a href="#496" id="496">496</a>
 <a href="#497" id="497">497</a>
 <a href="#498" id="498">498</a>
-<a href="#499" id="499">499</a>
-<a href="#500" id="500">500</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -508,7 +506,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::daemon::bundle::load_actor_bundles;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
-<span class="kw">use </span><span class="kw">crate</span>::fil_cns::composition <span class="kw">as </span>cns;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{recurse_links_hash, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::chain_api::ChainExportParams;
@@ -953,11 +950,10 @@
     </span>load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="comment">// Set proof parameter data dir and make sure the proofs are available
-    </span><span class="kw">if </span>cns::FETCH_PARAMS {
-        <span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
-            <span class="kw-2">&amp;</span>Config::default().client.data_dir,
-        );
-    }
+    </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
+        <span class="kw-2">&amp;</span>Config::default().client.data_dir,
+    );
+
     ensure_params_downloaded().<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>chain_index = Arc::new(ChainIndex::new(Arc::new(db.clone())));

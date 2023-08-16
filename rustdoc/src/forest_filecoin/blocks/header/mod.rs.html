@@ -363,7 +363,7 @@
 </span><span class="kw">use </span>std::fmt;
 
 <span class="kw">use super</span>::{ElectionProof, Error, Ticket, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconEntry, BeaconSchedule};
+<span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconEntry, BeaconSchedule};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address, crypto::Signature, econ::TokenAmount, sector::PoStProof,
@@ -611,10 +611,10 @@
 
     <span class="doccomment">/// Validates if the current header&#39;s Beacon entries are valid to ensure
     /// randomness was generated correctly
-    </span><span class="kw">pub fn </span>validate_block_drand&lt;B: Beacon&gt;(
+    </span><span class="kw">pub fn </span>validate_block_drand(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         network_version: NetworkVersion,
-        b_schedule: <span class="kw-2">&amp;</span>BeaconSchedule&lt;B&gt;,
+        b_schedule: <span class="kw-2">&amp;</span>BeaconSchedule,
         parent_epoch: ChainEpoch,
         prev_entry: <span class="kw-2">&amp;</span>BeaconEntry,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {

@@ -977,18 +977,6 @@
 <a href="#977" id="977">977</a>
 <a href="#978" id="978">978</a>
 <a href="#979" id="979">979</a>
-<a href="#980" id="980">980</a>
-<a href="#981" id="981">981</a>
-<a href="#982" id="982">982</a>
-<a href="#983" id="983">983</a>
-<a href="#984" id="984">984</a>
-<a href="#985" id="985">985</a>
-<a href="#986" id="986">986</a>
-<a href="#987" id="987">987</a>
-<a href="#988" id="988">988</a>
-<a href="#989" id="989">989</a>
-<a href="#990" id="990">990</a>
-<a href="#991" id="991">991</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1024,7 +1012,6 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{
     bad_block_cache::BadBlockCache,
-    consensus::Consensus,
     metrics,
     network_context::SyncNetworkContext,
     sync_state::SyncState,
@@ -1039,11 +1026,11 @@
 <span class="kw">type </span>ChainMuxerFuture&lt;T, E&gt; = Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;T, E&gt;&gt; + Send&gt;&gt;;
 
 <span class="attr">#[derive(Debug, Error)]
-</span><span class="kw">pub enum </span>ChainMuxerError&lt;C: Consensus&gt; {
+</span><span class="kw">pub enum </span>ChainMuxerError {
     <span class="attr">#[error(<span class="string">&quot;Tipset processor error: {0}&quot;</span>)]
-    </span>TipsetProcessor(<span class="attr">#[from] </span>TipsetProcessorError&lt;C&gt;),
+    </span>TipsetProcessor(<span class="attr">#[from] </span>TipsetProcessorError),
     <span class="attr">#[error(<span class="string">&quot;Tipset range syncer error: {0}&quot;</span>)]
-    </span>TipsetRangeSyncer(<span class="attr">#[from] </span>TipsetRangeSyncerError&lt;C&gt;),
+    </span>TipsetRangeSyncer(<span class="attr">#[from] </span>TipsetRangeSyncerError),
     <span class="attr">#[error(<span class="string">&quot;Tipset validation error: {0}&quot;</span>)]
     </span>TipsetValidator(<span class="attr">#[from] </span>Box&lt;TipsetValidationError&gt;),
     <span class="attr">#[error(<span class="string">&quot;Sending tipset on channel failed: {0}&quot;</span>)]
@@ -1109,15 +1096,12 @@
 
 <span class="doccomment">/// The `ChainMuxer` handles events from the P2P network and orchestrates the
 /// chain synchronization.
-</span><span class="kw">pub struct </span>ChainMuxer&lt;DB, M, C: Consensus&gt; {
+</span><span class="kw">pub struct </span>ChainMuxer&lt;DB, M&gt; {
     <span class="doccomment">/// State of the `ChainSyncer` `Future` implementation
-    </span>state: ChainMuxerState&lt;C&gt;,
+    </span>state: ChainMuxerState,
 
     <span class="doccomment">/// Syncing state of chain sync workers.
     </span>worker_state: WorkerState,
-
-    <span class="doccomment">/// Custom consensus rules.
-    </span>consensus: Arc&lt;C&gt;,
 
     <span class="doccomment">/// manages retrieving and updates state objects
     </span>state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
@@ -1149,15 +1133,13 @@
     </span>sync_config: SyncConfig,
 }
 
-<span class="kw">impl</span>&lt;DB, M, C&gt; ChainMuxer&lt;DB, M, C&gt;
+<span class="kw">impl</span>&lt;DB, M&gt; ChainMuxer&lt;DB, M&gt;
 <span class="kw">where
     </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     M: Provider + Sync + Send + <span class="lifetime">&#39;static</span>,
-    C: Consensus,
 {
     <span class="attr">#[allow(clippy::too_many_arguments)]
     </span><span class="kw">pub fn </span>new(
-        consensus: Arc&lt;C&gt;,
         state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
         peer_manager: Arc&lt;PeerManager&gt;,
         mpool: Arc&lt;MessagePool&lt;M&gt;&gt;,
@@ -1167,7 +1149,7 @@
         tipset_sender: flume::Sender&lt;Arc&lt;Tipset&gt;&gt;,
         tipset_receiver: flume::Receiver&lt;Arc&lt;Tipset&gt;&gt;,
         cfg: SyncConfig,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ChainMuxerError&lt;C&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ChainMuxerError&gt; {
         <span class="kw">let </span>network =
             SyncNetworkContext::new(network_send, peer_manager, state_manager.blockstore_owned());
 
@@ -1176,7 +1158,6 @@
             worker_state: Default::default(),
             network,
             genesis,
-            consensus,
             state_manager,
             bad_blocks: Arc::new(BadBlockCache::default()),
             net_handler: network_rx,
@@ -1203,7 +1184,7 @@
         chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         peer_id: PeerId,
         tipset_keys: TipsetKeys,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&lt;C&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&gt; {
         <span class="comment">// Attempt to load from the store
         </span><span class="kw">if let </span><span class="prelude-val">Ok</span>(full_tipset) = <span class="self">Self</span>::load_full_tipset(chain_store, tipset_keys.clone()) {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(full_tipset);
@@ -1218,7 +1199,7 @@
     <span class="kw">fn </span>load_full_tipset(
         chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         tipset_keys: TipsetKeys,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&lt;C&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>blocks = Vec::new();
         <span class="comment">// Retrieve tipset from store based on passed in TipsetKeys
         </span><span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tipset_keys)<span class="question-mark">?</span>;
@@ -1287,7 +1268,7 @@
         block: GossipBlock,
         source: PeerId,
         network: SyncNetworkContext&lt;DB&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&lt;C&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&gt; {
         <span class="macro">debug!</span>(
             <span class="string">&quot;Received block over GossipSub: {} height {} from {}&quot;</span>,
             block.header.cid(),
@@ -1348,7 +1329,7 @@
         genesis: Arc&lt;Tipset&gt;,
         message_processing_strategy: PubsubMessageProcessingStrategy,
         block_delay: u64,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(FullTipset, PeerId)&gt;, ChainMuxerError&lt;C&gt;&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;(FullTipset, PeerId)&gt;, ChainMuxerError&gt; {
         <span class="kw">let </span>(tipset, source) = <span class="kw">match </span>event {
             NetworkEvent::HelloRequestInbound { source, request } =&gt; {
                 metrics::LIBP2P_MESSAGE_TOTAL
@@ -1511,7 +1492,7 @@
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((tipset, source)))
     }
 
-    <span class="kw">fn </span>evaluate_network_head(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChainMuxerFuture&lt;NetworkHeadEvaluation, ChainMuxerError&lt;C&gt;&gt; {
+    <span class="kw">fn </span>evaluate_network_head(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChainMuxerFuture&lt;NetworkHeadEvaluation, ChainMuxerError&gt; {
         <span class="kw">let </span>p2p_messages = <span class="self">self</span>.net_handler.clone();
         <span class="kw">let </span>chain_store = <span class="self">self</span>.state_manager.chain_store().clone();
         <span class="kw">let </span>network = <span class="self">self</span>.network.clone();
@@ -1593,22 +1574,20 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         network_head: FullTipset,
         local_head: Arc&lt;Tipset&gt;,
-    ) -&gt; ChainMuxerFuture&lt;(), ChainMuxerError&lt;C&gt;&gt; {
+    ) -&gt; ChainMuxerFuture&lt;(), ChainMuxerError&gt; {
         <span class="comment">// Instantiate a TipsetRangeSyncer
-        </span><span class="kw">let </span>trs_consensus = <span class="self">self</span>.consensus.clone();
-        <span class="kw">let </span>trs_state_manager = <span class="self">self</span>.state_manager.clone();
+        </span><span class="kw">let </span>trs_state_manager = <span class="self">self</span>.state_manager.clone();
         <span class="kw">let </span>trs_bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
         <span class="kw">let </span>trs_chain_store = <span class="self">self</span>.state_manager.chain_store().clone();
         <span class="kw">let </span>trs_network = <span class="self">self</span>.network.clone();
         <span class="kw">let </span>trs_tracker = <span class="self">self</span>.worker_state.clone();
         <span class="kw">let </span>trs_genesis = <span class="self">self</span>.genesis.clone();
-        <span class="kw">let </span>tipset_range_syncer: ChainMuxerFuture&lt;(), ChainMuxerError&lt;C&gt;&gt; = Box::pin(<span class="kw">async move </span>{
+        <span class="kw">let </span>tipset_range_syncer: ChainMuxerFuture&lt;(), ChainMuxerError&gt; = Box::pin(<span class="kw">async move </span>{
             <span class="kw">let </span>network_head_epoch = network_head.epoch();
             <span class="kw">let </span>tipset_range_syncer = <span class="kw">match </span>TipsetRangeSyncer::new(
                 trs_tracker,
                 Arc::new(network_head.into_tipset()),
                 local_head,
-                trs_consensus,
                 trs_state_manager,
                 trs_network,
                 trs_chain_store,
@@ -1639,7 +1618,7 @@
         <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
         <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
         <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs;
-        <span class="kw">let </span>stream_processor: ChainMuxerFuture&lt;(), ChainMuxerError&lt;C&gt;&gt; = Box::pin(<span class="kw">async move </span>{
+        <span class="kw">let </span>stream_processor: ChainMuxerFuture&lt;(), ChainMuxerError&gt; = Box::pin(<span class="kw">async move </span>{
             <span class="kw">loop </span>{
                 <span class="kw">let </span>event = <span class="kw">match </span>p2p_messages.recv_async().<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(event) =&gt; event,
@@ -1691,10 +1670,9 @@
         })
     }
 
-    <span class="kw">fn </span>follow(<span class="kw-2">&amp;</span><span class="self">self</span>, tipset_opt: <span class="prelude-ty">Option</span>&lt;FullTipset&gt;) -&gt; ChainMuxerFuture&lt;(), ChainMuxerError&lt;C&gt;&gt; {
+    <span class="kw">fn </span>follow(<span class="kw-2">&amp;</span><span class="self">self</span>, tipset_opt: <span class="prelude-ty">Option</span>&lt;FullTipset&gt;) -&gt; ChainMuxerFuture&lt;(), ChainMuxerError&gt; {
         <span class="comment">// Instantiate a TipsetProcessor
-        </span><span class="kw">let </span>tp_consensus = <span class="self">self</span>.consensus.clone();
-        <span class="kw">let </span>tp_state_manager = <span class="self">self</span>.state_manager.clone();
+        </span><span class="kw">let </span>tp_state_manager = <span class="self">self</span>.state_manager.clone();
         <span class="kw">let </span>tp_network = <span class="self">self</span>.network.clone();
         <span class="kw">let </span>tp_chain_store = <span class="self">self</span>.state_manager.chain_store().clone();
         <span class="kw">let </span>tp_bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
@@ -1704,12 +1682,11 @@
         <span class="kw">enum </span>UnexpectedReturnKind {
             TipsetProcessor,
         }
-        <span class="kw">let </span>tipset_processor: ChainMuxerFuture&lt;UnexpectedReturnKind, ChainMuxerError&lt;C&gt;&gt; =
+        <span class="kw">let </span>tipset_processor: ChainMuxerFuture&lt;UnexpectedReturnKind, ChainMuxerError&gt; =
             Box::pin(<span class="kw">async move </span>{
                 TipsetProcessor::new(
                     tp_tracker,
                     Box::pin(tp_tipset_receiver.into_stream()),
-                    tp_consensus,
                     tp_state_manager,
                     tp_network,
                     tp_chain_store,
@@ -1732,7 +1709,7 @@
         <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
         <span class="kw">let </span>tipset_sender = <span class="self">self</span>.tipset_sender.clone();
         <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs;
-        <span class="kw">let </span>stream_processor: ChainMuxerFuture&lt;UnexpectedReturnKind, ChainMuxerError&lt;C&gt;&gt; = Box::pin(
+        <span class="kw">let </span>stream_processor: ChainMuxerFuture&lt;UnexpectedReturnKind, ChainMuxerError&gt; = Box::pin(
             <span class="kw">async move </span>{
                 <span class="comment">// If a tipset has been provided, pass it to the tipset processor
                 </span><span class="kw">if let </span><span class="prelude-val">Some</span>(tipset) = tipset_opt {
@@ -1824,20 +1801,19 @@
     }
 }
 
-<span class="kw">enum </span>ChainMuxerState&lt;C: Consensus&gt; {
+<span class="kw">enum </span>ChainMuxerState {
     Idle,
-    Connect(ChainMuxerFuture&lt;NetworkHeadEvaluation, ChainMuxerError&lt;C&gt;&gt;),
-    Bootstrap(ChainMuxerFuture&lt;(), ChainMuxerError&lt;C&gt;&gt;),
-    Follow(ChainMuxerFuture&lt;(), ChainMuxerError&lt;C&gt;&gt;),
+    Connect(ChainMuxerFuture&lt;NetworkHeadEvaluation, ChainMuxerError&gt;),
+    Bootstrap(ChainMuxerFuture&lt;(), ChainMuxerError&gt;),
+    Follow(ChainMuxerFuture&lt;(), ChainMuxerError&gt;),
 }
 
-<span class="kw">impl</span>&lt;DB, M, C&gt; Future <span class="kw">for </span>ChainMuxer&lt;DB, M, C&gt;
+<span class="kw">impl</span>&lt;DB, M&gt; Future <span class="kw">for </span>ChainMuxer&lt;DB, M&gt;
 <span class="kw">where
     </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
     M: Provider + Sync + Send + <span class="lifetime">&#39;static</span>,
-    C: Consensus,
 {
-    <span class="kw">type </span>Output = ChainMuxerError&lt;C&gt;;
+    <span class="kw">type </span>Output = ChainMuxerError;
 
     <span class="kw">fn </span>poll(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
         <span class="kw">loop </span>{

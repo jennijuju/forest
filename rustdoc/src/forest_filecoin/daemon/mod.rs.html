@@ -792,20 +792,6 @@
 <a href="#792" id="792">792</a>
 <a href="#793" id="793">793</a>
 <a href="#794" id="794">794</a>
-<a href="#795" id="795">795</a>
-<a href="#796" id="796">796</a>
-<a href="#797" id="797">797</a>
-<a href="#798" id="798">798</a>
-<a href="#799" id="799">799</a>
-<a href="#800" id="800">800</a>
-<a href="#801" id="801">801</a>
-<a href="#802" id="802">802</a>
-<a href="#803" id="803">803</a>
-<a href="#804" id="804">804</a>
-<a href="#805" id="805">805</a>
-<a href="#806" id="806">806</a>
-<a href="#807" id="807">807</a>
-<a href="#808" id="808">808</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -815,7 +801,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::auth::{create_token, generate_priv_key, ADMIN, JWT_IDENTIFIER};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
-<span class="kw">use </span><span class="kw">crate</span>::chain_sync::{consensus::SyncGossipSubmitter, ChainMuxer};
+<span class="kw">use </span><span class="kw">crate</span>::chain_sync::ChainMuxer;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{
     chain_path,
     cli::{CliOpts, Config},
@@ -888,8 +874,6 @@
         .force_create_flink()
         .flink(IPC_PATH.as_os_str())
 }
-
-<span class="kw">use </span><span class="kw">crate</span>::fil_cns::composition <span class="kw">as </span>cns;
 
 <span class="kw">fn </span>unblock_parent_process() -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>shmem = ipc_shmem_conf().open()<span class="question-mark">?</span>;
@@ -1121,18 +1105,9 @@
 
     <span class="kw">let </span>mpool = Arc::new(mpool);
 
-    <span class="comment">// For consensus types that do mining, create a component to submit their
-    // proposals.
-    </span><span class="kw">let </span>submitter = SyncGossipSubmitter::new();
-
-    <span class="comment">// Initialize Consensus. Mining may or may not happen, depending on type.
-    </span><span class="kw">let </span>consensus =
-        cns::consensus(<span class="kw-2">&amp;</span>state_manager, <span class="kw-2">&amp;</span>keystore, <span class="kw-2">&amp;</span>mpool, submitter, <span class="kw-2">&amp;mut </span>services).<span class="kw">await</span><span class="question-mark">?</span>;
-
     <span class="comment">// Initialize ChainMuxer
     </span><span class="kw">let </span>chain_muxer_tipset_sink = tipset_sink.clone();
     <span class="kw">let </span>chain_muxer = ChainMuxer::new(
-        Arc::new(consensus),
         Arc::clone(<span class="kw-2">&amp;</span>state_manager),
         peer_manager,
         mpool.clone(),
@@ -1166,8 +1141,7 @@
             </span><span class="kw">let </span>beacon = Arc::new(
                 rpc_state_manager
                     .chain_config()
-                    .get_beacon_schedule(chain_store.genesis().timestamp())
-                    .into_dyn(),
+                    .get_beacon_schedule(chain_store.genesis().timestamp()),
             );
             start_rpc(
                 Arc::new(RPCState {
@@ -1201,11 +1175,9 @@
 
     <span class="comment">// Sets proof parameter file download path early, the files will be checked and
     // downloaded later right after snapshot import step
-    </span><span class="kw">if </span>cns::FETCH_PARAMS {
-        <span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
-            <span class="kw-2">&amp;</span>config.client.data_dir,
-        );
-    }
+    </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(
+        <span class="kw-2">&amp;</span>config.client.data_dir,
+    );
 
     <span class="kw">let </span><span class="kw-2">mut </span>config = config;
     fetch_snapshot_if_required(<span class="kw-2">&amp;mut </span>config, epoch, opts.auto_download_snapshot).<span class="kw">await</span><span class="question-mark">?</span>;

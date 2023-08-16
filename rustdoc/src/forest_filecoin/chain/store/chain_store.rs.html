@@ -572,18 +572,13 @@
 <a href="#572" id="572">572</a>
 <a href="#573" id="573">573</a>
 <a href="#574" id="574">574</a>
-<a href="#575" id="575">575</a>
-<a href="#576" id="576">576</a>
-<a href="#577" id="577">577</a>
-<a href="#578" id="578">578</a>
-<a href="#579" id="579">579</a>
-<a href="#580" id="580">580</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys, TxMeta};
+<span class="kw">use </span><span class="kw">crate</span>::fil_cns;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::BlockMessages;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::FrozenCids;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
@@ -611,7 +606,6 @@
     tipset_tracker::TipsetTracker,
     Error,
 };
-<span class="kw">use </span><span class="kw">crate</span>::chain::Scale;
 <span class="kw">use </span><span class="kw">crate</span>::db::setting_keys::{ESTIMATED_RECORDS_KEY, HEAD_KEY};
 <span class="kw">use </span><span class="kw">crate</span>::db::{SettingsStore, SettingsStoreExt};
 
@@ -737,10 +731,7 @@
 
     <span class="doccomment">/// Writes tipset block headers to data store and updates heaviest tipset
     /// with other compatible tracked headers.
-    </span><span class="kw">pub fn </span>put_tipset&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
-    <span class="kw">where
-        </span>S: Scale,
-    {
+    </span><span class="kw">pub fn </span>put_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="comment">// TODO: we could add the blocks of `ts` to the tipset tracker from here,
         // making `add_to_tipset_tracker` redundant and decreasing the number of
         // `blockstore` reads
@@ -748,7 +739,7 @@
 
         <span class="comment">// Expand tipset to include other compatible blocks at the epoch.
         </span><span class="kw">let </span>expanded = <span class="self">self</span>.expand_tipset(ts.min_ticket_block().clone())<span class="question-mark">?</span>;
-        <span class="self">self</span>.update_heaviest::&lt;S&gt;(Arc::new(expanded))<span class="question-mark">?</span>;
+        <span class="self">self</span>.update_heaviest(Arc::new(expanded))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -795,14 +786,11 @@
 
     <span class="doccomment">/// Determines if provided tipset is heavier than existing known heaviest
     /// tipset
-    </span><span class="kw">fn </span>update_heaviest&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: Arc&lt;Tipset&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt;
-    <span class="kw">where
-        </span>S: Scale,
-    {
+    </span><span class="kw">fn </span>update_heaviest(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: Arc&lt;Tipset&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
         <span class="comment">// Calculate heaviest weight before matching to avoid deadlock with mutex
-        </span><span class="kw">let </span>heaviest_weight = S::weight(<span class="kw-2">&amp;</span><span class="self">self</span>.db, <span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>heaviest_weight = fil_cns::weight(<span class="self">self</span>.blockstore(), <span class="kw-2">&amp;</span><span class="self">self</span>.heaviest_tipset())<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>new_weight = S::weight(<span class="kw-2">&amp;</span><span class="self">self</span>.db, ts.as_ref())<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_weight = fil_cns::weight(<span class="self">self</span>.blockstore(), ts.as_ref())<span class="question-mark">?</span>;
         <span class="kw">let </span>curr_weight = heaviest_weight;
 
         <span class="kw">if </span>new_weight &gt; curr_weight {

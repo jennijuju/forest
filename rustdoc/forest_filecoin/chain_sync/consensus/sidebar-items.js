@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["collect_errs"],"struct":["SyncGossipSubmitter"],"trait":["Consensus","MessagePoolApi","Proposer"]};
+window.SIDEBAR_ITEMS = {"fn":["collect_errs"],"trait":["Consensus","MessagePoolApi","Proposer"]};

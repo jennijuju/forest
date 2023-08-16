@@ -131,7 +131,7 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconSchedule};
+<span class="kw">use </span><span class="kw">crate</span>::beacon::BeaconSchedule;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset};
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{BadBlockCache, SyncState};
@@ -170,7 +170,7 @@
     <span class="kw">pub </span>network_name: String,
     <span class="kw">pub </span>start_time: chrono::DateTime&lt;Utc&gt;,
     <span class="kw">pub </span>new_mined_block_tx: flume::Sender&lt;Arc&lt;Tipset&gt;&gt;,
-    <span class="kw">pub </span>beacon: Arc&lt;BeaconSchedule&lt;Box&lt;<span class="kw">dyn </span>Beacon&gt;&gt;&gt;,
+    <span class="kw">pub </span>beacon: Arc&lt;BeaconSchedule&gt;,
     <span class="kw">pub </span>gc_event_tx: flume::Sender&lt;flume::Sender&lt;anyhow::Result&lt;()&gt;&gt;&gt;,
 }
 

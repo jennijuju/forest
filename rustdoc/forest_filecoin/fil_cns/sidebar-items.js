@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["FilecoinConsensusError"],"mod":["composition","metrics","validation","weight"],"struct":["FilecoinConsensus"]};
+window.SIDEBAR_ITEMS = {"enum":["FilecoinConsensusError"],"fn":["weight"],"mod":["metrics","validation","weight"],"struct":["FilecoinConsensus"]};

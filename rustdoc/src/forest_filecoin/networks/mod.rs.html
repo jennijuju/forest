@@ -312,6 +312,10 @@
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
 <a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -568,7 +572,7 @@
         From::from(height)
     }
 
-    <span class="kw">pub fn </span>get_beacon_schedule(<span class="kw-2">&amp;</span><span class="self">self</span>, genesis_ts: u64) -&gt; BeaconSchedule&lt;DrandBeacon&gt; {
+    <span class="kw">pub fn </span>get_beacon_schedule(<span class="kw-2">&amp;</span><span class="self">self</span>, genesis_ts: u64) -&gt; BeaconSchedule {
         <span class="kw">let </span>ds_iter = <span class="kw">match </span><span class="self">self</span>.network {
             NetworkChain::Mainnet =&gt; mainnet::DRAND_SCHEDULE.iter(),
             NetworkChain::Calibnet =&gt; calibnet::DRAND_SCHEDULE.iter(),
@@ -579,7 +583,11 @@
             ds_iter
                 .map(|dc| BeaconPoint {
                     height: dc.height,
-                    beacon: DrandBeacon::new(genesis_ts, <span class="self">self</span>.block_delay_secs, dc.config),
+                    beacon: Box::new(DrandBeacon::new(
+                        genesis_ts,
+                        <span class="self">self</span>.block_delay_secs,
+                        dc.config,
+                    )),
                 })
                 .collect(),
         )

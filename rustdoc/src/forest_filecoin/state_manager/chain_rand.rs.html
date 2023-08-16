@@ -234,7 +234,7 @@
 
 </span><span class="kw">use </span>std::{io::Write, sync::Arc};
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::{Beacon, BeaconEntry, BeaconSchedule, DrandBeacon};
+<span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconEntry, BeaconSchedule};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::{ChainIndex, ResolveNullTipset};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
@@ -251,7 +251,7 @@
     chain_config: Arc&lt;ChainConfig&gt;,
     tipset: Arc&lt;Tipset&gt;,
     chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
-    beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
+    beacon: Arc&lt;BeaconSchedule&gt;,
 }
 
 <span class="kw">impl</span>&lt;DB&gt; Clone <span class="kw">for </span>ChainRand&lt;DB&gt; {
@@ -273,7 +273,7 @@
         chain_config: Arc&lt;ChainConfig&gt;,
         tipset: Arc&lt;Tipset&gt;,
         chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
-        beacon: Arc&lt;BeaconSchedule&lt;DrandBeacon&gt;&gt;,
+        beacon: Arc&lt;BeaconSchedule&gt;,
     ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
             chain_config,

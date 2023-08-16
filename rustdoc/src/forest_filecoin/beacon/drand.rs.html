@@ -322,22 +322,6 @@
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
-<a href="#337" id="337">337</a>
-<a href="#338" id="338">338</a>
-<a href="#339" id="339">339</a>
-<a href="#340" id="340">340</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -397,16 +381,9 @@
 
 <span class="doccomment">/// Contains the vector of `BeaconPoint`, which are mappings of epoch to the
 /// `Randomness` beacons used.
-</span><span class="kw">pub struct </span>BeaconSchedule&lt;T&gt;(<span class="kw">pub </span>Vec&lt;BeaconPoint&lt;T&gt;&gt;);
+</span><span class="kw">pub struct </span>BeaconSchedule(<span class="kw">pub </span>Vec&lt;BeaconPoint&gt;);
 
-<span class="kw">impl</span>&lt;T&gt; BeaconSchedule&lt;T&gt;
-<span class="kw">where
-    </span>T: Beacon,
-{
-    <span class="kw">pub fn </span>into_dyn(<span class="self">self</span>: BeaconSchedule&lt;T&gt;) -&gt; BeaconSchedule&lt;Box&lt;<span class="kw">dyn </span>Beacon&gt;&gt; {
-        BeaconSchedule(<span class="self">self</span>.<span class="number">0</span>.into_iter().map(BeaconPoint::into_dyn).collect())
-    }
-
+<span class="kw">impl </span>BeaconSchedule {
     <span class="doccomment">/// Constructs a new, empty `BeaconSchedule&lt;T&gt;` with the specified capacity.
     </span><span class="kw">pub fn </span>with_capacity(capacity: usize) -&gt; <span class="self">Self </span>{
         BeaconSchedule(Vec::with_capacity(capacity))
@@ -458,31 +435,22 @@
         <span class="prelude-val">Ok</span>(out)
     }
 
-    <span class="kw">pub fn </span>beacon_for_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;(ChainEpoch, <span class="kw-2">&amp;</span>T)&gt; {
+    <span class="kw">pub fn </span>beacon_for_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;(ChainEpoch, <span class="kw-2">&amp;</span><span class="kw">dyn </span>Beacon)&gt; {
         <span class="comment">// Iterate over beacon schedule to find the latest randomness beacon to use.
         </span><span class="self">self</span>.<span class="number">0
             </span>.iter()
             .rev()
             .find(|upgrade| epoch &gt;= upgrade.height)
-            .map(|upgrade| (upgrade.height, <span class="kw-2">&amp;</span>upgrade.beacon))
+            .map(|upgrade| (upgrade.height, upgrade.beacon.as_ref()))
             .context(<span class="string">&quot;Invalid beacon schedule, no valid beacon&quot;</span>)
     }
 }
 
 <span class="doccomment">/// Contains height at which the beacon is activated, as well as the beacon
 /// itself.
-</span><span class="kw">pub struct </span>BeaconPoint&lt;T&gt; {
+</span><span class="kw">pub struct </span>BeaconPoint {
     <span class="kw">pub </span>height: ChainEpoch,
-    <span class="kw">pub </span>beacon: T,
-}
-
-<span class="kw">impl</span>&lt;T: Beacon&gt; BeaconPoint&lt;T&gt; {
-    <span class="kw">fn </span>into_dyn(<span class="self">self</span>) -&gt; BeaconPoint&lt;Box&lt;<span class="kw">dyn </span>Beacon&gt;&gt; {
-        BeaconPoint {
-            height: <span class="self">self</span>.height,
-            beacon: Box::new(<span class="self">self</span>.beacon),
-        }
-    }
+    <span class="kw">pub </span>beacon: Box&lt;<span class="kw">dyn </span>Beacon&gt;,
 }
 
 <span class="attr">#[async_trait]
