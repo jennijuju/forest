@@ -275,6 +275,36 @@
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
 <a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -552,4 +582,34 @@
         <span class="macro">assert_eq!</span>(ipld, parsed.<span class="number">0</span>);
     }
 }
+
+<span class="doccomment">/// [`quickcheck`] [found a round-trip bug in CI][failing job], tracked by [#3383][issue]
+///
+/// ```text
+/// thread &#39;ipld::json::tests::ipld_roundtrip&#39; panicked at &#39;[quickcheck] TEST FAILED (runtime error).
+/// Arguments: ([[{&quot;&quot;: {&quot;&quot;: [[[{&quot;&quot;: [{&quot;&quot;: [{&quot;&quot;: [{&quot;&quot;: [[{&quot;&quot;: [[{&quot;&quot;: {&quot;/&quot;: &quot;&quot;}}]]}]]}]}]}]}]]]}}]])
+/// Error: &quot;called `Result::unwrap()` on an `Err` value: Error(\&quot;Input too short\&quot;, line: 1, column: 52)&quot;&#39;,
+/// ```
+/// The actual error message is a little ambiguous with regards to the cause
+/// because [`libipld` has a custom debug implementation][unhelpful]
+///
+/// Here&#39;s what the minimal test case (or simply another bug) is after trying to understand the above.
+///
+/// [issue]: https://github.com/ChainSafe/forest/issues/3383
+/// [failing job]: https://github.com/ChainSafe/forest/actions/runs/5877726416/job/15938386821?pr=3382#step:9:1835
+/// [unhelpful]: https://github.com/ipld/libipld/blob/8478d6d66576636b9970cb3b00a232be7a88ea42/core/src/ipld.rs#L53-L63
+</span><span class="attr">#[test]
+#[should_panic = <span class="string">&quot;Input too short&quot;</span>]
+</span><span class="kw">fn </span>issue_3383() {
+    <span class="kw">let </span>poison = Ipld::Map(BTreeMap::from_iter([(
+        String::from(<span class="string">&quot;/&quot;</span>),
+        Ipld::String(String::from(<span class="string">&quot;&quot;</span>)),
+    )]));
+    <span class="kw">let </span>serialized = serde_json::to_value(IpldJsonRef(<span class="kw-2">&amp;</span>poison)).unwrap();
+
+    <span class="comment">// we try and parse the map as a CID, even though it&#39;s meant to be a map...
+    </span><span class="kw">let </span>IpldJson(round_tripped) = serde_json::from_value(serialized).unwrap();
+
+    <span class="macro">assert_eq!</span>(round_tripped, poison); <span class="comment">// we never make it here
+</span>}
 </code></pre></div></section></main></body></html>
