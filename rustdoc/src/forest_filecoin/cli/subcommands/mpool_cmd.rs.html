@@ -529,20 +529,6 @@
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
-<a href="#533" id="533">533</a>
-<a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
-<a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
-<a href="#540" id="540">540</a>
-<a href="#541" id="541">541</a>
-<a href="#542" id="542">542</a>
-<a href="#543" id="543">543</a>
-<a href="#544" id="544">544</a>
-<a href="#545" id="545">545</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -550,7 +536,8 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::json::cid::vec::CidJsonVec;
-<span class="kw">use </span><span class="kw">crate</span>::json::signed_message::json::SignedMessageJson;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
+<span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, mpool_pending, state_ops::<span class="kw-2">*</span>, wallet_ops::<span class="kw-2">*</span>};
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::StrictAddress;
 <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
@@ -599,11 +586,11 @@
 }
 
 <span class="kw">fn </span>filter_messages(
-    messages: Vec&lt;SignedMessageJson&gt;,
+    messages: Vec&lt;SignedMessage&gt;,
     local_addrs: <span class="prelude-ty">Option</span>&lt;HashSet&lt;Address&gt;&gt;,
     to: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
     from: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; anyhow::Result&lt;Vec&lt;SignedMessageJson&gt;&gt; {
+) -&gt; anyhow::Result&lt;Vec&lt;SignedMessage&gt;&gt; {
     <span class="kw">use </span><span class="kw">crate</span>::message::Message;
 
     <span class="kw">let </span>to = to_addr(to)<span class="question-mark">?</span>;
@@ -614,10 +601,10 @@
         .filter(|msg| {
             local_addrs
                 .as_ref()
-                .map(|addrs| addrs.contains(<span class="kw-2">&amp;</span>msg.<span class="number">0</span>.from()))
+                .map(|addrs| addrs.contains(<span class="kw-2">&amp;</span>msg.from()))
                 .unwrap_or(<span class="bool-val">true</span>)
-                &amp;&amp; to.map(|addr| msg.<span class="number">0</span>.to() == addr.into()).unwrap_or(<span class="bool-val">true</span>)
-                &amp;&amp; from.map(|addr| msg.<span class="number">0</span>.from() == addr.into()).unwrap_or(<span class="bool-val">true</span>)
+                &amp;&amp; to.map(|addr| msg.to() == addr.into()).unwrap_or(<span class="bool-val">true</span>)
+                &amp;&amp; from.map(|addr| msg.from() == addr.into()).unwrap_or(<span class="bool-val">true</span>)
         })
         .collect();
 
@@ -637,10 +624,10 @@
     .<span class="kw">await</span>;
 
     <span class="kw">let </span>actor_state = <span class="kw">match </span>get_actor_result {
-        <span class="prelude-val">Ok</span>(actor_json) =&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(state) = actor_json {
-                state.<span class="number">0
-            </span>} <span class="kw">else </span>{
+        <span class="prelude-val">Ok</span>(LotusJson(maybe_actor)) =&gt; {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(state) = maybe_actor {
+                state
+            } <span class="kw">else </span>{
                 <span class="macro">println!</span>(<span class="string">&quot;{}, actor state not found&quot;</span>, address);
                 <span class="kw">return </span><span class="prelude-val">None</span>;
             }
@@ -786,13 +773,17 @@
                     <span class="prelude-val">None
                 </span>};
 
-                <span class="kw">let </span>filtered_messages = filter_messages(messages, local_addrs, <span class="kw-2">&amp;</span>to, <span class="kw-2">&amp;</span>from)<span class="question-mark">?</span>;
+                <span class="kw">let </span>filtered_messages =
+                    filter_messages(messages.into_inner(), local_addrs, <span class="kw-2">&amp;</span>to, <span class="kw-2">&amp;</span>from)<span class="question-mark">?</span>;
 
                 <span class="kw">for </span>msg <span class="kw">in </span>filtered_messages {
                     <span class="kw">if </span>cids {
-                        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, msg.<span class="number">0</span>.cid().unwrap());
+                        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, msg.cid().unwrap());
                     } <span class="kw">else </span>{
-                        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, serde_json::to_string_pretty(<span class="kw-2">&amp;</span>msg)<span class="question-mark">?</span>);
+                        <span class="macro">println!</span>(
+                            <span class="string">&quot;{}&quot;</span>,
+                            serde_json::to_string_pretty(<span class="kw-2">&amp;</span><span class="kw">crate</span>::lotus_json::LotusJson(msg))<span class="question-mark">?
+                        </span>);
                     }
                 }
 
@@ -804,9 +795,8 @@
             } =&gt; {
                 <span class="kw">let </span>tipset = chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token)
                     .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?
-                    </span>.<span class="number">0</span>;
-
+                    </span>.map(|LotusJson(tipset)| Arc::new(tipset))
+                    .map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="kw">let </span>curr_base_fee = tipset.blocks()[<span class="number">0</span>].parent_base_fee().to_owned();
 
                 <span class="kw">let </span>atto_str =
@@ -828,10 +818,11 @@
                     <span class="prelude-val">None
                 </span>};
 
-                <span class="kw">let </span>messages: Vec&lt;Message&gt; = filter_messages(messages, local_addrs, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)<span class="question-mark">?
-                    </span>.into_iter()
-                    .map(|m| m.<span class="number">0</span>.message)
-                    .collect();
+                <span class="kw">let </span>messages: Vec&lt;Message&gt; =
+                    filter_messages(messages.into_inner(), local_addrs, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)<span class="question-mark">?
+                        </span>.into_iter()
+                        .map(|it| it.message)
+                        .collect();
 
                 <span class="kw">let </span><span class="kw-2">mut </span>actor_sequences: HashMap&lt;Address, u64&gt; = HashMap::default();
                 <span class="kw">for </span>msg <span class="kw">in </span>messages.iter() {
@@ -872,17 +863,12 @@
             smsg_vec.push(msg);
         }
 
-        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessageJson&gt; = smsg_vec
-            .clone()
-            .into_iter()
-            .map(SignedMessageJson::from)
-            .collect();
+        <span class="kw">let </span>smsg_json_vec = smsg_vec.clone().into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
         <span class="comment">// No filtering is set up
         </span><span class="kw">let </span>smsg_filtered: Vec&lt;SignedMessage&gt; = filter_messages(smsg_json_vec, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)
             .unwrap()
             .into_iter()
-            .map(|m| m.<span class="number">0</span>)
             .collect();
 
         <span class="macro">assert_eq!</span>(smsg_vec, smsg_filtered);
@@ -917,11 +903,7 @@
         );
         smsg_vec.push(msg);
 
-        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessageJson&gt; = smsg_vec
-            .clone()
-            .into_iter()
-            .map(SignedMessageJson::from)
-            .collect();
+        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessage&gt; = smsg_vec.clone().into_iter().collect();
         <span class="kw">let </span>local_addrs = HashSet::from_iter(wallet.list_addrs().unwrap().into_iter());
 
         <span class="comment">// Filter local addresses
@@ -929,7 +911,6 @@
             filter_messages(smsg_json_vec, <span class="prelude-val">Some</span>(local_addrs), <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)
                 .unwrap()
                 .into_iter()
-                .map(|m| m.<span class="number">0</span>)
                 .collect();
 
         <span class="kw">for </span>smsg <span class="kw">in </span>smsg_filtered.iter() {
@@ -956,18 +937,13 @@
         <span class="kw">let </span>msg = create_smsg(<span class="kw-2">&amp;</span>target, <span class="kw-2">&amp;</span>sender2, wallet.borrow_mut(), <span class="number">4</span>, <span class="number">1000000</span>, <span class="number">1</span>);
         smsg_vec.push(msg);
 
-        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessageJson&gt; = smsg_vec
-            .clone()
-            .into_iter()
-            .map(SignedMessageJson::from)
-            .collect();
+        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessage&gt; = smsg_vec.clone().into_iter().collect();
 
         <span class="comment">// Filtering messages from sender2
         </span><span class="kw">let </span>smsg_filtered: Vec&lt;SignedMessage&gt; =
             filter_messages(smsg_json_vec, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(sender2.to_string()))
                 .unwrap()
                 .into_iter()
-                .map(|m| m.<span class="number">0</span>)
                 .collect();
 
         <span class="kw">for </span>smsg <span class="kw">in </span>smsg_filtered.iter() {
@@ -994,18 +970,14 @@
         <span class="kw">let </span>msg = create_smsg(<span class="kw-2">&amp;</span>target2, <span class="kw-2">&amp;</span>sender, wallet.borrow_mut(), <span class="number">4</span>, <span class="number">1000000</span>, <span class="number">1</span>);
         smsg_vec.push(msg);
 
-        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessageJson&gt; = smsg_vec
-            .clone()
-            .into_iter()
-            .map(SignedMessageJson::from)
-            .collect();
+        <span class="kw">let </span>smsg_json_vec: Vec&lt;SignedMessage&gt; = smsg_vec.clone().into_iter().collect();
 
         <span class="comment">// Filtering messages to target2
         </span><span class="kw">let </span>smsg_filtered: Vec&lt;SignedMessage&gt; =
             filter_messages(smsg_json_vec, <span class="prelude-val">None</span>, <span class="kw-2">&amp;</span><span class="prelude-val">Some</span>(target2.to_string()), <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)
                 .unwrap()
                 .into_iter()
-                .map(|m| m.<span class="number">0</span>)
+                .map(Into::into)
                 .collect();
 
         <span class="kw">for </span>smsg <span class="kw">in </span>smsg_filtered.iter() {

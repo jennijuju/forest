@@ -22,12 +22,10 @@
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
 <a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::beacon::json::BeaconEntryJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_api::{beacon_api::<span class="kw-2">*</span>, data_types::RPCState};
+</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::{beacon_api::<span class="kw-2">*</span>, data_types::RPCState};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 
@@ -46,6 +44,6 @@
     <span class="kw">let </span>rr =
         beacon.max_beacon_round_for_epoch(data.state_manager.get_network_version(first), first);
     <span class="kw">let </span>e = beacon.entry(rr).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(BeaconEntryJson(e))
+    <span class="prelude-val">Ok</span>(e.into())
 }
 </code></pre></div></section></main></body></html>

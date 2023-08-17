@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["BlockHeaderBuilderError"],"mod":["encoding","json","lotus_json"],"struct":["BlockHeader","BlockHeaderBuilder"]};
+window.SIDEBAR_ITEMS = {"enum":["BlockHeaderBuilderError"],"mod":["encoding","lotus_json"],"struct":["BlockHeader","BlockHeaderBuilder"]};

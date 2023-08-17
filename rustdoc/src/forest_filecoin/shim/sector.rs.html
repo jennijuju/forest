@@ -301,6 +301,22 @@
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -340,7 +356,16 @@
 /// assert_eq!(fvm3_proof, *proof_shim);
 /// assert_eq!(fvm2_proof, proof_shim.into());
 /// ```
-</span><span class="attr">#[derive(serde::Serialize, serde::Deserialize, Clone, Copy)]
+</span><span class="attr">#[derive(
+    serde::Serialize,
+    serde::Deserialize,
+    Clone,
+    Copy,
+    derive_more::From,
+    derive_more::Into,
+    PartialEq,
+    Debug,
+)]
 </span><span class="kw">pub struct </span>RegisteredSealProof(RegisteredSealProofV3);
 
 <span class="kw">impl </span>RegisteredSealProof {
@@ -349,12 +374,6 @@
             size.into(),
             network_version.into(),
         ))
-    }
-}
-
-<span class="kw">impl </span>From&lt;RegisteredSealProofV3&gt; <span class="kw">for </span>RegisteredSealProof {
-    <span class="kw">fn </span>from(value: RegisteredSealProofV3) -&gt; <span class="self">Self </span>{
-        RegisteredSealProof(value)
     }
 }
 
@@ -379,13 +398,26 @@
     }
 }
 
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>RegisteredSealProof {
+    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(i64::arbitrary(g).into())
+    }
+}
+
 <span class="doccomment">/// Represents a shim over `SectorInfo` from `fvm_shared` with convenience
 /// methods to convert to an older version of the type
+</span><span class="attr">#[derive(PartialEq, Debug, Clone, derive_more::From, derive_more::Into)]
 </span><span class="kw">pub struct </span>SectorInfo(SectorInfoV3);
 
-<span class="kw">impl </span>From&lt;SectorInfoV3&gt; <span class="kw">for </span>SectorInfo {
-    <span class="kw">fn </span>from(value: SectorInfoV3) -&gt; <span class="self">Self </span>{
-        SectorInfo(value)
+<span class="attr">#[cfg(test)]
+</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>SectorInfo {
+    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(SectorInfoV3 {
+            proof: RegisteredSealProof::arbitrary(g).into(),
+            sector_number: u64::arbitrary(g),
+            sealed_cid: cid::Cid::arbitrary(g),
+        })
     }
 }
 

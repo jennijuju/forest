@@ -132,11 +132,16 @@
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
+</span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::chain_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
@@ -213,8 +218,11 @@
                 maybe_confirm(<span class="kw-2">*</span>no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
                 <span class="macro">assert!</span>(cids.is_empty(), <span class="string">&quot;should be disallowed by clap&quot;</span>);
                 tipset_by_epoch_or_offset(<span class="kw-2">*</span>epoch, <span class="kw-2">&amp;</span>config.client.rpc_token)
-                    .and_then(|tipset| {
-                        chain_set_head((tipset.<span class="number">0</span>.key().clone(),), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                    .and_then(|tipset_json| {
+                        chain_set_head(
+                            (tipset_json.into_inner().key().clone(),),
+                            <span class="kw-2">&amp;</span>config.client.rpc_token,
+                        )
                     })
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)
@@ -238,15 +246,15 @@
 </span><span class="kw">async fn </span>tipset_by_epoch_or_offset(
     epoch_or_offset: i64,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetJson, JsonRpcError&gt; {
-    <span class="kw">let </span>current_head = chain_head(auth_token).<span class="kw">await</span><span class="question-mark">?</span>;
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt; {
+    <span class="kw">let </span>current_head = chain_head(auth_token).<span class="kw">await</span><span class="question-mark">?</span>.into_inner();
 
     <span class="kw">let </span>target_epoch = <span class="kw">match </span>epoch_or_offset.is_negative() {
-        <span class="bool-val">true </span>=&gt; current_head.<span class="number">0</span>.epoch() + epoch_or_offset, <span class="comment">// adding negative number
+        <span class="bool-val">true </span>=&gt; current_head.epoch() + epoch_or_offset, <span class="comment">// adding negative number
         </span><span class="bool-val">false </span>=&gt; epoch_or_offset,
     };
 
-    chain_get_tipset_by_height((target_epoch, current_head.<span class="number">0</span>.key().clone()), auth_token).<span class="kw">await
+    chain_get_tipset_by_height((target_epoch, current_head.key().clone()), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">const </span>SET_HEAD_CONFIRMATION_MESSAGE: <span class="kw-2">&amp;</span>str =

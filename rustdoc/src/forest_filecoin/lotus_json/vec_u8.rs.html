@@ -14,13 +14,19 @@
 <a href="#14" id="14">14</a>
 <a href="#15" id="15">15</a>
 <a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-<span class="attr">#[derive(Serialize, Deserialize, From, Into)]
-#[serde(transparent)]
+<span class="attr">#[derive(Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>VecU8LotusJson(<span class="attr">#[serde(with = <span class="string">&quot;base64_standard&quot;</span>)] </span>Vec&lt;u8&gt;);
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>Vec&lt;u8&gt; {
@@ -28,6 +34,14 @@
 
     <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
         <span class="macro">vec!</span>[(<span class="macro">json!</span>(<span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>), Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>))]
+    }
+
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        VecU8LotusJson(<span class="self">self</span>)
+    }
+
+    <span class="kw">fn </span>from_lotus_json(VecU8LotusJson(vec): <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        vec
     }
 }
 </code></pre></div></section></main></body></html>

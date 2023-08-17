@@ -160,9 +160,25 @@
 <a href="#160" id="160">160</a>
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
-</span><span class="kw">use </span><span class="kw">crate</span>::lotus_json::<span class="kw-2">*</span>;
+
+</span><span class="kw">use </span><span class="kw">crate</span>::beacon::BeaconEntry;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::shim::sector::PoStProof;
+<span class="kw">use crate</span>::{
+    blocks::{ElectionProof, Ticket, TipsetKeys},
+    shim::address::Address,
+    shim::{crypto::Signature, econ::TokenAmount},
+};
+<span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>once_cell::sync::OnceCell;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -171,26 +187,26 @@
 <span class="attr">#[derive(Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>BlockHeaderLotusJson {
-    miner: AddressLotusJson,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>ticket: <span class="prelude-ty">Option</span>&lt;TicketLotusJson&gt;,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>election_proof: <span class="prelude-ty">Option</span>&lt;ElectionProofLotusJson&gt;,
-    beacon_entries: VecLotusJson&lt;BeaconEntryLotusJson&gt;,
-    win_po_st_proof: VecLotusJson&lt;PoStProofLotusJson&gt;,
-    parents: TipsetKeysLotusJson,
-    parent_weight: BigIntLotusJson,
-    height: i64,
-    parent_state_root: CidLotusJson,
-    parent_message_receipts: CidLotusJson,
-    messages: CidLotusJson,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>b_l_s_aggregate: <span class="prelude-ty">Option</span>&lt;SignatureLotusJson&gt;,
-    timestamp: u64,
-    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>block_sig: <span class="prelude-ty">Option</span>&lt;SignatureLotusJson&gt;,
-    fork_signaling: u64,
-    parent_base_fee: TokenAmountLotusJson,
+    miner: LotusJson&lt;Address&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    </span>ticket: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;Ticket&gt;&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    </span>election_proof: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;ElectionProof&gt;&gt;,
+    beacon_entries: LotusJson&lt;Vec&lt;BeaconEntry&gt;&gt;,
+    win_po_st_proof: LotusJson&lt;Vec&lt;PoStProof&gt;&gt;,
+    parents: LotusJson&lt;TipsetKeys&gt;,
+    parent_weight: LotusJson&lt;BigInt&gt;,
+    height: LotusJson&lt;i64&gt;,
+    parent_state_root: LotusJson&lt;Cid&gt;,
+    parent_message_receipts: LotusJson&lt;Cid&gt;,
+    messages: LotusJson&lt;Cid&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    </span>b_l_s_aggregate: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;Signature&gt;&gt;,
+    timestamp: LotusJson&lt;u64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    </span>block_sig: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;Signature&gt;&gt;,
+    fork_signaling: LotusJson&lt;u64&gt;,
+    parent_base_fee: LotusJson&lt;TokenAmount&gt;,
 }
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>BlockHeader {
@@ -223,23 +239,9 @@
             BlockHeader::default(),
         )]
     }
-}
 
-<span class="attr">#[test]
-</span><span class="kw">fn </span>snapshots() {
-    assert_all_snapshots::&lt;BlockHeader&gt;()
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="macro">quickcheck::quickcheck! </span>{
-    <span class="kw">fn </span>quickcheck(val: BlockHeader) -&gt; () {
-        assert_unchanged_via_json(val)
-    }
-}
-
-<span class="kw">impl </span>From&lt;BlockHeader&gt; <span class="kw">for </span>BlockHeaderLotusJson {
-    <span class="kw">fn </span>from(value: BlockHeader) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>BlockHeader {
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        <span class="kw">let </span><span class="self">Self </span>{
             parents,
             weight,
             epoch,
@@ -258,31 +260,29 @@
             parent_base_fee,
             cached_cid: _ignore_cache0,
             is_validated: _ignore_cache1,
-        } = value;
-        <span class="self">Self </span>{
+        } = <span class="self">self</span>;
+        <span class="self">Self</span>::LotusJson {
             miner: miner_address.into(),
-            ticket: ticket.map(Into::into),
-            election_proof: election_proof.map(Into::into),
+            ticket: ticket.into(),
+            election_proof: election_proof.into(),
             beacon_entries: beacon_entries.into(),
             win_po_st_proof: winning_post_proof.into(),
             parents: parents.into(),
             parent_weight: weight.into(),
-            height: epoch,
+            height: epoch.into(),
             parent_state_root: state_root.into(),
             parent_message_receipts: message_receipts.into(),
             messages: messages.into(),
-            b_l_s_aggregate: bls_aggregate.map(Into::into),
-            timestamp,
-            block_sig: signature.map(Into::into),
-            fork_signaling: fork_signal,
+            b_l_s_aggregate: bls_aggregate.into(),
+            timestamp: timestamp.into(),
+            block_sig: signature.into(),
+            fork_signaling: fork_signal.into(),
             parent_base_fee: parent_base_fee.into(),
         }
     }
-}
 
-<span class="kw">impl </span>From&lt;BlockHeaderLotusJson&gt; <span class="kw">for </span>BlockHeader {
-    <span class="kw">fn </span>from(value: BlockHeaderLotusJson) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>BlockHeaderLotusJson {
+    <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="self">Self</span>::LotusJson {
             miner,
             ticket,
             election_proof,
@@ -294,32 +294,44 @@
             parent_state_root,
             parent_message_receipts,
             messages,
-            b_l_s_aggregate: bls_aggregate,
+            b_l_s_aggregate,
             timestamp,
             block_sig,
             fork_signaling,
             parent_base_fee,
-        } = value;
+        } = lotus_json;
         <span class="self">Self </span>{
-            parents: parents.into(),
-            weight: parent_weight.into(),
-            epoch: height,
-            beacon_entries: beacon_entries.into(),
-            winning_post_proof: win_po_st_proof.into(),
-            miner_address: miner.into(),
-            messages: messages.into(),
-            message_receipts: parent_message_receipts.into(),
-            state_root: parent_state_root.into(),
-            fork_signal: fork_signaling,
-            signature: block_sig.map(Into::into),
-            election_proof: election_proof.map(Into::into),
-            timestamp,
-            ticket: ticket.map(Into::into),
-            bls_aggregate: bls_aggregate.map(Into::into),
-            parent_base_fee: parent_base_fee.into(),
+            parents: parents.into_inner(),
+            weight: parent_weight.into_inner(),
+            epoch: height.into_inner(),
+            beacon_entries: beacon_entries.into_inner(),
+            winning_post_proof: win_po_st_proof.into_inner(),
+            miner_address: miner.into_inner(),
+            messages: messages.into_inner(),
+            message_receipts: parent_message_receipts.into_inner(),
+            state_root: parent_state_root.into_inner(),
+            fork_signal: fork_signaling.into_inner(),
+            signature: block_sig.into_inner(),
+            election_proof: election_proof.into_inner(),
+            timestamp: timestamp.into_inner(),
+            ticket: ticket.into_inner(),
+            bls_aggregate: b_l_s_aggregate.into_inner(),
+            parent_base_fee: parent_base_fee.into_inner(),
             cached_cid: OnceCell::new(),
             is_validated: OnceCell::new(),
         }
+    }
+}
+
+<span class="attr">#[test]
+</span><span class="kw">fn </span>snapshots() {
+    assert_all_snapshots::&lt;BlockHeader&gt;()
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="macro">quickcheck::quickcheck! </span>{
+    <span class="kw">fn </span>quickcheck(val: BlockHeader) -&gt; () {
+        assert_unchanged_via_json(val)
     }
 }
 </code></pre></div></section></main></body></html>

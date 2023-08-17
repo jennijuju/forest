@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["VRFProofLotusJson"]};
+window.SIDEBAR_ITEMS = {};

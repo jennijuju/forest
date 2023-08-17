@@ -211,6 +211,8 @@
 <a href="#211" id="211">211</a>
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -239,9 +241,10 @@
 
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::tipset_json::TipsetJson;
+<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::Config;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{CliOpts, HELP_MESSAGE};
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::utils::version::FOREST_VERSION_STRING;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Parser;
@@ -375,14 +378,15 @@
 }
 
 <span class="doccomment">/// Prints a tipset from a HTTP JSON-RPC response result
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_cids(res: <span class="prelude-ty">Result</span>&lt;TipsetJson, JsonRpcError&gt;) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>tipset = res.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_cids(
+    res: <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt;,
+) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>tipset = res.map_err(handle_rpc_err)<span class="question-mark">?</span>.into_inner();
     <span class="macro">println!</span>(
         <span class="string">&quot;{}&quot;</span>,
         serde_json::to_string_pretty(
             <span class="kw-2">&amp;</span>tipset
-                .<span class="number">0
-                </span>.cids()
+                .cids()
                 .iter()
                 .map(|cid: <span class="kw-2">&amp;</span>Cid| cid.to_string())
                 .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()

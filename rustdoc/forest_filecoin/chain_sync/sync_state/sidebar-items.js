@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SyncStage"],"mod":["json","vec"],"struct":["SyncState","SyncStateDe","SyncStateJson"]};
+window.SIDEBAR_ITEMS = {"enum":["SyncStage"],"mod":["lotus_json"],"struct":["SyncState"]};

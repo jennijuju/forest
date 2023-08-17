@@ -699,39 +699,6 @@
 <a href="#699" id="699">699</a>
 <a href="#700" id="700">700</a>
 <a href="#701" id="701">701</a>
-<a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
-<a href="#707" id="707">707</a>
-<a href="#708" id="708">708</a>
-<a href="#709" id="709">709</a>
-<a href="#710" id="710">710</a>
-<a href="#711" id="711">711</a>
-<a href="#712" id="712">712</a>
-<a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
-<a href="#719" id="719">719</a>
-<a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
-<a href="#722" id="722">722</a>
-<a href="#723" id="723">723</a>
-<a href="#724" id="724">724</a>
-<a href="#725" id="725">725</a>
-<a href="#726" id="726">726</a>
-<a href="#727" id="727">727</a>
-<a href="#728" id="728">728</a>
-<a href="#729" id="729">729</a>
-<a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1158,141 +1125,108 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">pub mod </span>tipset_keys_json {
+<span class="kw">pub mod </span>lotus_json {
+    <span class="doccomment">//! [Tipset] isn&#39;t just plain old data - it has an invariant (all [`BlockHeader`]s are valid)
+    //! So there is custom de-serialization here
+
+    </span><span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
+    <span class="kw">use </span><span class="kw">crate</span>::lotus_json::<span class="kw-2">*</span>;
     <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
 
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">super</span>::TipsetKeys;
 
-    <span class="attr">#[derive(Clone, Debug, Deserialize, Serialize)]
-    #[serde(transparent)]
-    </span><span class="kw">pub struct </span>TipsetKeysJson(<span class="attr">#[serde(with = <span class="string">&quot;self&quot;</span>)] </span><span class="kw">pub </span>TipsetKeys);
+    <span class="kw">pub struct </span>TipsetLotusJson(Tipset);
 
-    <span class="kw">impl </span>From&lt;TipsetKeysJson&gt; <span class="kw">for </span>TipsetKeys {
-        <span class="kw">fn </span>from(wrapper: TipsetKeysJson) -&gt; <span class="self">Self </span>{
-            wrapper.<span class="number">0
-        </span>}
+    <span class="attr">#[derive(Serialize, Deserialize)]
+    #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
+    </span><span class="kw">struct </span>TipsetLotusJsonInner {
+        cids: LotusJson&lt;TipsetKeys&gt;,
+        blocks: LotusJson&lt;Vec&lt;BlockHeader&gt;&gt;,
+        height: LotusJson&lt;i64&gt;,
     }
 
-    <span class="kw">impl </span>From&lt;TipsetKeys&gt; <span class="kw">for </span>TipsetKeysJson {
-        <span class="kw">fn </span>from(wrapper: TipsetKeys) -&gt; <span class="self">Self </span>{
-            TipsetKeysJson(wrapper)
+    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>TipsetLotusJson {
+        <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
+        <span class="kw">where
+            </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
+        {
+            <span class="kw">let </span>TipsetLotusJsonInner {
+                cids: _ignored0,
+                blocks,
+                height: _ignored1,
+            } = Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
+            Tipset::new(blocks.into_inner())
+                .map_err(serde::de::Error::custom)
+                .map(<span class="self">Self</span>)
         }
     }
 
-    <span class="kw">pub fn </span>serialize&lt;S&gt;(m: <span class="kw-2">&amp;</span>TipsetKeys, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
-    <span class="kw">where
-        </span>S: Serializer,
-    {
-        <span class="kw">crate</span>::json::cid::vec::serialize(<span class="kw-2">&amp;</span>Vec::&lt;Cid&gt;::from(<span class="kw-2">&amp;</span>m.cids), serializer)
-    }
-
-    <span class="kw">pub fn </span>deserialize&lt;<span class="lifetime">&#39;de</span>, D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;TipsetKeys, D::Error&gt;
-    <span class="kw">where
-        </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
-    {
-        <span class="prelude-val">Ok</span>(TipsetKeys {
-            cids: <span class="kw">crate</span>::json::cid::vec::deserialize(deserializer)<span class="question-mark">?</span>.into(),
-        })
-    }
-}
-
-<span class="kw">pub mod </span>tipset_json {
-    <span class="kw">use </span>std::sync::Arc;
-
-    <span class="kw">use </span>serde::{de, Deserialize, Deserializer, Serialize, Serializer};
-
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-    <span class="doccomment">/// Wrapper for serializing and de-serializing a `Tipset` from JSON.
-    </span><span class="attr">#[derive(Debug, Deserialize, Serialize)]
-    #[serde(transparent)]
-    </span><span class="kw">pub struct </span>TipsetJson(<span class="attr">#[serde(with = <span class="string">&quot;self&quot;</span>)] </span><span class="kw">pub </span>Arc&lt;Tipset&gt;);
-
-    <span class="doccomment">/// Wrapper for serializing a `Tipset` reference to JSON.
-    </span><span class="attr">#[derive(Serialize)]
-    #[serde(transparent)]
-    </span><span class="kw">pub struct </span>TipsetJsonRef&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="attr">#[serde(with = <span class="string">&quot;self&quot;</span>)] </span><span class="kw">pub </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Tipset);
-
-    <span class="kw">impl </span>From&lt;TipsetJson&gt; <span class="kw">for </span>Arc&lt;Tipset&gt; {
-        <span class="kw">fn </span>from(wrapper: TipsetJson) -&gt; <span class="self">Self </span>{
-            wrapper.<span class="number">0
-        </span>}
-    }
-
-    <span class="kw">impl </span>From&lt;Arc&lt;Tipset&gt;&gt; <span class="kw">for </span>TipsetJson {
-        <span class="kw">fn </span>from(wrapper: Arc&lt;Tipset&gt;) -&gt; <span class="self">Self </span>{
-            TipsetJson(wrapper)
+    <span class="kw">impl </span>Serialize <span class="kw">for </span>TipsetLotusJson {
+        <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
+        <span class="kw">where
+            </span>S: Serializer,
+        {
+            <span class="kw">let </span><span class="self">Self</span>(tipset) = <span class="self">self</span>;
+            TipsetLotusJsonInner {
+                cids: tipset.key().clone().into(),
+                blocks: tipset.clone().into_blocks().into(),
+                height: tipset.epoch().into(),
+            }
+            .serialize(serializer)
         }
     }
 
-    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Tipset&gt; <span class="kw">for </span>TipsetJsonRef&lt;<span class="lifetime">&#39;a</span>&gt; {
-        <span class="kw">fn </span>from(wrapper: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Tipset) -&gt; <span class="self">Self </span>{
-            TipsetJsonRef(wrapper)
+    <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>Tipset {
+        <span class="kw">type </span>LotusJson = TipsetLotusJson;
+
+        <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
+            <span class="kw">use </span>serde_json::json;
+            <span class="macro">vec!</span>[(
+                <span class="macro">json!</span>({
+                    <span class="string">&quot;Blocks&quot;</span>: [
+                        {
+                            <span class="string">&quot;BeaconEntries&quot;</span>: null,
+                            <span class="string">&quot;ForkSignaling&quot;</span>: <span class="number">0</span>,
+                            <span class="string">&quot;Height&quot;</span>: <span class="number">0</span>,
+                            <span class="string">&quot;Messages&quot;</span>: { <span class="string">&quot;/&quot;</span>: <span class="string">&quot;baeaaaaa&quot; </span>},
+                            <span class="string">&quot;Miner&quot;</span>: <span class="string">&quot;f00&quot;</span>,
+                            <span class="string">&quot;ParentBaseFee&quot;</span>: <span class="string">&quot;0&quot;</span>,
+                            <span class="string">&quot;ParentMessageReceipts&quot;</span>: { <span class="string">&quot;/&quot;</span>: <span class="string">&quot;baeaaaaa&quot; </span>},
+                            <span class="string">&quot;ParentStateRoot&quot;</span>: { <span class="string">&quot;/&quot;</span>:<span class="string">&quot;baeaaaaa&quot; </span>},
+                            <span class="string">&quot;ParentWeight&quot;</span>: <span class="string">&quot;0&quot;</span>,
+                            <span class="string">&quot;Parents&quot;</span>: null,
+                            <span class="string">&quot;Timestamp&quot;</span>: <span class="number">0</span>,
+                            <span class="string">&quot;WinPoStProof&quot;</span>: null
+                        }
+                    ],
+                    <span class="string">&quot;Cids&quot;</span>: [
+                        { <span class="string">&quot;/&quot;</span>: <span class="string">&quot;bafy2bzacean6ik6kxe6i6nv5of3ocoq4czioo556fxifhunwue2q7kqmn6zqc&quot; </span>}
+                    ],
+                    <span class="string">&quot;Height&quot;</span>: <span class="number">0
+                </span>}),
+                <span class="self">Self</span>::new(<span class="macro">vec!</span>[BlockHeader::default()]).unwrap(),
+            )]
+        }
+
+        <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+            TipsetLotusJson(<span class="self">self</span>)
+        }
+
+        <span class="kw">fn </span>from_lotus_json(TipsetLotusJson(tipset): <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+            tipset
         }
     }
 
-    <span class="kw">pub fn </span>serialize&lt;S&gt;(m: <span class="kw-2">&amp;</span>Tipset, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
-    <span class="kw">where
-        </span>S: Serializer,
-    {
-        <span class="attr">#[derive(Serialize)]
-        #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
-        </span><span class="kw">struct </span>TipsetSer&lt;<span class="lifetime">&#39;a</span>&gt; {
-            <span class="attr">#[serde(with = <span class="string">&quot;super::tipset_keys_json&quot;</span>)]
-            </span>cids: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TipsetKeys,
-            <span class="attr">#[serde(with = <span class="string">&quot;super::super::header::json::vec&quot;</span>)]
-            </span>blocks: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[BlockHeader],
-            height: ChainEpoch,
-        }
-        TipsetSer {
-            blocks: <span class="kw-2">&amp;</span>m.headers,
-            cids: m.key(),
-            height: m.epoch(),
-        }
-        .serialize(serializer)
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>snapshots() {
+        assert_all_snapshots::&lt;Tipset&gt;()
     }
 
-    <span class="kw">pub fn </span>deserialize&lt;<span class="lifetime">&#39;de</span>, D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, D::Error&gt;
-    <span class="kw">where
-        </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
-    {
-        <span class="attr">#[derive(Serialize, Deserialize)]
-        #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
-        </span><span class="kw">struct </span>TipsetDe {
-            <span class="attr">#[serde(with = <span class="string">&quot;super::tipset_keys_json&quot;</span>)]
-            </span>cids: TipsetKeys,
-            <span class="attr">#[serde(with = <span class="string">&quot;super::super::header::json::vec&quot;</span>)]
-            </span>blocks: Vec&lt;BlockHeader&gt;,
-            height: ChainEpoch,
+    <span class="attr">#[cfg(test)]
+    </span><span class="macro">quickcheck::quickcheck! </span>{
+        <span class="kw">fn </span>quickcheck(val: Tipset) -&gt; () {
+            assert_unchanged_via_json(val)
         }
-        <span class="kw">let </span>TipsetDe { blocks, .. } = Deserialize::deserialize(deserializer)<span class="question-mark">?</span>;
-        Tipset::new(blocks).map(Arc::new).map_err(de::Error::custom)
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>property_tests {
-    <span class="kw">use </span>quickcheck_macros::quickcheck;
-    <span class="kw">use </span>serde_json;
-
-    <span class="kw">use super</span>::{
-        tipset_json::{TipsetJson, TipsetJsonRef},
-        tipset_keys_json::TipsetKeysJson,
-        Tipset, TipsetKeys,
-    };
-
-    <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>tipset_keys_roundtrip(tipset_keys: TipsetKeys) {
-        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>TipsetKeysJson(tipset_keys.clone())).unwrap();
-        <span class="kw">let </span>parsed: TipsetKeysJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
-        <span class="macro">assert_eq!</span>(tipset_keys, parsed.<span class="number">0</span>);
-    }
-
-    <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>tipset_roundtrip(tipset: Tipset) {
-        <span class="kw">let </span>serialized = serde_json::to_string(<span class="kw-2">&amp;</span>TipsetJsonRef(<span class="kw-2">&amp;</span>tipset)).unwrap();
-        <span class="kw">let </span>parsed: TipsetJson = serde_json::from_str(<span class="kw-2">&amp;</span>serialized).unwrap();
-        <span class="macro">assert_eq!</span>(<span class="kw-2">&amp;</span>tipset, parsed.<span class="number">0</span>.as_ref());
     }
 }
 

@@ -500,7 +500,7 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ChainIndex;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
@@ -605,7 +605,7 @@
                 depth,
             } =&gt; {
                 <span class="kw">let </span>chain_head = <span class="kw">match </span>chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
-                    <span class="prelude-val">Ok</span>(head) =&gt; head.<span class="number">0</span>,
+                    <span class="prelude-val">Ok</span>(LotusJson(head)) =&gt; head,
                     <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; cli_error_and_die(<span class="string">&quot;Could not get network head&quot;</span>, <span class="number">1</span>),
                 };
 
@@ -633,7 +633,7 @@
                     epoch,
                     recent_roots: depth.unwrap_or(config.chain.recent_state_roots),
                     output_path: temp_path.to_path_buf(),
-                    tipset_keys: TipsetKeysJson(chain_head.key().clone()),
+                    tipset_keys: chain_head.key().clone(),
                     skip_checksum,
                     dry_run,
                 };

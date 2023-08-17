@@ -139,11 +139,6 @@
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -151,11 +146,8 @@
 </span><span class="kw">use </span>std::convert::TryFrom;
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
-<span class="kw">use </span><span class="kw">crate</span>::json::{
-    cid::{vec::CidJsonVec, CidJson},
-    message::json::MessageJson,
-    signed_message::json::SignedMessageJson,
-};
+<span class="kw">use </span><span class="kw">crate</span>::json::cid::{vec::CidJsonVec, CidJson};
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCState, mpool_api::<span class="kw-2">*</span>};
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::Protocol;
@@ -185,7 +177,7 @@
     }
 
     <span class="kw">if </span>mpts.epoch() &gt; ts.epoch() {
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(pending.into_iter().map(SignedMessageJson::from).collect());
+        <span class="kw">return </span><span class="prelude-val">Ok</span>(pending.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().into());
     }
 
     <span class="kw">loop </span>{
@@ -222,20 +214,18 @@
             .chain_store()
             .tipset_from_keys(ts.parents())<span class="question-mark">?</span>;
     }
-    <span class="prelude-val">Ok</span>(pending.into_iter().map(SignedMessageJson::from).collect())
+    <span class="prelude-val">Ok</span>(pending.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().into())
 }
 
 <span class="doccomment">/// Add `SignedMessage` to `mpool`, return message CID
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>mpool_push&lt;DB&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;MpoolPushParams&gt;,
+    Params((LotusJson(signed_message),)): Params&lt;MpoolPushParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">let </span>(SignedMessageJson(smsg),) = params;
-
-    <span class="kw">let </span>cid = data.mpool.as_ref().push(smsg).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>cid = data.mpool.as_ref().push(signed_message).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(CidJson(cid))
 }
@@ -248,7 +238,7 @@
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">let </span>(MessageJson(umsg), spec) = params;
+    <span class="kw">let </span>(LotusJson(umsg), spec) = params;
 
     <span class="kw">let </span>from = umsg.from;
 
@@ -288,6 +278,6 @@
 
     data.mpool.as_ref().push(smsg.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(SignedMessageJson(smsg))
+    <span class="prelude-val">Ok</span>(smsg.into())
 }
 </code></pre></div></section></main></body></html>

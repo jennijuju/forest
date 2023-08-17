@@ -38,10 +38,6 @@
 <a href="#38" id="38">38</a>
 <a href="#39" id="39">39</a>
 <a href="#40" id="40">40</a>
-<a href="#41" id="41">41</a>
-<a href="#42" id="42">42</a>
-<a href="#43" id="43">43</a>
-<a href="#44" id="44">44</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -73,17 +69,13 @@
             RawBytes::new(Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>)),
         )]
     }
-}
 
-<span class="kw">impl </span>From&lt;RawBytes&gt; <span class="kw">for </span>RawBytesLotusJson {
-    <span class="kw">fn </span>from(value: RawBytes) -&gt; <span class="self">Self </span>{
-        RawBytesLotusJson(Vec::from(value))
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        RawBytesLotusJson(Vec::from(<span class="self">self</span>))
     }
-}
 
-<span class="kw">impl </span>From&lt;RawBytesLotusJson&gt; <span class="kw">for </span>RawBytes {
-    <span class="kw">fn </span>from(RawBytesLotusJson(value): RawBytesLotusJson) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::from(value)
+    <span class="kw">fn </span>from_lotus_json(RawBytesLotusJson(vec): <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from(vec)
     }
 }
 </code></pre></div></section></main></body></html>

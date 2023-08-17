@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SignatureTypeLotusJson"]};
+window.SIDEBAR_ITEMS = {"enum":["SignatureTypeLotusJson"]};

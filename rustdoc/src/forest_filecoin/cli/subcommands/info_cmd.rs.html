@@ -333,11 +333,13 @@
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::CliOpts;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{
     chain_get_name, chain_head, node_ops::node_status, start_time, wallet_balance,
     wallet_default_address,
@@ -505,7 +507,7 @@
         );
 
         <span class="kw">match </span>res {
-            <span class="prelude-val">Ok</span>((node_status, head, network, start_time, default_wallet_address)) =&gt; {
+            <span class="prelude-val">Ok</span>((node_status, LotusJson(head), network, start_time, default_wallet_address)) =&gt; {
                 <span class="kw">let </span>cur_duration: Duration = SystemTime::now().duration_since(UNIX_EPOCH)<span class="question-mark">?</span>;
                 <span class="kw">let </span>blocks_per_tipset_last_finality =
                     node_status.chain_status.blocks_per_tipset_last_finality;
@@ -523,7 +525,7 @@
                 <span class="kw">let </span>node_status_info = NodeStatusInfo::new(
                     cur_duration,
                     blocks_per_tipset_last_finality,
-                    head.<span class="number">0</span>.as_ref(),
+                    <span class="kw-2">&amp;</span>head,
                     start_time,
                     network,
                     default_wallet_address.clone(),

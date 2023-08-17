@@ -26,30 +26,16 @@
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
-<a href="#29" id="29">29</a>
-<a href="#30" id="30">30</a>
-<a href="#31" id="31">31</a>
-<a href="#32" id="32">32</a>
-<a href="#33" id="33">33</a>
-<a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
+</span><span class="kw">use super</span>::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::FrozenCids;
 <span class="kw">use </span>::cid::Cid;
 
-<span class="kw">use super</span>::<span class="kw-2">*</span>;
-
-<span class="attr">#[derive(Serialize, Deserialize)]
-</span><span class="kw">pub struct </span>TipsetKeysLotusJson(VecLotusJson&lt;CidLotusJson&gt;);
-
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>TipsetKeys {
-    <span class="kw">type </span>LotusJson = TipsetKeysLotusJson;
+    <span class="kw">type </span>LotusJson = LotusJson&lt;Vec&lt;Cid&gt;&gt;;
 
     <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
         <span class="macro">vec!</span>[(
@@ -59,19 +45,13 @@
             },
         )]
     }
-}
 
-<span class="kw">impl </span>From&lt;TipsetKeys&gt; <span class="kw">for </span>TipsetKeysLotusJson {
-    <span class="kw">fn </span>from(value: TipsetKeys) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>TipsetKeys { cids } = value;
-        <span class="self">Self</span>(VecLotusJson::&lt;CidLotusJson&gt;::from(Vec::&lt;Cid&gt;::from(cids)))
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        LotusJson(<span class="self">self</span>.cids.into_iter().collect::&lt;Vec&lt;Cid&gt;&gt;())
     }
-}
 
-<span class="kw">impl </span>From&lt;TipsetKeysLotusJson&gt; <span class="kw">for </span>TipsetKeys {
-    <span class="kw">fn </span>from(value: TipsetKeysLotusJson) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>TipsetKeysLotusJson(cids) = value;
-        <span class="self">Self </span>{ cids: FrozenCids::from(Vec::&lt;Cid&gt;::from(cids)) }
+    <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from(lotus_json.into_inner())
     }
 }
 </code></pre></div></section></main></body></html>

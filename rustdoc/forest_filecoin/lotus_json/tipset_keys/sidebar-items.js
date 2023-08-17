@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["TipsetKeysLotusJson"]};
+window.SIDEBAR_ITEMS = {};

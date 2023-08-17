@@ -102,32 +102,31 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
+<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, message::Message};
+<span class="kw">use </span>::cid::Cid;
+<span class="kw">use </span>fvm_ipld_encoding::RawBytes;
 
-<span class="comment">// TODO(aatifsyed): derive
-</span><span class="attr">#[derive(Serialize, Deserialize)]
+<span class="attr">#[derive(Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>MessageLotusJson {
-    version: u64,
-    to: AddressLotusJson,
-    from: AddressLotusJson,
-    nonce: u64,
-    value: TokenAmountLotusJson,
-    gas_limit: u64,
-    gas_fee_cap: TokenAmountLotusJson,
-    gas_premium: TokenAmountLotusJson,
-    method: u64,
-    params: <span class="prelude-ty">Option</span>&lt;RawBytesLotusJson&gt;,
-    <span class="attr">#[serde(rename = <span class="string">&quot;CID&quot;</span>, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>cid: <span class="prelude-ty">Option</span>&lt;CidLotusJson&gt;,
+    version: LotusJson&lt;u64&gt;,
+    to: LotusJson&lt;Address&gt;,
+    from: LotusJson&lt;Address&gt;,
+    nonce: LotusJson&lt;u64&gt;,
+    value: LotusJson&lt;TokenAmount&gt;,
+    gas_limit: LotusJson&lt;u64&gt;,
+    gas_fee_cap: LotusJson&lt;TokenAmount&gt;,
+    gas_premium: LotusJson&lt;TokenAmount&gt;,
+    method: LotusJson&lt;u64&gt;,
+    <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    </span>params: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;RawBytes&gt;&gt;,
+    <span class="attr">#[serde(rename = <span class="string">&quot;CID&quot;</span>, skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    </span>cid: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;Cid&gt;&gt;,
 }
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>Message {
@@ -150,42 +149,9 @@
             Message::default(),
         )]
     }
-}
 
-<span class="comment">// TODO(aatifsyed): derive
-</span><span class="kw">impl </span>From&lt;MessageLotusJson&gt; <span class="kw">for </span>Message {
-    <span class="kw">fn </span>from(value: MessageLotusJson) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>MessageLotusJson {
-            version,
-            to,
-            from,
-            nonce,
-            value,
-            gas_limit,
-            gas_fee_cap,
-            gas_premium,
-            method,
-            params,
-            cid: _ignored, <span class="comment">// TODO(aatifsyed): is this an error?
-        </span>} = value;
-        <span class="self">Self </span>{
-            version,
-            from: from.into(),
-            to: to.into(),
-            sequence: nonce,
-            value: value.into(),
-            method_num: method,
-            params: params.map(Into::into).unwrap_or_default(),
-            gas_limit,
-            gas_fee_cap: gas_fee_cap.into(),
-            gas_premium: gas_premium.into(),
-        }
-    }
-}
-
-<span class="kw">impl </span>From&lt;Message&gt; <span class="kw">for </span>MessageLotusJson {
-    <span class="kw">fn </span>from(value: Message) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>Message {
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        <span class="kw">let </span><span class="self">Self </span>{
             version,
             from,
             to,
@@ -196,20 +162,48 @@
             gas_limit,
             gas_fee_cap,
             gas_premium,
-        } = value;
-        <span class="self">Self </span>{
-            version,
+        } = <span class="self">self</span>;
+        <span class="self">Self</span>::LotusJson {
+            version: version.into(),
             to: to.into(),
             from: from.into(),
-            nonce: sequence,
+            nonce: sequence.into(),
             value: value.into(),
-            gas_limit,
+            gas_limit: gas_limit.into(),
             gas_fee_cap: gas_fee_cap.into(),
             gas_premium: gas_premium.into(),
-            method: method_num,
-            params: <span class="prelude-val">Some</span>(params.into()),
-            cid: <span class="prelude-val">None</span>, <span class="comment">// TODO(aatifsyed): is this an error?
-        </span>}
+            method: method_num.into(),
+            params: <span class="prelude-val">Some</span>(params).into(),
+            cid: <span class="prelude-val">None</span>.into(),
+        }
+    }
+
+    <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="self">Self</span>::LotusJson {
+            version,
+            to,
+            from,
+            nonce,
+            value,
+            gas_limit,
+            gas_fee_cap,
+            gas_premium,
+            method,
+            params,
+            cid: _ignored, <span class="comment">// BUG?(aatifsyed)
+        </span>} = lotus_json;
+        <span class="self">Self </span>{
+            version: version.into_inner(),
+            from: from.into_inner(),
+            to: to.into_inner(),
+            sequence: nonce.into_inner(),
+            value: value.into_inner(),
+            method_num: method.into_inner(),
+            params: params.into_inner().unwrap_or_default(),
+            gas_limit: gas_limit.into_inner(),
+            gas_fee_cap: gas_fee_cap.into_inner(),
+            gas_premium: gas_premium.into_inner(),
+        }
     }
 }
 </code></pre></div></section></main></body></html>

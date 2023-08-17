@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["RegisteredPoStProofLotusJson"]};
+window.SIDEBAR_ITEMS = {};

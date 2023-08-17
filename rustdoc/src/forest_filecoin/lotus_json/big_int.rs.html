@@ -15,6 +15,11 @@
 <a href="#15" id="15">15</a>
 <a href="#16" id="16">16</a>
 <a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -22,14 +27,19 @@
 
 <span class="kw">use </span>num::BigInt;
 
-<span class="attr">#[derive(Serialize, Deserialize, From, Into)]
-</span><span class="kw">pub struct </span>BigIntLotusJson(<span class="attr">#[serde(with = <span class="string">&quot;stringify&quot;</span>)] </span>BigInt);
-
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>BigInt {
-    <span class="kw">type </span>LotusJson = BigIntLotusJson;
+    <span class="kw">type </span>LotusJson = Stringify&lt;BigInt&gt;;
 
     <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
         <span class="macro">vec!</span>[(<span class="macro">json!</span>(<span class="string">&quot;1&quot;</span>), BigInt::from(<span class="number">1</span>))]
+    }
+
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        <span class="self">self</span>.into()
+    }
+
+    <span class="kw">fn </span>from_lotus_json(Stringify(big_int): <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        big_int
     }
 }
 </code></pre></div></section></main></body></html>

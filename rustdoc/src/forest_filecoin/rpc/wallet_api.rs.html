@@ -220,13 +220,16 @@
 <a href="#220" id="220">220</a>
 <a href="#221" id="221">221</a>
 <a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 </span><span class="kw">use </span>std::{convert::TryFrom, str::FromStr};
 
-<span class="kw">use </span><span class="kw">crate</span>::json::{address::json::AddressJson, signature::json::SignatureJson};
-<span class="kw">use </span><span class="kw">crate</span>::key_management::{json::KeyInfoJson, Error, Key};
+<span class="kw">use </span><span class="kw">crate</span>::json::address::json::AddressJson;
+<span class="kw">use </span><span class="kw">crate</span>::key_management::{Error, Key};
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCState, wallet_api::<span class="kw-2">*</span>};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount, state_tree::StateTree};
 <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
@@ -289,7 +292,7 @@
     <span class="kw">let </span>keystore = data.keystore.read().<span class="kw">await</span>;
 
     <span class="kw">let </span>key_info = <span class="kw">crate</span>::key_management::export_key_info(<span class="kw-2">&amp;</span>addr, <span class="kw-2">&amp;</span>keystore)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(KeyInfoJson(key_info))
+    <span class="prelude-val">Ok</span>(key_info.into())
 }
 
 <span class="doccomment">/// Return whether or not a Key is in the Wallet
@@ -317,10 +320,11 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">let </span>key_info: <span class="kw">crate</span>::key_management::KeyInfo = <span class="kw">match </span>params.first().cloned() {
-        <span class="prelude-val">Some</span>(key_info) =&gt; key_info.into(),
-        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(JsonRpcError::INTERNAL_ERROR),
-    };
+    <span class="kw">let </span>key_info = params
+        .into_inner()
+        .into_iter()
+        .next()
+        .ok_or(JsonRpcError::INTERNAL_ERROR)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>key = Key::try_from(key_info)<span class="question-mark">?</span>;
 
@@ -425,7 +429,7 @@
         <span class="kw-2">&amp;</span>BASE64_STANDARD.decode(msg_string)<span class="question-mark">?</span>,
     )<span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(SignatureJson(sig))
+    <span class="prelude-val">Ok</span>(sig.into())
 }
 
 <span class="doccomment">/// Verify a Signature, true if verified, false otherwise
@@ -436,7 +440,7 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">let </span>(addr, msg, SignatureJson(sig)) = params;
+    <span class="kw">let </span>(addr, msg, LotusJson(sig)) = params;
     <span class="kw">let </span>address = addr.<span class="number">0</span>;
 
     <span class="kw">let </span>ret = sig.verify(<span class="kw-2">&amp;</span>msg, <span class="kw-2">&amp;</span>address).is_ok();

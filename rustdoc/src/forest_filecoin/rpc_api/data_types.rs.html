@@ -132,16 +132,17 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::beacon::BeaconSchedule;
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{tipset_keys_json::TipsetKeysJson, Tipset};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{BadBlockCache, SyncState};
 <span class="kw">use </span><span class="kw">crate</span>::ipld::json::IpldJson;
-<span class="kw">use </span><span class="kw">crate</span>::json::{cid::CidJson, message_receipt::json::ReceiptJson, token_amount::json};
+<span class="kw">use </span><span class="kw">crate</span>::json::{cid::CidJson, token_amount::json};
 <span class="kw">use </span><span class="kw">crate</span>::key_management::KeyStore;
 <span class="kw">pub use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multihash, NetworkMessage};
 <span class="kw">use </span><span class="kw">crate</span>::message::signed_message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, MpoolRpcProvider};
+<span class="kw">use </span><span class="kw">crate</span>::shim::executor::Receipt;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{econ::TokenAmount, message::Message};
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span>ahash::HashSet;
@@ -175,8 +176,9 @@
 }
 
 <span class="attr">#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>RPCSyncState {
-    <span class="attr">#[serde(rename = <span class="string">&quot;ActiveSyncs&quot;</span>)]
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>active_syncs: Vec&lt;SyncState&gt;,
 }
 
@@ -185,12 +187,9 @@
 <span class="comment">// Chain API
 </span><span class="attr">#[derive(Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>BlockMessages {
-    <span class="attr">#[serde(rename = <span class="string">&quot;BlsMessages&quot;</span>, with = <span class="string">&quot;crate::json::message::json::vec&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">&quot;BlsMessages&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>bls_msg: Vec&lt;Message&gt;,
-    <span class="attr">#[serde(
-        rename = <span class="string">&quot;SecpkMessages&quot;</span>,
-        with = <span class="string">&quot;crate::json::signed_message::json::vec&quot;
-    </span>)]
+    <span class="attr">#[serde(rename = <span class="string">&quot;SecpkMessages&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>secp_msg: Vec&lt;SignedMessage&gt;,
     <span class="attr">#[serde(rename = <span class="string">&quot;Cids&quot;</span>, with = <span class="string">&quot;crate::json::cid::vec&quot;</span>)]
     </span><span class="kw">pub </span>cids: Vec&lt;Cid&gt;,
@@ -213,9 +212,10 @@
 <span class="attr">#[derive(Serialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>MessageLookup {
-    <span class="kw">pub </span>receipt: ReceiptJson,
-    <span class="attr">#[serde(rename = <span class="string">&quot;TipSet&quot;</span>)]
-    </span><span class="kw">pub </span>tipset: TipsetKeysJson,
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
+    </span><span class="kw">pub </span>receipt: Receipt,
+    <span class="attr">#[serde(rename = <span class="string">&quot;TipSet&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
+    </span><span class="kw">pub </span>tipset: TipsetKeys,
     <span class="kw">pub </span>height: i64,
     <span class="kw">pub </span>message: CidJson,
     <span class="kw">pub </span>return_dec: IpldJson,

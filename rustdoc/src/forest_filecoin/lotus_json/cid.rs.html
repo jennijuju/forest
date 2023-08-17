@@ -30,17 +30,22 @@
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">pub type </span>CidLotusJson = CidLotusJsonGeneric&lt;<span class="number">64</span>&gt;;
-
-<span class="attr">#[derive(Serialize, Deserialize, From, Into)]
+<span class="attr">#[derive(Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>CidLotusJsonGeneric&lt;<span class="kw">const </span>S: usize&gt; {
-    <span class="attr">#[serde(rename = <span class="string">&quot;/&quot;</span>, with = <span class="string">&quot;stringify&quot;</span>)]
-    </span>slash: ::cid::CidGeneric&lt;S&gt;,
+    <span class="attr">#[serde(rename = <span class="string">&quot;/&quot;</span>)]
+    </span>slash: Stringify&lt;::cid::CidGeneric&lt;S&gt;&gt;,
 }
 
 <span class="kw">impl</span>&lt;<span class="kw">const </span>S: usize&gt; HasLotusJson <span class="kw">for </span>::cid::CidGeneric&lt;S&gt; {
@@ -48,6 +53,15 @@
 
     <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
         <span class="macro">unimplemented!</span>(<span class="string">&quot;only Cid&lt;64&gt; is tested, below&quot;</span>)
+    }
+
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        <span class="self">Self</span>::LotusJson { slash: <span class="self">self</span>.into() }
+    }
+
+    <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="self">Self</span>::LotusJson { slash } = lotus_json;
+        slash.into_inner()
     }
 }
 

@@ -1310,7 +1310,6 @@
 <a href="#1310" id="1310">1310</a>
 <a href="#1311" id="1311">1311</a>
 <a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1332,7 +1331,6 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::BlockMessages;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, ExecutionContext, VM};
-<span class="kw">use </span><span class="kw">crate</span>::json::message_receipt;
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
@@ -1484,9 +1482,9 @@
 </span><span class="attr">#[derive(Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>InvocResult {
-    <span class="attr">#[serde(with = <span class="string">&quot;crate::json::message::json&quot;</span>)]
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>msg: Message,
-    <span class="attr">#[serde(with = <span class="string">&quot;message_receipt::json::opt&quot;</span>)]
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>msg_rct: <span class="prelude-ty">Option</span>&lt;Receipt&gt;,
     <span class="kw">pub </span>error: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }

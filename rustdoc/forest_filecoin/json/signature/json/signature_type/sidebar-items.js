@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["JsonHelperEnum"],"fn":["deserialize","serialize"],"struct":["SignatureTypeJson"]};

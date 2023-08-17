@@ -286,23 +286,17 @@
 <a href="#286" id="286">286</a>
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{
-    header::json::BlockHeaderJson, tipset_json::TipsetJson, tipset_keys_json::TipsetKeysJson,
-    BlockHeader, Tipset,
-};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
-<span class="kw">use </span><span class="kw">crate</span>::json::{cid::CidJson, message::json::MessageJson};
+<span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     chain_api::<span class="kw-2">*</span>,
     data_types::{BlockMessages, RPCState},
@@ -330,7 +324,7 @@
         .blockstore()
         .get_cbor(<span class="kw-2">&amp;</span>msg_cid)<span class="question-mark">?
         </span>.ok_or(<span class="string">&quot;can&#39;t find message with that cid&quot;</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(MessageJson(ret))
+    <span class="prelude-val">Ok</span>(LotusJson(ret))
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_export&lt;DB&gt;(
@@ -339,7 +333,7 @@
         epoch,
         recent_roots,
         output_path,
-        tipset_keys: TipsetKeysJson(tsk),
+        tipset_keys: tsk,
         skip_checksum,
         dry_run,
     }): Params&lt;ChainExportParams&gt;,
@@ -474,7 +468,7 @@
         .chain_store()
         .chain_index
         .tipset_by_height(height, ts, ResolveNullTipset::TakeOlder)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(TipsetJson(tss))
+    <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>tss).clone().into())
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_genesis&lt;DB&gt;(
@@ -484,8 +478,7 @@
     </span>DB: Blockstore,
 {
     <span class="kw">let </span>genesis = data.state_manager.chain_store().genesis();
-    <span class="kw">let </span>gen_ts = Arc::new(Tipset::from(genesis));
-    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(TipsetJson(gen_ts)))
+    <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Tipset::from(genesis).into()))
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_head&lt;DB&gt;(
@@ -495,7 +488,7 @@
     </span>DB: Blockstore,
 {
     <span class="kw">let </span>heaviest = data.state_manager.chain_store().heaviest_tipset();
-    <span class="prelude-val">Ok</span>(TipsetJson(heaviest))
+    <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>heaviest).clone().into())
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block&lt;DB&gt;(
@@ -511,19 +504,18 @@
         .blockstore()
         .get_cbor(<span class="kw-2">&amp;</span>blk_cid)<span class="question-mark">?
         </span>.ok_or(<span class="string">&quot;can&#39;t find BlockHeader with that cid&quot;</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(BlockHeaderJson(blk))
+    <span class="prelude-val">Ok</span>(blk.into())
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset&lt;DB&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetTipSetParams&gt;,
+    Params((LotusJson(tsk),)): Params&lt;ChainGetTipSetParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipSetResult, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">let </span>(TipsetKeysJson(tsk),) = params;
     <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(TipsetJson(ts))
+    <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>ts).clone().into())
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_name&lt;DB&gt;(

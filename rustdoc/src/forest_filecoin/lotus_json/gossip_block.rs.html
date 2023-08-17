@@ -75,46 +75,20 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
-<a href="#81" id="81">81</a>
-<a href="#82" id="82">82</a>
-<a href="#83" id="83">83</a>
-<a href="#84" id="84">84</a>
-<a href="#85" id="85">85</a>
-<a href="#86" id="86">86</a>
-<a href="#87" id="87">87</a>
-<a href="#88" id="88">88</a>
-<a href="#89" id="89">89</a>
-<a href="#90" id="90">90</a>
-<a href="#91" id="91">91</a>
-<a href="#92" id="92">92</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::GossipBlock;
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, GossipBlock};
+<span class="kw">use </span>::cid::Cid;
 
 <span class="attr">#[derive(Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>GossipBlockLotusJson {
-    <span class="kw">pub </span>header: &lt;<span class="kw">crate</span>::blocks::BlockHeader <span class="kw">as </span>HasLotusJson&gt;::LotusJson,
-    <span class="kw">pub </span>bls_messages: VecLotusJson&lt;CidLotusJson&gt;,
-    <span class="kw">pub </span>secpk_messages: VecLotusJson&lt;CidLotusJson&gt;,
-}
-
-<span class="attr">#[test]
-</span><span class="kw">fn </span>snapshots() {
-    assert_all_snapshots::&lt;GossipBlock&gt;()
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="macro">quickcheck! </span>{
-    <span class="kw">fn </span>quickcheck(val: GossipBlock) -&gt; () {
-        assert_unchanged_via_json(val)
-    }
+    header: LotusJson&lt;BlockHeader&gt;,
+    bls_messages: LotusJson&lt;Vec&lt;Cid&gt;&gt;,
+    secpk_messages: LotusJson&lt;Vec&lt;Cid&gt;&gt;,
 }
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>GossipBlock {
@@ -151,34 +125,30 @@
             GossipBlock::default(),
         )]
     }
-}
 
-<span class="kw">impl </span>From&lt;GossipBlockLotusJson&gt; <span class="kw">for </span>GossipBlock {
-    <span class="kw">fn </span>from(value: GossipBlockLotusJson) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>GossipBlockLotusJson {
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        <span class="kw">let </span><span class="self">Self </span>{
             header,
             bls_messages,
             secpk_messages,
-        } = value;
-        <span class="self">Self </span>{
+        } = <span class="self">self</span>;
+        <span class="self">Self</span>::LotusJson {
             header: header.into(),
             bls_messages: bls_messages.into(),
             secpk_messages: secpk_messages.into(),
         }
     }
-}
 
-<span class="kw">impl </span>From&lt;GossipBlock&gt; <span class="kw">for </span>GossipBlockLotusJson {
-    <span class="kw">fn </span>from(value: GossipBlock) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>GossipBlock {
+    <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="self">Self</span>::LotusJson {
             header,
             bls_messages,
             secpk_messages,
-        } = value;
+        } = lotus_json;
         <span class="self">Self </span>{
-            header: header.into(),
-            bls_messages: bls_messages.into(),
-            secpk_messages: secpk_messages.into(),
+            header: header.into_inner(),
+            bls_messages: bls_messages.into_inner(),
+            secpk_messages: secpk_messages.into_inner(),
         }
     }
 }

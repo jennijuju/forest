@@ -75,7 +75,7 @@
 
 </span><span class="kw">use </span>std::str::FromStr;
 
-<span class="kw">use </span><span class="kw">crate</span>::json::message::json::MessageJson;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{mpool_push_message, wallet_default_address};
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{Address, StrictAddress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
@@ -132,12 +132,12 @@
             </span>..Default::default()
         };
 
-        <span class="kw">let </span>signed_msg_json =
-            mpool_push_message((MessageJson(message), <span class="prelude-val">None</span>), <span class="kw-2">&amp;</span>config.client.rpc_token)
-                .<span class="kw">await
-                </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+        <span class="kw">let </span>signed_msg = mpool_push_message((LotusJson(message), <span class="prelude-val">None</span>), <span class="kw-2">&amp;</span>config.client.rpc_token)
+            .<span class="kw">await
+            </span>.map_err(handle_rpc_err)<span class="question-mark">?
+            </span>.into_inner();
 
-        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, signed_msg_json.<span class="number">0</span>.cid().unwrap());
+        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, signed_msg.cid().unwrap());
 
         <span class="prelude-val">Ok</span>(())
     }

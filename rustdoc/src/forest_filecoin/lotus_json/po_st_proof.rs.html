@@ -53,14 +53,10 @@
 <a href="#53" id="53">53</a>
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
-<a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
-<a href="#59" id="59">59</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::shim::sector::PoStProof;
+</span><span class="kw">use </span><span class="kw">crate</span>::shim::sector::{PoStProof, RegisteredPoStProof};
 <span class="kw">use </span>fvm_shared3::sector::PoStProof <span class="kw">as </span>PoStProofV3;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -68,8 +64,8 @@
 <span class="attr">#[derive(Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>PoStProofLotusJson {
-    po_st_proof: RegisteredPoStProofLotusJson,
-    proof_bytes: VecU8LotusJson,
+    po_st_proof: LotusJson&lt;RegisteredPoStProof&gt;,
+    proof_bytes: LotusJson&lt;Vec&lt;u8&gt;&gt;,
 }
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>PoStProof {
@@ -89,30 +85,26 @@
             ),
         )]
     }
-}
 
-<span class="kw">impl </span>From&lt;PoStProof&gt; <span class="kw">for </span>PoStProofLotusJson {
-    <span class="kw">fn </span>from(value: PoStProof) -&gt; <span class="self">Self </span>{
+    <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
         <span class="kw">let </span>PoStProofV3 {
             post_proof,
             proof_bytes,
-        } = value.into();
-        <span class="self">Self </span>{
+        } = <span class="self">self</span>.into();
+        <span class="self">Self</span>::LotusJson {
             po_st_proof: <span class="kw">crate</span>::shim::sector::RegisteredPoStProof::from(post_proof).into(),
             proof_bytes: proof_bytes.into(),
         }
     }
-}
 
-<span class="kw">impl </span>From&lt;PoStProofLotusJson&gt; <span class="kw">for </span>PoStProof {
-    <span class="kw">fn </span>from(value: PoStProofLotusJson) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>PoStProofLotusJson {
+    <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="self">Self</span>::LotusJson {
             po_st_proof,
             proof_bytes,
-        } = value;
+        } = lotus_json;
         <span class="self">Self</span>::from(PoStProofV3 {
-            post_proof: <span class="kw">crate</span>::shim::sector::RegisteredPoStProof::from(po_st_proof).into(),
-            proof_bytes: proof_bytes.into(),
+            post_proof: po_st_proof.into_inner().into(),
+            proof_bytes: proof_bytes.into_inner(),
         })
     }
 }
