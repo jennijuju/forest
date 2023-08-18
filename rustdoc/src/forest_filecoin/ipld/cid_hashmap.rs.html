@@ -183,45 +183,10 @@
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
 <a href="#185" id="185">185</a>
-<a href="#186" id="186">186</a>
-<a href="#187" id="187">187</a>
-<a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::utils::cid::{CidVariant, BLAKE2B256_SIZE};
+</span><span class="kw">use </span><span class="kw">crate</span>::utils::cid::SmallCid;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>cid::Cid;
 
@@ -237,10 +202,7 @@
 // length=32. Taking advantage of this knowledge, we can store the vast majority of CIDs (+99.99%)
 // in one third of the usual space (32 bytes vs 96 bytes).
 </span><span class="attr">#[derive(Clone, Debug, Default, PartialEq)]
-</span><span class="kw">pub struct </span>CidHashMap&lt;V&gt; {
-    v1_dagcbor_blake2b_hash_map: HashMap&lt;[u8; BLAKE2B256_SIZE], V&gt;,
-    fallback_hash_map: HashMap&lt;Cid, V&gt;,
-}
+</span><span class="kw">pub struct </span>CidHashMap&lt;V&gt;(HashMap&lt;SmallCid, V&gt;);
 
 <span class="kw">impl</span>&lt;V&gt; Extend&lt;(Cid, V)&gt; <span class="kw">for </span>CidHashMap&lt;V&gt; {
     <span class="kw">fn </span>extend&lt;T: IntoIterator&lt;Item = (Cid, V)&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, iter: T) {
@@ -258,91 +220,59 @@
     }
 }
 
-<span class="kw">pub struct </span>IntoIter&lt;V&gt; {
-    small: std::collections::hash_map::IntoIter&lt;[u8; BLAKE2B256_SIZE], V&gt;,
-    fallback: std::collections::hash_map::IntoIter&lt;Cid, V&gt;,
-}
+<span class="kw">pub struct </span>IntoIter&lt;V&gt;(std::collections::hash_map::IntoIter&lt;SmallCid, V&gt;);
 
 <span class="kw">impl</span>&lt;V&gt; IntoIterator <span class="kw">for </span>CidHashMap&lt;V&gt; {
     <span class="kw">type </span>Item = (Cid, V);
     <span class="kw">type </span>IntoIter = IntoIter&lt;V&gt;;
 
     <span class="kw">fn </span>into_iter(<span class="self">self</span>) -&gt; <span class="self">Self</span>::IntoIter {
-        <span class="kw">let </span>CidHashMap {
-            v1_dagcbor_blake2b_hash_map,
-            fallback_hash_map,
-        } = <span class="self">self</span>;
-        <span class="self">Self</span>::IntoIter {
-            small: v1_dagcbor_blake2b_hash_map.into_iter(),
-            fallback: fallback_hash_map.into_iter(),
-        }
+        IntoIter(<span class="self">self</span>.<span class="number">0</span>.into_iter())
     }
 }
 
 <span class="kw">impl</span>&lt;V&gt; Iterator <span class="kw">for </span>IntoIter&lt;V&gt; {
     <span class="kw">type </span>Item = (Cid, V);
     <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-        <span class="self">self</span>.small
-            .next()
-            .map(|(bytes, v)| (Cid::from(CidVariant::V1DagCborBlake2b(bytes)), v))
-            .or_else(|| <span class="self">self</span>.fallback.next())
+        <span class="self">self</span>.<span class="number">0</span>.next().map(|(small_cid, v)| (small_cid.cid(), v))
     }
 }
 
 <span class="kw">impl</span>&lt;V&gt; CidHashMap&lt;V&gt; {
     <span class="doccomment">/// Creates an empty `HashMap` with CID type keys.
     </span><span class="kw">pub fn </span>new() -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{
-            v1_dagcbor_blake2b_hash_map: HashMap::new(),
-            fallback_hash_map: HashMap::new(),
-        }
+        <span class="self">Self</span>(HashMap::new())
     }
 
     <span class="doccomment">/// Returns `true` if the map contains a value for the specified key.
     </span><span class="kw">pub fn </span>contains_key(<span class="kw-2">&amp;</span><span class="self">self</span>, k: Cid) -&gt; bool {
-        <span class="kw">match </span>k.into() {
-            CidVariant::V1DagCborBlake2b(bytes) =&gt; {
-                <span class="self">self</span>.v1_dagcbor_blake2b_hash_map.contains_key(<span class="kw-2">&amp;</span>bytes)
-            }
-            CidVariant::Generic(<span class="kw">_</span>) =&gt; <span class="self">self</span>.fallback_hash_map.contains_key(<span class="kw-2">&amp;</span>k),
-        }
+        <span class="self">self</span>.<span class="number">0</span>.contains_key(<span class="kw-2">&amp;</span>SmallCid::from(k))
     }
 
     <span class="doccomment">/// Inserts a key-value pair into the map; if the map did not have this key present, [`None`] is returned.
     </span><span class="kw">pub fn </span>insert(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: Cid, v: V) -&gt; <span class="prelude-ty">Option</span>&lt;V&gt; {
-        <span class="kw">match </span>k.into() {
-            CidVariant::V1DagCborBlake2b(bytes) =&gt; {
-                <span class="self">self</span>.v1_dagcbor_blake2b_hash_map.insert(bytes, v)
-            }
-            CidVariant::Generic(<span class="kw">_</span>) =&gt; <span class="self">self</span>.fallback_hash_map.insert(k, v),
-        }
+        <span class="self">self</span>.<span class="number">0</span>.insert(SmallCid::from(k), v)
     }
 
     <span class="doccomment">/// Removes a key from the map, returning the value at the key if the key
     /// was previously in the map.
     </span><span class="kw">pub fn </span>remove(<span class="kw-2">&amp;mut </span><span class="self">self</span>, k: Cid) -&gt; <span class="prelude-ty">Option</span>&lt;V&gt; {
-        <span class="kw">match </span>k.into() {
-            CidVariant::V1DagCborBlake2b(bytes) =&gt; <span class="self">self</span>.v1_dagcbor_blake2b_hash_map.remove(<span class="kw-2">&amp;</span>bytes),
-            CidVariant::Generic(<span class="kw">_</span>) =&gt; <span class="self">self</span>.fallback_hash_map.remove(<span class="kw-2">&amp;</span>k),
-        }
+        <span class="self">self</span>.<span class="number">0</span>.remove(<span class="kw-2">&amp;</span>SmallCid::from(k))
     }
 
     <span class="doccomment">/// Returns the number of elements the map can hold without reallocating.
     </span><span class="kw">pub fn </span>capacity(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.v1_dagcbor_blake2b_hash_map.capacity() + <span class="self">self</span>.fallback_hash_map.capacity()
+        <span class="self">self</span>.<span class="number">0</span>.capacity()
     }
 
     <span class="doccomment">/// Returns a reference to the value corresponding to the key.
     </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: Cid) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>V&gt; {
-        <span class="kw">match </span>k.into() {
-            CidVariant::V1DagCborBlake2b(bytes) =&gt; <span class="self">self</span>.v1_dagcbor_blake2b_hash_map.get(<span class="kw-2">&amp;</span>bytes),
-            CidVariant::Generic(<span class="kw">_</span>) =&gt; <span class="self">self</span>.fallback_hash_map.get(<span class="kw-2">&amp;</span>k),
-        }
+        <span class="self">self</span>.<span class="number">0</span>.get(<span class="kw-2">&amp;</span>SmallCid::from(k))
     }
 
     <span class="doccomment">/// Returns the number of elements in the map.
     </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.v1_dagcbor_blake2b_hash_map.len() + <span class="self">self</span>.fallback_hash_map.len()
+        <span class="self">self</span>.<span class="number">0</span>.len()
     }
 }
 

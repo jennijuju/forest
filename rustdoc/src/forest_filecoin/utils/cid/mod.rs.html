@@ -170,6 +170,23 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -203,20 +220,37 @@
 
 <span class="kw">pub const </span>BLAKE2B256_SIZE: usize = <span class="number">32</span>;
 
-<span class="doccomment">/// `CidVariant` is an enumeration of known CID types that are used in the Filecoin blockchain. CIDs
+<span class="doccomment">/// `SmallCid` encapsulates an enumeration of known CID types that are used in the Filecoin blockchain. CIDs
 /// contain a significant amount of static data (such as version, codec, hash identifier, hash
 /// length). This static data represented by a single tag in the `enum`.
 ///
 /// Nearly all Filecoin CIDs are `V1`,`DagCbor` encoded, and hashed with `Blake2b256` (which has a hash
-/// length of 256 bits). Naively representing such a CID requires 96 bytes but `CidVariant` does it in
-/// only 40 bytes. If other types of CID become popular, they can be added to the `CidVariant`
+/// length of 256 bits). Naively representing such a CID requires 96 bytes but `SmallCid` does it in
+/// only 40 bytes. If other types of CID become popular, they can be added to the `SmallCid`
 /// structure.
 ///
 /// The `Generic` variant is used for CIDs that do not fit into the other variants.
 /// These variants are used for optimizing storage of CIDs in the `FrozenCids` structure.
 </span><span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-</span><span class="kw">pub enum </span>CidVariant {
+</span><span class="kw">pub struct </span>SmallCid(SmallCidInner);
+
+<span class="kw">impl </span>SmallCid {
+    <span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cid {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
+            SmallCidInner::Generic(cid) =&gt; <span class="kw-2">**</span>cid,
+            SmallCidInner::V1DagCborBlake2b(digest) =&gt; Cid::new_v1(
+                DAG_CBOR,
+                multihash::Multihash::wrap(Blake2b256.into(), digest)
+                    .expect(<span class="string">&quot;failed to convert Blake2b digest to Multihash for creation of V1 DAG-CBOR Blake2b CID&quot;</span>),
+            ),
+        }
+    }
+}
+
+<span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+</span><span class="kw">enum </span>SmallCidInner {
     Generic(Box&lt;Cid&gt;),
     V1DagCborBlake2b(
         <span class="attr">#[cfg_attr(test, arbitrary(gen(|g: <span class="kw-2">&amp;mut </span>quickcheck::Gen| std::array::from_fn(|_ix| Arbitrary::arbitrary(g)))))]
@@ -224,16 +258,16 @@
     ),
 }
 
-<span class="kw">impl </span>Serialize <span class="kw">for </span>CidVariant {
+<span class="kw">impl </span>Serialize <span class="kw">for </span>SmallCid {
     <span class="kw">fn </span>serialize&lt;S&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, serializer: S) -&gt; <span class="prelude-ty">Result</span>&lt;S::Ok, S::Error&gt;
     <span class="kw">where
         </span>S: Serializer,
     {
-        Cid::from(<span class="self">self</span>).serialize(serializer)
+        <span class="self">self</span>.cid().serialize(serializer)
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>CidVariant {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;de</span>&gt; Deserialize&lt;<span class="lifetime">&#39;de</span>&gt; <span class="kw">for </span>SmallCid {
     <span class="kw">fn </span>deserialize&lt;D&gt;(deserializer: D) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, D::Error&gt;
     <span class="kw">where
         </span>D: Deserializer&lt;<span class="lifetime">&#39;de</span>&gt;,
@@ -242,34 +276,34 @@
     }
 }
 
-<span class="kw">impl </span>From&lt;Cid&gt; <span class="kw">for </span>CidVariant {
+<span class="kw">impl </span>From&lt;Cid&gt; <span class="kw">for </span>SmallCid {
     <span class="kw">fn </span>from(cid: Cid) -&gt; <span class="self">Self </span>{
         <span class="kw">if </span>cid.version() == Version::V1 &amp;&amp; cid.codec() == DAG_CBOR {
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(small_hash) = cid.hash().resize() {
                 <span class="kw">let </span>(code, bytes, size) = small_hash.into_inner();
                 <span class="kw">if </span>code == u64::from(Code::Blake2b256) &amp;&amp; size <span class="kw">as </span>usize == BLAKE2B256_SIZE {
-                    <span class="kw">return </span>CidVariant::V1DagCborBlake2b(bytes);
+                    <span class="kw">return </span>SmallCid(SmallCidInner::V1DagCborBlake2b(bytes));
                 }
             }
         }
-        CidVariant::Generic(Box::new(cid))
+        SmallCid(SmallCidInner::Generic(Box::new(cid)))
     }
 }
 
-<span class="kw">impl </span>From&lt;CidVariant&gt; <span class="kw">for </span>Cid {
-    <span class="kw">fn </span>from(variant: CidVariant) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;SmallCid&gt; <span class="kw">for </span>Cid {
+    <span class="kw">fn </span>from(variant: SmallCid) -&gt; <span class="self">Self </span>{
         Cid::from(<span class="kw-2">&amp;</span>variant)
     }
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>CidVariant&gt; <span class="kw">for </span>Cid {
-    <span class="kw">fn </span>from(variant: <span class="kw-2">&amp;</span>CidVariant) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>SmallCid&gt; <span class="kw">for </span>Cid {
+    <span class="kw">fn </span>from(variant: <span class="kw-2">&amp;</span>SmallCid) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span>variant {
-            CidVariant::Generic(cid) =&gt; <span class="kw-2">**</span>cid,
-            CidVariant::V1DagCborBlake2b(digest) =&gt; Cid::new_v1(
+            SmallCid(SmallCidInner::Generic(cid)) =&gt; <span class="kw-2">**</span>cid,
+            SmallCid(SmallCidInner::V1DagCborBlake2b(digest)) =&gt; Cid::new_v1(
                 DAG_CBOR,
                 multihash::Multihash::wrap(Blake2b256.into(), digest)
-                    .expect(<span class="string">&quot;failed to convert Blake2b digest to V1 DAG-CBOR Blake2b CID&quot;</span>),
+                    .expect(<span class="string">&quot;failed to convert Blake2b digest to Multihash for creation of V1 DAG-CBOR Blake2b CID&quot;</span>),
             ),
         }
     }
@@ -277,7 +311,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span><span class="kw">super</span>::CidVariant;
+    <span class="kw">use </span><span class="kw">super</span>::SmallCid;
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
     <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
@@ -327,18 +361,18 @@
         .unwrap();
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
             cid.try_into().unwrap(),
-            CidVariant::V1DagCborBlake2b(<span class="kw">_</span>)
+            SmallCid(SmallCidInner::V1DagCborBlake2b(<span class="kw">_</span>))
         ));
     }
 
-    <span class="comment">// If this test fails, the default encoding is no longer v1+dagcbor+blake2b. Add the new default
-    // CID type to `CidVariant`.
+    <span class="comment">// If this test fails, the default encoding is no longer v1+dagcbor+blake2b. Consider adding the new default
+    // CID type to `SmallCid`.
     </span><span class="attr">#[test]
     </span><span class="kw">fn </span>default_is_v1_dagcbor() {
         <span class="kw">let </span>cid = MemoryDB::default().put_cbor_default(<span class="kw-2">&amp;</span>()).unwrap();
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
             cid.try_into().unwrap(),
-            CidVariant::V1DagCborBlake2b(<span class="kw">_</span>)
+            SmallCid(SmallCidInner::V1DagCborBlake2b(<span class="kw">_</span>))
         ));
     }
 }
