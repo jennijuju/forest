@@ -559,7 +559,7 @@ OPTIONS:
 
 <span class="kw">impl </span>CliOpts {
     <span class="kw">pub fn </span>to_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;(Config, <span class="prelude-ty">Option</span>&lt;ConfigPath&gt;), anyhow::Error&gt; {
-        <span class="kw">let </span>path = find_config_path(<span class="self">self</span>);
+        <span class="kw">let </span>path = find_config_path(<span class="kw-2">&amp;</span><span class="self">self</span>.config);
         <span class="kw">let </span><span class="kw-2">mut </span>cfg: Config = <span class="kw">match </span><span class="kw-2">&amp;</span>path {
             <span class="prelude-val">Some</span>(path) =&gt; {
                 <span class="comment">// Read from config file
@@ -658,8 +658,8 @@ OPTIONS:
     }
 }
 
-<span class="kw">fn </span>find_config_path(opts: <span class="kw-2">&amp;</span>CliOpts) -&gt; <span class="prelude-ty">Option</span>&lt;ConfigPath&gt; {
-    <span class="kw">if let </span><span class="prelude-val">Some</span>(s) = <span class="kw-2">&amp;</span>opts.config {
+<span class="kw">pub fn </span>find_config_path(config: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;ConfigPath&gt; {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(s) = config {
         <span class="kw">return </span><span class="prelude-val">Some</span>(ConfigPath::Cli(PathBuf::from(s)));
     }
     <span class="kw">if let </span><span class="prelude-val">Ok</span>(s) = std::env::var(<span class="string">&quot;FOREST_CONFIG_PATH&quot;</span>) {

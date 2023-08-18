@@ -25,6 +25,10 @@
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -48,7 +52,11 @@
         </span>.block_on(<span class="kw">async </span>{
             <span class="comment">// Run command
             </span><span class="kw">match </span>cmd {
-                Subcommand::Benchmark(benchmark) =&gt; benchmark.run().<span class="kw">await</span>,
+                Subcommand::Benchmark(cmd) =&gt; cmd.run().<span class="kw">await</span>,
+                Subcommand::Snapshot(cmd) =&gt; cmd.run().<span class="kw">await</span>,
+                Subcommand::Fetch(cmd) =&gt; cmd.run().<span class="kw">await</span>,
+                Subcommand::Archive(cmd) =&gt; cmd.run().<span class="kw">await</span>,
+                Subcommand::DB(cmd) =&gt; cmd.run().<span class="kw">await</span>,
             }
         })
 }

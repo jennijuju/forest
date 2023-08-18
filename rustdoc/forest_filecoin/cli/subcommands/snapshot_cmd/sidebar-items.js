@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SnapshotCommands"],"fn":["query_network","save_checksum","validate_ipld_links","validate_stateroots","validate_with_blockstore","validation_spinner"],"static":["DEFAULT_VALUE"]};
+window.SIDEBAR_ITEMS = {"enum":["SnapshotCommands"],"fn":["save_checksum"],"static":["DEFAULT_VALUE"]};
