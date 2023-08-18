@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"forest_filecoin":[]
+"forest_filecoin":[["impl&lt;'de, 'a&gt; <a class=\"trait\" href=\"forest_filecoin/utils/encoding/de/trait.DeserializeSeed.html\" title=\"trait forest_filecoin::utils::encoding::de::DeserializeSeed\">DeserializeSeed</a>&lt;'de&gt; for <a class=\"struct\" href=\"forest_filecoin/utils/encoding/cid_de_cbor/struct.FilterCids.html\" title=\"struct forest_filecoin::utils::encoding::cid_de_cbor::FilterCids\">FilterCids</a>&lt;'a&gt;"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

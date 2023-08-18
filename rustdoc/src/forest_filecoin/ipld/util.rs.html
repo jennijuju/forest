@@ -421,6 +421,22 @@
 <a href="#421" id="421">421</a>
 <a href="#422" id="422">422</a>
 <a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -436,6 +452,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{CidHashSet, Ipld};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::Block;
+<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::progress_log::WithProgressRaw;
 <span class="kw">use crate</span>::{
     blocks::{BlockHeader, Tipset},
@@ -690,7 +707,7 @@
     <span class="comment">// Yield the block, don&#39;t visit it.
     </span>Emit(Cid),
     <span class="comment">// Visit all the elements, recursively.
-    </span>Iterate(DfsIter),
+    </span>Iterate(VecDeque&lt;Cid&gt;),
 }
 
 <span class="macro">pin_project! </span>{
@@ -763,6 +780,13 @@
         <span class="kw">use </span>Task::<span class="kw-2">*</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.project();
 
+        <span class="kw">let </span>ipld_to_cid = |ipld| {
+            <span class="kw">if let </span>Ipld::Link(cid) = ipld {
+                <span class="kw">return </span><span class="prelude-val">Some</span>(cid);
+            }
+            <span class="prelude-val">None
+        </span>};
+
         <span class="kw">let </span>stateroot_limit = <span class="kw-2">*</span>this.stateroot_limit;
         <span class="kw">loop </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(task) = this.dfs.front_mut() {
@@ -776,27 +800,29 @@
                             <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key: {}&quot;</span>, cid))));
                         }
                     }
-                    Iterate(dfs_iter) =&gt; {
-                        <span class="kw">while let </span><span class="prelude-val">Some</span>(ipld) = dfs_iter.next() {
-                            <span class="kw">if let </span>Ipld::Link(cid) = ipld {
-                                <span class="comment">// The link traversal implementation assumes there are three types of encoding:
-                                // 1. DAG_CBOR: needs to be reachable, so we add it to the queue and load.
-                                // 2. IPLD_RAW: WASM blocks, for example. Need to be loaded, but not traversed.
-                                // 3. _: ignore all other links
-                                // Don&#39;t revisit what&#39;s already been visited.
-                                </span><span class="kw">if </span>should_save_block_to_snapshot(cid) &amp;&amp; this.seen.insert(cid) {
-                                    <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
-                                        <span class="kw">if </span>cid.codec() == fvm_ipld_encoding::DAG_CBOR {
-                                            <span class="kw">let </span>ipld: Ipld = from_slice_with_fallback(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
-                                            dfs_iter.walk_next(ipld);
+                    Iterate(cid_vec) =&gt; {
+                        <span class="kw">while let </span><span class="prelude-val">Some</span>(cid) = cid_vec.pop_front() {
+                            <span class="comment">// The link traversal implementation assumes there are three types of encoding:
+                            // 1. DAG_CBOR: needs to be reachable, so we add it to the queue and load.
+                            // 2. IPLD_RAW: WASM blocks, for example. Need to be loaded, but not traversed.
+                            // 3. _: ignore all other links
+                            // Don&#39;t revisit what&#39;s already been visited.
+                            </span><span class="kw">if </span>should_save_block_to_snapshot(cid) &amp;&amp; this.seen.insert(cid) {
+                                <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
+                                    <span class="kw">if </span>cid.codec() == fvm_ipld_encoding::DAG_CBOR {
+                                        <span class="kw">let </span>new_values = extract_cids(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
+                                        cid_vec.reserve(new_values.len());
+
+                                        <span class="kw">for </span>v <span class="kw">in </span>new_values.into_iter().rev() {
+                                            cid_vec.push_front(v)
                                         }
-                                        <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Block { cid, data })));
-                                    } <span class="kw">else if </span><span class="kw-2">*</span>this.fail_on_dead_links {
-                                        <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(
-                                            <span class="string">&quot;missing key: {}&quot;</span>,
-                                            cid
-                                        ))));
                                     }
+                                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Block { cid, data })));
+                                } <span class="kw">else if </span><span class="kw-2">*</span>this.fail_on_dead_links {
+                                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(
+                                        <span class="string">&quot;missing key: {}&quot;</span>,
+                                        cid
+                                    ))));
                                 }
                             }
                         }
@@ -823,8 +849,11 @@
 
                         <span class="comment">// Process block messages.
                         </span><span class="kw">if </span>block.epoch() &gt; stateroot_limit {
-                            this.dfs
-                                .push_back(Iterate(DfsIter::from(<span class="kw-2">*</span>block.messages())));
+                            this.dfs.push_back(Iterate(
+                                DfsIter::from(<span class="kw-2">*</span>block.messages())
+                                    .filter_map(ipld_to_cid)
+                                    .collect(),
+                            ));
                         }
 
                         <span class="comment">// Visit the block if it&#39;s within required depth. And a special case for `0`
@@ -832,8 +861,11 @@
                         </span><span class="kw">if </span>block.epoch() == <span class="number">0 </span>|| block.epoch() &gt; stateroot_limit {
                             <span class="comment">// NOTE: In the original `walk_snapshot` implementation we walk the dag
                             // immediately. Which is what we do here as well, but using a queue.
-                            </span>this.dfs
-                                .push_back(Iterate(DfsIter::from(<span class="kw-2">*</span>block.state_root())));
+                            </span>this.dfs.push_back(Iterate(
+                                DfsIter::from(<span class="kw-2">*</span>block.state_root())
+                                    .filter_map(ipld_to_cid)
+                                    .collect(),
+                            ));
                         }
                     }
                 }

@@ -241,6 +241,8 @@
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -271,7 +273,9 @@
     }
 }
 
+<span class="kw">mod </span>cid_de_cbor;
 <span class="kw">pub mod </span>uvibytes;
+<span class="kw">pub use </span>cid_de_cbor::extract_cids;
 
 <span class="doccomment">/// `serde_bytes` with max length check
 </span><span class="kw">pub mod </span>serde_byte_array {

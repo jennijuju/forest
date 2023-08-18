@@ -257,14 +257,6 @@
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -273,10 +265,10 @@
     ChainEpochDelta,
 };
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, stream_graph, DfsIter};
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, stream_graph};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarStream};
-<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
+<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
 <span class="kw">use </span><span class="kw">crate</span>::utils::stream::par_buffer;
 <span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>cid::Cid;
@@ -285,7 +277,6 @@
 <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
 <span class="kw">use </span>indicatif::{ProgressBar, ProgressStyle};
 <span class="kw">use </span>itertools::Itertools;
-<span class="kw">use </span>libipld_core::ipld::Ipld;
 <span class="kw">use </span>std::ops::Deref;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;
@@ -301,7 +292,7 @@
         <span class="doccomment">/// Snapshot input files (`.car.`, `.car.zst`, `.forest.car.zst`)
         </span><span class="attr">#[arg(required = <span class="bool-val">true</span>)]
         </span>snapshot_files: Vec&lt;PathBuf&gt;,
-        <span class="doccomment">/// Whether or not we want to expect [`Ipld`] data for each block.
+        <span class="doccomment">/// Whether or not we want to expect [`libipld_core::ipld::Ipld`] data for each block.
         </span><span class="attr">#[arg(long)]
         </span>inspect: bool,
     },
@@ -396,13 +387,6 @@
 // realistic expectations in terms of DFS graph travels, for example.
 </span><span class="kw">async fn </span>benchmark_car_streaming_inspect(input: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>sink = indicatif_sink(<span class="string">&quot;traversed&quot;</span>);
-    <span class="kw">let </span>ipld_to_cid = |ipld| {
-        <span class="kw">if let </span>Ipld::Link(cid) = ipld {
-            <span class="kw">return </span><span class="prelude-val">Some</span>((cid, ()));
-        }
-        <span class="prelude-val">None
-    </span>};
-
     <span class="kw">let </span><span class="kw-2">mut </span>s = Box::pin(
         futures::stream::iter(input)
             .then(File::open)
@@ -413,8 +397,8 @@
     <span class="kw">while let </span><span class="prelude-val">Some</span>(block) = s.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
         <span class="kw">let </span>block: Block = block;
         <span class="kw">if </span>block.cid.codec() == DAG_CBOR {
-            <span class="kw">let </span>ipld: Ipld = from_slice_with_fallback(<span class="kw-2">&amp;</span>block.data)<span class="question-mark">?</span>;
-            <span class="kw">let _ </span>= DfsIter::new(ipld).filter_map(ipld_to_cid).unique().count();
+            <span class="kw">let </span>cid_vec: Vec&lt;Cid&gt; = extract_cids(<span class="kw-2">&amp;</span>block.data)<span class="question-mark">?</span>;
+            <span class="kw">let _ </span>= cid_vec.iter().unique().count();
         }
         sink.write_all(<span class="kw-2">&amp;</span>block.data).<span class="kw">await</span><span class="question-mark">?
     </span>}
