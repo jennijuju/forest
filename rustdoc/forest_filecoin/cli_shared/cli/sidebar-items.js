@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ConfigPath"],"fn":["check_for_unknown_keys","cli_error_and_die","find_config_path","find_unknown_keys"],"mod":["client","config"],"static":["HELP_MESSAGE"],"struct":["CliOpts"]};
+window.SIDEBAR_ITEMS = {"enum":["ConfigPath"],"fn":["check_for_unknown_keys","cli_error_and_die","find_config_path","find_unknown_keys"],"mod":["client","config"],"static":["HELP_MESSAGE"],"struct":["CliOpts","CliRpcOpts"]};

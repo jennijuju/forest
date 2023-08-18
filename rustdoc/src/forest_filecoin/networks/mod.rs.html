@@ -316,6 +316,10 @@
 <a href="#316" id="316">316</a>
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -382,6 +386,10 @@
 <span class="kw">impl </span>NetworkChain {
     <span class="kw">pub fn </span>is_devnet(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="macro">matches!</span>(<span class="self">self</span>, NetworkChain::Devnet(<span class="kw">_</span>))
+    }
+
+    <span class="kw">pub fn </span>is_testnet(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="macro">matches!</span>(<span class="self">self</span>, NetworkChain::Mainnet)
     }
 }
 
@@ -610,7 +618,7 @@
     }
 
     <span class="kw">pub fn </span>is_testnet(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        !<span class="macro">matches!</span>(<span class="self">self</span>.network, NetworkChain::Mainnet)
+        <span class="self">self</span>.network.is_testnet()
     }
 }
 

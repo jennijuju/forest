@@ -260,7 +260,7 @@ you obtained in the previous step)</p>
 <pre><code class="language-shell">export JWT_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXSwiZXhwIjoxNjgxODIxMTc4fQ.3toXEeiGcHT01pUjQeqMyW2kZmQpqpE4Gi4vOHjX4rE
 </code></pre>
 <p>Create the wallet</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN new
 t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 </code></pre>
 <p>You can fund your wallet using this
@@ -272,11 +272,11 @@ You can verify your wallet was funded after a few minutes in
 from the faucet. Example from
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.</p>
 <p>Verify that your account has 100 FIL . The result is in <code>attoFIL</code>.</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 100000000000000000000
 </code></pre>
 <p>Create another wallet</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN new
 t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 </code></pre>
 <p>Send 10 FIL from the original wallet to the new one (default unit for the amount
@@ -286,7 +286,7 @@ in send command is FIL).</p>
 <p>Verify the balance of the new address.
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebymw25tedmec4xnwmf7fcrt64qvfbbuacbx6lnhyrcbfv3rgkn2a">Sample transaction</a>
 for this wallet.</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN balance t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 10000000000000000000
 </code></pre>
 

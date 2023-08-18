@@ -96,6 +96,8 @@
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -148,6 +150,7 @@
 </span><span class="kw">mod </span>test_utils;
 <span class="kw">mod </span>tool;
 <span class="kw">mod </span>utils;
+<span class="kw">mod </span>wallet;
 
 <span class="kw">pub mod </span>build {
     <span class="kw">pub use super</span>::r#mod::<span class="kw-2">*</span>;
@@ -194,4 +197,5 @@
     KeyStore, KeyStoreConfig, ENCRYPTED_KEYSTORE_NAME, FOREST_KEYSTORE_PHRASE_ENV, KEYSTORE_NAME,
 };
 <span class="kw">pub use </span>tool::main::main <span class="kw">as </span>forest_tool_main;
+<span class="kw">pub use </span>wallet::main::main <span class="kw">as </span>forest_wallet_main;
 </code></pre></div></section></main></body></html>

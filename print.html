@@ -258,7 +258,7 @@ blockchain.</p>
 remotely, you will need to provide the multiaddress information for the node.
 You will need to either set the environment variable <code>FULLNODE_API_INFO</code>, or
 prepend it to the command, like so:</p>
-<p><code>FULLNODE_API_INFO=&quot;...&quot; forest wallet new -s bls</code></p>
+<p><code>FULLNODE_API_INFO=&quot;...&quot; forest-wallet new -s bls</code></p>
 <p>On Linux, you can set the environment variable with the following syntax</p>
 <p><code>export FULLNODE_API_INFO=&quot;...&quot;</code></p>
 <p>Setting your API info this way will limit the value to your current session.
@@ -299,40 +299,40 @@ interact with the keystore. The admin token can be retrieved from forest startup
 logs or by including the flag <code>--save-token &lt;PATH&gt;</code> during <code>forest</code> invocation.</p>
 <h3 id="balance"><a class="header" href="#balance">Balance:</a></h3>
 <p>Retrieve the FIL balance of a given address. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet balance &lt;address&gt;</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; balance &lt;address&gt;</code></p>
 <h3 id="default"><a class="header" href="#default">Default:</a></h3>
 <p>Get the default, persisted address from the keystore. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet default</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; default</code></p>
 <h3 id="has"><a class="header" href="#has">Has:</a></h3>
 <p>Check if an address exists in the keystore. Outputs <code>true</code> if address exists and
 <code>false</code> if address does not exist. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet has &lt;address&gt;</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; has &lt;address&gt;</code></p>
 <h3 id="list"><a class="header" href="#list">List:</a></h3>
 <p>Display the keys in the keystore. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet list</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; list</code></p>
 <h3 id="new"><a class="header" href="#new">New:</a></h3>
 <p>Create a new wallet. The signature type can either be secp256k1 or bls. Defaults
 to use secp256k1. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet new [ bls | secp256k1 ]</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; new [ bls | secp256k1 ]</code></p>
 <h3 id="set-default"><a class="header" href="#set-default">Set-default:</a></h3>
 <p>Set an address to be the default address of the keystore. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet set-default &lt;address&gt;</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; set-default &lt;address&gt;</code></p>
 <h3 id="export"><a class="header" href="#export">Export:</a></h3>
 <p>Export a key by address. Use a wallet address to export a key. Returns a
 formatted key to be used to import on another node, or into a new keystore.
-Usage: <code>forest-cli --token &lt;admin_token&gt; wallet export &lt;address&gt;</code></p>
+Usage: <code>forest-wallet --token &lt;admin_token&gt; export &lt;address&gt;</code></p>
 <h3 id="import"><a class="header" href="#import">Import:</a></h3>
 <p>Import a file containing a private key to the keystore and create a new address.
 The default format for importing keys is hex encoded JSON. Use the <code>export</code>
 command to get formatted keys for importing. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet import &lt;PATH&gt;</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; import &lt;PATH&gt;</code></p>
 <h3 id="sign"><a class="header" href="#sign">Sign:</a></h3>
 <p>Use an address to sign a vector of bytes. Usage:
-<code>forest-cli --token &lt;admin_token&gt; wallet sign -m &lt;hex message&gt; -a &lt;address&gt;</code></p>
+<code>forest-wallet --token &lt;admin_token&gt; sign -m &lt;hex message&gt; -a &lt;address&gt;</code></p>
 <h3 id="verify"><a class="header" href="#verify">Verify:</a></h3>
 <p>Verify the message's integrity with an address and signature. Outputs <code>true</code> if
 signature verifies message integrity, otherwise <code>false</code>. Usage:
-<code>forest-cli wallet verify -m &lt;hex message&gt; -a &lt;address&gt; -s &lt;signature&gt;</code></p>
+<code>forest-wallet verify -m &lt;hex message&gt; -a &lt;address&gt; -s &lt;signature&gt;</code></p>
 <h2 id="chain-sync"><a class="header" href="#chain-sync">Chain-Sync</a></h2>
 <p>The chain-sync CLI can mark blocks to never be synced, provide information about
 the state of the syncing process, and check blocks that will never be synced
@@ -552,7 +552,7 @@ you obtained in the previous step)</p>
 <pre><code class="language-shell">export JWT_TOKEN=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJBbGxvdyI6WyJyZWFkIiwid3JpdGUiLCJzaWduIiwiYWRtaW4iXSwiZXhwIjoxNjgxODIxMTc4fQ.3toXEeiGcHT01pUjQeqMyW2kZmQpqpE4Gi4vOHjX4rE
 </code></pre>
 <p>Create the wallet</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN new
 t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 </code></pre>
 <p>You can fund your wallet using this
@@ -564,11 +564,11 @@ You can verify your wallet was funded after a few minutes in
 from the faucet. Example from
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebdverplts5qs3lwzsenzlh4rdsmvc42r6yg6suu4comr7gkbe76a">this wallet</a>.</p>
 <p>Verify that your account has 100 FIL . The result is in <code>attoFIL</code>.</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN balance t1uvqpa2jgic7fhhko3w4wf3kxj36qslvqrk2ln5i
 100000000000000000000
 </code></pre>
 <p>Create another wallet</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet new
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN new
 t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 </code></pre>
 <p>Send 10 FIL from the original wallet to the new one (default unit for the amount
@@ -578,7 +578,7 @@ in send command is FIL).</p>
 <p>Verify the balance of the new address.
 <a href="https://calibration.filscan.io/tipset/message-detail?cid=bafy2bzacebymw25tedmec4xnwmf7fcrt64qvfbbuacbx6lnhyrcbfv3rgkn2a">Sample transaction</a>
 for this wallet.</p>
-<pre><code class="language-shell">❯ docker exec -it forest forest-cli --chain calibnet --token $JWT_TOKEN wallet balance t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
+<pre><code class="language-shell">❯ docker exec -it forest forest-wallet --token $JWT_TOKEN balance t1wa7lgs7b3p5a26abkgpxwjpw67tx4fbsryg6tca
 10000000000000000000
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="snapshot-exporting-"><a class="header" href="#snapshot-exporting-">Snapshot exporting 📸</a></h1>

@@ -77,7 +77,6 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
-<a href="#80" id="80">80</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -87,8 +86,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::logger;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{CurrentNetwork, Network};
-<span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
+<span class="kw">use </span><span class="kw">crate</span>::utils::{bail_moved_cmd, io::ProgressBar};
 <span class="kw">use crate</span>::{
     cli::subcommands::{cli_error_and_die, Cli},
     rpc_client::chain_get_name,
@@ -137,7 +135,7 @@
                         Subcommand::Chain(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Auth(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Net(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                        Subcommand::Wallet(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                        Subcommand::Wallet(_cmd) =&gt; bail_moved_cmd(<span class="string">&quot;wallet&quot;</span>, <span class="string">&quot;forest-wallet&quot;</span>),
                         Subcommand::Sync(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Mpool(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::State(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
