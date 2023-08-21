@@ -311,6 +311,30 @@
 <a href="#311" id="311">311</a>
 <a href="#312" id="312">312</a>
 <a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -353,6 +377,7 @@
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDateTime;
 <span class="kw">use </span>clap::Subcommand;
+<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
 <span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>sha2::Sha256;
@@ -388,6 +413,9 @@
         /// state-roots are included if this flag is not set.
         </span><span class="attr">#[arg(short, long)]
         </span>diff_depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
+        <span class="doccomment">/// Overwrite output file without prompting.
+        </span><span class="attr">#[arg(long, default_value_t = <span class="bool-val">false</span>)]
+        </span>force: bool,
     },
     <span class="doccomment">/// Print block headers at 30 day interval for a snapshot file
     </span>Checkpoints {
@@ -408,6 +436,7 @@
                 depth,
                 diff,
                 diff_depth,
+                force,
             } =&gt; {
                 <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;
                 <span class="kw">let </span>heaviest_tipset = store.heaviest_tipset()<span class="question-mark">?</span>;
@@ -419,6 +448,7 @@
                     depth,
                     diff,
                     diff_depth,
+                    force,
                 )
                 .<span class="kw">await
             </span>}
@@ -454,7 +484,8 @@
     }
 }
 
-<span class="kw">async fn </span>do_export(
+<span class="attr">#[allow(clippy::too_many_arguments)]
+</span><span class="kw">async fn </span>do_export(
     store: <span class="kw">impl </span>Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
     root: Tipset,
     output_path: PathBuf,
@@ -462,6 +493,7 @@
     depth: ChainEpochDelta,
     diff: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     diff_depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
+    force: bool,
 ) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>ts = Arc::new(root);
 
@@ -513,6 +545,21 @@
 
     <span class="kw">let </span>output_path =
         build_output_path(network.to_string(), genesis.timestamp(), epoch, output_path);
+
+    <span class="kw">if </span>!force &amp;&amp; output_path.exists() {
+        <span class="kw">let </span>have_permission = Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+            .with_prompt(<span class="macro">format!</span>(
+                <span class="string">&quot;{} will be overwritten. Continue?&quot;</span>,
+                output_path.to_string_lossy()
+            ))
+            .default(<span class="bool-val">false</span>)
+            .interact()
+            <span class="comment">// e.g not a tty (or some other error), so haven&#39;t got permission.
+            </span>.unwrap_or(<span class="bool-val">false</span>);
+        <span class="kw">if </span>!have_permission {
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+        }
+    }
 
     <span class="kw">let </span>writer = tokio::fs::File::create(<span class="kw-2">&amp;</span>output_path)
         .<span class="kw">await
@@ -607,6 +654,7 @@
             <span class="number">1</span>,
             <span class="prelude-val">None</span>,
             <span class="prelude-val">None</span>,
+            <span class="bool-val">false</span>,
         )
         .<span class="kw">await
         </span>.unwrap();
