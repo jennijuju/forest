@@ -178,12 +178,12 @@
 </span><span class="kw">use super</span>::{AnyCar, ZstdFrameCache};
 <span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::BitswapStoreReadWrite;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::random_access::RandomAccessFile;
 <span class="kw">use crate</span>::{blocks::Tipset, libp2p_bitswap::BitswapStoreRead};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>parking_lot::Mutex;
+<span class="kw">use </span>positioned_io::RandomAccessFile;
 <span class="kw">use </span>std::{io, path::PathBuf, sync::Arc};
 
 <span class="kw">pub struct </span>ManyCar&lt;WriterT = MemoryDB&gt; {
