@@ -701,16 +701,16 @@
     <span class="kw">use </span>std::path::PathBuf;
 
     <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
-    <span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
     <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
     <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
     <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
+    <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>serde::{Deserialize, Serialize};
 
     <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::BlockMessages;
 
     <span class="kw">pub const </span>CHAIN_GET_MESSAGE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetMessage&quot;</span>;
-    <span class="kw">pub type </span>ChainGetMessageParams = (CidJson,);
+    <span class="kw">pub type </span>ChainGetMessageParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>ChainGetMessageResult = LotusJson&lt;Message&gt;;
 
     <span class="kw">pub const </span>CHAIN_EXPORT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainExport&quot;</span>;
@@ -729,15 +729,15 @@
     <span class="kw">pub type </span>ChainExportResult = <span class="prelude-ty">Option</span>&lt;String&gt;;
 
     <span class="kw">pub const </span>CHAIN_READ_OBJ: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainReadObj&quot;</span>;
-    <span class="kw">pub type </span>ChainReadObjParams = (CidJson,);
+    <span class="kw">pub type </span>ChainReadObjParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>ChainReadObjResult = String;
 
     <span class="kw">pub const </span>CHAIN_HAS_OBJ: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainHasObj&quot;</span>;
-    <span class="kw">pub type </span>ChainHasObjParams = (CidJson,);
+    <span class="kw">pub type </span>ChainHasObjParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>ChainHasObjResult = bool;
 
     <span class="kw">pub const </span>CHAIN_GET_BLOCK_MESSAGES: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetBlockMessages&quot;</span>;
-    <span class="kw">pub type </span>ChainGetBlockMessagesParams = (CidJson,);
+    <span class="kw">pub type </span>ChainGetBlockMessagesParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>ChainGetBlockMessagesResult = BlockMessages;
 
     <span class="kw">pub const </span>CHAIN_GET_TIPSET_BY_HEIGHT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetTipsetByHeight&quot;</span>;
@@ -755,7 +755,7 @@
     <span class="kw">pub type </span>ChainHeadResult = LotusJson&lt;Tipset&gt;;
 
     <span class="kw">pub const </span>CHAIN_GET_BLOCK: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetBlock&quot;</span>;
-    <span class="kw">pub type </span>ChainGetBlockParams = (CidJson,);
+    <span class="kw">pub type </span>ChainGetBlockParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>ChainGetBlockResult = LotusJson&lt;BlockHeader&gt;;
 
     <span class="kw">pub const </span>CHAIN_GET_TIPSET: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetTipSet&quot;</span>;
@@ -777,21 +777,19 @@
 
 <span class="doccomment">/// Message Pool API
 </span><span class="kw">pub mod </span>mpool_api {
+    <span class="kw">use </span>cid::Cid;
+
     <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::MessageSendSpec;
     <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
-    <span class="kw">use crate</span>::{
-        json::cid::{vec::CidJsonVec, CidJson},
-        lotus_json::LotusJson,
-        message::SignedMessage,
-    };
+    <span class="kw">use crate</span>::{lotus_json::LotusJson, message::SignedMessage};
 
     <span class="kw">pub const </span>MPOOL_PENDING: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.MpoolPending&quot;</span>;
-    <span class="kw">pub type </span>MpoolPendingParams = (CidJsonVec,);
+    <span class="kw">pub type </span>MpoolPendingParams = (LotusJson&lt;Vec&lt;Cid&gt;&gt;,);
     <span class="kw">pub type </span>MpoolPendingResult = LotusJson&lt;Vec&lt;SignedMessage&gt;&gt;;
 
     <span class="kw">pub const </span>MPOOL_PUSH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.MpoolPush&quot;</span>;
     <span class="kw">pub type </span>MpoolPushParams = (LotusJson&lt;SignedMessage&gt;,);
-    <span class="kw">pub type </span>MpoolPushResult = CidJson;
+    <span class="kw">pub type </span>MpoolPushResult = LotusJson&lt;Cid&gt;;
 
     <span class="kw">pub const </span>MPOOL_PUSH_MESSAGE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.MpoolPushMessage&quot;</span>;
     <span class="kw">pub type </span>MpoolPushMessageParams = (LotusJson&lt;Message&gt;, <span class="prelude-ty">Option</span>&lt;MessageSendSpec&gt;);
@@ -800,16 +798,17 @@
 
 <span class="doccomment">/// Sync API
 </span><span class="kw">pub mod </span>sync_api {
-    <span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
 
-    <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::RPCSyncState;
+    <span class="kw">use </span>cid::Cid;
+
+    <span class="kw">use crate</span>::{lotus_json::LotusJson, rpc_api::data_types::RPCSyncState};
 
     <span class="kw">pub const </span>SYNC_CHECK_BAD: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.SyncCheckBad&quot;</span>;
-    <span class="kw">pub type </span>SyncCheckBadParams = (CidJson,);
+    <span class="kw">pub type </span>SyncCheckBadParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>SyncCheckBadResult = String;
 
     <span class="kw">pub const </span>SYNC_MARK_BAD: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.SyncMarkBad&quot;</span>;
-    <span class="kw">pub type </span>SyncMarkBadParams = (CidJson,);
+    <span class="kw">pub type </span>SyncMarkBadParams = (LotusJson&lt;Cid&gt;,);
     <span class="kw">pub type </span>SyncMarkBadResult = ();
 
     <span class="kw">pub const </span>SYNC_STATE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.SyncState&quot;</span>;
@@ -819,9 +818,9 @@
 
 <span class="doccomment">/// Wallet API
 </span><span class="kw">pub mod </span>wallet_api {
-    <span class="kw">use </span><span class="kw">crate</span>::json::address::json::AddressJson;
     <span class="kw">use </span><span class="kw">crate</span>::key_management::KeyInfo;
     <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
+    <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
     <span class="kw">use </span><span class="kw">crate</span>::shim::crypto::{Signature, SignatureType};
 
     <span class="kw">pub const </span>WALLET_BALANCE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletBalance&quot;</span>;
@@ -846,22 +845,22 @@
 
     <span class="kw">pub const </span>WALLET_LIST: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletList&quot;</span>;
     <span class="kw">pub type </span>WalletListParams = ();
-    <span class="kw">pub type </span>WalletListResult = Vec&lt;AddressJson&gt;;
+    <span class="kw">pub type </span>WalletListResult = LotusJson&lt;Vec&lt;Address&gt;&gt;;
 
     <span class="kw">pub const </span>WALLET_NEW: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletNew&quot;</span>;
     <span class="kw">pub type </span>WalletNewParams = (LotusJson&lt;SignatureType&gt;,);
     <span class="kw">pub type </span>WalletNewResult = String;
 
     <span class="kw">pub const </span>WALLET_SET_DEFAULT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletSetDefault&quot;</span>;
-    <span class="kw">pub type </span>WalletSetDefaultParams = (AddressJson,);
+    <span class="kw">pub type </span>WalletSetDefaultParams = (LotusJson&lt;Address&gt;,);
     <span class="kw">pub type </span>WalletSetDefaultResult = ();
 
     <span class="kw">pub const </span>WALLET_SIGN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletSign&quot;</span>;
-    <span class="kw">pub type </span>WalletSignParams = (AddressJson, Vec&lt;u8&gt;);
+    <span class="kw">pub type </span>WalletSignParams = (LotusJson&lt;Address&gt;, Vec&lt;u8&gt;);
     <span class="kw">pub type </span>WalletSignResult = LotusJson&lt;Signature&gt;;
 
     <span class="kw">pub const </span>WALLET_VERIFY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletVerify&quot;</span>;
-    <span class="kw">pub type </span>WalletVerifyParams = (AddressJson, Vec&lt;u8&gt;, LotusJson&lt;Signature&gt;);
+    <span class="kw">pub type </span>WalletVerifyParams = (LotusJson&lt;Address&gt;, Vec&lt;u8&gt;, LotusJson&lt;Signature&gt;);
     <span class="kw">pub type </span>WalletVerifyResult = bool;
 }
 
@@ -870,13 +869,14 @@
     <span class="kw">use </span>std::path::PathBuf;
 
     <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
-    <span class="kw">use </span><span class="kw">crate</span>::json::{address::json::AddressJson, cid::CidJson};
     <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
+    <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
     <span class="kw">use </span><span class="kw">crate</span>::shim::executor::Receipt;
     <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
     <span class="kw">use </span><span class="kw">crate</span>::shim::{state_tree::ActorState, version::NetworkVersion};
     <span class="kw">use </span><span class="kw">crate</span>::state_manager::{InvocResult, MarketBalance};
     <span class="kw">use </span>ahash::HashMap;
+    <span class="kw">use </span>cid::Cid;
 
     <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::{MarketDeal, MessageLookup};
 
@@ -885,7 +885,7 @@
     <span class="kw">pub type </span>StateCallResult = InvocResult;
 
     <span class="kw">pub const </span>STATE_REPLAY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateReplay&quot;</span>;
-    <span class="kw">pub type </span>StateReplayParams = (CidJson, LotusJson&lt;TipsetKeys&gt;);
+    <span class="kw">pub type </span>StateReplayParams = (LotusJson&lt;Cid&gt;, LotusJson&lt;TipsetKeys&gt;);
     <span class="kw">pub type </span>StateReplayResult = InvocResult;
 
     <span class="kw">pub const </span>STATE_NETWORK_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateNetworkName&quot;</span>;
@@ -898,11 +898,11 @@
     <span class="kw">pub type </span>StateNetworkVersionResult = NetworkVersion;
 
     <span class="kw">pub const </span>STATE_GET_ACTOR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetActor&quot;</span>;
-    <span class="kw">pub type </span>StateGetActorParams = (AddressJson, LotusJson&lt;TipsetKeys&gt;);
+    <span class="kw">pub type </span>StateGetActorParams = (LotusJson&lt;Address&gt;, LotusJson&lt;TipsetKeys&gt;);
     <span class="kw">pub type </span>StateGetActorResult = LotusJson&lt;<span class="prelude-ty">Option</span>&lt;ActorState&gt;&gt;;
 
     <span class="kw">pub const </span>STATE_MARKET_BALANCE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMarketBalance&quot;</span>;
-    <span class="kw">pub type </span>StateMarketBalanceParams = (AddressJson, LotusJson&lt;TipsetKeys&gt;);
+    <span class="kw">pub type </span>StateMarketBalanceParams = (LotusJson&lt;Address&gt;, LotusJson&lt;TipsetKeys&gt;);
     <span class="kw">pub type </span>StateMarketBalanceResult = MarketBalance;
 
     <span class="kw">pub const </span>STATE_MARKET_DEALS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMarketDeals&quot;</span>;
@@ -910,25 +910,25 @@
     <span class="kw">pub type </span>StateMarketDealsResult = HashMap&lt;String, MarketDeal&gt;;
 
     <span class="kw">pub const </span>STATE_GET_RECEIPT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetReceipt&quot;</span>;
-    <span class="kw">pub type </span>StateGetReceiptParams = (CidJson, LotusJson&lt;TipsetKeys&gt;);
+    <span class="kw">pub type </span>StateGetReceiptParams = (LotusJson&lt;Cid&gt;, LotusJson&lt;TipsetKeys&gt;);
     <span class="kw">pub type </span>StateGetReceiptResult = LotusJson&lt;Receipt&gt;;
 
     <span class="kw">pub const </span>STATE_WAIT_MSG: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateWaitMsg&quot;</span>;
-    <span class="kw">pub type </span>StateWaitMsgParams = (CidJson, i64);
+    <span class="kw">pub type </span>StateWaitMsgParams = (LotusJson&lt;Cid&gt;, i64);
     <span class="kw">pub type </span>StateWaitMsgResult = MessageLookup;
 
     <span class="kw">pub const </span>STATE_FETCH_ROOT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateFetchRoot&quot;</span>;
-    <span class="kw">pub type </span>StateFetchRootParams = (CidJson, <span class="prelude-ty">Option</span>&lt;PathBuf&gt;);
+    <span class="kw">pub type </span>StateFetchRootParams = (LotusJson&lt;Cid&gt;, <span class="prelude-ty">Option</span>&lt;PathBuf&gt;);
     <span class="kw">pub type </span>StateFetchRootResult = String;
 }
 
 <span class="doccomment">/// Gas API
 </span><span class="kw">pub mod </span>gas_api {
     <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
-    <span class="kw">use </span><span class="kw">crate</span>::json::address::json::AddressJson;
     <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 
     <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::MessageSendSpec;
+    <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
     <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
 
     <span class="kw">pub const </span>GAS_ESTIMATE_FEE_CAP: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.GasEstimateFeeCap&quot;</span>;
@@ -936,7 +936,7 @@
     <span class="kw">pub type </span>GasEstimateFeeCapResult = String;
 
     <span class="kw">pub const </span>GAS_ESTIMATE_GAS_PREMIUM: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.GasEstimateGasPremium&quot;</span>;
-    <span class="kw">pub type </span>GasEstimateGasPremiumParams = (u64, AddressJson, i64, LotusJson&lt;TipsetKeys&gt;);
+    <span class="kw">pub type </span>GasEstimateGasPremiumParams = (u64, LotusJson&lt;Address&gt;, i64, LotusJson&lt;TipsetKeys&gt;);
     <span class="kw">pub type </span>GasEstimateGasPremiumResult = String;
 
     <span class="kw">pub const </span>GAS_ESTIMATE_GAS_LIMIT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.GasEstimateGasLimit&quot;</span>;

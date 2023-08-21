@@ -196,12 +196,15 @@
 <a href="#196" id="196">196</a>
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncState;
-<span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     data_types::{RPCState, RPCSyncState},
     sync_api::<span class="kw-2">*</span>,
@@ -218,7 +221,7 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">let </span>(CidJson(cid),) = params;
+    <span class="kw">let </span>(LotusJson(cid),) = params;
     <span class="prelude-val">Ok</span>(data.bad_blocks.peek(<span class="kw-2">&amp;</span>cid).unwrap_or_default())
 }
 
@@ -230,7 +233,7 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">let </span>(CidJson(cid),) = params;
+    <span class="kw">let </span>(LotusJson(cid),) = params;
     data.bad_blocks
         .put(cid, <span class="string">&quot;Marked bad manually through RPC API&quot;</span>.to_string());
     <span class="prelude-val">Ok</span>(())
@@ -267,6 +270,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
     <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
     <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
+    <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>serde_json::from_str;
     <span class="kw">use </span>tokio::{sync::RwLock, task::JoinSet};
 
@@ -352,19 +356,21 @@
     </span><span class="kw">async fn </span>set_check_bad() {
         <span class="kw">let </span>(state, <span class="kw">_</span>) = state_setup();
 
-        <span class="kw">let </span>cid: CidJson =
-            from_str(<span class="string">r#&quot;{&quot;/&quot;:&quot;bafy2bzacea3wsdh6y3a36tb3skempjoxqpuyompjbmfeyf34fi3uy6uue42v4&quot;}&quot;#</span>)
-                .unwrap();
-        <span class="kw">match </span>sync_check_bad(Data(state.clone()), Params((cid.clone(),))).<span class="kw">await </span>{
+        <span class="kw">let </span>cid = from_str::&lt;LotusJson&lt;Cid&gt;&gt;(
+            <span class="string">r#&quot;{&quot;/&quot;:&quot;bafy2bzacea3wsdh6y3a36tb3skempjoxqpuyompjbmfeyf34fi3uy6uue42v4&quot;}&quot;#</span>,
+        )
+        .unwrap()
+        .into_inner();
+        <span class="kw">match </span>sync_check_bad(Data(state.clone()), Params((cid.into(),))).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(reason) =&gt; <span class="macro">assert_eq!</span>(reason, <span class="string">&quot;&quot;</span>),
             <span class="prelude-val">Err</span>(e) =&gt; std::panic::panic_any(e),
         }
 
         <span class="comment">// Mark that block as bad manually and check again to verify
-        </span><span class="macro">assert!</span>(sync_mark_bad(Data(state.clone()), Params((cid.clone(),)))
+        </span><span class="macro">assert!</span>(sync_mark_bad(Data(state.clone()), Params((cid.into(),)))
             .<span class="kw">await
             </span>.is_ok());
-        <span class="kw">match </span>sync_check_bad(Data(state), Params((cid,))).<span class="kw">await </span>{
+        <span class="kw">match </span>sync_check_bad(Data(state), Params((LotusJson(cid),))).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(reason) =&gt; <span class="macro">assert_eq!</span>(reason, <span class="string">&quot;Marked bad manually through RPC API&quot;</span>),
             <span class="prelude-val">Err</span>(e) =&gt; std::panic::panic_any(e),
         }

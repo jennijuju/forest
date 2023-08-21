@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"mod":["address","cid","token_amount"]};

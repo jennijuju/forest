@@ -345,20 +345,12 @@
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
 <a href="#347" id="347">347</a>
-<a href="#348" id="348">348</a>
-<a href="#349" id="349">349</a>
-<a href="#350" id="350">350</a>
-<a href="#351" id="351">351</a>
-<a href="#352" id="352">352</a>
-<a href="#353" id="353">353</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span><span class="kw">crate</span>::ipld::json::IpldJson;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
-<span class="kw">use </span><span class="kw">crate</span>::json::address::json::AddressJson;
-<span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::NetworkMessage;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
@@ -369,7 +361,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::InvocResult;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>anyhow::Context;
-<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::market;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_car::CarHeader;
@@ -403,8 +394,7 @@
     Params(params): Params&lt;StateReplayParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateReplayResult, JsonRpcError&gt; {
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
-    <span class="kw">let </span>(cidjson, LotusJson(key)) = params;
-    <span class="kw">let </span>cid = cidjson.into();
+    <span class="kw">let </span>(LotusJson(cid), LotusJson(key)) = params;
     <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     <span class="kw">let </span>(msg, ret) = state_manager.replay(<span class="kw-2">&amp;</span>tipset, cid).<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -440,7 +430,7 @@
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateGetActorParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateGetActorResult, JsonRpcError&gt; {
-    <span class="kw">let </span>(AddressJson(addr), LotusJson(tsk)) = params;
+    <span class="kw">let </span>(LotusJson(addr), LotusJson(tsk)) = params;
     <span class="kw">let </span>ts = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>state = data.state_manager.get_actor(<span class="kw-2">&amp;</span>addr, <span class="kw-2">*</span>ts.parent_state());
     state.map(Into::into).map_err(|e| e.into())
@@ -453,7 +443,7 @@
     Params(params): Params&lt;StateMarketBalanceParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateMarketBalanceResult, JsonRpcError&gt; {
     <span class="kw">let </span>(address, LotusJson(key)) = params;
-    <span class="kw">let </span>address = address.into();
+    <span class="kw">let </span>address = address.into_inner();
     <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     data.state_manager
         .market_balance(<span class="kw-2">&amp;</span>address, <span class="kw-2">&amp;</span>tipset)
@@ -500,9 +490,8 @@
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateGetReceiptParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateGetReceiptResult, JsonRpcError&gt; {
-    <span class="kw">let </span>(cidjson, LotusJson(key)) = params;
+    <span class="kw">let </span>(LotusJson(cid), LotusJson(key)) = params;
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
-    <span class="kw">let </span>cid = cidjson.into();
     <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     state_manager
         .get_receipt(tipset, cid)
@@ -515,9 +504,8 @@
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;StateWaitMsgParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateWaitMsgResult, JsonRpcError&gt; {
-    <span class="kw">let </span>(cidjson, confidence) = params;
+    <span class="kw">let </span>(LotusJson(cid), confidence) = params;
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
-    <span class="kw">let </span>cid: Cid = cidjson.into();
     <span class="kw">let </span>(tipset, receipt) = state_manager.wait_for_message(cid, confidence).<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="kw">let </span>tipset = tipset.ok_or(<span class="string">&quot;wait for msg returned empty tuple&quot;</span>)<span class="question-mark">?</span>;
     <span class="kw">let </span>receipt = receipt.ok_or(<span class="string">&quot;wait for msg returned empty receipt&quot;</span>)<span class="question-mark">?</span>;
@@ -530,7 +518,7 @@
         receipt,
         tipset: tipset.key().clone(),
         height: tipset.epoch(),
-        message: CidJson(cid),
+        message: cid,
         return_dec: IpldJson(ipld),
     })
 }
@@ -551,7 +539,7 @@
 /// consensus rules.
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>state_fetch_root&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params((CidJson(root_cid), save_to_file)): Params&lt;StateFetchRootParams&gt;,
+    Params((LotusJson(root_cid), save_to_file)): Params&lt;StateFetchRootParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateFetchRootResult, JsonRpcError&gt; {
     <span class="kw">let </span>network_send = data.network_send.clone();
     <span class="kw">let </span>db = data.chain_store.db.clone();

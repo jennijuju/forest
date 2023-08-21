@@ -312,7 +312,6 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::json::{IpldJson, IpldJsonRef};
-<span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
     state_tree::{ActorState, StateTree},
@@ -334,7 +333,8 @@
 
 <span class="attr">#[derive(Serialize, Deserialize)]
 </span><span class="kw">struct </span>ActorStateResolved {
-    code: CidJson,
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
+    </span>code: Cid,
     sequence: u64,
     balance: String,
     state: IpldJson,
@@ -349,7 +349,7 @@
         resolve_cids_recursive(bs, <span class="kw-2">&amp;</span>actor.state, depth).unwrap_or(Ipld::Link(actor.state));
     ActorStateResolved {
         state: IpldJson(resolved),
-        code: CidJson(actor.code),
+        code: actor.code,
         balance: actor.balance.to_string(),
         sequence: actor.sequence,
     }

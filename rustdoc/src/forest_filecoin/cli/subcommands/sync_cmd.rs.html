@@ -157,7 +157,6 @@
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
-<a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -166,9 +165,8 @@
     time::Duration,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncStage;
-<span class="kw">use </span><span class="kw">crate</span>::json::cid::CidJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::<span class="kw-2">*</span>;
+<span class="kw">use crate</span>::{chain_sync::SyncStage, lotus_json::LotusJson};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>ticker::Ticker;
@@ -296,7 +294,7 @@
             }
             <span class="self">Self</span>::CheckBad { cid } =&gt; {
                 <span class="kw">let </span>cid: Cid = cid.parse()<span class="question-mark">?</span>;
-                <span class="kw">let </span>response = sync_check_bad((CidJson(cid),), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>response = sync_check_bad((LotusJson(cid),), <span class="kw-2">&amp;</span>config.client.rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
@@ -309,7 +307,7 @@
             }
             <span class="self">Self</span>::MarkBad { cid } =&gt; {
                 <span class="kw">let </span>cid: Cid = cid.parse()<span class="question-mark">?</span>;
-                sync_mark_bad((CidJson(cid),), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                sync_mark_bad((LotusJson(cid),), <span class="kw-2">&amp;</span>config.client.rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;OK&quot;</span>);

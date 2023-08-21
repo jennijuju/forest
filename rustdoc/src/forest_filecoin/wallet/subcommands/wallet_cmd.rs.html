@@ -267,6 +267,7 @@
 <a href="#267" id="267">267</a>
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -276,6 +277,7 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::key_management::KeyInfo;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::wallet_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::{Protocol, StrictAddress},
@@ -283,7 +285,6 @@
     econ::TokenAmount,
 };
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::read_file_to_string;
-<span class="kw">use crate</span>::{json::address::json::AddressJson, lotus_json::LotusJson};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
 <span class="kw">use </span>clap::{arg, Subcommand};
@@ -446,7 +447,10 @@
                 no_round,
                 no_abbrev,
             } =&gt; {
-                <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>token).<span class="kw">await</span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>token)
+                    .<span class="kw">await
+                    </span>.map_err(handle_rpc_err)<span class="question-mark">?
+                    </span>.into_inner();
 
                 <span class="kw">let </span>default = wallet_default_address((), <span class="kw-2">&amp;</span>token)
                     .<span class="kw">await
@@ -457,7 +461,7 @@
                 <span class="macro">println!</span>(<span class="string">&quot;{title_address:41} {title_default_mark:7} {title_balance}&quot;</span>);
 
                 <span class="kw">for </span>address <span class="kw">in </span>response {
-                    <span class="kw">let </span>addr = address.<span class="number">0</span>.to_string();
+                    <span class="kw">let </span>addr = address.to_string();
                     <span class="kw">let </span>default_address_mark = <span class="kw">if </span>default.as_ref() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>addr) {
                         <span class="string">&quot;X&quot;
                     </span>} <span class="kw">else </span>{
@@ -490,8 +494,7 @@
                 <span class="kw">let </span>StrictAddress(key) = StrictAddress::from_str(key)
                     .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Invalid address: {key}&quot;</span>))<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>key_json = AddressJson(key);
-                wallet_set_default((key_json,), <span class="kw-2">&amp;</span>token)
+                wallet_set_default((key.into(),), <span class="kw-2">&amp;</span>token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
@@ -503,7 +506,7 @@
                 <span class="kw">let </span>message = hex::decode(message).context(<span class="string">&quot;Message has to be a hex string&quot;</span>)<span class="question-mark">?</span>;
                 <span class="kw">let </span>message = BASE64_STANDARD.encode(message);
 
-                <span class="kw">let </span>response = wallet_sign((AddressJson(address), message.into_bytes()), <span class="kw-2">&amp;</span>token)
+                <span class="kw">let </span>response = wallet_sign(((address).into(), message.into_bytes()), <span class="kw-2">&amp;</span>token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, hex::encode(response.<span class="number">0</span>.bytes()));
@@ -525,10 +528,9 @@
                 };
                 <span class="kw">let </span>msg = hex::decode(message).context(<span class="string">&quot;Message has to be a hex string&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>response =
-                    wallet_verify((AddressJson(address), msg, LotusJson(signature)), <span class="kw-2">&amp;</span>token)
-                        .<span class="kw">await
-                        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = wallet_verify(((address).into(), msg, LotusJson(signature)), <span class="kw-2">&amp;</span>token)
+                    .<span class="kw">await
+                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())

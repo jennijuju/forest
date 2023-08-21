@@ -136,7 +136,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{BadBlockCache, SyncState};
 <span class="kw">use </span><span class="kw">crate</span>::ipld::json::IpldJson;
-<span class="kw">use </span><span class="kw">crate</span>::json::{cid::CidJson, token_amount::json};
 <span class="kw">use </span><span class="kw">crate</span>::key_management::KeyStore;
 <span class="kw">pub use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multihash, NetworkMessage};
@@ -191,14 +190,14 @@
     </span><span class="kw">pub </span>bls_msg: Vec&lt;Message&gt;,
     <span class="attr">#[serde(rename = <span class="string">&quot;SecpkMessages&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>secp_msg: Vec&lt;SignedMessage&gt;,
-    <span class="attr">#[serde(rename = <span class="string">&quot;Cids&quot;</span>, with = <span class="string">&quot;crate::json::cid::vec&quot;</span>)]
+    <span class="attr">#[serde(rename = <span class="string">&quot;Cids&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>cids: Vec&lt;Cid&gt;,
 }
 
 <span class="attr">#[derive(Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>MessageSendSpec {
-    <span class="attr">#[serde(with = <span class="string">&quot;json&quot;</span>)]
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span>max_fee: TokenAmount,
 }
 
@@ -217,7 +216,8 @@
     <span class="attr">#[serde(rename = <span class="string">&quot;TipSet&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>tipset: TipsetKeys,
     <span class="kw">pub </span>height: i64,
-    <span class="kw">pub </span>message: CidJson,
+    <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
+    </span><span class="kw">pub </span>message: Cid,
     <span class="kw">pub </span>return_dec: IpldJson,
 }
 

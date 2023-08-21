@@ -138,7 +138,6 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -146,7 +145,6 @@
 </span><span class="kw">use </span>std::convert::TryFrom;
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
-<span class="kw">use </span><span class="kw">crate</span>::json::cid::{vec::CidJsonVec, CidJson};
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCState, mpool_api::<span class="kw-2">*</span>};
@@ -165,7 +163,7 @@
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">let </span>(CidJsonVec(cid_vec),) = params;
+    <span class="kw">let </span>(LotusJson(cid_vec),) = params;
     <span class="kw">let </span>tsk = TipsetKeys::new(cid_vec.into());
     <span class="kw">let </span><span class="kw-2">mut </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
 
@@ -227,7 +225,7 @@
 {
     <span class="kw">let </span>cid = data.mpool.as_ref().push(signed_message).<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(CidJson(cid))
+    <span class="prelude-val">Ok</span>(cid.into())
 }
 
 <span class="doccomment">/// Sign given `UnsignedMessage` and add it to `mpool`, return `SignedMessage`
