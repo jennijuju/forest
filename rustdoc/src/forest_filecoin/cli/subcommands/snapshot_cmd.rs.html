@@ -295,7 +295,7 @@
     <span class="doccomment">/// Export a snapshot of the chain to `&lt;output_path&gt;`
     </span>Export {
         <span class="doccomment">/// `./forest_snapshot_{chain}_{year}-{month}-{day}_height_{epoch}.car.zst`.
-        </span><span class="attr">#[arg(short, default_value = <span class="string">&quot;.&quot;</span>, verbatim_doc_comment)]
+        </span><span class="attr">#[arg(short, long, default_value = <span class="string">&quot;.&quot;</span>, verbatim_doc_comment)]
         </span>output_path: PathBuf,
         <span class="doccomment">/// Skip creating the checksum file.
         </span><span class="attr">#[arg(long)]
@@ -342,7 +342,7 @@
         /// Will reuse the source name (with new extension) if pointed to a
         /// directory.
         </span><span class="attr">#[arg(short, long, default_value = <span class="string">&quot;.&quot;</span>)]
-        </span>output: PathBuf,
+        </span>output_path: PathBuf,
         <span class="attr">#[arg(long, default_value_t = <span class="number">3</span>)]
         </span>compression_level: u16,
         <span class="doccomment">/// End zstd frames after they exceed this length
@@ -454,16 +454,16 @@
             }
             <span class="self">Self</span>::Compress {
                 source,
-                output,
+                output_path,
                 compression_level,
                 frame_size,
                 force,
             } =&gt; {
                 <span class="comment">// If input is &#39;snapshot.car.zst&#39; and output is &#39;.&#39;, set the
                 // destination to &#39;./snapshot.forest.car.zst&#39;.
-                </span><span class="kw">let </span>destination = <span class="kw">match </span>output.is_dir() {
+                </span><span class="kw">let </span>destination = <span class="kw">match </span>output_path.is_dir() {
                     <span class="bool-val">true </span>=&gt; {
-                        <span class="kw">let </span><span class="kw-2">mut </span>destination = output;
+                        <span class="kw">let </span><span class="kw-2">mut </span>destination = output_path;
                         destination.push(source.clone());
                         <span class="kw">while let </span><span class="prelude-val">Some</span>(ext) = destination.extension() {
                             <span class="kw">if </span>!(ext == <span class="string">&quot;zst&quot; </span>|| ext == <span class="string">&quot;car&quot; </span>|| ext == <span class="string">&quot;forest&quot;</span>) {
@@ -473,7 +473,7 @@
                         }
                         destination.with_extension(<span class="string">&quot;forest.car.zst&quot;</span>)
                     }
-                    <span class="bool-val">false </span>=&gt; output.clone(),
+                    <span class="bool-val">false </span>=&gt; output_path.clone(),
                 };
 
                 <span class="kw">if </span>!force &amp;&amp; destination.exists() {
