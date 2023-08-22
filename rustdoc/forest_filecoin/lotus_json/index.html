@@ -26,7 +26,7 @@ the reference Filecoin implementation, displays that object in JSON.<div class="
 );</code></pre></div>
 </li>
 </ul>
-<p>In rust, the most common serialization framework is <a href="https://docs.rs/serde/1.0.183/serde/index.html" title="mod serde"><code>serde</code></a>.
+<p>In rust, the most common serialization framework is <a href="https://docs.rs/serde/1.0.185/serde/index.html" title="mod serde"><code>serde</code></a>.
 It has ONE (de)serialization model for each struct - the serialization code <em>cannot</em> know
 if it’s writing JSON or CBOR.</p>
 <p>The cleanest way handle the distinction would be a serde-compatible trait:</p>
@@ -42,7 +42,7 @@ if it’s writing JSON or CBOR.</p>
 }
 <span class="kw">pub trait </span>LotusDeserialize&lt;<span class="lifetime">&#39;de</span>&gt; { <span class="comment">/* ... */ </span>}</code></pre></div>
 <p>However, that would require writing and maintaining a custom derive macro - can we lean on
-<a href="https://docs.rs/serde_derive/1.0.183/serde_derive/derive.Serialize.html" title="derive serde_derive::Serialize"><code>serde::Serialize</code></a> and <a href="https://docs.rs/serde_derive/1.0.183/serde_derive/derive.Deserialize.html" title="derive serde_derive::Deserialize"><code>serde::Deserialize</code></a> instead?</p>
+<a href="https://docs.rs/serde_derive/1.0.185/serde_derive/derive.Serialize.html" title="derive serde_derive::Serialize"><code>serde::Serialize</code></a> and <a href="https://docs.rs/serde_derive/1.0.185/serde_derive/derive.Deserialize.html" title="derive serde_derive::Deserialize"><code>serde::Deserialize</code></a> instead?</p>
 <h2 id="lotus-json-in-forest"><a href="#lotus-json-in-forest">Lotus JSON in Forest</a></h2>
 <ul>
 <li>Have a struct which represents a domain object: e.g <a href="../blocks/gossip_block/struct.GossipBlock.html" title="struct forest_filecoin::blocks::gossip_block::GossipBlock"><code>GossipBlock</code></a>.</li>
