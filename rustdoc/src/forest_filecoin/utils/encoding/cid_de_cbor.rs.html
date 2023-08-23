@@ -252,6 +252,8 @@
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -469,7 +471,7 @@
                     }
                     Ipld::Map(map) =&gt; map.values_mut().for_each(|val| cleanup_ipld(val, g)),
                     Ipld::List(vec) =&gt; vec.iter_mut().for_each(|val| cleanup_ipld(val, g)),
-                    <span class="comment">// Cleaning up Integer and Float in order to avoid parser mistakes that result
+                    <span class="comment">// Cleaning up Integer in order to avoid parser mistakes that result
                     // in tag detection and a subsequent Cid decoding failure.
                     // Otherwise the `serde_ipld_dagcbor` library incorrectly treats some of those
                     // values as [`cbor4ii::core::major::TAG`] and tries to deserialize a [`Cid`]
@@ -481,7 +483,9 @@
                     // these tests, because our deserializer ignores those as it only cares about
                     // maps, lists and [`Cid`]s.
                     </span>Ipld::Integer(int) =&gt; <span class="kw-2">*</span>int = <span class="number">0</span>,
-                    Ipld::Float(float) =&gt; <span class="kw-2">*</span>float = <span class="number">0.0</span>,
+                    <span class="comment">// Cleaning up Float to avoid `unwrap()` panics.
+                    // See https://github.com/ipld/serde_ipld_dagcbor/blob/379581691d82a68a774f87deb9462091ec3c8cb6/src/ser.rs#L138.
+                    </span>Ipld::Float(float) =&gt; <span class="kw-2">*</span>float = <span class="number">0.0</span>,
                     <span class="kw">_ </span>=&gt; (),
                 }
             }
