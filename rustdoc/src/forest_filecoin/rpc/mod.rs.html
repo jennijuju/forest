@@ -150,6 +150,7 @@
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
 <a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -254,6 +255,7 @@
             .with_method(WALLET_SET_DEFAULT, wallet_set_default::&lt;DB&gt;)
             .with_method(WALLET_SIGN, wallet_sign::&lt;DB&gt;)
             .with_method(WALLET_VERIFY, wallet_verify::&lt;DB&gt;)
+            .with_method(WALLET_DELETE, wallet_delete::&lt;DB&gt;)
             <span class="comment">// State API
             </span>.with_method(STATE_CALL, state_call::&lt;DB&gt;)
             .with_method(STATE_REPLAY, state_replay::&lt;DB&gt;)

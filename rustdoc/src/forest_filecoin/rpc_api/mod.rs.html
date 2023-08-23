@@ -537,6 +537,11 @@
 <a href="#537" id="537">537</a>
 <a href="#538" id="538">538</a>
 <a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -610,6 +615,7 @@
     access.insert(wallet_api::WALLET_SET_DEFAULT, Access::Write);
     access.insert(wallet_api::WALLET_SIGN, Access::Sign);
     access.insert(wallet_api::WALLET_VERIFY, Access::Read);
+    access.insert(wallet_api::WALLET_DELETE, Access::Write);
 
     <span class="comment">// State API
     </span>access.insert(state_api::STATE_CALL, Access::Read);
@@ -862,6 +868,10 @@
     <span class="kw">pub const </span>WALLET_VERIFY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletVerify&quot;</span>;
     <span class="kw">pub type </span>WalletVerifyParams = (LotusJson&lt;Address&gt;, Vec&lt;u8&gt;, LotusJson&lt;Signature&gt;);
     <span class="kw">pub type </span>WalletVerifyResult = bool;
+
+    <span class="kw">pub const </span>WALLET_DELETE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.WalletDelete&quot;</span>;
+    <span class="kw">pub type </span>WalletDeleteParams = (String,);
+    <span class="kw">pub type </span>WalletDeleteResult = ();
 }
 
 <span class="doccomment">/// State API

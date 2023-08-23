@@ -268,6 +268,18 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -363,6 +375,11 @@
         </span><span class="attr">#[arg(short)]
         </span>signature: String,
     },
+    <span class="doccomment">/// Deletes the wallet associated with the given address.
+    </span>Delete {
+        <span class="doccomment">/// The address of the wallet to delete
+        </span>address: String,
+    },
 }
 
 <span class="kw">impl </span>WalletCommands {
@@ -411,6 +428,13 @@
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
+                <span class="prelude-val">Ok</span>(())
+            }
+            <span class="self">Self</span>::Delete { address } =&gt; {
+                wallet_delete((address.to_string(),), <span class="kw-2">&amp;</span>token)
+                    .<span class="kw">await
+                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="macro">println!</span>(<span class="string">&quot;deleted {address}.&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Import { path } =&gt; {
