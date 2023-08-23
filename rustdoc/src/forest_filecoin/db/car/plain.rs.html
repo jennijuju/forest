@@ -508,11 +508,11 @@
 //! - CARv2 support
 //! - A wrapper that abstracts over car formats for reading.
 
-</span><span class="kw">use crate</span>::{
+</span><span class="kw">use </span><span class="kw">crate</span>::ipld::{CidHashMap, CidHashMapEntry};
+<span class="kw">use crate</span>::{
     blocks::{Tipset, TipsetKeys},
     utils::encoding::from_slice_with_fallback,
 };
-<span class="kw">use </span>ahash::HashMapExt <span class="kw">as _</span>;
 
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -524,7 +524,6 @@
 <span class="kw">use </span>std::ops::DerefMut;
 <span class="kw">use </span>std::{
     any::Any,
-    collections::hash_map::Entry::{Occupied, Vacant},
     io::{
         <span class="self">self</span>, BufReader,
         ErrorKind::{InvalidData, UnexpectedEof, Unsupported},
@@ -534,6 +533,7 @@
 };
 <span class="kw">use </span>tokio::io::{AsyncWrite, AsyncWriteExt};
 <span class="kw">use </span>tracing::{debug, trace};
+<span class="kw">use </span>CidHashMapEntry::{Occupied, Vacant};
 
 <span class="doccomment">/// **Note that all operations on this store are blocking**.
 ///
@@ -558,8 +558,8 @@
 /// See [module documentation](mod@self) for more.
 </span><span class="kw">pub struct </span>PlainCar&lt;ReaderT&gt; {
     reader: ReaderT,
-    write_cache: RwLock&lt;ahash::HashMap&lt;Cid, Vec&lt;u8&gt;&gt;&gt;,
-    index: RwLock&lt;ahash::HashMap&lt;Cid, UncompressedBlockDataLocation&gt;&gt;,
+    write_cache: RwLock&lt;CidHashMap&lt;Vec&lt;u8&gt;&gt;&gt;,
+    index: RwLock&lt;CidHashMap&lt;UncompressedBlockDataLocation&gt;&gt;,
     roots: Vec&lt;Cid&gt;,
 }
 
@@ -580,7 +580,7 @@
         <span class="comment">// now create the index
         </span><span class="kw">let </span>index =
             iter::from_fn(|| read_block_data_location_and_skip(<span class="kw-2">&amp;mut </span>buf_reader).transpose())
-                .collect::&lt;<span class="prelude-ty">Result</span>&lt;ahash::HashMap&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
+                .collect::&lt;<span class="prelude-ty">Result</span>&lt;CidHashMap&lt;<span class="kw">_</span>&gt;, <span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>;
 
         <span class="kw">match </span>index.len() {
             <span class="number">0 </span>=&gt; <span class="prelude-val">Err</span>(io::Error::new(
@@ -593,7 +593,7 @@
                     reader,
                     index: RwLock::new(index),
                     roots,
-                    write_cache: RwLock::new(ahash::HashMap::new()),
+                    write_cache: RwLock::new(CidHashMap::new()),
                 })
             }
         }
@@ -610,7 +610,7 @@
     <span class="doccomment">/// In an arbitrary order
     </span><span class="attr">#[cfg(test)]
     </span><span class="kw">pub fn </span>cids(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Cid&gt; {
-        <span class="self">self</span>.index.read().keys().cloned().collect()
+        <span class="self">self</span>.index.read().keys().collect()
     }
 
     <span class="kw">pub fn </span>into_dyn(<span class="self">self</span>) -&gt; PlainCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::RandomAccessFileReader&gt;&gt; {
@@ -644,10 +644,10 @@
 {
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>))]
     </span><span class="kw">fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {
-        <span class="kw">match </span>(<span class="self">self</span>.index.read().get(k), <span class="self">self</span>.write_cache.read().get(k)) {
+        <span class="kw">match </span>(<span class="self">self</span>.index.read().get(<span class="kw-2">*</span>k), <span class="self">self</span>.write_cache.read().get(<span class="kw-2">*</span>k)) {
             (<span class="prelude-val">Some</span>(_location), <span class="prelude-val">Some</span>(_cached)) =&gt; {
                 <span class="macro">trace!</span>(<span class="string">&quot;evicting from write cache&quot;</span>);
-                <span class="prelude-val">Ok</span>(<span class="self">self</span>.write_cache.write().remove(k))
+                <span class="prelude-val">Ok</span>(<span class="self">self</span>.write_cache.write().remove(<span class="kw-2">*</span>k))
             }
             (<span class="prelude-val">Some</span>(UncompressedBlockDataLocation { offset, length }), <span class="prelude-val">None</span>) =&gt; {
                 <span class="macro">trace!</span>(<span class="string">&quot;fetching from disk&quot;</span>);
@@ -701,12 +701,12 @@
 /// Note: This could potentially be enhanced with fine-grained read/write
 /// locking, however the performance is acceptable for now.
 </span><span class="kw">fn </span>handle_write_cache(
-    write_cache: <span class="kw-2">&amp;mut </span>ahash::HashMap&lt;Cid, Vec&lt;u8&gt;&gt;,
-    index: <span class="kw-2">&amp;mut </span>ahash::HashMap&lt;Cid, <span class="kw">impl </span>Any&gt;,
+    write_cache: <span class="kw-2">&amp;mut </span>CidHashMap&lt;Vec&lt;u8&gt;&gt;,
+    index: <span class="kw-2">&amp;mut </span>CidHashMap&lt;<span class="kw">impl </span>Any&gt;,
     k: <span class="kw-2">&amp;</span>Cid,
     block: <span class="kw-2">&amp;</span>[u8],
 ) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">match </span>(index.get(k), write_cache.entry(<span class="kw-2">*</span>k)) {
+    <span class="kw">match </span>(index.get(<span class="kw-2">*</span>k), write_cache.entry(<span class="kw-2">*</span>k)) {
         (<span class="prelude-val">None</span>, Occupied(already)) =&gt; <span class="kw">match </span>already.get() == block {
             <span class="bool-val">true </span>=&gt; {
                 <span class="macro">trace!</span>(<span class="string">&quot;already in cache&quot;</span>);
