@@ -3,7 +3,7 @@
     root: &amp;Cid,
     expected_root: &amp;Cid,
     depth: <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u64.html">u64</a>&gt;
-) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, <a class="struct" href="https://docs.rs/anyhow/1.0.74/anyhow/struct.Error.html" title="struct anyhow::Error">Error</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Tries to resolve state tree actors, if all data exists in store.
+) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/result/enum.Result.html" title="enum core::result::Result">Result</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.unit.html">()</a>, <a class="struct" href="https://docs.rs/anyhow/1.0.75/anyhow/struct.Error.html" title="struct anyhow::Error">Error</a>&gt;</code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Tries to resolve state tree actors, if all data exists in store.
 The actors HAMT is hard to parse in a diff, so this attempts to remedy this.
 This function will only print the actors that are added, removed, or changed
 so it can be used on large state trees.</p>

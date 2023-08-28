@@ -837,7 +837,6 @@
 <a href="#837" id="837">837</a>
 <a href="#838" id="838">838</a>
 <a href="#839" id="839">839</a>
-<a href="#840" id="840">840</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1666,8 +1665,7 @@
 </span><span class="kw">pub fn </span>build_transport(local_key: Keypair) -&gt; anyhow::Result&lt;Boxed&lt;(PeerId, StreamMuxerBox)&gt;&gt; {
     <span class="kw">let </span>build_tcp = || libp2p::tcp::tokio::Transport::new(libp2p::tcp::Config::new().nodelay(<span class="bool-val">true</span>));
     <span class="kw">let </span>build_dns_tcp = || libp2p::dns::TokioDnsConfig::system(build_tcp());
-    <span class="kw">let </span>transport =
-        libp2p::websocket::WsConfig::new(build_dns_tcp()<span class="question-mark">?</span>).or_transport(build_dns_tcp()<span class="question-mark">?</span>);
+    <span class="kw">let </span>transport = build_dns_tcp()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>auth_config = noise::Config::new(<span class="kw-2">&amp;</span>local_key).context(<span class="string">&quot;Noise key generation failed&quot;</span>)<span class="question-mark">?</span>;
 
