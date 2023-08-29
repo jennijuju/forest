@@ -467,8 +467,22 @@ process.</p>
 <div class="table-wrapper"><table><thead><tr><th>Environment variable</th><th>Value</th><th>Default</th><th>Description</th></tr></thead><tbody>
 <tr><td>FOREST_KEYSTORE_PHRASE_ENV</td><td>any text</td><td>empty</td><td>The passphrase for the encrypted keystore</td></tr>
 <tr><td>FOREST_CAR_LOADER_FILE_IO</td><td>1 or true</td><td>false</td><td>Load CAR files with <code>RandomAccessFile</code> instead of <code>Mmap</code></td></tr>
+<tr><td>FOREST_DB_DEV_MODE</td><td><a href="environment_variables.html#-forest_db_dev_mode">see here</a></td><td>current</td><td>The database to use in development mode</td></tr>
 </tbody></table>
-</div><div style="break-before: page; page-break-before: always;"></div><h1 id="forest-in-docker"><a class="header" href="#forest-in-docker">Forest in Docker🌲❤️🐋</a></h1>
+</div>
+<h3 id="forest_db_dev_mode"><a class="header" href="#forest_db_dev_mode">FOREST_DB_DEV_MODE</a></h3>
+<p>By default, Forest will create a database of its current version or try to
+migrate to it. This can be overridden with the <code>FOREST_DB_DEV_MODE</code>
+environmental variable.</p>
+<div class="table-wrapper"><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>current</code> or (unset)</td><td>Forest will either create a new database with the current version or attempt a migration if possible. On failure, it will create a new database.</td></tr>
+<tr><td><code>latest</code></td><td>Forest will use the latest versioned database. No migration will be performed.</td></tr>
+<tr><td>other values (e.g., <code>cthulhu</code>)</td><td>Forest will use the provided database (if it exists, otherwise it will create one under this name)</td></tr>
+</tbody></table>
+</div>
+<p>The databases can be found, by default, under <code>&lt;DATA_DIR&gt;/&lt;chain&gt;/</code>, e.g.,
+<code>$HOME/.local/share/forest/calibnet</code>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="forest-in-docker"><a class="header" href="#forest-in-docker">Forest in Docker🌲❤️🐋</a></h1>
 <h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
 <ul>
 <li>Docker engine installed and running. Forest containers are confirmed to run on
@@ -882,14 +896,12 @@ released.</p>
     end
     SameDbVersionExists --&gt;|yes| Finish[Finish]
     SameDbVersionExists ==&gt;|no| OlderDbVersionExists{Older DB version exists and migration possible?}:::Yellow
-    OlderDbVersionExists --&gt;|no| NewerDbVersionExists{Newer DB version exists?}
+    OlderDbVersionExists --&gt;|no| CreateVersionedDb
     OlderDbVersionExists ==&gt;|yes| RunMigration[Run migration]:::Yellow
     RunMigration ==&gt; RunChecks[Run checks]:::Yellow
     RunChecks ==&gt; ChecksPassing{Checks passing?}:::Green
     ChecksPassing --&gt;|yes| Finish
     ChecksPassing --&gt;|no| CreateVersionedDb
-    NewerDbVersionExists --&gt;|no| CreateVersionedDb[Create new versioned DB]
-    NewerDbVersionExists --&gt;|yes| RunChecks
     CreateVersionedDb --&gt; Finish
     CreateDevDb --&gt; Finish
     OpenDevDb --&gt; Finish[/Run daemon/]
@@ -898,8 +910,6 @@ classDef Green stroke:#0f0,stroke-width:2px;
 classDef Yellow stroke:#ff0,stroke-width:2px;
 </code></pre>
 <p>Expected migration path is marked in bold.</p>
-<p>Note: instead of creating a new database in case of errors, we can choose to
-fail the process completely (this will require manual interventions)</p>
 <h3 id="scenarios-to-cover"><a class="header" href="#scenarios-to-cover">Scenarios to cover</a></h3>
 <h4 id="scenario-1-no-db-exists"><a class="header" href="#scenario-1-no-db-exists">Scenario 1: No DB exists</a></h4>
 <p>A new DB is created and the daemon is started. If the development environment
@@ -912,14 +922,12 @@ start under a new database. Alternatively, we can choose to fail the migration
 and not start the daemon.</p>
 <p>If migration succeeds and the checks are passing, the database is atomically
 renamed to <code>&lt;DATA_DIR&gt;/&lt;NETWORK&gt;/paritydb-vX.Y.Z</code> and the daemon is started. If
-the checks are not passing, the migration is cancelled and we either fail or
-start the daemon under a new database.</p>
+the checks are not passing, the migration is cancelled, and we start the daemon
+under a new database.</p>
 <h4 id="scenario-3-db-exists-and-is-the-latest-version"><a class="header" href="#scenario-3-db-exists-and-is-the-latest-version">Scenario 3: DB exists and is the latest version</a></h4>
 <p>The daemon is started and the database path is not changed.</p>
 <h4 id="scenario-4-db-exists-and-is-newer-than-the-daemon-version"><a class="header" href="#scenario-4-db-exists-and-is-newer-than-the-daemon-version">Scenario 4: DB exists and is newer than the daemon version</a></h4>
-<p>No migration is performed and the daemon is started. A warning is displayed.
-Basic checks are performed to ensure that the database is compatible with the
-daemon.</p>
+<p>The daemon is started with a new database as migrating down is not supported.</p>
 <h3 id="use-cases"><a class="header" href="#use-cases">Use cases</a></h3>
 <h4 id="developer-switching-to-newer-branch-development-mode"><a class="header" href="#developer-switching-to-newer-branch-development-mode">Developer, switching to newer branch (development mode)</a></h4>
 <p>An attempt will be made to open the database, it may succeed or not.</p>

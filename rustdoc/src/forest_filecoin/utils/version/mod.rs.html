@@ -12,6 +12,9 @@
 <a href="#12" id="12">12</a>
 <a href="#13" id="13">13</a>
 <a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -26,4 +29,7 @@
 /// E.g., `0.8.0+git.e69baf3e4`
 </span><span class="kw">pub static </span>FOREST_VERSION_STRING: Lazy&lt;String&gt; =
     Lazy::new(|| <span class="macro">format!</span>(<span class="string">&quot;{}+git.{}&quot;</span>, <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>), GIT_HASH));
+
+<span class="kw">pub static </span>FOREST_VERSION: Lazy&lt;semver::Version&gt; =
+    Lazy::new(|| semver::Version::parse(<span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_VERSION&quot;</span>)).expect(<span class="string">&quot;Invalid version&quot;</span>));
 </code></pre></div></section></main></body></html>

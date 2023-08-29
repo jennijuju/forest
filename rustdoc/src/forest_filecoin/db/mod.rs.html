@@ -111,6 +111,10 @@
 <a href="#111" id="111">111</a>
 <a href="#112" id="112">112</a>
 <a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -123,13 +127,15 @@
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">pub mod </span>car;
+<span class="kw">mod </span>db_mode;
+<span class="kw">pub mod </span>migration;
 
 <span class="kw">pub mod </span>rolling;
 
 <span class="kw">pub mod </span>setting_keys {
-    <span class="doccomment">/// Key used to store the heaviest tipset in the settings store.
+    <span class="doccomment">/// Key used to store the heaviest tipset in the settings store. This is expected to be a [`crate::blocks::TipsetKeys`]
     </span><span class="kw">pub const </span>HEAD_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;head&quot;</span>;
-    <span class="doccomment">/// Estimated number of IPLD records in the database.
+    <span class="doccomment">/// Estimated number of IPLD records in the database. This is expected to be a `usize`
     </span><span class="kw">pub const </span>ESTIMATED_RECORDS_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;estimated_reachable_records&quot;</span>;
     <span class="doccomment">/// Key used to store the memory pool configuration in the settings store.
     </span><span class="kw">pub const </span>MPOOL_CONFIG_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/mpool/config&quot;</span>;
@@ -201,12 +207,14 @@
 
     <span class="kw">use </span><span class="kw">crate</span>::db::rolling::<span class="kw-2">*</span>;
 
+    <span class="kw">use </span><span class="kw">super</span>::db_mode::choose_db;
+
     <span class="kw">pub type </span>Db = <span class="kw">crate</span>::db::parity_db::ParityDb;
     <span class="kw">pub type </span>DbConfig = <span class="kw">crate</span>::db::parity_db_config::ParityDbConfig;
-    <span class="kw">const </span>DIR_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;paritydb&quot;</span>;
 
-    <span class="kw">pub fn </span>db_root(chain_data_root: <span class="kw-2">&amp;</span>Path) -&gt; PathBuf {
-        chain_data_root.join(DIR_NAME)
+    <span class="doccomment">/// Returns the path to the database directory to be used by the daemon.
+    </span><span class="kw">pub fn </span>db_root(chain_data_root: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;PathBuf&gt; {
+        choose_db(chain_data_root)
     }
 
     <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::db) <span class="kw">fn </span>open_db(path: <span class="kw-2">&amp;</span>Path, config: <span class="kw-2">&amp;</span>DbConfig) -&gt; anyhow::Result&lt;Db&gt; {

@@ -792,6 +792,14 @@
 <a href="#792" id="792">792</a>
 <a href="#793" id="793">793</a>
 <a href="#794" id="794">794</a>
+<a href="#795" id="795">795</a>
+<a href="#796" id="796">796</a>
+<a href="#797" id="797">797</a>
+<a href="#798" id="798">798</a>
+<a href="#799" id="799">799</a>
+<a href="#800" id="800">800</a>
+<a href="#801" id="801">801</a>
+<a href="#802" id="802">802</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -966,8 +974,16 @@
     <span class="kw">let </span>keystore = Arc::new(RwLock::new(keystore));
 
     <span class="kw">let </span>chain_data_path = chain_path(<span class="kw-2">&amp;</span>config);
+
+    <span class="comment">// Try to migrate the database if needed. In case the migration fails, we fallback to creating a new database
+    // to avoid breaking the node.
+    </span><span class="kw">let </span>db_migration = <span class="kw">crate</span>::db::migration::DbMigration::new(chain_data_path.clone());
+    <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = db_migration.migrate() {
+        <span class="macro">warn!</span>(<span class="string">&quot;Failed to migrate database: {e}&quot;</span>);
+    }
+
     <span class="kw">let </span>db = Arc::new(ManyCar::new(Arc::new(open_proxy_db(
-        db_root(<span class="kw-2">&amp;</span>chain_data_path),
+        db_root(<span class="kw-2">&amp;</span>chain_data_path)<span class="question-mark">?</span>,
         config.db_config().clone(),
     )<span class="question-mark">?</span>)));
 
@@ -990,7 +1006,7 @@
             <span class="string">&quot;Prometheus server started at {}&quot;</span>,
             config.client.metrics_address
         );
-        <span class="kw">let </span>db_directory = <span class="kw">crate</span>::db::db_engine::db_root(<span class="kw-2">&amp;</span>chain_path(<span class="kw-2">&amp;</span>config));
+        <span class="kw">let </span>db_directory = <span class="kw">crate</span>::db::db_engine::db_root(<span class="kw-2">&amp;</span>chain_path(<span class="kw-2">&amp;</span>config))<span class="question-mark">?</span>;
         <span class="kw">let </span>db = db.writer().clone();
         services.spawn(<span class="kw">async </span>{
             <span class="kw">crate</span>::metrics::init_prometheus(prometheus_listener, db_directory, db)

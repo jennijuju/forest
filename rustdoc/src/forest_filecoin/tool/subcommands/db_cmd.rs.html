@@ -126,7 +126,7 @@
 
                 <span class="kw">let </span>config = read_config(config, chain)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>dir = db_root(<span class="kw-2">&amp;</span>chain_path(<span class="kw-2">&amp;</span>config));
+                <span class="kw">let </span>dir = db_root(<span class="kw-2">&amp;</span>chain_path(<span class="kw-2">&amp;</span>config))<span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;Database path: {}&quot;</span>, dir.display());
                 <span class="kw">let </span>size = fs_extra::dir::get_size(dir).unwrap_or_default();
                 <span class="macro">println!</span>(<span class="string">&quot;Database size: {}&quot;</span>, size.human_count_bytes());

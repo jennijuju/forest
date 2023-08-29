@@ -74,6 +74,7 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -140,7 +141,8 @@
                     .client
                     .data_dir
                     .join(config.chain.network.to_string());
-                <span class="kw">let </span>blockstore = Arc::new(open_proxy_db(db_root(<span class="kw-2">&amp;</span>chain_path), Default::default())<span class="question-mark">?</span>);
+                <span class="kw">let </span>blockstore =
+                    Arc::new(open_proxy_db(db_root(<span class="kw-2">&amp;</span>chain_path)<span class="question-mark">?</span>, Default::default())<span class="question-mark">?</span>);
 
                 <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = print_state_diff(<span class="kw-2">&amp;</span>blockstore, <span class="kw-2">&amp;</span>pre, <span class="kw-2">&amp;</span>post, depth) {
                     <span class="macro">eprintln!</span>(<span class="string">&quot;Failed to print state diff: {err}&quot;</span>);

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MIGRATION_DB_0_12_1_0_13_0"],"mod":["paritydb_0_12_1","paritydb_0_13_0"],"struct":["Migration0_12_1_0_13_0"]};

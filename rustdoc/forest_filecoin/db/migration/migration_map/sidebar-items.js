@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["create_migration_chain","create_migration_chain_from_migrations"],"static":["MIGRATIONS"],"struct":["Migration"],"trait":["MigrationOperation"],"type":["MigrationsMap","Migrator"]};

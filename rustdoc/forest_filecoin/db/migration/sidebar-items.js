@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["db_migration","migration_map","v0_12_1"]};

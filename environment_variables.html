@@ -173,8 +173,22 @@ process.</p>
 <div class="table-wrapper"><table><thead><tr><th>Environment variable</th><th>Value</th><th>Default</th><th>Description</th></tr></thead><tbody>
 <tr><td>FOREST_KEYSTORE_PHRASE_ENV</td><td>any text</td><td>empty</td><td>The passphrase for the encrypted keystore</td></tr>
 <tr><td>FOREST_CAR_LOADER_FILE_IO</td><td>1 or true</td><td>false</td><td>Load CAR files with <code>RandomAccessFile</code> instead of <code>Mmap</code></td></tr>
+<tr><td>FOREST_DB_DEV_MODE</td><td><a href="#-forest_db_dev_mode">see here</a></td><td>current</td><td>The database to use in development mode</td></tr>
 </tbody></table>
 </div>
+<h3 id="forest_db_dev_mode"><a class="header" href="#forest_db_dev_mode">FOREST_DB_DEV_MODE</a></h3>
+<p>By default, Forest will create a database of its current version or try to
+migrate to it. This can be overridden with the <code>FOREST_DB_DEV_MODE</code>
+environmental variable.</p>
+<div class="table-wrapper"><table><thead><tr><th>Value</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>current</code> or (unset)</td><td>Forest will either create a new database with the current version or attempt a migration if possible. On failure, it will create a new database.</td></tr>
+<tr><td><code>latest</code></td><td>Forest will use the latest versioned database. No migration will be performed.</td></tr>
+<tr><td>other values (e.g., <code>cthulhu</code>)</td><td>Forest will use the provided database (if it exists, otherwise it will create one under this name)</td></tr>
+</tbody></table>
+</div>
+<p>The databases can be found, by default, under <code>&lt;DATA_DIR&gt;/&lt;chain&gt;/</code>, e.g.,
+<code>$HOME/.local/share/forest/calibnet</code>.</p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
