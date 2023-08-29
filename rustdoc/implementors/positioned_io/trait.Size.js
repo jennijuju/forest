@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"forest_filecoin":[["impl <a class=\"trait\" href=\"https://docs.rs/positioned-io/0.3.1/positioned_io/trait.Size.html\" title=\"trait positioned_io::Size\">Size</a> for <a class=\"struct\" href=\"forest_filecoin/utils/io/mmap/struct.Mmap.html\" title=\"struct forest_filecoin::utils::io::mmap::Mmap\">Mmap</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
