@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize"],"struct":["MPOOL_MESSAGE_TOTAL"]};
+window.SIDEBAR_ITEMS = {"struct":["MPOOL_MESSAGE_TOTAL"]};

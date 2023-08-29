@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["extract_cids"],"struct":["CidVec","FilterCids","FilterCidsVisitor"]};
+window.SIDEBAR_ITEMS = {"fn":["extract_cids"],"struct":["CidVec","FilterCids"]};

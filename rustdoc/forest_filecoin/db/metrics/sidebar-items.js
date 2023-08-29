@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize"],"struct":["BLOCK_SIZE_BYTES"]};
+window.SIDEBAR_ITEMS = {"struct":["BLOCK_SIZE_BYTES"]};

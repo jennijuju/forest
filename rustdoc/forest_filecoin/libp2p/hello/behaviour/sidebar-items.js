@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["HelloBehaviour"],"type":["InnerBehaviour"]};
+window.SIDEBAR_ITEMS = {"struct":["HelloBehaviour"],"type":["InnerBehaviour"]};

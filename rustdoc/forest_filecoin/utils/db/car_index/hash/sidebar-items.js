@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["div_ceil"],"struct":["Hash"]};
+window.SIDEBAR_ITEMS = {"struct":["Hash"]};

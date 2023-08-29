@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["ChainExchangeBehaviour"],"type":["InnerBehaviour"]};
+window.SIDEBAR_ITEMS = {"struct":["ChainExchangeBehaviour"],"type":["InnerBehaviour"]};

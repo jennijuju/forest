@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize"],"struct":["APPLY_BLOCKS_TIME"]};
+window.SIDEBAR_ITEMS = {"struct":["APPLY_BLOCKS_TIME"]};

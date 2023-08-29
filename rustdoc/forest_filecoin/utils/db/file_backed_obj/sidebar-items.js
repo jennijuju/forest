@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["ChainMeta","FileBacked"],"trait":["FileBackedObject"]};
+window.SIDEBAR_ITEMS = {"struct":["ChainMeta","FileBacked"],"trait":["FileBackedObject"]};

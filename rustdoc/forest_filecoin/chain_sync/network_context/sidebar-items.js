@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["CHAIN_EXCHANGE_TIMEOUT","HELLO_TIMEOUT","MAX_CONCURRENT_CHAIN_EXCHANGE_REQUESTS"],"static":["CALLSITE"],"struct":["RaceBatch","SyncNetworkContext"]};
+window.SIDEBAR_ITEMS = {"constant":["CHAIN_EXCHANGE_TIMEOUT","MAX_CONCURRENT_CHAIN_EXCHANGE_REQUESTS"],"struct":["RaceBatch","SyncNetworkContext"]};

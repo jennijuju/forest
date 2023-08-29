@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BeaconEntry","Inner"]};
+window.SIDEBAR_ITEMS = {"struct":["BeaconEntry"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MSG"],"fn":["verify_blocks"],"mod":["lotus_json"],"static":["CALLSITE","KNOWN_HEADERS"],"struct":["FullTipset","KnownHeaders","Tipset","TipsetKeys"]};
+window.SIDEBAR_ITEMS = {"fn":["verify_blocks"],"mod":["lotus_json"],"struct":["FullTipset","Tipset","TipsetKeys"]};

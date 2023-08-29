@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BLOCK_GAS_LIMIT","TOTAL_FILECOIN_BASE"],"fn":["__stability","__static_ref_initialize"],"struct":["TOTAL_FILECOIN","TokenAmount"]};
+window.SIDEBAR_ITEMS = {"constant":["BLOCK_GAS_LIMIT","TOTAL_FILECOIN_BASE"],"struct":["TOTAL_FILECOIN","TokenAmount"]};

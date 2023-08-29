@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["COUNT"],"enum":["InfoCommand","SyncStatus"],"fn":["balance"],"struct":["NodeStatusInfo"]};
+window.SIDEBAR_ITEMS = {"enum":["InfoCommand","SyncStatus"],"fn":["balance"],"struct":["NodeStatusInfo"]};

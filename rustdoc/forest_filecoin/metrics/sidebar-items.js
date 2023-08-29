@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize","add_metrics_registry","collect_db_metrics","collect_prometheus_metrics","init_prometheus"],"mod":["db","labels","values"],"struct":["LRU_CACHE_HIT","LRU_CACHE_MISS","REGISTRIES_EXT"]};
+window.SIDEBAR_ITEMS = {"fn":["add_metrics_registry","collect_db_metrics","collect_prometheus_metrics","init_prometheus"],"mod":["db","labels","values"],"struct":["LRU_CACHE_HIT","LRU_CACHE_MISS","REGISTRIES_EXT"]};

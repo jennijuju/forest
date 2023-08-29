@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["delete_db","load_dbs"],"static":["CALLSITE"]};
+window.SIDEBAR_ITEMS = {"fn":["delete_db","load_dbs"]};

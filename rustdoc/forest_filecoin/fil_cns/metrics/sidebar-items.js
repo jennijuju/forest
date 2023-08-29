@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["__stability","__static_ref_initialize"],"mod":["values"],"struct":["CONSENSUS_BLOCK_VALIDATION_TASKS_TIME","CONSENSUS_BLOCK_VALIDATION_TIME"]};
+window.SIDEBAR_ITEMS = {"mod":["values"],"struct":["CONSENSUS_BLOCK_VALIDATION_TASKS_TIME","CONSENSUS_BLOCK_VALIDATION_TIME"]};

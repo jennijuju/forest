@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["SnapshotCommands"],"fn":["save_checksum"],"static":["DEFAULT_VALUE"]};
+window.SIDEBAR_ITEMS = {"enum":["SnapshotCommands"],"fn":["save_checksum"]};

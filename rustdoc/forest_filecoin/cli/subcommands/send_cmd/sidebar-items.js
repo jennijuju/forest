@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["DEFAULT_VALUE"],"struct":["SendCommand"]};
+window.SIDEBAR_ITEMS = {"struct":["SendCommand"]};

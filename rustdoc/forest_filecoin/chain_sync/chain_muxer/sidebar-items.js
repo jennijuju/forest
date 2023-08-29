@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ChainMuxerError","ChainMuxerState","NetworkHeadEvaluation","PubsubMessageProcessingStrategy","UnexpectedReturnKind"],"static":["CALLSITE"],"struct":["ChainMuxer","SyncConfig"],"type":["ChainMuxerFuture","WorkerState"]};
+window.SIDEBAR_ITEMS = {"enum":["ChainMuxerError","ChainMuxerState","NetworkHeadEvaluation","PubsubMessageProcessingStrategy"],"struct":["ChainMuxer","SyncConfig"],"type":["ChainMuxerFuture","WorkerState"]};

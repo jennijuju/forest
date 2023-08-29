@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ArchiveCommands"],"fn":["build_output_path","do_export","list_checkpoints","print_checkpoints"],"static":["DEFAULT_VALUE"]};
+window.SIDEBAR_ITEMS = {"enum":["ArchiveCommands"],"fn":["build_output_path","do_export","list_checkpoints","print_checkpoints"]};

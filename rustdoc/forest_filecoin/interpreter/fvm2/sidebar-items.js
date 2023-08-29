@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["cal_gas_used_from_stats"],"static":["CALLSITE"],"struct":["ForestExternsV2"]};
+window.SIDEBAR_ITEMS = {"fn":["cal_gas_used_from_stats"],"struct":["ForestExternsV2"]};

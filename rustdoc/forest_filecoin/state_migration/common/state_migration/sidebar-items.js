@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["StateMigration"]};
+window.SIDEBAR_ITEMS = {"struct":["StateMigration"]};

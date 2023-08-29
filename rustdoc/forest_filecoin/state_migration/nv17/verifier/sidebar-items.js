@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["Verifier"]};
+window.SIDEBAR_ITEMS = {"struct":["Verifier"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"static":["CALLSITE"],"struct":["MemStatsTracker"]};
+window.SIDEBAR_ITEMS = {"struct":["MemStatsTracker"]};

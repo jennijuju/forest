@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BITSWAP_BLOCK_REQUEST_INTERVAL"],"static":["CALLSITE"],"struct":["BitswapRequestManager","ResponseChannels"]};
+window.SIDEBAR_ITEMS = {"constant":["BITSWAP_BLOCK_REQUEST_INTERVAL"],"struct":["BitswapRequestManager","ResponseChannels"]};

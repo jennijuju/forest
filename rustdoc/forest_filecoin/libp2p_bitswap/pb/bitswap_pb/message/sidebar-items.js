@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["BlockPresenceType"],"mod":["wantlist"],"static":["instance"],"struct":["Block","BlockPresence","Wantlist"]};
+window.SIDEBAR_ITEMS = {"enum":["BlockPresenceType"],"mod":["wantlist"],"struct":["Block","BlockPresence","Wantlist"]};

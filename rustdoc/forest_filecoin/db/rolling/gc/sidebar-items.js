@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["BUFFER_CAPCITY_BYTES"],"fn":["gc_trigger_factor"],"static":["CALLSITE"],"struct":["DbGarbageCollector"]};
+window.SIDEBAR_ITEMS = {"fn":["gc_trigger_factor"],"struct":["DbGarbageCollector"]};

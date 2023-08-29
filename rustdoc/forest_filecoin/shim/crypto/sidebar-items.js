@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["IPLD_RAW","TICKET_RANDOMNESS_LOOKBACK","_IMPL_NUM_FromPrimitive_FOR_SignatureType"],"enum":["SignatureType"],"fn":["cid_to_replica_commitment_v1","verify_bls_aggregate","verify_bls_sig"],"struct":["Signature","discriminant"]};
+window.SIDEBAR_ITEMS = {"constant":["IPLD_RAW","TICKET_RANDOMNESS_LOOKBACK","_IMPL_NUM_FromPrimitive_FOR_SignatureType"],"enum":["SignatureType"],"fn":["cid_to_replica_commitment_v1","verify_bls_aggregate","verify_bls_sig"],"struct":["Signature"]};
