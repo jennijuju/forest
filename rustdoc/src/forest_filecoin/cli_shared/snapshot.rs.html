@@ -468,6 +468,8 @@
 <a href="#468" id="468">468</a>
 <a href="#469" id="469">469</a>
 <a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -697,6 +699,8 @@
     };
     <span class="kw">use </span>url::Url;
 
+    <span class="kw">use </span><span class="kw">crate</span>::db::car::forest::FOREST_CAR_FILE_EXTENSION;
+
     <span class="attr">#[derive(PartialEq, Debug, Clone, Hash)]
     </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">enum </span>ParsedFilename&lt;<span class="lifetime">&#39;a</span>&gt; {
         Short {
@@ -804,7 +808,7 @@
                 ymd(<span class="string">&quot;-&quot;</span>),
                 tag(<span class="string">&quot;_height_&quot;</span>),
                 number,
-                alt((tag(<span class="string">&quot;.car.zst&quot;</span>), tag(<span class="string">&quot;.forest.car.zst&quot;</span>))),
+                alt((tag(<span class="string">&quot;.car.zst&quot;</span>), tag(FOREST_CAR_FILE_EXTENSION))),
             ))(input)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>((
             rest,
@@ -813,7 +817,7 @@
                 chain,
                 date,
                 height,
-                forest_format: car_zst == <span class="string">&quot;.forest.car.zst&quot;</span>,
+                forest_format: car_zst == FOREST_CAR_FILE_EXTENSION,
             },
         ))
     }
