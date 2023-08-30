@@ -437,6 +437,7 @@
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -762,13 +763,14 @@
 </span><span class="kw">pub fn </span>stream_graph&lt;DB: Blockstore, T: Iterator&lt;Item = Tipset&gt; + Unpin&gt;(
     db: DB,
     tipset_iter: T,
+    stateroot_limit: ChainEpoch,
 ) -&gt; ChainStream&lt;DB, T&gt; {
     ChainStream {
         tipset_iter,
         db,
         dfs: VecDeque::new(),
         seen: CidHashSet::default(),
-        stateroot_limit: <span class="number">0</span>,
+        stateroot_limit,
         fail_on_dead_links: <span class="bool-val">false</span>,
     }
 }
