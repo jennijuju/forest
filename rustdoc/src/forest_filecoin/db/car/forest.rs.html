@@ -465,6 +465,19 @@
 <a href="#465" id="465">465</a>
 <a href="#466" id="466">466</a>
 <a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -528,7 +541,6 @@
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>parking_lot::{Mutex, RwLock};
 <span class="kw">use </span>positioned_io::{Cursor, ReadAt, SizeCursor};
-
 <span class="kw">use </span>std::io::{Seek, SeekFrom};
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::task::Poll;
@@ -538,6 +550,9 @@
 };
 <span class="kw">use </span>tokio::io::{AsyncWrite, AsyncWriteExt};
 <span class="kw">use </span>tokio_util::codec::{Decoder, Encoder <span class="kw">as _</span>};
+
+<span class="kw">pub const </span>DEFAULT_FOREST_CAR_FRAME_SIZE: usize = <span class="number">8000_usize</span>.next_power_of_two();
+<span class="kw">pub const </span>DEFAULT_FOREST_CAR_COMPRESSION_LEVEL: u16 = zstd::DEFAULT_COMPRESSION_LEVEL <span class="kw">as _</span>;
 
 <span class="kw">pub trait </span>ReaderGen&lt;V&gt;: Fn() -&gt; io::Result&lt;V&gt; + Send + Sync + <span class="lifetime">&#39;static </span>{}
 <span class="kw">impl</span>&lt;ReaderT, X: Fn() -&gt; io::Result&lt;ReaderT&gt; + Send + Sync + <span class="lifetime">&#39;static</span>&gt; ReaderGen&lt;ReaderT&gt; <span class="kw">for </span>X {}
@@ -745,8 +760,19 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="comment">// Consume stream of blocks, emit a new position of each block and a stream
-    // of zstd frames.
+    <span class="doccomment">/// `compress_stream` with [`DEFAULT_FOREST_CAR_FRAME_SIZE`] as default frame size and [`DEFAULT_FOREST_CAR_COMPRESSION_LEVEL`] as default compression level.
+    </span><span class="kw">pub fn </span>compress_stream_default(
+        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= Block, Error = anyhow::Error&gt;,
+    ) -&gt; <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = anyhow::Error&gt; {
+        <span class="self">Self</span>::compress_stream(
+            DEFAULT_FOREST_CAR_FRAME_SIZE,
+            DEFAULT_FOREST_CAR_COMPRESSION_LEVEL,
+            stream,
+        )
+    }
+
+    <span class="doccomment">/// Consume stream of blocks, emit a new position of each block and a stream
+    /// of zstd frames.
     </span><span class="kw">pub fn </span>compress_stream(
         zstd_frame_size_tripwire: usize,
         zstd_compression_level: u16,

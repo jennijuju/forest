@@ -197,10 +197,6 @@
 <a href="#197" id="197">197</a>
 <a href="#198" id="198">198</a>
 <a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -244,9 +240,7 @@
                     .cloned()
                     .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
 
-                <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
-                    <span class="number">8000_usize</span>.next_power_of_two(),
-                    zstd::DEFAULT_COMPRESSION_LEVEL <span class="kw">as _</span>,
+                <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream_default(
                     dedup_block_stream(merge_car_streams(car_streams)).map_err(anyhow::Error::from),
                 );
                 <span class="kw">let </span><span class="kw-2">mut </span>writer = tokio::io::BufWriter::new(tokio::fs::File::create(<span class="kw-2">&amp;</span>output).<span class="kw">await</span><span class="question-mark">?</span>);
@@ -299,9 +293,7 @@
     <span class="kw">impl </span>Blocks {
         <span class="kw">async fn </span>into_forest_car_zst_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
             <span class="kw">let </span>roots = <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>].cid];
-            <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
-                <span class="number">8000_usize</span>.next_power_of_two(),
-                zstd::DEFAULT_COMPRESSION_LEVEL <span class="kw">as _</span>,
+            <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream_default(
                 <span class="self">self</span>.into_stream().map_err(anyhow::Error::from),
             );
             <span class="kw">let </span><span class="kw-2">mut </span>writer = <span class="macro">vec!</span>[];

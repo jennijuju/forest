@@ -257,6 +257,7 @@
 <a href="#257" id="257">257</a>
 <a href="#258" id="258">258</a>
 <a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -264,6 +265,7 @@
     index::{ChainIndex, ResolveNullTipset},
     ChainEpochDelta,
 };
+<span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, stream_graph};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
@@ -309,7 +311,7 @@
         <span class="attr">#[arg(long, default_value_t = <span class="number">3</span>)]
         </span>compression_level: u16,
         <span class="doccomment">/// End zstd frames after they exceed this length
-        </span><span class="attr">#[arg(long, default_value_t = <span class="number">8000usize</span>.next_power_of_two())]
+        </span><span class="attr">#[arg(long, default_value_t = DEFAULT_FOREST_CAR_FRAME_SIZE)]
         </span>frame_size: usize,
     },
     <span class="doccomment">/// Exporting a `.forest.car.zst` file from HEAD
@@ -320,7 +322,7 @@
         <span class="attr">#[arg(long, default_value_t = <span class="number">3</span>)]
         </span>compression_level: u16,
         <span class="doccomment">/// End zstd frames after they exceed this length
-        </span><span class="attr">#[arg(long, default_value_t = <span class="number">8000usize</span>.next_power_of_two())]
+        </span><span class="attr">#[arg(long, default_value_t = DEFAULT_FOREST_CAR_FRAME_SIZE)]
         </span>frame_size: usize,
         <span class="doccomment">/// Latest epoch that has to be exported for this snapshot, the upper bound. This value
         /// cannot be greater than the latest epoch available in the input snapshot.

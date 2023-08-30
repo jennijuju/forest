@@ -268,12 +268,14 @@
 <a href="#268" id="268">268</a>
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
+<span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::chain_api::ChainExportParams;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::chain_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
@@ -346,7 +348,7 @@
         <span class="attr">#[arg(long, default_value_t = <span class="number">3</span>)]
         </span>compression_level: u16,
         <span class="doccomment">/// End zstd frames after they exceed this length
-        </span><span class="attr">#[arg(long, default_value_t = <span class="number">8000usize</span>.next_power_of_two())]
+        </span><span class="attr">#[arg(long, default_value_t = DEFAULT_FOREST_CAR_FRAME_SIZE)]
         </span>frame_size: usize,
         <span class="doccomment">/// Overwrite output file without prompting.
         </span><span class="attr">#[arg(long, default_value_t = <span class="bool-val">false</span>)]

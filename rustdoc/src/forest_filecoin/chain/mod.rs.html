@@ -108,7 +108,7 @@
     );
 
     <span class="comment">// Encode Ipld key-value pairs in zstd frames
-    </span><span class="kw">let </span>frames = forest::Encoder::compress_stream(<span class="number">8000usize</span>.next_power_of_two(), <span class="number">3</span>, blocks);
+    </span><span class="kw">let </span>frames = forest::Encoder::compress_stream_default(blocks);
 
     <span class="comment">// Write zstd frames and include a skippable index
     </span>forest::Encoder::write(<span class="kw-2">&amp;mut </span>writer, roots, frames).<span class="kw">await</span><span class="question-mark">?</span>;
