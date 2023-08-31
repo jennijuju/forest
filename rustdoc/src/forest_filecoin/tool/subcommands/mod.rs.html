@@ -70,6 +70,11 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -78,6 +83,7 @@
 <span class="kw">pub mod </span>db_cmd;
 <span class="kw">pub mod </span>fetch_params_cmd;
 <span class="kw">pub mod </span>snapshot_cmd;
+<span class="kw">pub mod </span>state_migration_cmd;
 
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::HELP_MESSAGE;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::<span class="kw-2">*</span>;
@@ -102,6 +108,10 @@
     <span class="doccomment">/// Benchmark various Forest subsystems
     </span><span class="attr">#[command(subcommand)]
     </span>Benchmark(benchmark_cmd::BenchmarkCommands),
+
+    <span class="doccomment">/// State migration tools
+    </span><span class="attr">#[command(subcommand)]
+    </span>StateMigration(state_migration_cmd::StateMigrationCommands),
 
     <span class="doccomment">/// Manage snapshots
     </span><span class="attr">#[command(subcommand)]

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CarCommands"],"fn":["dedup_block_stream","merge_car_streams"]};
+window.SIDEBAR_ITEMS = {"enum":["CarCommands"]};

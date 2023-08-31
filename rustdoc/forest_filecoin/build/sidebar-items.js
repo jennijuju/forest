@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"static":["ACTOR_BUNDLES"],"struct":["ActorBundleInfo"]};

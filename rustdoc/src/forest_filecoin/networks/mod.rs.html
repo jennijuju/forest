@@ -320,21 +320,73 @@
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
 <a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{fmt::Display, str::FromStr};
 
-<span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconPoint, BeaconSchedule, DrandBeacon, DrandConfig};
-<span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCH_DURATION_SECONDS};
-<span class="kw">use </span><span class="kw">crate</span>::shim::sector::{RegisteredPoStProofV3, RegisteredSealProofV3};
-<span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
 <span class="kw">use </span>anyhow::Error;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actors_shared::v10::runtime::Policy;
 <span class="kw">use </span>libp2p::Multiaddr;
+<span class="kw">use </span>once_cell::sync::Lazy;
+<span class="kw">use </span>reqwest::Url;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>strum_macros::Display;
+
+<span class="kw">use </span><span class="kw">crate</span>::beacon::{BeaconPoint, BeaconSchedule, DrandBeacon, DrandConfig};
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCH_DURATION_SECONDS};
+<span class="kw">use </span><span class="kw">crate</span>::shim::sector::{RegisteredPoStProofV3, RegisteredSealProofV3};
+<span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
 
 <span class="kw">mod </span>drand;
 
@@ -642,4 +694,50 @@
         })
         .collect()
 }
+
+<span class="attr">#[derive(Debug)]
+</span><span class="kw">pub struct </span>ActorBundleInfo {
+    <span class="kw">pub </span>manifest: Cid,
+    <span class="kw">pub </span>url: Url,
+}
+
+<span class="kw">pub static </span>ACTOR_BUNDLES: Lazy&lt;[ActorBundleInfo; <span class="number">8</span>]&gt; = Lazy::new(|| {
+    [
+        <span class="comment">// calibnet
+        </span>ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedbedgynklc4dgpyxippkxmba2mgtw7ecntoneclsvvl4klqwuyyy&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
+        },
+        ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0-rc.1/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
+        },
+        ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedhuowetjy2h4cxnijz2l64h4mzpk5m256oywp4evarpono3cjhco&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0-rc2/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
+        },
+        <span class="comment">// devnet
+        </span>ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacebzz376j5kizfck56366kdz5aut6ktqrvqbi3efa2d4l2o2m653ts&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0/builtin-actors-devnet.car&quot;</span>).unwrap(),
+        },
+        ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaceay35go4xbjb45km6o46e5bib3bi46panhovcbedrynzwmm3drr4i&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0/builtin-actors-devnet.car&quot;</span>).unwrap(),
+        },
+        <span class="comment">// mainnet
+        </span>ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaceb6j6666h36xnhksu3ww4kxb6e25niayfgkdnifaqi6m6ooc66i6i&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-mainnet.car&quot;</span>).unwrap(),
+        },
+        ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacecsuyf7mmvrhkx2evng5gnz5canlnz2fdlzu2lvcgptiq2pzuovos&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0/builtin-actors-mainnet.car&quot;</span>).unwrap(),
+        },
+        ActorBundleInfo{
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacecnhaiwcrpyjvzl4uv4q3jzoif26okl3m66q3cijp3dfwlcxwztwo&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0/builtin-actors-mainnet.car&quot;</span>).unwrap(),
+        },
+    ]
+});
 </code></pre></div></section></main></body></html>

@@ -29,6 +29,7 @@
 <a href="#29" id="29">29</a>
 <a href="#30" id="30">30</a>
 <a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -53,6 +54,7 @@
             <span class="comment">// Run command
             </span><span class="kw">match </span>cmd {
                 Subcommand::Benchmark(cmd) =&gt; cmd.run().<span class="kw">await</span>,
+                Subcommand::StateMigration(state_migration) =&gt; state_migration.run().<span class="kw">await</span>,
                 Subcommand::Snapshot(cmd) =&gt; cmd.run().<span class="kw">await</span>,
                 Subcommand::Fetch(cmd) =&gt; cmd.run().<span class="kw">await</span>,
                 Subcommand::Archive(cmd) =&gt; cmd.run().<span class="kw">await</span>,

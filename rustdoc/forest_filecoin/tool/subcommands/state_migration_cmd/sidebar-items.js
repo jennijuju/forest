@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_BUNDLE_FILE_NAME"],"enum":["StateMigrationCommands"],"fn":["download_bundle_if_needed","generate_actor_bundle","is_bundle_car_valid","is_bundle_valid"],"static":["ACTOR_BUNDLE_CACHE_DIR"]};
