@@ -566,11 +566,6 @@
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
 <a href="#568" id="568">568</a>
-<a href="#569" id="569">569</a>
-<a href="#570" id="570">570</a>
-<a href="#571" id="571">571</a>
-<a href="#572" id="572">572</a>
-<a href="#573" id="573">573</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -605,7 +600,7 @@
     tipset_tracker::TipsetTracker,
     Error,
 };
-<span class="kw">use </span><span class="kw">crate</span>::db::setting_keys::{ESTIMATED_RECORDS_KEY, HEAD_KEY};
+<span class="kw">use </span><span class="kw">crate</span>::db::setting_keys::HEAD_KEY;
 <span class="kw">use </span><span class="kw">crate</span>::db::{SettingsStore, SettingsStoreExt};
 
 <span class="comment">// A cap on the size of the future_sink
@@ -721,11 +716,6 @@
     /// headers.
     </span><span class="kw">pub fn </span>add_to_tipset_tracker(<span class="kw-2">&amp;</span><span class="self">self</span>, header: <span class="kw-2">&amp;</span>BlockHeader) {
         <span class="self">self</span>.tipset_tracker.add(header);
-    }
-
-    <span class="kw">pub fn </span>set_estimated_records(<span class="kw-2">&amp;</span><span class="self">self</span>, records: u64) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="self">self</span>.settings.write_obj(ESTIMATED_RECORDS_KEY, <span class="kw-2">&amp;</span>records)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Writes tipset block headers to data store and updates heaviest tipset

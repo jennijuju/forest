@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Mmap"]};
+window.SIDEBAR_ITEMS = {"enum":["EitherMmapOrRandomAccessFile"],"fn":["should_use_file_io"],"struct":["Mmap"]};

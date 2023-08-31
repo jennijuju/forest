@@ -140,8 +140,6 @@
 <a href="#140" id="140">140</a>
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -163,8 +161,6 @@
 <span class="kw">use </span>std::ffi::OsString;
 <span class="kw">use </span>std::{fs::File, process, time::Duration};
 <span class="kw">use </span>tracing::info;
-
-<span class="kw">const </span>EVENT_TIMEOUT: Timeout = Timeout::Val(Duration::from_secs(<span class="number">20</span>));
 
 <span class="comment">// Initiate an Event object in shared memory.
 </span><span class="kw">fn </span>create_ipc_lock() -&gt; anyhow::Result&lt;()&gt; {
@@ -192,12 +188,12 @@
         daemon = daemon.pid_file(path, <span class="prelude-val">Some</span>(<span class="bool-val">false</span>))
     }
 
-    daemon = daemon.setup_post_fork_parent_hook(|_parent_pid, _child_pid| {
+    daemon = daemon.setup_post_fork_parent_hook(|_parent_pid, child_pid| {
         <span class="kw">let </span><span class="kw-2">mut </span>shmem = ipc_shmem_conf().open().expect(<span class="string">&quot;open must succeed&quot;</span>);
         shmem.set_owner(<span class="bool-val">true</span>);
         <span class="kw">let </span>(event, <span class="kw">_</span>) =
             <span class="kw">unsafe </span>{ Event::from_existing(shmem.as_ptr()).expect(<span class="string">&quot;from_existing must succeed&quot;</span>) };
-        <span class="kw">let </span>ret = event.wait(EVENT_TIMEOUT);
+        <span class="kw">let </span>ret = event.wait(Timeout::Infinite);
         drop(shmem); <span class="comment">// Delete the local link and the shared memory object.
         </span><span class="kw">if </span>ret.is_err() {
             cli_error_and_die(
@@ -205,7 +201,7 @@
                 <span class="number">1</span>,
             );
         }
-        <span class="macro">info!</span>(<span class="string">&quot;Forest has been detached and runs in the background.&quot;</span>);
+        <span class="macro">info!</span>(<span class="string">&quot;Forest has been detached and runs in the background (PID: {child_pid}).&quot;</span>);
         process::exit(<span class="number">0</span>);
     });
 

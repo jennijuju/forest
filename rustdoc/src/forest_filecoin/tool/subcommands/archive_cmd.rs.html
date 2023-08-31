@@ -163,6 +163,9 @@
 <a href="#163" id="163">163</a>
 <a href="#164" id="164">164</a>
 <a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -189,7 +192,10 @@
     <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Info { snapshot } =&gt; {
-                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, ArchiveInfo::from_store(AnyCar::try_from(snapshot)<span class="question-mark">?</span>)<span class="question-mark">?</span>);
+                <span class="macro">println!</span>(
+                    <span class="string">&quot;{}&quot;</span>,
+                    ArchiveInfo::from_store(AnyCar::try_from(snapshot.as_path())<span class="question-mark">?</span>)<span class="question-mark">?
+                </span>);
                 <span class="prelude-val">Ok</span>(())
             }
         }

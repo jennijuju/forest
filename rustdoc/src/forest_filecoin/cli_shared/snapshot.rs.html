@@ -470,6 +470,28 @@
 <a href="#470" id="470">470</a>
 <a href="#471" id="471">471</a>
 <a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -480,7 +502,10 @@
     str::FromStr,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
+<span class="kw">use crate</span>::{
+    networks::NetworkChain,
+    utils::{retry, RetryArgs},
+};
 <span class="kw">use </span>anyhow::{anyhow, bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDate;
 <span class="kw">use </span>tracing::{info, warn};
@@ -544,11 +569,30 @@
         </span>.date_and_height_and_forest();
     <span class="kw">let </span>filename = filename(vendor, chain, date, height, forest_format);
 
-    <span class="kw">match </span>download_aria2c(<span class="kw-2">&amp;</span>url, directory, <span class="kw-2">&amp;</span>filename).<span class="kw">await </span>{
+    download_file_with_retry(<span class="kw-2">&amp;</span>url, directory, <span class="kw-2">&amp;</span>filename).<span class="kw">await
+</span>}
+
+<span class="kw">pub async fn </span>download_file_with_retry(
+    url: <span class="kw-2">&amp;</span>Url,
+    directory: <span class="kw-2">&amp;</span>Path,
+    filename: <span class="kw-2">&amp;</span>str,
+) -&gt; anyhow::Result&lt;PathBuf&gt; {
+    <span class="prelude-val">Ok</span>(retry(
+        RetryArgs {
+            timeout: <span class="prelude-val">None</span>,
+            ..Default::default()
+        },
+        || download_file(url.clone(), directory, filename),
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>)
+}
+
+<span class="kw">pub async fn </span>download_file(url: Url, directory: <span class="kw-2">&amp;</span>Path, filename: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;PathBuf&gt; {
+    <span class="kw">match </span>download_aria2c(<span class="kw-2">&amp;</span>url, directory, filename).<span class="kw">await </span>{
         <span class="prelude-val">Ok</span>(path) =&gt; <span class="prelude-val">Ok</span>(path),
         <span class="prelude-val">Err</span>(AriaErr::CouldNotExec(reason)) =&gt; {
             <span class="macro">warn!</span>(%reason, <span class="string">&quot;couldn&#39;t run aria2c. Falling back to conventional download, which will be much slower - consider installing aria2c.&quot;</span>);
-            download_http(url, directory, <span class="kw-2">&amp;</span>filename).<span class="kw">await
+            download_http(url, directory, filename).<span class="kw">await
         </span>}
         <span class="prelude-val">Err</span>(AriaErr::Other(o)) =&gt; <span class="prelude-val">Err</span>(o),
     }

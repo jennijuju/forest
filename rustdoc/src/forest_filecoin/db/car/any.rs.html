@@ -155,6 +155,19 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -167,12 +180,13 @@
 
 </span><span class="kw">use super</span>::{CacheKey, ZstdFrameCache};
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::EitherMmapOrRandomAccessFile;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>parking_lot::Mutex;
-<span class="kw">use </span>positioned_io::{RandomAccessFile, ReadAt};
+<span class="kw">use </span>positioned_io::ReadAt;
 <span class="kw">use </span>std::io::{Error, ErrorKind, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>std::path::PathBuf;
+<span class="kw">use </span>std::path::Path;
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">pub enum </span>AnyCar&lt;ReaderT&gt; {
@@ -253,10 +267,10 @@
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;PathBuf&gt; <span class="kw">for </span>AnyCar&lt;RandomAccessFile&gt; {
+<span class="kw">impl </span>TryFrom&lt;<span class="kw-2">&amp;</span>Path&gt; <span class="kw">for </span>AnyCar&lt;EitherMmapOrRandomAccessFile&gt; {
     <span class="kw">type </span>Error = std::io::Error;
-    <span class="kw">fn </span>try_from(path: PathBuf) -&gt; std::io::Result&lt;<span class="self">Self</span>&gt; {
-        AnyCar::new(RandomAccessFile::open(path)<span class="question-mark">?</span>)
+    <span class="kw">fn </span>try_from(path: <span class="kw-2">&amp;</span>Path) -&gt; std::io::Result&lt;<span class="self">Self</span>&gt; {
+        AnyCar::new(EitherMmapOrRandomAccessFile::open(path)<span class="question-mark">?</span>)
     }
 }
 
@@ -278,6 +292,18 @@
             AnyCar::Plain(plain) =&gt; plain.put_keyed(k, block),
             AnyCar::Memory(mem) =&gt; mem.put_keyed(k, block),
         }
+    }
+}
+
+<span class="kw">impl</span>&lt;ReaderT&gt; From&lt;<span class="kw">super</span>::ForestCar&lt;ReaderT&gt;&gt; <span class="kw">for </span>AnyCar&lt;ReaderT&gt; {
+    <span class="kw">fn </span>from(car: <span class="kw">super</span>::ForestCar&lt;ReaderT&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Forest(car)
+    }
+}
+
+<span class="kw">impl</span>&lt;ReaderT&gt; From&lt;<span class="kw">super</span>::PlainCar&lt;ReaderT&gt;&gt; <span class="kw">for </span>AnyCar&lt;ReaderT&gt; {
+    <span class="kw">fn </span>from(car: <span class="kw">super</span>::PlainCar&lt;ReaderT&gt;) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::Plain(car)
     }
 }
 

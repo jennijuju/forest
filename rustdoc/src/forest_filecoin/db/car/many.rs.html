@@ -176,6 +176,24 @@
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -187,20 +205,19 @@
 //! A single z-frame cache is shared between all read-only stores.
 
 </span><span class="kw">use super</span>::{AnyCar, ZstdFrameCache};
-<span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
+<span class="kw">use </span><span class="kw">crate</span>::db::{MemoryDB, SettingsStore};
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::BitswapStoreReadWrite;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::Mmap;
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::EitherMmapOrRandomAccessFile;
 <span class="kw">use crate</span>::{blocks::Tipset, libp2p_bitswap::BitswapStoreRead};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>parking_lot::Mutex;
-<span class="kw">use </span>positioned_io::RandomAccessFile;
-<span class="kw">use </span>std::{fs, io, path::PathBuf, sync::Arc};
+<span class="kw">use </span>parking_lot::{Mutex, RwLock};
+<span class="kw">use </span>std::{io, path::PathBuf, sync::Arc};
 
 <span class="kw">pub struct </span>ManyCar&lt;WriterT = MemoryDB&gt; {
     shared_cache: Arc&lt;Mutex&lt;ZstdFrameCache&gt;&gt;,
-    read_only: Vec&lt;AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::RandomAccessFileReader&gt;&gt;&gt;,
+    read_only: RwLock&lt;Vec&lt;AnyCar&lt;Box&lt;<span class="kw">dyn </span><span class="kw">super</span>::RandomAccessFileReader&gt;&gt;&gt;&gt;,
     writer: WriterT,
 }
 
@@ -208,7 +225,7 @@
     <span class="kw">pub fn </span>new(writer: WriterT) -&gt; <span class="self">Self </span>{
         ManyCar {
             shared_cache: Arc::new(Mutex::new(ZstdFrameCache::default())),
-            read_only: Vec::new(),
+            read_only: RwLock::new(Vec::new()),
             writer,
         }
     }
@@ -225,28 +242,32 @@
 }
 
 <span class="kw">impl</span>&lt;WriterT&gt; ManyCar&lt;WriterT&gt; {
-    <span class="kw">pub fn </span>read_only&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, any_car: AnyCar&lt;ReaderT&gt;) {
-        <span class="kw">let </span>key = <span class="self">self</span>.read_only.len() <span class="kw">as </span>u64;
-        <span class="self">self</span>.read_only.push(
+    <span class="kw">pub fn </span>with_read_only&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt;(
+        <span class="self">self</span>,
+        any_car: AnyCar&lt;ReaderT&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.read_only(any_car);
+        <span class="self">self
+    </span>}
+
+    <span class="kw">pub fn </span>read_only&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, any_car: AnyCar&lt;ReaderT&gt;) {
+        <span class="kw">let </span><span class="kw-2">mut </span>read_only = <span class="self">self</span>.read_only.write();
+        <span class="kw">let </span>key = read_only.len() <span class="kw">as </span>u64;
+        read_only.push(
             any_car
                 .with_cache(<span class="self">self</span>.shared_cache.clone(), key)
                 .into_dyn(),
         );
     }
 
-    <span class="kw">pub fn </span>read_only_files(<span class="kw-2">&amp;mut </span><span class="self">self</span>, files: <span class="kw">impl </span>Iterator&lt;Item = PathBuf&gt;) -&gt; io::Result&lt;()&gt; {
-        <span class="comment">// Use mmap by default, switch to file-io when `FOREST_CAR_LOADER_FILE_IO` is set to `1` or `true`
-        </span><span class="kw">let </span>use_file_io = <span class="kw">match </span>std::env::var(<span class="string">&quot;FOREST_CAR_LOADER_FILE_IO&quot;</span>) {
-            <span class="prelude-val">Ok</span>(var) =&gt; <span class="macro">matches!</span>(var.to_lowercase().as_str(), <span class="string">&quot;1&quot; </span>| <span class="string">&quot;true&quot;</span>),
-            <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
-        };
+    <span class="kw">pub fn </span>with_read_only_files(<span class="self">self</span>, files: <span class="kw">impl </span>Iterator&lt;Item = PathBuf&gt;) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="self">self</span>.read_only_files(files)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>)
+    }
 
+    <span class="kw">pub fn </span>read_only_files(<span class="kw-2">&amp;</span><span class="self">self</span>, files: <span class="kw">impl </span>Iterator&lt;Item = PathBuf&gt;) -&gt; io::Result&lt;()&gt; {
         <span class="kw">for </span>file <span class="kw">in </span>files {
-            <span class="kw">if </span>use_file_io {
-                <span class="self">self</span>.read_only(AnyCar::new(RandomAccessFile::open(file)<span class="question-mark">?</span>)<span class="question-mark">?</span>);
-            } <span class="kw">else </span>{
-                <span class="self">self</span>.read_only(AnyCar::new(Mmap::map(<span class="kw-2">&amp;</span>fs::File::open(file)<span class="question-mark">?</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span>);
-            }
+            <span class="self">self</span>.read_only(AnyCar::new(EitherMmapOrRandomAccessFile::open(file)<span class="question-mark">?</span>)<span class="question-mark">?</span>);
         }
 
         <span class="prelude-val">Ok</span>(())
@@ -255,6 +276,7 @@
     <span class="kw">pub fn </span>heaviest_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Tipset&gt; {
         <span class="kw">let </span>tipsets = <span class="self">self
             </span>.read_only
+            .read()
             .iter()
             .map(AnyCar::heaviest_tipset)
             .collect::&lt;anyhow::Result&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?</span>;
@@ -267,18 +289,14 @@
 
 <span class="kw">impl</span>&lt;ReaderT: <span class="kw">super</span>::RandomAccessFileReader&gt; From&lt;AnyCar&lt;ReaderT&gt;&gt; <span class="kw">for </span>ManyCar&lt;MemoryDB&gt; {
     <span class="kw">fn </span>from(any_car: AnyCar&lt;ReaderT&gt;) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::default();
-        many_car.read_only(any_car);
-        many_car
+        ManyCar::default().with_read_only(any_car)
     }
 }
 
 <span class="kw">impl </span>TryFrom&lt;Vec&lt;PathBuf&gt;&gt; <span class="kw">for </span>ManyCar&lt;MemoryDB&gt; {
     <span class="kw">type </span>Error = io::Error;
     <span class="kw">fn </span>try_from(files: Vec&lt;PathBuf&gt;) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>many_car = ManyCar::default();
-        many_car.read_only_files(files.into_iter())<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(many_car)
+        ManyCar::default().with_read_only_files(files.into_iter())
     }
 }
 
@@ -287,7 +305,7 @@
         <span class="comment">// Theoretically it should be easily parallelizable with `rayon`.
         // In practice, there is a massive performance loss when providing
         // more than a single reader.
-        </span><span class="kw">for </span>reader <span class="kw">in </span><span class="self">self</span>.read_only.iter() {
+        </span><span class="kw">for </span>reader <span class="kw">in </span><span class="self">self</span>.read_only.read().iter() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(val) = reader.get(k)<span class="question-mark">? </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(val));
             }
@@ -318,6 +336,24 @@
     }
 }
 
+<span class="kw">impl</span>&lt;WriterT: SettingsStore&gt; SettingsStore <span class="kw">for </span>ManyCar&lt;WriterT&gt; {
+    <span class="kw">fn </span>read_bin(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;&gt; {
+        SettingsStore::read_bin(<span class="self">self</span>.writer(), key)
+    }
+
+    <span class="kw">fn </span>write_bin(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str, value: <span class="kw-2">&amp;</span>[u8]) -&gt; anyhow::Result&lt;()&gt; {
+        SettingsStore::write_bin(<span class="self">self</span>.writer(), key, value)
+    }
+
+    <span class="kw">fn </span>exists(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;bool&gt; {
+        SettingsStore::exists(<span class="self">self</span>.writer(), key)
+    }
+
+    <span class="kw">fn </span>setting_keys(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Vec&lt;String&gt;&gt; {
+        SettingsStore::setting_keys(<span class="self">self</span>.writer())
+    }
+}
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span><span class="kw">super</span>::<span class="kw">super</span>::AnyCar;
@@ -332,9 +368,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>many_car_idempotent() {
-        <span class="kw">let </span><span class="kw-2">mut </span>many = ManyCar::new(MemoryDB::default());
-        many.read_only(AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap());
-        many.read_only(AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap());
+        <span class="kw">let </span>many = ManyCar::new(MemoryDB::default())
+            .with_read_only(AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap())
+            .with_read_only(AnyCar::try_from(mainnet::DEFAULT_GENESIS).unwrap());
         <span class="macro">assert_eq!</span>(
             many.heaviest_tipset().unwrap(),
             AnyCar::try_from(mainnet::DEFAULT_GENESIS)
