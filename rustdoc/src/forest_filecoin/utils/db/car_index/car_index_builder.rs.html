@@ -142,6 +142,7 @@
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use super</span>::{FrameOffset, Hash, IndexHeader, KeyValuePair, Slot};
@@ -192,8 +193,8 @@
         <span class="kw">let </span><span class="kw-2">mut </span>best_hash = Hash::from(<span class="number">0_u64</span>);
         <span class="kw">for </span>(nth, slot) <span class="kw">in </span><span class="self">self</span>.table.iter().enumerate() {
             <span class="kw">if let </span>Slot::Full(entry) = slot {
-                <span class="kw">let </span>dist = entry.hash.distance(nth <span class="kw">as </span>u64, <span class="self">self</span>.len());
-                <span class="kw">if </span>dist &gt; <span class="self">self</span>.len() {
+                <span class="kw">let </span>dist = entry.hash.distance(nth <span class="kw">as </span>u64, <span class="self">self</span>.size());
+                <span class="kw">if </span>dist &gt; <span class="self">self</span>.size() {
                     <span class="kw">continue</span>;
                 }
                 <span class="kw">if </span>dist.abs_diff(wanted_dist) &lt; best_diff {
@@ -244,7 +245,7 @@
             magic_number: IndexHeader::MAGIC_NUMBER,
             longest_distance: <span class="self">self</span>.longest_distance,
             collisions: <span class="self">self</span>.collisions,
-            buckets: <span class="self">self</span>.len(),
+            buckets: <span class="self">self</span>.size(),
         }
     }
 
@@ -282,7 +283,8 @@
         len <span class="kw">as </span>u32
     }
 
-    <span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+    <span class="comment">// Name it `size` to get rid of `clippy::len-without-is-empty`
+    </span><span class="kw">pub fn </span>size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">self</span>.table.len() <span class="kw">as </span>u64
     }
 }
