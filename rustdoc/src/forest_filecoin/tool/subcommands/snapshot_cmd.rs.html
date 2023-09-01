@@ -277,6 +277,95 @@
 <a href="#277" id="277">277</a>
 <a href="#278" id="278">278</a>
 <a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -285,17 +374,24 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ChainIndex;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot;
 <span class="kw">use </span><span class="kw">crate</span>::daemon::bundle::load_actor_bundles;
+<span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{recurse_links_hash, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::machine::MultiEngine;
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
 <span class="kw">use </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::ensure_params_downloaded;
 <span class="kw">use </span>anyhow::{bail, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
+<span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
+<span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>indicatif::{ProgressBar, ProgressStyle};
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;
+<span class="kw">use </span>tokio::fs::File;
+<span class="kw">use </span>tokio::io::AsyncWriteExt;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>SnapshotCommands {
@@ -326,6 +422,26 @@
         <span class="doccomment">/// Path to a snapshot CAR, which may be zstd compressed
         </span><span class="attr">#[arg(required = <span class="bool-val">true</span>)]
         </span>snapshot_files: Vec&lt;PathBuf&gt;,
+    },
+
+    <span class="doccomment">/// Make this snapshot suitable for use as a compressed car-backed blockstore.
+    </span>Compress {
+        <span class="doccomment">/// Input CAR file, in `.car`, `.car.zst`, or `.forest.car.zst` format.
+        </span>source: PathBuf,
+        <span class="doccomment">/// Output file, will be in `.forest.car.zst` format.
+        ///
+        /// Will reuse the source name (with new extension) if pointed to a
+        /// directory.
+        </span><span class="attr">#[arg(short, long, default_value = <span class="string">&quot;.&quot;</span>)]
+        </span>output_path: PathBuf,
+        <span class="attr">#[arg(long, default_value_t = <span class="number">3</span>)]
+        </span>compression_level: u16,
+        <span class="doccomment">/// End zstd frames after they exceed this length
+        </span><span class="attr">#[arg(long, default_value_t = DEFAULT_FOREST_CAR_FRAME_SIZE)]
+        </span>frame_size: usize,
+        <span class="doccomment">/// Overwrite output file without prompting.
+        </span><span class="attr">#[arg(long, default_value_t = <span class="bool-val">false</span>)]
+        </span>force: bool,
     },
 }
 
@@ -359,6 +475,68 @@
                 )
                 .<span class="kw">await
             </span>}
+            <span class="self">Self</span>::Compress {
+                source,
+                output_path,
+                compression_level,
+                frame_size,
+                force,
+            } =&gt; {
+                <span class="comment">// If input is &#39;snapshot.car.zst&#39; and output is &#39;.&#39;, set the
+                // destination to &#39;./snapshot.forest.car.zst&#39;.
+                </span><span class="kw">let </span>destination = <span class="kw">match </span>output_path.is_dir() {
+                    <span class="bool-val">true </span>=&gt; {
+                        <span class="kw">let </span><span class="kw-2">mut </span>destination = output_path;
+                        destination.push(source.clone());
+                        <span class="kw">while let </span><span class="prelude-val">Some</span>(ext) = destination.extension() {
+                            <span class="kw">if </span>!(ext == <span class="string">&quot;zst&quot; </span>|| ext == <span class="string">&quot;car&quot; </span>|| ext == <span class="string">&quot;forest&quot;</span>) {
+                                <span class="kw">break</span>;
+                            }
+                            destination.set_extension(<span class="string">&quot;&quot;</span>);
+                        }
+                        destination.with_extension(<span class="string">&quot;forest.car.zst&quot;</span>)
+                    }
+                    <span class="bool-val">false </span>=&gt; output_path.clone(),
+                };
+
+                <span class="kw">if </span>!force &amp;&amp; destination.exists() {
+                    <span class="kw">let </span>have_permission = Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())
+                        .with_prompt(<span class="macro">format!</span>(
+                            <span class="string">&quot;{} will be overwritten. Continue?&quot;</span>,
+                            destination.to_string_lossy()
+                        ))
+                        .default(<span class="bool-val">false</span>)
+                        .interact()
+                        <span class="comment">// e.g not a tty (or some other error), so haven&#39;t got permission.
+                        </span>.unwrap_or(<span class="bool-val">false</span>);
+                    <span class="kw">if </span>!have_permission {
+                        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+                    }
+                }
+
+                <span class="macro">println!</span>(<span class="string">&quot;Generating forest.car.zst file: {:?}&quot;</span>, <span class="kw-2">&amp;</span>destination);
+
+                <span class="kw">let </span>file = File::open(<span class="kw-2">&amp;</span>source).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>pb = ProgressBar::new(file.metadata().<span class="kw">await</span><span class="question-mark">?</span>.len()).with_style(
+                    ProgressStyle::with_template(<span class="string">&quot;{bar} {percent}%, eta: {eta}&quot;</span>)
+                        .expect(<span class="string">&quot;infallible&quot;</span>),
+                );
+                <span class="kw">let </span>file = tokio::io::BufReader::new(pb.wrap_async_read(file));
+
+                <span class="kw">let </span><span class="kw-2">mut </span>block_stream = CarStream::new(file).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>roots = std::mem::take(<span class="kw-2">&amp;mut </span>block_stream.header.roots);
+
+                <span class="kw">let </span><span class="kw-2">mut </span>dest = tokio::io::BufWriter::new(File::create(<span class="kw-2">&amp;</span>destination).<span class="kw">await</span><span class="question-mark">?</span>);
+
+                <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
+                    frame_size,
+                    compression_level,
+                    block_stream.map_err(anyhow::Error::from),
+                );
+                <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>dest, roots, frames).<span class="kw">await</span><span class="question-mark">?</span>;
+                dest.flush().<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(())
+            }
         }
     }
 }
