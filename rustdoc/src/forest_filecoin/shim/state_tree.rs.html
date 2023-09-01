@@ -334,6 +334,71 @@
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{
@@ -341,7 +406,7 @@
     sync::Arc,
 };
 
-<span class="kw">use </span>anyhow::{bail, Context};
+<span class="kw">use </span>anyhow::{anyhow, bail, Context};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">pub use </span>fvm2::state_tree::{ActorState <span class="kw">as </span>ActorStateV2, StateTree <span class="kw">as </span>StateTreeV2};
 <span class="kw">pub use </span>fvm3::state_tree::{ActorState <span class="kw">as </span>ActorStateV3, StateTree <span class="kw">as </span>StateTreeV3};
@@ -370,13 +435,15 @@
     V5,
 }
 
-<span class="kw">impl </span>TryFrom&lt;StateTreeVersionV3&gt; <span class="kw">for </span>StateTreeVersion {
-    <span class="kw">type </span>Error = anyhow::Error;
-    <span class="kw">fn </span>try_from(value: StateTreeVersionV3) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = FromPrimitive::from_u32(value <span class="kw">as </span>u32) {
-            <span class="prelude-val">Ok</span>(v)
-        } <span class="kw">else </span>{
-            <span class="macro">bail!</span>(<span class="string">&quot;Invalid conversion&quot;</span>);
+<span class="kw">impl </span>From&lt;StateTreeVersionV3&gt; <span class="kw">for </span>StateTreeVersion {
+    <span class="kw">fn </span>from(value: StateTreeVersionV3) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>value {
+            StateTreeVersionV3::V0 =&gt; StateTreeVersion::V0,
+            StateTreeVersionV3::V1 =&gt; StateTreeVersion::V1,
+            StateTreeVersionV3::V2 =&gt; StateTreeVersion::V2,
+            StateTreeVersionV3::V3 =&gt; StateTreeVersion::V3,
+            StateTreeVersionV3::V4 =&gt; StateTreeVersion::V4,
+            StateTreeVersionV3::V5 =&gt; StateTreeVersion::V5,
         }
     }
 }
@@ -430,8 +497,12 @@
 /// Not all the inner methods are implemented, only those that are needed. Feel
 /// free to add those when necessary.
 </span><span class="kw">pub enum </span>StateTree&lt;S&gt; {
-    V2(StateTreeV2&lt;Arc&lt;S&gt;&gt;),
-    V3(StateTreeV3&lt;Arc&lt;S&gt;&gt;),
+    <span class="comment">// Version 0 is used to parse the genesis block.
+    </span>V0(<span class="kw">super</span>::state_tree_v0::StateTreeV0&lt;Arc&lt;S&gt;&gt;),
+    <span class="comment">// fvm-2 support state tree versions 3 and 4.
+    </span>FvmV2(StateTreeV2&lt;Arc&lt;S&gt;&gt;),
+    <span class="comment">// fvm-3 support state tree versions 5.
+    </span>FvmV3(StateTreeV3&lt;Arc&lt;S&gt;&gt;),
 }
 
 <span class="kw">impl</span>&lt;S&gt; StateTree&lt;S&gt;
@@ -441,9 +512,9 @@
     <span class="doccomment">/// Constructor for a HAMT state tree given an IPLD store
     </span><span class="kw">pub fn </span>new(store: Arc&lt;S&gt;, version: StateTreeVersion) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new(store.clone(), version.try_into()<span class="question-mark">?</span>) {
-            <span class="prelude-val">Ok</span>(StateTree::V3(st))
+            <span class="prelude-val">Ok</span>(StateTree::FvmV3(st))
         } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new(store, version.try_into()<span class="question-mark">?</span>) {
-            <span class="prelude-val">Ok</span>(StateTree::V2(st))
+            <span class="prelude-val">Ok</span>(StateTree::FvmV2(st))
         } <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="string">&quot;Can&#39;t create a valid state tree for the given version.&quot;</span>);
         }
@@ -451,9 +522,11 @@
 
     <span class="kw">pub fn </span>new_from_root(store: Arc&lt;S&gt;, c: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new_from_root(store.clone(), c) {
-            <span class="prelude-val">Ok</span>(StateTree::V3(st))
-        } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new_from_root(store, c) {
-            <span class="prelude-val">Ok</span>(StateTree::V2(st))
+            <span class="prelude-val">Ok</span>(StateTree::FvmV3(st))
+        } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new_from_root(store.clone(), c) {
+            <span class="prelude-val">Ok</span>(StateTree::FvmV2(st))
+        } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = <span class="kw">super</span>::state_tree_v0::StateTreeV0::new_from_root(store, c) {
+            <span class="prelude-val">Ok</span>(StateTree::V0(st))
         } <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="string">&quot;Can&#39;t create a valid state tree from the given root. This error may indicate unsupported version.&quot;</span>)
         }
@@ -462,16 +535,27 @@
     <span class="doccomment">/// Get actor state from an address. Will be resolved to ID address.
     </span><span class="kw">pub fn </span>get_actor(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorState&gt;&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            StateTree::V2(st) =&gt; <span class="prelude-val">Ok</span>(st
+            StateTree::FvmV2(st) =&gt; <span class="prelude-val">Ok</span>(st
                 .get_actor(<span class="kw-2">&amp;</span>addr.into())
-                .map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
+                .map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
                 </span>.map(Into::into)),
-            StateTree::V3(st) =&gt; {
+            StateTree::FvmV3(st) =&gt; {
                 <span class="kw">let </span>id = st.lookup_id(addr)<span class="question-mark">?</span>;
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = id {
                     <span class="prelude-val">Ok</span>(st
                         .get_actor(id)
-                        .map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
+                        .map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
+                        </span>.map(Into::into))
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+                }
+            }
+            StateTree::V0(st) =&gt; {
+                <span class="kw">let </span>id = st.lookup_id(addr)<span class="question-mark">?</span>;
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = id {
+                    <span class="prelude-val">Ok</span>(st
+                        .get_actor(<span class="kw-2">&amp;</span>id)
+                        .map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
                         </span>.map(Into::into))
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
@@ -483,18 +567,18 @@
     <span class="doccomment">/// Retrieve store reference to modify db.
     </span><span class="kw">pub fn </span>store(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>S {
         <span class="kw">match </span><span class="self">self </span>{
-            StateTree::V2(st) =&gt; st.store(),
-            StateTree::V3(st) =&gt; st.store(),
+            StateTree::FvmV2(st) =&gt; st.store(),
+            StateTree::FvmV3(st) =&gt; st.store(),
+            StateTree::V0(st) =&gt; st.store(),
         }
     }
 
     <span class="doccomment">/// Get an ID address from any Address
     </span><span class="kw">pub fn </span>lookup_id(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorID&gt;&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            StateTree::V2(st) =&gt; st
-                .lookup_id(<span class="kw-2">&amp;</span>addr.into())
-                .map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
-            StateTree::V3(st) =&gt; <span class="prelude-val">Ok</span>(st.lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?</span>),
+            StateTree::FvmV2(st) =&gt; st.lookup_id(<span class="kw-2">&amp;</span>addr.into()).map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
+            StateTree::FvmV3(st) =&gt; <span class="prelude-val">Ok</span>(st.lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?</span>),
+            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::lookup_id not supported on old state trees&quot;</span>),
         }
     }
 
@@ -503,42 +587,45 @@
         </span>F: FnMut(Address, <span class="kw-2">&amp;</span>ActorState) -&gt; anyhow::Result&lt;()&gt;,
     {
         <span class="kw">match </span><span class="self">self </span>{
-            StateTree::V2(st) =&gt; {
+            StateTree::FvmV2(st) =&gt; {
                 <span class="kw">let </span>inner = |address: fvm_shared2::address::Address, actor_state: <span class="kw-2">&amp;</span>ActorStateV2| {
                     f(address.into(), <span class="kw-2">&amp;</span>actor_state.into())
                 };
                 st.for_each(inner)
             }
-            StateTree::V3(st) =&gt; {
+            StateTree::FvmV3(st) =&gt; {
                 <span class="kw">let </span>inner = |address: fvm_shared3::address::Address, actor_state: <span class="kw-2">&amp;</span>ActorStateV3| {
                     f(address.into(), <span class="kw-2">&amp;</span>actor_state.into())
                 };
                 st.for_each(inner)
             }
+            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::for_each not supported on old state trees&quot;</span>),
         }
     }
 
     <span class="doccomment">/// Flush state tree and return Cid root.
     </span><span class="kw">pub fn </span>flush(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; anyhow::Result&lt;Cid&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            StateTree::V2(st) =&gt; st.flush().map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
-            StateTree::V3(st) =&gt; <span class="prelude-val">Ok</span>(st.flush()<span class="question-mark">?</span>),
+            StateTree::FvmV2(st) =&gt; st.flush().map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
+            StateTree::FvmV3(st) =&gt; <span class="prelude-val">Ok</span>(st.flush()<span class="question-mark">?</span>),
+            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::flush not supported on old state trees&quot;</span>),
         }
     }
 
     <span class="doccomment">/// Set actor state with an actor ID.
     </span><span class="kw">pub fn </span>set_actor(<span class="kw-2">&amp;mut </span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address, actor: ActorState) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            StateTree::V2(st) =&gt; st
+            StateTree::FvmV2(st) =&gt; st
                 .set_actor(<span class="kw-2">&amp;</span>addr.into(), actor.into())
-                .map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
-            StateTree::V3(st) =&gt; {
+                .map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
+            StateTree::FvmV3(st) =&gt; {
                 <span class="kw">let </span>id = st
                     .lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?
                     </span>.context(<span class="string">&quot;couldn&#39;t find actor id&quot;</span>)<span class="question-mark">?</span>;
                 st.set_actor(id, actor.into());
                 <span class="prelude-val">Ok</span>(())
             }
+            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::set_actor not supported on old state trees&quot;</span>),
         }
     }
 }
@@ -668,6 +755,49 @@
             sequence: other.sequence,
             balance: TokenAmount::from(<span class="kw-2">&amp;</span>other.balance).into(),
         }
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span><span class="kw">super</span>::StateTree;
+    <span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
+    <span class="kw">use </span><span class="kw">crate</span>::db::car::AnyCar;
+    <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet};
+    <span class="kw">use </span>cid::Cid;
+    <span class="kw">use </span>fil_actor_interface::init::{<span class="self">self</span>, State};
+    <span class="kw">use </span>std::sync::Arc;
+
+    <span class="comment">// refactored from `StateManager::get_network_name`
+    </span><span class="kw">fn </span>get_network_name(car: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8], genesis_cid: Cid) -&gt; String {
+        <span class="kw">let </span>forest_car = AnyCar::new(car).unwrap();
+        <span class="kw">let </span>genesis_block = BlockHeader::load(<span class="kw-2">&amp;</span>forest_car, genesis_cid)
+            .unwrap()
+            .unwrap();
+        <span class="kw">let </span>state =
+            StateTree::new_from_root(Arc::new(<span class="kw-2">&amp;</span>forest_car), genesis_block.state_root()).unwrap();
+        <span class="kw">let </span>init_act = state.get_actor(<span class="kw-2">&amp;</span>init::ADDRESS.into()).unwrap().unwrap();
+
+        <span class="kw">let </span>state = State::load(<span class="kw-2">&amp;</span>forest_car, init_act.code, init_act.state).unwrap();
+
+        state.into_network_name()
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>calibnet_network_name() {
+        <span class="macro">assert_eq!</span>(
+            get_network_name(calibnet::DEFAULT_GENESIS, <span class="kw-2">*</span>calibnet::GENESIS_CID),
+            <span class="string">&quot;calibrationnet&quot;
+        </span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>mainnet_network_name() {
+        <span class="comment">// Yes, the name of `mainnet` in the genesis block really is `testnetnet`.
+        </span><span class="macro">assert_eq!</span>(
+            get_network_name(mainnet::DEFAULT_GENESIS, <span class="kw-2">*</span>mainnet::GENESIS_CID),
+            <span class="string">&quot;testnetnet&quot;
+        </span>);
     }
 }
 </code></pre></div></section></main></body></html>

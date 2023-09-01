@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["address","bigint","clock","crypto","deal","econ","error","executor","externs","gas","machine","message","piece","randomness","sector","state_tree","version"]};
+window.SIDEBAR_ITEMS = {"mod":["address","bigint","clock","crypto","deal","econ","error","executor","externs","gas","machine","message","piece","randomness","sector","state_tree","state_tree_v0","version"]};

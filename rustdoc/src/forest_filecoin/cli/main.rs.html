@@ -77,6 +77,8 @@
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -84,12 +86,13 @@
 <span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::logger;
+<span class="kw">use </span><span class="kw">crate</span>::daemon::get_actual_chain_name;
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{CurrentNetwork, Network};
 <span class="kw">use </span><span class="kw">crate</span>::utils::{bail_moved_cmd, io::ProgressBar};
 <span class="kw">use crate</span>::{
     cli::subcommands::{cli_error_and_die, Cli},
-    rpc_client::chain_get_name,
+    rpc_client::state_network_name,
 };
 <span class="kw">use </span>clap::Parser;
 
@@ -116,7 +119,8 @@
                     }
                     <span class="kw">let </span>opts = <span class="kw-2">&amp;</span>opts;
                     <span class="kw">if </span>opts.chain.is_none() {
-                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
+                        <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = state_network_name((), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
+                            <span class="kw">let </span>name = get_actual_chain_name(<span class="kw-2">&amp;</span>name);
                             <span class="kw">if </span>name == <span class="string">&quot;calibnet&quot; </span>{
                                 config.chain = Arc::new(ChainConfig::calibnet());
                             } <span class="kw">else if </span>name == <span class="string">&quot;devnet&quot; </span>{
@@ -135,7 +139,7 @@
                         Subcommand::Chain(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Auth(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Net(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                        Subcommand::Wallet(_cmd) =&gt; bail_moved_cmd(<span class="string">&quot;wallet&quot;</span>, <span class="string">&quot;forest-wallet&quot;</span>),
+                        Subcommand::Wallet(..) =&gt; bail_moved_cmd(<span class="string">&quot;wallet&quot;</span>, <span class="string">&quot;forest-wallet&quot;</span>),
                         Subcommand::Sync(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::Mpool(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
                         Subcommand::State(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
@@ -147,7 +151,7 @@
                         Subcommand::Archive(cmd) =&gt; cmd.run().<span class="kw">await</span>,
                         Subcommand::Attach(cmd) =&gt; cmd.run(config),
                         Subcommand::Shutdown(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                        Subcommand::Car(cmd) =&gt; cmd.run().<span class="kw">await</span>,
+                        Subcommand::Car(..) =&gt; bail_moved_cmd(<span class="string">&quot;car&quot;</span>, <span class="string">&quot;forest-tool&quot;</span>),
                     }
                 }
                 <span class="prelude-val">Err</span>(e) =&gt; {

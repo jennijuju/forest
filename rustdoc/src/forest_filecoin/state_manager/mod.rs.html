@@ -1305,11 +1305,6 @@
 <a href="#1305" id="1305">1305</a>
 <a href="#1306" id="1306">1306</a>
 <a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1319,6 +1314,7 @@
 <span class="kw">mod </span>utils;
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::run_state_migrations;
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
+<span class="kw">use </span>fil_actor_interface::init::{<span class="self">self</span>, State};
 <span class="kw">use </span>rayon::prelude::ParallelBridge;
 <span class="kw">pub use </span>utils::is_valid_for_sending;
 <span class="kw">mod </span>vm_circ_supply;
@@ -1573,20 +1569,14 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>.cs
     }
 
-    <span class="comment">// This function used to do this: Returns the network name from the init actor
-    // state.
-    </span><span class="doccomment">/// Returns the internal, protocol-level network name.
-    </span><span class="comment">// TODO: Once we are able to query the init actor state to obtain the network name from the
-    // genesis file, this should be removed. It is work in progress here:
-    // https://github.com/ChainSafe/forest/pull/2913
-    </span><span class="kw">pub fn </span>get_network_name(<span class="kw-2">&amp;</span><span class="self">self</span>, _st: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
-        <span class="kw">let </span>name = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.chain_config.network {
-            <span class="kw">crate</span>::networks::NetworkChain::Mainnet =&gt; <span class="string">&quot;testnetnet&quot;</span>,
-            <span class="kw">crate</span>::networks::NetworkChain::Calibnet =&gt; <span class="string">&quot;calibrationnet&quot;</span>,
-            <span class="kw">crate</span>::networks::NetworkChain::Devnet(name) =&gt; name,
-        }
-        .to_string();
-        <span class="prelude-val">Ok</span>(name)
+    <span class="doccomment">/// Returns the internal, protocol-level network name.
+    </span><span class="kw">pub fn </span>get_network_name(<span class="kw-2">&amp;</span><span class="self">self</span>, st: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;String, Error&gt; {
+        <span class="kw">let </span>init_act = <span class="self">self
+            </span>.get_actor(<span class="kw-2">&amp;</span>init::ADDRESS.into(), <span class="kw-2">*</span>st)<span class="question-mark">?
+            </span>.ok_or_else(|| Error::State(<span class="string">&quot;Init actor address could not be resolved&quot;</span>.to_string()))<span class="question-mark">?</span>;
+        <span class="kw">let </span>state = State::load(<span class="self">self</span>.blockstore(), init_act.code, init_act.state)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(state.into_network_name())
     }
 
     <span class="doccomment">/// Returns true if miner has been slashed or is considered invalid.

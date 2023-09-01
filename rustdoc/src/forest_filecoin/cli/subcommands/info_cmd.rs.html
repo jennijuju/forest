@@ -341,7 +341,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::CliOpts;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{
-    chain_get_name, chain_head, node_ops::node_status, start_time, wallet_balance,
+    chain_head, node_ops::node_status, start_time, state_network_name, wallet_balance,
     wallet_default_address,
 };
 <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
@@ -501,7 +501,7 @@
         <span class="kw">let </span>res = <span class="macro">tokio::try_join!</span>(
             node_status((), <span class="kw-2">&amp;</span>config.client.rpc_token),
             chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token),
-            chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token),
+            state_network_name((), <span class="kw-2">&amp;</span>config.client.rpc_token),
             start_time(<span class="kw-2">&amp;</span>config.client.rpc_token),
             wallet_default_address((), <span class="kw-2">&amp;</span>config.client.rpc_token)
         );

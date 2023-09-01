@@ -269,6 +269,17 @@
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -280,7 +291,6 @@
 </span><span class="kw">mod </span>archive_cmd;
 <span class="kw">mod </span>attach_cmd;
 <span class="kw">mod </span>auth_cmd;
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">mod </span>car_cmd;
 <span class="kw">mod </span>chain_cmd;
 <span class="kw">mod </span>config_cmd;
 <span class="kw">mod </span>db_cmd;
@@ -304,11 +314,12 @@
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
 <span class="kw">use </span>serde::Serialize;
+<span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>tracing::error;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">use </span><span class="self">self</span>::{
     archive_cmd::ArchiveCommands, attach_cmd::AttachCommand, auth_cmd::AuthCommands,
-    car_cmd::CarCommands, chain_cmd::ChainCommands, config_cmd::ConfigCommands, db_cmd::DBCommands,
+    chain_cmd::ChainCommands, config_cmd::ConfigCommands, db_cmd::DBCommands,
     mpool_cmd::MpoolCommands, net_cmd::NetCommands, send_cmd::SendCommand,
     shutdown_cmd::ShutdownCommand, snapshot_cmd::SnapshotCommands, state_cmd::StateCommands,
     sync_cmd::SyncCommands,
@@ -383,6 +394,16 @@
     },
 }
 
+<span class="comment">// This subcommand is hidden and only here to help users migrating to forest-tool
+</span><span class="attr">#[derive(Debug, clap::Subcommand)]
+</span><span class="kw">pub enum </span>CarCommands {
+    Concat {
+        car_files: Vec&lt;PathBuf&gt;,
+        <span class="attr">#[arg(short, long)]
+        </span>output: PathBuf,
+    },
+}
+
 <span class="doccomment">/// Forest binary sub-commands available.
 </span><span class="attr">#[derive(clap::Subcommand, Debug)]
 </span><span class="kw">pub enum </span>Subcommand {
@@ -448,8 +469,9 @@
     <span class="doccomment">/// Shutdown Forest
     </span>Shutdown(ShutdownCommand),
 
-    <span class="doccomment">/// Utilities for manipulating CAR files
-    </span><span class="attr">#[command(subcommand)]
+    <span class="comment">// This subcommand is hidden and only here to help users migrating to forest-tool
+    </span><span class="attr">#[command(hide = <span class="bool-val">true</span>)]
+    #[command(subcommand)]
     </span>Car(CarCommands),
 }
 

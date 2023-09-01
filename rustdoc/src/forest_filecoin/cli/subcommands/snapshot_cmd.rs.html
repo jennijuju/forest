@@ -269,6 +269,7 @@
 <a href="#269" id="269">269</a>
 <a href="#270" id="270">270</a>
 <a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -277,7 +278,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::chain_api::ChainExportParams;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::chain_ops::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, state_network_name};
 <span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
 <span class="kw">use </span>anyhow::{bail, Context, <span class="prelude-ty">Result</span>};
@@ -373,9 +374,10 @@
 
                 <span class="kw">let </span>epoch = tipset.unwrap_or(chain_head.epoch());
 
-                <span class="kw">let </span>chain_name = chain_get_name((), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>chain_name = state_network_name((), <span class="kw-2">&amp;</span>config.client.rpc_token)
                     .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                    </span>.map(|name| <span class="kw">crate</span>::daemon::get_actual_chain_name(<span class="kw-2">&amp;</span>name).to_string())
+                    .map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>output_path = <span class="kw">match </span>output_path.is_dir() {
                     <span class="bool-val">true </span>=&gt; output_path.join(snapshot::filename(

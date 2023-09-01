@@ -39,7 +39,7 @@
 
 <span class="kw">use </span><span class="kw">super</span>::subcommands::{handle_rpc_err, Cli};
 <span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::chain_get_name;
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::state_network_name;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{CurrentNetwork, Network};
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>std::str::FromStr;
@@ -55,7 +55,7 @@
         .enable_all()
         .build()<span class="question-mark">?
         </span>.block_on(<span class="kw">async </span>{
-            <span class="kw">let </span>name = chain_get_name((), <span class="kw-2">&amp;</span>opts.token)
+            <span class="kw">let </span>name = state_network_name((), <span class="kw-2">&amp;</span>opts.token)
                 .<span class="kw">await
                 </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
             <span class="kw">let </span>chain = NetworkChain::from_str(<span class="kw-2">&amp;</span>name)<span class="question-mark">?</span>;
