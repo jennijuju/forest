@@ -369,6 +369,11 @@
 <a href="#369" id="369">369</a>
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -701,7 +706,7 @@
     <span class="kw">pub </span>url: Url,
 }
 
-<span class="kw">pub static </span>ACTOR_BUNDLES: Lazy&lt;[ActorBundleInfo; <span class="number">8</span>]&gt; = Lazy::new(|| {
+<span class="kw">pub static </span>ACTOR_BUNDLES: Lazy&lt;[ActorBundleInfo; <span class="number">9</span>]&gt; = Lazy::new(|| {
     [
         <span class="comment">// calibnet
         </span>ActorBundleInfo{
@@ -715,6 +720,11 @@
         ActorBundleInfo{
             manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedhuowetjy2h4cxnijz2l64h4mzpk5m256oywp4evarpono3cjhco&quot;</span>).unwrap(),
             url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0-rc2/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
+        },
+        <span class="comment">// devnet 
+        </span>ActorBundleInfo {
+            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedozk3jh2j4nobqotkbofodq4chbrabioxbfrygpldgoxs3zwgggk&quot;</span>).unwrap(),
+            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-devnet.car&quot;</span>).unwrap(),
         },
         <span class="comment">// devnet
         </span>ActorBundleInfo{
