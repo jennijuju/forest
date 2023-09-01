@@ -34,13 +34,15 @@
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>anyhow::Context;
-<span class="kw">use </span>async_compression::futures::bufread::ZstdDecoder;
+<span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
 <span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;Vec&lt;Cid&gt;&gt; {
     <span class="kw">const </span>ERROR_MESSAGE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Actor bundles assets are not properly downloaded, make sure git-lfs is installed and run `git lfs pull` again. See &lt;https://github.com/git-lfs/git-lfs/blob/main/INSTALLING.md&gt;&quot;</span>;
@@ -49,7 +51,7 @@
 
     fvm_ipld_car::load_car(
         db,
-        ZstdDecoder::new(futures::io::BufReader::new(ACTOR_BUNDLES_CAR_ZST)),
+        ZstdDecoder::new(tokio::io::BufReader::new(ACTOR_BUNDLES_CAR_ZST)).compat(),
     )
     .<span class="kw">await
     </span>.context(ERROR_MESSAGE)

@@ -136,6 +136,8 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -144,7 +146,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_util::merge_car_streams;
 <span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
 <span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>async_compression::futures::write::ZstdEncoder;
+<span class="kw">use </span>async_compression::tokio::write::ZstdEncoder;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>futures::io::{BufReader, BufWriter};
@@ -156,6 +158,7 @@
 <span class="kw">use </span>std::env;
 <span class="kw">use </span>std::path::{Path, PathBuf};
 <span class="kw">use </span>std::{fs, io};
+<span class="kw">use </span>tokio_util::compat::TokioAsyncWriteCompatExt;
 
 <span class="kw">const </span>DEFAULT_BUNDLE_FILE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;actor_bundles.car.zst&quot;</span>;
 
@@ -208,9 +211,10 @@
     <span class="kw">let </span>car_writer = CarHeader::from(all_roots);
 
     <span class="kw">let </span><span class="kw-2">mut </span>zstd_encoder = ZstdEncoder::with_quality(
-        async_fs::File::create(Path::new(DEFAULT_BUNDLE_FILE_NAME)).<span class="kw">await</span><span class="question-mark">?</span>,
+        tokio::fs::File::create(Path::new(DEFAULT_BUNDLE_FILE_NAME)).<span class="kw">await</span><span class="question-mark">?</span>,
         async_compression::Level::Precise(zstd::zstd_safe::max_c_level()),
-    );
+    )
+    .compat_write();
 
     car_writer
         .write_stream_async(
