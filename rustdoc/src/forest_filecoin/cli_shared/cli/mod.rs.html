@@ -417,6 +417,18 @@
 <a href="#417" id="417">417</a>
 <a href="#418" id="418">418</a>
 <a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -496,6 +508,9 @@ OPTIONS:
     <span class="doccomment">/// Import a snapshot from a local CAR file or URL
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>import_snapshot: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="doccomment">/// Import a snapshot from a local CAR file and delete it, or from a URL
+    </span><span class="attr">#[arg(long)]
+    </span><span class="kw">pub </span>consume_snapshot: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// Halt with exit code 0 after successfully importing a snapshot
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>halt_after_import: bool,
@@ -607,11 +622,20 @@ OPTIONS:
         }
         <span class="kw">if </span><span class="self">self</span>.import_snapshot.is_some() &amp;&amp; <span class="self">self</span>.import_chain.is_some() {
             <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Can&#39;t set import_snapshot and import_chain at the same time!&quot;</span>)
+        } <span class="kw">else if </span><span class="self">self</span>.import_snapshot.is_some() &amp;&amp; <span class="self">self</span>.consume_snapshot.is_some() {
+            <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Can&#39;t set import_snapshot and consume_snapshot at the same time!&quot;</span>)
+        } <span class="kw">else if </span><span class="self">self</span>.consume_snapshot.is_some() &amp;&amp; <span class="self">self</span>.import_chain.is_some() {
+            <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Can&#39;t set consume_snapshot and import_chain at the same time!&quot;</span>)
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(snapshot_path) = <span class="kw-2">&amp;</span><span class="self">self</span>.import_snapshot {
             cfg.client.snapshot_path = <span class="prelude-val">Some</span>(snapshot_path.into());
             cfg.client.snapshot = <span class="bool-val">true</span>;
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(snapshot_path) = <span class="kw-2">&amp;</span><span class="self">self</span>.consume_snapshot {
+            cfg.client.snapshot_path = <span class="prelude-val">Some</span>(snapshot_path.into());
+            cfg.client.snapshot = <span class="bool-val">true</span>;
+            cfg.client.consume_snapshot = <span class="bool-val">true</span>;
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(snapshot_path) = <span class="kw-2">&amp;</span><span class="self">self</span>.import_chain {
             cfg.client.snapshot_path = <span class="prelude-val">Some</span>(snapshot_path.into());

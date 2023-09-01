@@ -96,6 +96,9 @@
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -144,6 +147,8 @@
     <span class="doccomment">/// If this is true, then we do not validate the imported snapshot.
     /// Otherwise, we validate and compute the states.
     </span><span class="kw">pub </span>snapshot: bool,
+    <span class="doccomment">/// If this is true, delete the snapshot at `snapshot_path` if it&#39;s a local file.
+    </span><span class="kw">pub </span>consume_snapshot: bool,
     <span class="kw">pub </span>snapshot_height: <span class="prelude-ty">Option</span>&lt;i64&gt;,
     <span class="kw">pub </span>snapshot_head: <span class="prelude-ty">Option</span>&lt;i64&gt;,
     <span class="kw">pub </span>snapshot_path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
@@ -181,6 +186,7 @@
             rpc_token: <span class="prelude-val">None</span>,
             snapshot_path: <span class="prelude-val">None</span>,
             snapshot: <span class="bool-val">false</span>,
+            consume_snapshot: <span class="bool-val">false</span>,
             snapshot_height: <span class="prelude-val">None</span>,
             snapshot_head: <span class="prelude-val">None</span>,
             skip_load: <span class="bool-val">false</span>,

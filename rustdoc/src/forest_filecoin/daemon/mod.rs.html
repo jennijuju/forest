@@ -696,6 +696,8 @@
 <a href="#696" id="696">696</a>
 <a href="#697" id="697">697</a>
 <a href="#698" id="698">698</a>
+<a href="#699" id="699">699</a>
+<a href="#700" id="700">700</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1104,10 +1106,12 @@
     <span class="comment">// Import chain if needed
     </span><span class="kw">if </span>!opts.skip_load.unwrap_or_default() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>config.client.snapshot_path {
-            <span class="comment">// TODO: respect `--consume-snapshot` CLI option once it&#39;s implemented.
-            // See &lt;https://github.com/ChainSafe/forest/issues/3334&gt;.
-            </span><span class="kw">let </span>(car_db_path, ts) =
-                import_chain_as_forest_car(path, <span class="kw-2">&amp;</span>forest_car_db_dir, <span class="bool-val">false</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>(car_db_path, ts) = import_chain_as_forest_car(
+                path,
+                <span class="kw-2">&amp;</span>forest_car_db_dir,
+                config.client.consume_snapshot,
+            )
+            .<span class="kw">await</span><span class="question-mark">?</span>;
             db.read_only_files(std::iter::once(car_db_path.clone()))<span class="question-mark">?</span>;
             <span class="macro">debug!</span>(<span class="string">&quot;Loaded car DB at {}&quot;</span>, car_db_path.display());
             state_manager
