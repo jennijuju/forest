@@ -655,7 +655,7 @@
     <span class="comment">// Timestamp checks
     </span><span class="kw">let </span>block_delay = chain_config.block_delay_secs;
     <span class="kw">let </span>nulls = (header.epoch() - (base_tipset.epoch() + <span class="number">1</span>)) <span class="kw">as </span>u64;
-    <span class="kw">let </span>target_timestamp = base_tipset.min_timestamp() + block_delay * (nulls + <span class="number">1</span>);
+    <span class="kw">let </span>target_timestamp = base_tipset.min_timestamp() + block_delay <span class="kw">as </span>u64 * (nulls + <span class="number">1</span>);
     <span class="kw">if </span>target_timestamp != header.timestamp() {
         <span class="kw">return </span><span class="prelude-val">Err</span>(FilecoinConsensusError::UnequalBlockTimestamps(
             header.timestamp(),

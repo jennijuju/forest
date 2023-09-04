@@ -615,7 +615,7 @@
         <span class="kw">if </span>network_version &gt;= NetworkVersion::V18 {
             <span class="kw">let </span><span class="kw-2">mut </span>config = NetworkConfig_v3::new(network_version.into());
             <span class="comment">// ChainId defines the chain ID used in the Ethereum JSON-RPC endpoint.
-            </span>config.chain_id(chain_config.eth_chain_id.into());
+            </span>config.chain_id((chain_config.eth_chain_id <span class="kw">as </span>u64).into());
             <span class="kw">if let </span>NetworkChain::Devnet(<span class="kw">_</span>) = chain_config.network {
                 config.enable_actor_debugging();
             }

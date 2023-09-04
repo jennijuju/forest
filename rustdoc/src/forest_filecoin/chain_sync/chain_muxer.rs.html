@@ -1500,7 +1500,7 @@
         <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
         <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
         <span class="kw">let </span>tipset_sample_size = <span class="self">self</span>.sync_config.tipset_sample_size;
-        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs;
+        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs <span class="kw">as </span>u64;
 
         <span class="kw">let </span>evaluator = <span class="kw">async move </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>tipsets = <span class="macro">vec!</span>[];
@@ -1617,7 +1617,7 @@
         <span class="kw">let </span>genesis = <span class="self">self</span>.genesis.clone();
         <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
         <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
-        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs;
+        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs <span class="kw">as </span>u64;
         <span class="kw">let </span>stream_processor: ChainMuxerFuture&lt;(), ChainMuxerError&gt; = Box::pin(<span class="kw">async move </span>{
             <span class="kw">loop </span>{
                 <span class="kw">let </span>event = <span class="kw">match </span>p2p_messages.recv_async().<span class="kw">await </span>{
@@ -1708,7 +1708,7 @@
         <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
         <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
         <span class="kw">let </span>tipset_sender = <span class="self">self</span>.tipset_sender.clone();
-        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs;
+        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs <span class="kw">as </span>u64;
         <span class="kw">let </span>stream_processor: ChainMuxerFuture&lt;UnexpectedReturnKind, ChainMuxerError&gt; = Box::pin(
             <span class="kw">async move </span>{
                 <span class="comment">// If a tipset has been provided, pass it to the tipset processor

@@ -2703,7 +2703,7 @@
     <span class="comment">// Stream through the tipsets from lowest epoch to highest epoch
     </span>stream::iter(tipsets.into_iter().rev())
         <span class="comment">// Chunk tipsets in batches (default batch size is 8)
-        </span>.chunks(request_window)
+        </span>.chunks(request_window <span class="kw">as </span>usize)
         <span class="comment">// Request batches from the p2p network
         </span>.map(|batch| fetch_batch(batch, <span class="kw-2">&amp;</span>network, db))
         <span class="comment">// run 64 batches concurrently

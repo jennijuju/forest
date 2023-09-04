@@ -374,6 +374,18 @@
 <a href="#374" id="374">374</a>
 <a href="#375" id="375">375</a>
 <a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -411,6 +423,7 @@
 <span class="doccomment">/// Forest builtin `filecoin` network chains. In general only `mainnet` and its
 /// chain information should be considered stable.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[serde(tag = <span class="string">&quot;type&quot;</span>, content = <span class="string">&quot;name&quot;</span>, rename_all = <span class="string">&quot;lowercase&quot;</span>)]
 </span><span class="kw">pub enum </span>NetworkChain {
     Mainnet,
@@ -452,6 +465,7 @@
 
 <span class="doccomment">/// Defines the meaningful heights of the protocol.
 </span><span class="attr">#[derive(Debug, Display, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Hash)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub enum </span>Height {
     Breeze,
     Smoke,
@@ -511,6 +525,7 @@
 }
 
 <span class="attr">#[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>HeightInfo {
     <span class="kw">pub </span>height: Height,
     <span class="kw">pub </span>epoch: ChainEpoch,
@@ -530,22 +545,31 @@
 }
 
 <span class="doccomment">/// Defines all network configuration parameters.
-</span><span class="attr">#[derive(Serialize, Deserialize, PartialEq, Debug)]
+</span><span class="attr">#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[serde(default)]
 </span><span class="kw">pub struct </span>ChainConfig {
     <span class="kw">pub </span>network: NetworkChain,
     <span class="kw">pub </span>genesis_cid: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="attr">#[cfg_attr(test, arbitrary(gen(
+        |g: <span class="kw-2">&amp;mut </span>quickcheck::Gen| {
+            <span class="kw">let </span>addr = std::net::Ipv4Addr::arbitrary(<span class="kw-2">&amp;mut *</span>g);
+            <span class="kw">let </span>n = u8::arbitrary(g) <span class="kw">as </span>usize;
+            <span class="macro">vec!</span>[addr.into(); n]
+        </span>}
+    )))]
     <span class="kw">pub </span>bootstrap_peers: Vec&lt;Multiaddr&gt;,
-    <span class="kw">pub </span>block_delay_secs: u64,
-    <span class="kw">pub </span>propagation_delay_secs: u64,
+    <span class="kw">pub </span>block_delay_secs: u32,
+    <span class="kw">pub </span>propagation_delay_secs: u32,
     <span class="kw">pub </span>height_infos: Vec&lt;HeightInfo&gt;,
-    <span class="attr">#[serde(default = <span class="string">&quot;default_policy&quot;</span>)]
+    <span class="attr">#[cfg_attr(test, arbitrary(gen(|_g| Policy::mainnet())))]
+    #[serde(default = <span class="string">&quot;default_policy&quot;</span>)]
     </span><span class="kw">pub </span>policy: Policy,
-    <span class="kw">pub </span>eth_chain_id: u64,
+    <span class="kw">pub </span>eth_chain_id: u32,
     <span class="doccomment">/// Number of default recent state roots to keep in memory and include in
     /// the exported snapshot.
     </span><span class="kw">pub </span>recent_state_roots: i64,
-    <span class="kw">pub </span>request_window: usize,
+    <span class="kw">pub </span>request_window: u32,
 }
 
 <span class="kw">impl </span>ChainConfig {
@@ -555,13 +579,13 @@
             network: NetworkChain::Mainnet,
             genesis_cid: <span class="prelude-val">Some</span>(GENESIS_CID.to_string()),
             bootstrap_peers: DEFAULT_BOOTSTRAP.clone(),
-            block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u64,
+            block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u32,
             propagation_delay_secs: <span class="number">10</span>,
             height_infos: HEIGHT_INFOS.to_vec(),
             policy: Policy::mainnet(),
-            eth_chain_id: ETH_CHAIN_ID,
+            eth_chain_id: ETH_CHAIN_ID <span class="kw">as </span>u32,
             recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
-            request_window: DEFAULT_REQUEST_WINDOW,
+            request_window: DEFAULT_REQUEST_WINDOW <span class="kw">as </span>u32,
         }
     }
 
@@ -571,13 +595,13 @@
             network: NetworkChain::Calibnet,
             genesis_cid: <span class="prelude-val">Some</span>(GENESIS_CID.to_string()),
             bootstrap_peers: DEFAULT_BOOTSTRAP.clone(),
-            block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u64,
+            block_delay_secs: EPOCH_DURATION_SECONDS <span class="kw">as </span>u32,
             propagation_delay_secs: <span class="number">10</span>,
             height_infos: HEIGHT_INFOS.to_vec(),
             policy: Policy::calibnet(),
-            eth_chain_id: ETH_CHAIN_ID,
+            eth_chain_id: ETH_CHAIN_ID <span class="kw">as </span>u32,
             recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
-            request_window: DEFAULT_REQUEST_WINDOW,
+            request_window: DEFAULT_REQUEST_WINDOW <span class="kw">as </span>u32,
         }
     }
 
@@ -609,9 +633,9 @@
             propagation_delay_secs: <span class="number">1</span>,
             height_infos: HEIGHT_INFOS.to_vec(),
             policy,
-            eth_chain_id: ETH_CHAIN_ID,
+            eth_chain_id: ETH_CHAIN_ID <span class="kw">as </span>u32,
             recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
-            request_window: DEFAULT_REQUEST_WINDOW,
+            request_window: DEFAULT_REQUEST_WINDOW <span class="kw">as </span>u32,
         }
     }
 
@@ -650,7 +674,7 @@
                     height: dc.height,
                     beacon: Box::new(DrandBeacon::new(
                         genesis_ts,
-                        <span class="self">self</span>.block_delay_secs,
+                        <span class="self">self</span>.block_delay_secs <span class="kw">as </span>u64,
                         dc.config,
                     )),
                 })
