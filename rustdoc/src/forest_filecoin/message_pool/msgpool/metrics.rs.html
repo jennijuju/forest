@@ -19,29 +19,25 @@
 <a href="#19" id="19">19</a>
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
-<a href="#22" id="22">22</a>
-<a href="#23" id="23">23</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>lazy_static::lazy_static;
+</span><span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>prometheus::core::{AtomicU64, GenericGauge};
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>MPOOL_MESSAGE_TOTAL: Box&lt;GenericGauge&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>mpool_message_total = Box::new(
-            GenericGauge::&lt;AtomicU64&gt;::new(
-                <span class="string">&quot;mpool_message_total&quot;</span>,
-                <span class="string">&quot;Total number of messages in the message pool&quot;</span>,
-            )
-            .expect(<span class="string">&quot;Defining the mpool_message_total metric must succeed&quot;</span>),
+<span class="kw">pub static </span>MPOOL_MESSAGE_TOTAL: Lazy&lt;Box&lt;GenericGauge&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>mpool_message_total = Box::new(
+        GenericGauge::&lt;AtomicU64&gt;::new(
+            <span class="string">&quot;mpool_message_total&quot;</span>,
+            <span class="string">&quot;Total number of messages in the message pool&quot;</span>,
+        )
+        .expect(<span class="string">&quot;Defining the mpool_message_total metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(mpool_message_total.clone())
+        .expect(
+            <span class="string">&quot;Registering the mpool_message_total metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry()
-            .register(mpool_message_total.clone())
-            .expect(
-                <span class="string">&quot;Registering the mpool_message_total metric with the metrics registry must succeed&quot;</span>,
-            );
-        mpool_message_total
-    };
-}
+    mpool_message_total
+});
 </code></pre></div></section></main></body></html>

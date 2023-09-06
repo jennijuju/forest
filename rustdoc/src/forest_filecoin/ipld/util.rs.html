@@ -437,7 +437,6 @@
 <a href="#437" id="437">437</a>
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -462,7 +461,7 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::Stream;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>lazy_static::lazy_static;
+<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>pin_project_lite::pin_project;
 <span class="kw">use </span>std::pin::Pin;
 <span class="kw">use </span>std::task::{Context, Poll};
@@ -545,9 +544,8 @@
 
 <span class="kw">pub type </span>ProgressBarCurrentTotalPair = Arc&lt;(AtomicU64, AtomicU64)&gt;;
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>WALK_SNAPSHOT_PROGRESS_DB_GC: ProgressBarCurrentTotalPair = Default::default();
-}
+<span class="kw">pub static </span>WALK_SNAPSHOT_PROGRESS_DB_GC: Lazy&lt;ProgressBarCurrentTotalPair&gt; =
+    Lazy::new(Default::default);
 
 <span class="doccomment">/// Walks over tipset and state data and loads all blocks not yet seen.
 /// This is tracked based on the callback function loading blocks.

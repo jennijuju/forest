@@ -264,7 +264,6 @@
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -273,19 +272,18 @@
 <span class="kw">use </span>fvm_shared2::econ::TokenAmount <span class="kw">as </span>TokenAmount_v2;
 <span class="kw">use </span>fvm_shared3::econ::TokenAmount <span class="kw">as </span>TokenAmount_v3;
 <span class="kw">pub use </span>fvm_shared3::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN_BASE};
-<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>num_bigint::BigInt;
 <span class="kw">use </span>num_traits::Zero;
+<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>static_assertions::const_assert_eq;
 
 <span class="macro">const_assert_eq!</span>(BLOCK_GAS_LIMIT, fvm_shared2::BLOCK_GAS_LIMIT <span class="kw">as </span>u64);
 <span class="macro">const_assert_eq!</span>(TOTAL_FILECOIN_BASE, fvm_shared2::TOTAL_FILECOIN_BASE);
 
-<span class="macro">lazy_static! </span>{
-    <span class="doccomment">/// Total Filecoin available to the network.
-    </span><span class="kw">pub static </span><span class="kw-2">ref </span>TOTAL_FILECOIN: TokenAmount = TokenAmount::from_whole(TOTAL_FILECOIN_BASE);
-}
+<span class="doccomment">/// Total Filecoin available to the network.
+</span><span class="kw">pub static </span>TOTAL_FILECOIN: Lazy&lt;TokenAmount&gt; =
+    Lazy::new(|| TokenAmount::from_whole(TOTAL_FILECOIN_BASE));
 
 <span class="comment">// FIXME: Transparent Debug trait impl
 // FIXME: Consider &#39;type TokenAmount = TokenAmount_v3&#39;

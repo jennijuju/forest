@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Task"],"fn":["recurse_links_hash","should_save_block_to_snapshot","stream_chain","stream_graph","traverse_ipld_links_hash","walk_snapshot"],"struct":["ChainStream","DfsIter","WALK_SNAPSHOT_PROGRESS_DB_GC"],"type":["ProgressBarCurrentTotalPair"]};
+window.SIDEBAR_ITEMS = {"enum":["Task"],"fn":["recurse_links_hash","should_save_block_to_snapshot","stream_chain","stream_graph","traverse_ipld_links_hash","walk_snapshot"],"static":["WALK_SNAPSHOT_PROGRESS_DB_GC"],"struct":["ChainStream","DfsIter"],"type":["ProgressBarCurrentTotalPair"]};

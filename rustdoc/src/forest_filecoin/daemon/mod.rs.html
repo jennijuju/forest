@@ -740,7 +740,7 @@
 <span class="kw">use </span>dialoguer::console::Term;
 <span class="kw">use </span>dialoguer::theme::ColorfulTheme;
 <span class="kw">use </span>futures::{select, Future, FutureExt};
-<span class="kw">use </span>lazy_static::lazy_static;
+<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>raw_sync::events::{Event, EventInit <span class="kw">as _</span>, EventState};
 <span class="kw">use </span>shared_memory::ShmemConf;
 <span class="kw">use </span>std::path::Path;
@@ -756,13 +756,13 @@
 };
 <span class="kw">use </span>tracing::{debug, info, warn};
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>IPC_PATH: TempPath = Builder::new()
+<span class="kw">static </span>IPC_PATH: Lazy&lt;TempPath&gt; = Lazy::new(|| {
+    Builder::new()
         .prefix(<span class="string">&quot;forest-ipc&quot;</span>)
         .tempfile()
         .expect(<span class="string">&quot;tempfile must succeed&quot;</span>)
-        .into_temp_path();
-}
+        .into_temp_path()
+});
 
 <span class="comment">// The parent process and the daemonized child communicate through an Event in
 // shared memory. The identity of the shared memory object is written to a

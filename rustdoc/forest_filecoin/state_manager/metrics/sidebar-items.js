@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["APPLY_BLOCKS_TIME"]};
+window.SIDEBAR_ITEMS = {"static":["APPLY_BLOCKS_TIME"]};

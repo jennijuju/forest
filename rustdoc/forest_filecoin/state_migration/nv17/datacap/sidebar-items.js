@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DATA_CAP_GRANULARITY"],"struct":["DataCapPostMigrator","INFINITE_ALLOWANCE"]};
+window.SIDEBAR_ITEMS = {"constant":["DATA_CAP_GRANULARITY"],"static":["INFINITE_ALLOWANCE"],"struct":["DataCapPostMigrator"]};

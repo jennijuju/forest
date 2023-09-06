@@ -95,6 +95,8 @@
 <a href="#95" id="95">95</a>
 <a href="#96" id="96">96</a>
 <a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -113,13 +115,15 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_hamt::BytesKey;
 <span class="kw">use </span>num_traits::Zero;
+<span class="kw">use </span>once_cell::sync::Lazy;
 
 <span class="kw">use </span><span class="kw">super</span>::util::hamt_addr_key_to_key;
 
 <span class="kw">const </span>DATA_CAP_GRANULARITY: u64 = TokenAmount::PRECISION;
-<span class="macro">lazy_static::lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>INFINITE_ALLOWANCE: StoragePower = StoragePower::from_str(<span class="string">&quot;1000000000000000000000&quot;</span>).expect(<span class="string">&quot;Failed to parse INFINITE_ALLOWANCE&quot;</span>) * TokenAmount::PRECISION;
-}
+<span class="kw">static </span>INFINITE_ALLOWANCE: Lazy&lt;StoragePower&gt; = Lazy::new(|| {
+    StoragePower::from_str(<span class="string">&quot;1000000000000000000000&quot;</span>).expect(<span class="string">&quot;Failed to parse INFINITE_ALLOWANCE&quot;</span>)
+        * TokenAmount::PRECISION
+});
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">struct </span>DataCapPostMigrator {
     <span class="kw">pub</span>(<span class="kw">super</span>) new_code_cid: Cid,

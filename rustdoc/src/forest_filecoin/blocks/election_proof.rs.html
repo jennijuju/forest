@@ -183,17 +183,19 @@
 <a href="#183" id="183">183</a>
 <a href="#184" id="184">184</a>
 <a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::VRFProof;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::BLOCKS_PER_EPOCH;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::blake2b_256;
-<span class="kw">use </span>lazy_static::lazy_static;
 <span class="kw">use </span>num::{
     bigint::{ParseBigIntError, Sign},
     BigInt, Integer,
 };
+<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>serde_tuple::{<span class="self">self</span>, Deserialize_tuple, Serialize_tuple};
 
 <span class="kw">const </span>PRECISION: u64 = <span class="number">256</span>;
@@ -210,8 +212,8 @@
         .collect()
 }
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">static </span><span class="kw-2">ref </span>EXP_NUM_COEF: Vec&lt;BigInt&gt; = parse(<span class="kw-2">&amp;</span>[
+<span class="kw">static </span>EXP_NUM_COEF: Lazy&lt;Vec&lt;BigInt&gt;&gt; = Lazy::new(|| {
+    parse(<span class="kw-2">&amp;</span>[
         <span class="string">&quot;-648770010757830093818553637600&quot;</span>,
         <span class="string">&quot;67469480939593786226847644286976&quot;</span>,
         <span class="string">&quot;-3197587544499098424029388939001856&quot;</span>,
@@ -221,8 +223,10 @@
         <span class="string">&quot;-115682590513835356866803355398940131328&quot;</span>,
         <span class="string">&quot;340282366920938463463374607431768211456&quot;</span>,
     ])
-    .unwrap();
-    <span class="kw">static </span><span class="kw-2">ref </span>EXP_DENO_COEF: Vec&lt;BigInt&gt; = parse(<span class="kw-2">&amp;</span>[
+    .unwrap()
+});
+<span class="kw">static </span>EXP_DENO_COEF: Lazy&lt;Vec&lt;BigInt&gt;&gt; = Lazy::new(|| {
+    parse(<span class="kw-2">&amp;</span>[
         <span class="string">&quot;1225524182432722209606361&quot;</span>,
         <span class="string">&quot;114095592300906098243859450&quot;</span>,
         <span class="string">&quot;5665570424063336070530214243&quot;</span>,
@@ -238,8 +242,8 @@
         <span class="string">&quot;224599776407103106596571252037123047424&quot;</span>,
         <span class="string">&quot;340282366920938463463374607431768211456&quot;</span>,
     ])
-    .unwrap();
-}
+    .unwrap()
+});
 
 <span class="doccomment">/// `expneg` accepts x in Q.256 format and computes e^-x.
 /// It is most precise within [0, 1.725) range, where error is less than

@@ -20,32 +20,26 @@
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
-<a href="#23" id="23">23</a>
-<a href="#24" id="24">24</a>
-<a href="#25" id="25">25</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>lazy_static::lazy_static;
+</span><span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>prometheus::{core::Opts, Histogram, HistogramOpts};
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>APPLY_BLOCKS_TIME: Box&lt;Histogram&gt; =
-        {
-            <span class="kw">let </span>apply_blocks_time = Box::new(
-                Histogram::with_opts(HistogramOpts {
-                    common_opts: Opts::new(
-                        <span class="string">&quot;apply_blocks_time&quot;</span>,
-                        <span class="string">&quot;Duration of routine which applied blocks&quot;</span>,
-                    ),
-                    buckets: <span class="macro">vec!</span>[],
-                })
-                .expect(<span class="string">&quot;Defining the apply_blocks_time metric must succeed&quot;</span>),
-            );
-            prometheus::default_registry().register(apply_blocks_time.clone()).expect(
-            <span class="string">&quot;Registering the apply_blocks_time metric with the metrics registry must succeed&quot;</span>,
-        );
-            apply_blocks_time
-        };
-}
+<span class="kw">pub static </span>APPLY_BLOCKS_TIME: Lazy&lt;Box&lt;Histogram&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>apply_blocks_time = Box::new(
+        Histogram::with_opts(HistogramOpts {
+            common_opts: Opts::new(
+                <span class="string">&quot;apply_blocks_time&quot;</span>,
+                <span class="string">&quot;Duration of routine which applied blocks&quot;</span>,
+            ),
+            buckets: <span class="macro">vec!</span>[],
+        })
+        .expect(<span class="string">&quot;Defining the apply_blocks_time metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(apply_blocks_time.clone())
+        .expect(<span class="string">&quot;Registering the apply_blocks_time metric with the metrics registry must succeed&quot;</span>);
+    apply_blocks_time
+});
 </code></pre></div></section></main></body></html>

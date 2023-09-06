@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_WIN_COUNT","PRECISION"],"fn":["expneg","lambda","parse","poly_val"],"struct":["EXP_DENO_COEF","EXP_NUM_COEF","ElectionProof","Poiss"]};
+window.SIDEBAR_ITEMS = {"constant":["MAX_WIN_COUNT","PRECISION"],"fn":["expneg","lambda","parse","poly_val"],"static":["EXP_DENO_COEF","EXP_NUM_COEF"],"struct":["ElectionProof","Poiss"]};

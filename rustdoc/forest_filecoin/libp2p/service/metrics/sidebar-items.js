@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["labels","values"],"struct":["NETWORK_CONTAINER_CAPACITIES"]};
+window.SIDEBAR_ITEMS = {"mod":["labels","values"],"static":["NETWORK_CONTAINER_CAPACITIES"]};

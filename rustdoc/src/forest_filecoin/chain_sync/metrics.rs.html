@@ -255,10 +255,24 @@
 <a href="#255" id="255">255</a>
 <a href="#256" id="256">256</a>
 <a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>lazy_static::lazy_static;
+</span><span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>prometheus::{
     core::{
         AtomicI64, AtomicU64, GenericCounter, GenericCounterVec, GenericGauge, GenericGaugeVec,
@@ -267,88 +281,98 @@
     Histogram, HistogramOpts, HistogramVec,
 };
 
-<span class="macro">lazy_static! </span>{
-    <span class="kw">pub static </span><span class="kw-2">ref </span>TIPSET_PROCESSING_TIME: Box&lt;Histogram&gt; = {
-        <span class="kw">let </span>tipset_processing_time = Box::new(
-            Histogram::with_opts(HistogramOpts {
-                common_opts: Opts::new(
-                    <span class="string">&quot;tipset_processing_time&quot;</span>,
-                    <span class="string">&quot;Duration of routine which processes Tipsets to include them in the store&quot;</span>,
-                ),
-                buckets: <span class="macro">vec!</span>[],
-            })
-            .expect(<span class="string">&quot;Defining the tipset_processing_time metric must succeed&quot;</span>),
-        );
-        prometheus::default_registry().register(tipset_processing_time.clone()).expect(
+<span class="kw">pub static </span>TIPSET_PROCESSING_TIME: Lazy&lt;Box&lt;Histogram&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>tipset_processing_time = Box::new(
+        Histogram::with_opts(HistogramOpts {
+            common_opts: Opts::new(
+                <span class="string">&quot;tipset_processing_time&quot;</span>,
+                <span class="string">&quot;Duration of routine which processes Tipsets to include them in the store&quot;</span>,
+            ),
+            buckets: <span class="macro">vec!</span>[],
+        })
+        .expect(<span class="string">&quot;Defining the tipset_processing_time metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(tipset_processing_time.clone())
+        .expect(
             <span class="string">&quot;Registering the tipset_processing_time metric with the metrics registry must succeed&quot;</span>,
         );
-        tipset_processing_time
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>BLOCK_VALIDATION_TIME: Box&lt;Histogram&gt; = {
-        <span class="kw">let </span>block_validation_time = Box::new(
-            Histogram::with_opts(HistogramOpts {
+    tipset_processing_time
+});
+<span class="kw">pub static </span>BLOCK_VALIDATION_TIME: Lazy&lt;Box&lt;Histogram&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>block_validation_time = Box::new(
+        Histogram::with_opts(HistogramOpts {
+            common_opts: Opts::new(
+                <span class="string">&quot;block_validation_time&quot;</span>,
+                <span class="string">&quot;Duration of routine which validate blocks with no cache hit&quot;</span>,
+            ),
+            buckets: <span class="macro">vec!</span>[],
+        })
+        .expect(<span class="string">&quot;Defining the block_validation_time metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(block_validation_time.clone())
+        .expect(
+            <span class="string">&quot;Registering the block_validation_time metric with the metrics registry must succeed&quot;</span>,
+        );
+    block_validation_time
+});
+<span class="kw">pub static </span>BLOCK_VALIDATION_TASKS_TIME: Lazy&lt;Box&lt;HistogramVec&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>block_validation_tasks_time = Box::new(
+        HistogramVec::new(
+            HistogramOpts {
                 common_opts: Opts::new(
-                    <span class="string">&quot;block_validation_time&quot;</span>,
-                    <span class="string">&quot;Duration of routine which validate blocks with no cache hit&quot;</span>,
+                    <span class="string">&quot;block_validation_tasks_time&quot;</span>,
+                    <span class="string">&quot;Duration of subroutines inside block validation&quot;</span>,
                 ),
                 buckets: <span class="macro">vec!</span>[],
-            })
-            .expect(<span class="string">&quot;Defining the block_validation_time metric must succeed&quot;</span>),
-        );
-        prometheus::default_registry().register(block_validation_time.clone()).expect(
+            },
+            <span class="kw-2">&amp;</span>[<span class="string">&quot;type&quot;</span>],
+        )
+        .expect(<span class="string">&quot;Defining the block_validation_time metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(block_validation_tasks_time.clone())
+        .expect(
             <span class="string">&quot;Registering the block_validation_time metric with the metrics registry must succeed&quot;</span>,
         );
-        block_validation_time
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>BLOCK_VALIDATION_TASKS_TIME: Box&lt;HistogramVec&gt; = {
-        <span class="kw">let </span>block_validation_tasks_time = Box::new(
-            HistogramVec::new(
-                HistogramOpts {
-                    common_opts: Opts::new(
-                        <span class="string">&quot;block_validation_tasks_time&quot;</span>,
-                        <span class="string">&quot;Duration of subroutines inside block validation&quot;</span>,
-                    ),
-                    buckets: <span class="macro">vec!</span>[],
-                },
-                <span class="kw-2">&amp;</span>[<span class="string">&quot;type&quot;</span>],
-            )
-            .expect(<span class="string">&quot;Defining the block_validation_time metric must succeed&quot;</span>),
+    block_validation_tasks_time
+});
+<span class="kw">pub static </span>LIBP2P_MESSAGE_TOTAL: Lazy&lt;Box&lt;GenericCounterVec&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>libp2p_message_total = Box::new(
+        GenericCounterVec::&lt;AtomicU64&gt;::new(
+            Opts::new(
+                <span class="string">&quot;libp2p_messsage_total&quot;</span>,
+                <span class="string">&quot;Total number of libp2p messages by type&quot;</span>,
+            ),
+            <span class="kw-2">&amp;</span>[labels::GOSSIPSUB_MESSAGE_KIND],
+        )
+        .expect(<span class="string">&quot;Defining the libp2p_message_total metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(libp2p_message_total.clone())
+        .expect(
+            <span class="string">&quot;Registering the libp2p_message_total metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry().register(block_validation_tasks_time.clone()).expect(
-            <span class="string">&quot;Registering the block_validation_time metric with the metrics registry must succeed&quot;</span>,
+    libp2p_message_total
+});
+<span class="kw">pub static </span>INVALID_TIPSET_TOTAL: Lazy&lt;Box&lt;GenericCounter&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>invalid_tipset_total = Box::new(
+        GenericCounter::&lt;AtomicU64&gt;::new(
+            <span class="string">&quot;invalid_tipset_total&quot;</span>,
+            <span class="string">&quot;Total number of invalid tipsets received over gossipsub&quot;</span>,
+        )
+        .expect(<span class="string">&quot;Defining the invalid_tipset_total metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(invalid_tipset_total.clone())
+        .expect(
+            <span class="string">&quot;Registering the invalid_tipset_total metric with the metrics registry must succeed&quot;</span>,
         );
-        block_validation_tasks_time
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>LIBP2P_MESSAGE_TOTAL: Box&lt;GenericCounterVec&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>libp2p_message_total = Box::new(
-            GenericCounterVec::&lt;AtomicU64&gt;::new(
-                Opts::new(
-                    <span class="string">&quot;libp2p_messsage_total&quot;</span>,
-                    <span class="string">&quot;Total number of libp2p messages by type&quot;</span>,
-                ),
-                <span class="kw-2">&amp;</span>[labels::GOSSIPSUB_MESSAGE_KIND],
-            )
-            .expect(<span class="string">&quot;Defining the libp2p_message_total metric must succeed&quot;</span>),
-        );
-        prometheus::default_registry().register(libp2p_message_total.clone()).expect(
-            <span class="string">&quot;Registering the libp2p_message_total metric with the metrics registry must succeed&quot;
-        </span>);
-        libp2p_message_total
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>INVALID_TIPSET_TOTAL: Box&lt;GenericCounter&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>invalid_tipset_total = Box::new(
-            GenericCounter::&lt;AtomicU64&gt;::new(
-                <span class="string">&quot;invalid_tipset_total&quot;</span>,
-                <span class="string">&quot;Total number of invalid tipsets received over gossipsub&quot;</span>,
-            )
-            .expect(<span class="string">&quot;Defining the invalid_tipset_total metric must succeed&quot;</span>),
-        );
-        prometheus::default_registry().register(invalid_tipset_total.clone()).expect(
-            <span class="string">&quot;Registering the invalid_tipset_total metric with the metrics registry must succeed&quot;
-        </span>);
-        invalid_tipset_total
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>TIPSET_RANGE_SYNC_FAILURE_TOTAL: Box&lt;GenericCounter&lt;AtomicU64&gt;&gt; = {
+    invalid_tipset_total
+});
+<span class="kw">pub static </span>TIPSET_RANGE_SYNC_FAILURE_TOTAL: Lazy&lt;Box&lt;GenericCounter&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(
+    || {
         <span class="kw">let </span>tipset_range_sync_failure_total = Box::new(
             GenericCounter::&lt;AtomicU64&gt;::new(
                 <span class="string">&quot;tipset_range_sync_failure_total&quot;</span>,
@@ -357,104 +381,108 @@
             .expect(<span class="string">&quot;Defining the tipset_range_sync_failure_total metrics must succeed&quot;</span>),
         );
         prometheus::default_registry()
-            .register(tipset_range_sync_failure_total.clone())
-            .expect(<span class="string">&quot;Registering the tipset_range_sync_failure_total metric with the metrics registry must succeed&quot;</span>);
+        .register(tipset_range_sync_failure_total.clone())
+        .expect(
+            <span class="string">&quot;Registering the tipset_range_sync_failure_total metric with the metrics registry must succeed&quot;</span>,
+        );
         tipset_range_sync_failure_total
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>HEAD_EPOCH: Box&lt;GenericGauge&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>head_epoch = Box::new(
-            GenericGauge::&lt;AtomicU64&gt;::new(<span class="string">&quot;head_epoch&quot;</span>, <span class="string">&quot;Latest epoch synchronized to the node&quot;</span>)
-                .expect(<span class="string">&quot;Defining the head_epoch metric must succeed&quot;</span>),
+    },
+);
+<span class="kw">pub static </span>HEAD_EPOCH: Lazy&lt;Box&lt;GenericGauge&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>head_epoch = Box::new(
+        GenericGauge::&lt;AtomicU64&gt;::new(<span class="string">&quot;head_epoch&quot;</span>, <span class="string">&quot;Latest epoch synchronized to the node&quot;</span>)
+            .expect(<span class="string">&quot;Defining the head_epoch metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(head_epoch.clone())
+        .expect(<span class="string">&quot;Registering the head_epoch metric with the metrics registry must succeed&quot;</span>);
+    head_epoch
+});
+<span class="kw">pub static </span>LAST_VALIDATED_TIPSET_EPOCH: Lazy&lt;Box&lt;GenericGauge&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>last_validated_tipset_epoch = Box::new(
+        GenericGauge::new(<span class="string">&quot;last_validated_tipset_epoch&quot;</span>, <span class="string">&quot;Last validated tipset epoch&quot;</span>)
+            .expect(<span class="string">&quot;Defining the last_validated_tipset_epoch metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(last_validated_tipset_epoch.clone())
+        .expect(
+            <span class="string">&quot;Registering the last_validated_tipset_epoch metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry()
-            .register(head_epoch.clone())
-            .expect(<span class="string">&quot;Registering the head_epoch metric with the metrics registry must succeed&quot;</span>);
-        head_epoch
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>LAST_VALIDATED_TIPSET_EPOCH: Box&lt;GenericGauge&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>last_validated_tipset_epoch = Box::new(
-            GenericGauge::new(<span class="string">&quot;last_validated_tipset_epoch&quot;</span>, <span class="string">&quot;Last validated tipset epoch&quot;</span>)
-                .expect(<span class="string">&quot;Defining the last_validated_tipset_epoch metric must succeed&quot;</span>),
+    last_validated_tipset_epoch
+});
+<span class="kw">pub static </span>PEER_TIPSET_EPOCH: Lazy&lt;Box&lt;GenericGaugeVec&lt;AtomicI64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>peer_tipset_epoch = Box::new(
+        GenericGaugeVec::new(
+            Opts::new(<span class="string">&quot;peer_tipset_epoch&quot;</span>, <span class="string">&quot;peer tipset epoch&quot;</span>),
+            <span class="kw-2">&amp;</span>[<span class="string">&quot;PEER&quot;</span>],
+        )
+        .expect(<span class="string">&quot;Defining the peer_tipset_epoch metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(peer_tipset_epoch.clone())
+        .expect(
+            <span class="string">&quot;Registering the last_validated_tipset_epoch metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry()
-            .register(last_validated_tipset_epoch.clone())
-            .expect(<span class="string">&quot;Registering the last_validated_tipset_epoch metric with the metrics registry must succeed&quot;</span>);
-        last_validated_tipset_epoch
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>PEER_TIPSET_EPOCH: Box&lt;GenericGaugeVec&lt;AtomicI64&gt;&gt; = {
-        <span class="kw">let </span>peer_tipset_epoch = Box::new(
-            GenericGaugeVec::new(
-                Opts::new(<span class="string">&quot;peer_tipset_epoch&quot;</span>, <span class="string">&quot;peer tipset epoch&quot;</span>),
-                <span class="kw-2">&amp;</span>[<span class="string">&quot;PEER&quot;</span>],
-            )
-            .expect(<span class="string">&quot;Defining the peer_tipset_epoch metric must succeed&quot;</span>),
+    peer_tipset_epoch
+});
+<span class="kw">pub static </span>NETWORK_HEAD_EVALUATION_ERRORS: Lazy&lt;Box&lt;GenericCounter&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>network_head_evaluation_errors = Box::new(
+        GenericCounter::&lt;AtomicU64&gt;::new(
+            <span class="string">&quot;network_head_evaluation_errors&quot;</span>,
+            <span class="string">&quot;Total number of network head evaluation errors&quot;</span>,
+        )
+        .expect(<span class="string">&quot;Defining the network_head_evaluation_errors metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(network_head_evaluation_errors.clone())
+        .expect(
+            <span class="string">&quot;Registering the network_head_evaluation_errors metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry()
-            .register(peer_tipset_epoch.clone())
-            .expect(<span class="string">&quot;Registering the last_validated_tipset_epoch metric with the metrics registry must succeed&quot;</span>);
-        peer_tipset_epoch
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>NETWORK_HEAD_EVALUATION_ERRORS: Box&lt;GenericCounter&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>network_head_evaluation_errors = Box::new(
-            GenericCounter::&lt;AtomicU64&gt;::new(
-                <span class="string">&quot;network_head_evaluation_errors&quot;</span>,
-                <span class="string">&quot;Total number of network head evaluation errors&quot;</span>,
-            )
-            .expect(<span class="string">&quot;Defining the network_head_evaluation_errors metric must succeed&quot;</span>),
+    network_head_evaluation_errors
+});
+<span class="kw">pub static </span>BOOTSTRAP_ERRORS: Lazy&lt;Box&lt;GenericCounter&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>boostrap_errors = Box::new(
+        GenericCounter::&lt;AtomicU64&gt;::new(
+            <span class="string">&quot;bootstrap_errors&quot;</span>,
+            <span class="string">&quot;Total number of bootstrap attempts failures&quot;</span>,
+        )
+        .expect(<span class="string">&quot;Defining the bootstrap_errors metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(boostrap_errors.clone())
+        .expect(<span class="string">&quot;Registering the bootstrap_errors metric with the metrics registry must succeed&quot;</span>);
+    boostrap_errors
+});
+<span class="kw">pub static </span>FOLLOW_NETWORK_INTERRUPTIONS: Lazy&lt;Box&lt;GenericCounter&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>follow_network_restarts = Box::new(
+        GenericCounter::&lt;AtomicU64&gt;::new(
+            <span class="string">&quot;follow_network_interruptions&quot;</span>,
+            <span class="string">&quot;Total number of follow network interruptions, where it unexpectedly ended&quot;</span>,
+        )
+        .expect(<span class="string">&quot;Defining the follow_network_interruptions metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(follow_network_restarts.clone())
+        .expect(
+            <span class="string">&quot;Registering the follow_network_interruptions metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry()
-            .register(network_head_evaluation_errors.clone())
-            .expect(
-                <span class="string">&quot;Registering the network_head_evaluation_errors metric with the metrics registry must succeed&quot;</span>,
-            );
-        network_head_evaluation_errors
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>BOOTSTRAP_ERRORS: Box&lt;GenericCounter&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>boostrap_errors = Box::new(
-            GenericCounter::&lt;AtomicU64&gt;::new(
-                <span class="string">&quot;bootstrap_errors&quot;</span>,
-                <span class="string">&quot;Total number of bootstrap attempts failures&quot;</span>,
-            )
-            .expect(<span class="string">&quot;Defining the bootstrap_errors metric must succeed&quot;</span>),
+    follow_network_restarts
+});
+<span class="kw">pub static </span>FOLLOW_NETWORK_ERRORS: Lazy&lt;Box&lt;GenericCounter&lt;AtomicU64&gt;&gt;&gt; = Lazy::new(|| {
+    <span class="kw">let </span>follow_network_errors = Box::new(
+        GenericCounter::&lt;AtomicU64&gt;::new(
+            <span class="string">&quot;follow_network_errors&quot;</span>,
+            <span class="string">&quot;Total number of follow network errors&quot;</span>,
+        )
+        .expect(<span class="string">&quot;Defining the follow_network_errors metric must succeed&quot;</span>),
+    );
+    prometheus::default_registry()
+        .register(follow_network_errors.clone())
+        .expect(
+            <span class="string">&quot;Registering the follow_network_errors metric with the metrics registry must succeed&quot;</span>,
         );
-        prometheus::default_registry()
-            .register(boostrap_errors.clone())
-            .expect(
-                <span class="string">&quot;Registering the bootstrap_errors metric with the metrics registry must succeed&quot;</span>,
-            );
-        boostrap_errors
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>FOLLOW_NETWORK_INTERRUPTIONS: Box&lt;GenericCounter&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>follow_network_restarts = Box::new(
-            GenericCounter::&lt;AtomicU64&gt;::new(
-                <span class="string">&quot;follow_network_interruptions&quot;</span>,
-                <span class="string">&quot;Total number of follow network interruptions, where it unexpectedly ended&quot;</span>,
-            )
-            .expect(<span class="string">&quot;Defining the follow_network_interruptions metric must succeed&quot;</span>),
-        );
-        prometheus::default_registry()
-            .register(follow_network_restarts.clone())
-            .expect(
-                <span class="string">&quot;Registering the follow_network_interruptions metric with the metrics registry must succeed&quot;</span>,
-            );
-        follow_network_restarts
-    };
-    <span class="kw">pub static </span><span class="kw-2">ref </span>FOLLOW_NETWORK_ERRORS: Box&lt;GenericCounter&lt;AtomicU64&gt;&gt; = {
-        <span class="kw">let </span>follow_network_errors = Box::new(
-            GenericCounter::&lt;AtomicU64&gt;::new(
-                <span class="string">&quot;follow_network_errors&quot;</span>,
-                <span class="string">&quot;Total number of follow network errors&quot;</span>,
-            )
-            .expect(<span class="string">&quot;Defining the follow_network_errors metric must succeed&quot;</span>),
-        );
-        prometheus::default_registry()
-            .register(follow_network_errors.clone())
-            .expect(
-                <span class="string">&quot;Registering the follow_network_errors metric with the metrics registry must succeed&quot;</span>,
-            );
-        follow_network_errors
-    };
-}
+    follow_network_errors
+});
 
 <span class="kw">pub mod </span>labels {
     <span class="kw">pub const </span>GOSSIPSUB_MESSAGE_KIND: <span class="kw-2">&amp;</span>str = <span class="string">&quot;libp2p_message_kind&quot;</span>;
