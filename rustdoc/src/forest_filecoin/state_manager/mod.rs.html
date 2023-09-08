@@ -1305,6 +1305,16 @@
 <a href="#1305" id="1305">1305</a>
 <a href="#1306" id="1306">1306</a>
 <a href="#1307" id="1307">1307</a>
+<a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
+<a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
+<a href="#1317" id="1317">1317</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1312,6 +1322,7 @@
 <span class="kw">mod </span>errors;
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::{MessageCallbackCtx, VMTrace};
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::run_state_migrations;
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>fil_actor_interface::init::{<span class="self">self</span>, State};
@@ -1325,8 +1336,8 @@
     index::{ChainIndex, ResolveNullTipset},
     ChainStore, HeadChange,
 };
-<span class="kw">use </span><span class="kw">crate</span>::interpreter::BlockMessages;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{resolve_to_key_addr, ExecutionContext, VM};
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::{BlockMessages, CalledAt};
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait};
 <span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
@@ -1514,7 +1525,7 @@
 }
 
 <span class="attr">#[allow(clippy::type_complexity)]
-</span><span class="kw">pub const </span>NO_CALLBACK: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; anyhow::Result&lt;()&gt;&gt; = <span class="prelude-val">None</span>;
+</span><span class="kw">pub const </span>NO_CALLBACK: <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>(<span class="kw-2">&amp;</span>MessageCallbackCtx) -&gt; anyhow::Result&lt;()&gt;&gt; = <span class="prelude-val">None</span>;
 
 <span class="kw">impl</span>&lt;DB&gt; StateManager&lt;DB&gt;
 <span class="kw">where
@@ -1659,7 +1670,7 @@
         <span class="self">self</span>.cache
             .get_or_else(key, || <span class="kw">async move </span>{
                 <span class="kw">let </span>ts_state = <span class="self">self
-                    </span>.compute_tipset_state(Arc::clone(tipset), NO_CALLBACK)
+                    </span>.compute_tipset_state(Arc::clone(tipset), NO_CALLBACK, VMTrace::NotTraced)
                     .<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="macro">debug!</span>(<span class="string">&quot;Completed tipset state calculation {:?}&quot;</span>, tipset.cids());
                 <span class="prelude-val">Ok</span>(ts_state)
@@ -1694,6 +1705,7 @@
                 timestamp: tipset.min_timestamp(),
             },
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
+            VMTrace::NotTraced,
         )<span class="question-mark">?</span>;
 
         <span class="kw">if </span>msg.gas_limit == <span class="number">0 </span>{
@@ -1770,6 +1782,7 @@
                 timestamp: ts.min_timestamp(),
             },
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
+            VMTrace::NotTraced,
         )<span class="question-mark">?</span>;
 
         <span class="kw">for </span>msg <span class="kw">in </span>prior_messages {
@@ -1804,16 +1817,21 @@
         // thread to avoid starving executor
         </span><span class="kw">let </span>(m_tx, m_rx) = std::sync::mpsc::channel();
         <span class="kw">let </span>(r_tx, r_rx) = std::sync::mpsc::channel();
-        <span class="kw">let </span>callback = <span class="kw">move </span>|cid: <span class="kw-2">&amp;</span>Cid, unsigned: <span class="kw-2">&amp;</span>ChainMessage, apply_ret: <span class="kw-2">&amp;</span>ApplyRet| {
-            <span class="kw">if </span><span class="kw-2">*</span>cid == mcid {
-                m_tx.send(unsigned.message().clone())<span class="question-mark">?</span>;
-                r_tx.send(apply_ret.clone())<span class="question-mark">?</span>;
-                <span class="macro">anyhow::bail!</span>(ERROR_MSG);
-            }
-            <span class="prelude-val">Ok</span>(())
+        <span class="kw">let </span>callback = <span class="kw">move </span>|ctx: <span class="kw-2">&amp;</span>MessageCallbackCtx| {
+            <span class="kw">match </span>ctx.at {
+                CalledAt::Applied | CalledAt::Reward =&gt; {
+                    <span class="kw">if </span>ctx.cid == mcid {
+                        m_tx.send(ctx.message.message().clone())<span class="question-mark">?</span>;
+                        r_tx.send(ctx.apply_ret.clone())<span class="question-mark">?</span>;
+                        <span class="macro">anyhow::bail!</span>(ERROR_MSG);
+                    }
+                    <span class="prelude-val">Ok</span>(())
+                }
+                CalledAt::Cron =&gt; <span class="prelude-val">Ok</span>(()), <span class="comment">// ignored
+            </span>}
         };
         <span class="kw">let </span>result = <span class="self">self
-            </span>.compute_tipset_state(Arc::clone(ts), <span class="prelude-val">Some</span>(callback))
+            </span>.compute_tipset_state(Arc::clone(ts), <span class="prelude-val">Some</span>(callback), VMTrace::NotTraced)
             .<span class="kw">await</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Err</span>(error_message) = result {
@@ -1908,30 +1926,28 @@
     ///
     /// For details, see the documentation for [`apply_block_messages`].
     ///
-    </span><span class="attr">#[instrument(skip(<span class="self">self</span>, tipset, callback))]
-    </span><span class="kw">pub async fn </span>compute_tipset_state&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
+    </span><span class="attr">#[instrument(skip_all)]
+    </span><span class="kw">pub async fn </span>compute_tipset_state(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
         tipset: Arc&lt;Tipset&gt;,
-        callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, Error&gt;
-    <span class="kw">where
-        </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
-    {
+        callback: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>MessageCallbackCtx) -&gt; anyhow::Result&lt;()&gt; + Send + <span class="lifetime">&#39;static</span>&gt;,
+        enable_tracing: VMTrace,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, Error&gt; {
         <span class="kw">let </span>this = Arc::clone(<span class="self">self</span>);
-        tokio::task::spawn_blocking(<span class="kw">move </span>|| this.compute_tipset_state_blocking(tipset, callback))
-            .<span class="kw">await</span><span class="question-mark">?
+        tokio::task::spawn_blocking(<span class="kw">move </span>|| {
+            this.compute_tipset_state_blocking(tipset, callback, enable_tracing)
+        })
+        .<span class="kw">await</span><span class="question-mark">?
     </span>}
 
     <span class="doccomment">/// Blocking version of `compute_tipset_state`
     </span><span class="attr">#[tracing::instrument(skip_all)]
-    </span><span class="kw">pub fn </span>compute_tipset_state_blocking&lt;CB: <span class="lifetime">&#39;static</span>&gt;(
+    </span><span class="kw">pub fn </span>compute_tipset_state_blocking(
         <span class="self">self</span>: <span class="kw-2">&amp;</span>Arc&lt;<span class="self">Self</span>&gt;,
         tipset: Arc&lt;Tipset&gt;,
-        callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, Error&gt;
-    <span class="kw">where
-        </span>CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; + Send,
-    {
+        callback: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>MessageCallbackCtx) -&gt; anyhow::Result&lt;()&gt; + Send + <span class="lifetime">&#39;static</span>&gt;,
+        enable_tracing: VMTrace,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, Error&gt; {
         <span class="prelude-val">Ok</span>(apply_block_messages(
             <span class="self">self</span>.chain_store().genesis().timestamp(),
             Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store().chain_index),
@@ -1940,6 +1956,7 @@
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
             tipset,
             callback,
+            enable_tracing,
         )<span class="question-mark">?</span>)
     }
 
@@ -2416,6 +2433,7 @@
                 engine,
                 parent,
                 NO_CALLBACK,
+                VMTrace::NotTraced,
             )
             .context(<span class="string">&quot;couldn&#39;t compute tipset state&quot;</span>)<span class="question-mark">?</span>;
             <span class="kw">let </span>expected_receipt = child.min_ticket_block().message_receipts();
@@ -2513,18 +2531,19 @@
 ///
 /// Scanning the blockchain to find past tipsets and state-trees may be slow.
 /// The `ChainStore` caches recent tipsets to make these scans faster.
-</span><span class="kw">pub fn </span>apply_block_messages&lt;DB, CB&gt;(
+</span><span class="attr">#[allow(clippy::too_many_arguments)]
+</span><span class="kw">pub fn </span>apply_block_messages&lt;DB&gt;(
     genesis_timestamp: u64,
     chain_index: Arc&lt;ChainIndex&lt;Arc&lt;DB&gt;&gt;&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
     beacon: Arc&lt;BeaconSchedule&gt;,
     engine: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::machine::MultiEngine,
     tipset: Arc&lt;Tipset&gt;,
-    <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;CB&gt;,
+    <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>MessageCallbackCtx) -&gt; anyhow::Result&lt;()&gt;&gt;,
+    enable_tracing: VMTrace,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;CidPair, anyhow::Error&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
-    CB: FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;,
 {
     <span class="comment">// This function will:
     // 1. handle the genesis block as a special case
@@ -2569,6 +2588,7 @@
                 timestamp,
             },
             engine,
+            enable_tracing,
         )
     };
 

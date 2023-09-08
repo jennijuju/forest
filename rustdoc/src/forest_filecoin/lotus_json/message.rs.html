@@ -102,6 +102,16 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -125,7 +135,13 @@
     method: LotusJson&lt;u64&gt;,
     <span class="attr">#[serde(skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
     </span>params: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;RawBytes&gt;&gt;,
-    <span class="attr">#[serde(rename = <span class="string">&quot;CID&quot;</span>, skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
+    <span class="comment">// This is a bit of a hack - `Message`s don&#39;t really store their CID, but they&#39;re
+    // serialized with it.
+    // However, getting a message&#39;s CID is fallible...
+    // So we keep this as an `Option`, and ignore it if it fails.
+    // We also ignore it when serializing from json.
+    // I wouldn&#39;t be surprised if this causes issues with arbitrary tests
+    </span><span class="attr">#[serde(rename = <span class="string">&quot;CID&quot;</span>, skip_serializing_if = <span class="string">&quot;LotusJson::is_none&quot;</span>, default)]
     </span>cid: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;Cid&gt;&gt;,
 }
 
@@ -137,20 +153,24 @@
             <span class="macro">json!</span>({
                 <span class="string">&quot;From&quot;</span>: <span class="string">&quot;f00&quot;</span>,
                 <span class="string">&quot;GasFeeCap&quot;</span>: <span class="string">&quot;0&quot;</span>,
-                <span class="string">&quot;GasLimit&quot;</span>: <span class="number">0</span>, <span class="comment">// BUG?(aatifsyed)
-                </span><span class="string">&quot;GasPremium&quot;</span>: <span class="string">&quot;0&quot;</span>,
+                <span class="string">&quot;GasLimit&quot;</span>: <span class="number">0</span>,
+                <span class="string">&quot;GasPremium&quot;</span>: <span class="string">&quot;0&quot;</span>,
                 <span class="string">&quot;Method&quot;</span>: <span class="number">0</span>,
                 <span class="string">&quot;Nonce&quot;</span>: <span class="number">0</span>,
-                <span class="string">&quot;Params&quot;</span>: <span class="string">&quot;&quot;</span>, <span class="comment">// BUG?(aatifsyed)
-                </span><span class="string">&quot;To&quot;</span>: <span class="string">&quot;f00&quot;</span>,
+                <span class="string">&quot;Params&quot;</span>: null,
+                <span class="string">&quot;To&quot;</span>: <span class="string">&quot;f00&quot;</span>,
                 <span class="string">&quot;Value&quot;</span>: <span class="string">&quot;0&quot;</span>,
-                <span class="string">&quot;Version&quot;</span>: <span class="number">0
-            </span>}),
+                <span class="string">&quot;Version&quot;</span>: <span class="number">0</span>,
+                <span class="string">&quot;CID&quot;</span>: {
+                    <span class="string">&quot;/&quot;</span>: <span class="string">&quot;bafy2bzaced3xdk2uf6azekyxgcttujvy3fzyeqmibtpjf2fxcpfdx2zcx4s3g&quot;
+                </span>}
+            }),
             Message::default(),
         )]
     }
 
     <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
+        <span class="kw">let </span>cid = <span class="self">self</span>.cid().ok();
         <span class="kw">let </span><span class="self">Self </span>{
             version,
             from,
@@ -174,7 +194,7 @@
             gas_premium: gas_premium.into(),
             method: method_num.into(),
             params: <span class="prelude-val">Some</span>(params).into(),
-            cid: <span class="prelude-val">None</span>.into(),
+            cid: cid.into(),
         }
     }
 
@@ -190,8 +210,8 @@
             gas_premium,
             method,
             params,
-            cid: _ignored, <span class="comment">// BUG?(aatifsyed)
-        </span>} = lotus_json;
+            cid: _ignored,
+        } = lotus_json;
         <span class="self">Self </span>{
             version: version.into_inner(),
             from: from.into_inner(),

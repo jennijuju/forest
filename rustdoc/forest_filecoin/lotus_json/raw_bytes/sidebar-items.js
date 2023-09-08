@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["RawBytesLotusJson"]};
+window.SIDEBAR_ITEMS = {};

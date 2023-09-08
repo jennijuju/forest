@@ -67,6 +67,9 @@
 <a href="#67" id="67">67</a>
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -98,11 +101,14 @@
                     <span class="string">&quot;GasPremium&quot;</span>: <span class="string">&quot;0&quot;</span>,
                     <span class="string">&quot;Method&quot;</span>: <span class="number">0</span>,
                     <span class="string">&quot;Nonce&quot;</span>: <span class="number">0</span>,
-                    <span class="string">&quot;Params&quot;</span>: <span class="string">&quot;&quot;</span>,
+                    <span class="string">&quot;Params&quot;</span>: null,
                     <span class="string">&quot;To&quot;</span>: <span class="string">&quot;f00&quot;</span>,
                     <span class="string">&quot;Value&quot;</span>: <span class="string">&quot;0&quot;</span>,
-                    <span class="string">&quot;Version&quot;</span>: <span class="number">0
-                </span>},
+                    <span class="string">&quot;Version&quot;</span>: <span class="number">0</span>,
+                    <span class="string">&quot;CID&quot;</span>: {
+                        <span class="string">&quot;/&quot;</span>: <span class="string">&quot;bafy2bzaced3xdk2uf6azekyxgcttujvy3fzyeqmibtpjf2fxcpfdx2zcx4s3g&quot;
+                    </span>},
+                },
                 <span class="string">&quot;Signature&quot;</span>: {<span class="string">&quot;Type&quot;</span>: <span class="string">&quot;bls&quot;</span>, <span class="string">&quot;Data&quot;</span>: <span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>}
             }),
             SignedMessage {
@@ -120,7 +126,7 @@
         <span class="self">Self</span>::LotusJson {
             message: message.into(),
             signature: signature.into(),
-            cid: <span class="prelude-val">None</span>.into(), <span class="comment">// BUG?(aatifsyed)
+            cid: <span class="prelude-val">None</span>.into(), <span class="comment">// See notes on Message
         </span>}
     }
 
@@ -128,7 +134,7 @@
         <span class="kw">let </span><span class="self">Self</span>::LotusJson {
             message,
             signature,
-            cid: _ignored, <span class="comment">// BUG?(aatifsyed)
+            cid: _ignored, <span class="comment">// See notes on Message
         </span>} = lotus_json;
         <span class="self">Self </span>{
             message: message.into_inner(),

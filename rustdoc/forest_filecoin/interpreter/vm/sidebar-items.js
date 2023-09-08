@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["VM"],"struct":["BlockMessages","ExecutionContext"],"type":["ForestExecutorV2","ForestExecutorV3","ForestKernelV2","ForestKernelV3","ForestMachineV2","ForestMachineV3"]};
+window.SIDEBAR_ITEMS = {"constant":["IMPLICIT_MESSAGE_GAS_LIMIT"],"enum":["CalledAt","VM","VMTrace"],"struct":["BlockMessages","ExecutionContext","MessageCallbackCtx"],"type":["ForestExecutorV2","ForestExecutorV3","ForestKernelV2","ForestKernelV3","ForestMachineV2","ForestMachineV3"]};

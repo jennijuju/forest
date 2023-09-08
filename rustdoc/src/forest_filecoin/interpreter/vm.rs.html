@@ -449,6 +449,73 @@
 <a href="#449" id="449">449</a>
 <a href="#450" id="450">450</a>
 <a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
+<a href="#499" id="499">499</a>
+<a href="#500" id="500">500</a>
+<a href="#501" id="501">501</a>
+<a href="#502" id="502">502</a>
+<a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
+<a href="#509" id="509">509</a>
+<a href="#510" id="510">510</a>
+<a href="#511" id="511">511</a>
+<a href="#512" id="512">512</a>
+<a href="#513" id="513">513</a>
+<a href="#514" id="514">514</a>
+<a href="#515" id="515">515</a>
+<a href="#516" id="516">516</a>
+<a href="#517" id="517">517</a>
+<a href="#518" id="518">518</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -458,6 +525,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::block_messages;
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ChainIndex;
 <span class="kw">use </span><span class="kw">crate</span>::chain::store::Error;
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::{fvm2::ForestExternsV2, fvm3::ForestExterns <span class="kw">as </span>ForestExternsV3};
 <span class="kw">use </span><span class="kw">crate</span>::message::ChainMessage;
 <span class="kw">use </span><span class="kw">crate</span>::message::Message <span class="kw">as </span>MessageTrait;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
@@ -491,10 +559,8 @@
 };
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::{to_vec, RawBytes};
-<span class="kw">use </span>fvm_shared2::{clock::ChainEpoch, BLOCK_GAS_LIMIT};
+<span class="kw">use </span>fvm_shared2::clock::ChainEpoch;
 <span class="kw">use </span>num::Zero;
-
-<span class="kw">use </span><span class="kw">crate</span>::interpreter::{fvm2::ForestExternsV2, fvm3::ForestExterns <span class="kw">as </span>ForestExternsV3};
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::interpreter) <span class="kw">type </span>ForestMachineV2&lt;DB&gt; =
     DefaultMachine_v2&lt;Arc&lt;DB&gt;, ForestExternsV2&lt;DB&gt;&gt;;
@@ -507,6 +573,9 @@
     fvm3::DefaultKernel&lt;fvm3::call_manager::DefaultCallManager&lt;ForestMachineV3&lt;DB&gt;&gt;&gt;;
 <span class="kw">type </span>ForestExecutorV2&lt;DB&gt; = DefaultExecutor_v2&lt;ForestKernelV2&lt;DB&gt;&gt;;
 <span class="kw">type </span>ForestExecutorV3&lt;DB&gt; = DefaultExecutor_v3&lt;ForestKernelV3&lt;DB&gt;&gt;;
+
+<span class="doccomment">/// Comes from &lt;https://github.com/filecoin-project/lotus/blob/v1.23.2/chain/vm/fvm.go#L473&gt;
+</span><span class="kw">const </span>IMPLICIT_MESSAGE_GAS_LIMIT: i64 = i64::MAX / <span class="number">2</span>;
 
 <span class="doccomment">/// Contains all messages to process through the VM as well as miner information
 /// for block rewards.
@@ -610,6 +679,7 @@
             timestamp,
         }: ExecutionContext&lt;DB&gt;,
         multi_engine: <span class="kw-2">&amp;</span>MultiEngine,
+        enable_tracing: VMTrace,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
         <span class="kw">let </span>network_version = chain_config.network_version(epoch);
         <span class="kw">if </span>network_version &gt;= NetworkVersion::V18 {
@@ -624,6 +694,8 @@
             <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, timestamp, state_tree_root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());
+            context.tracing = enable_tracing.is_traced();
+
             <span class="kw">let </span>fvm: ForestMachineV3&lt;DB&gt; = ForestMachineV3::new(
                 <span class="kw-2">&amp;</span>context,
                 Arc::clone(<span class="kw-2">&amp;</span>chain_index.db),
@@ -644,6 +716,8 @@
             <span class="kw">let </span><span class="kw-2">mut </span>context = config.for_epoch(epoch, state_tree_root);
             context.set_base_fee(base_fee.into());
             context.set_circulating_supply(circ_supply.into());
+            context.tracing = enable_tracing.is_traced();
+
             <span class="kw">let </span>fvm: ForestMachineV2&lt;DB&gt; = ForestMachineV2::new(
                 <span class="kw-2">&amp;</span>engine,
                 <span class="kw-2">&amp;</span>context,
@@ -693,17 +767,15 @@
     <span class="kw">pub fn </span>run_cron(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         epoch: ChainEpoch,
-        callback: <span class="prelude-ty">Option</span>&lt;
-            <span class="kw-2">&amp;mut </span><span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;,
-        &gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
+        callback: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>MessageCallbackCtx) -&gt; anyhow::Result&lt;()&gt;&gt;,
+    ) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>cron_msg: Message = Message_v3 {
             from: Address::SYSTEM_ACTOR.into(),
             to: Address::CRON_ACTOR.into(),
             <span class="comment">// Epoch as sequence is intentional
             </span>sequence: epoch <span class="kw">as </span>u64,
             <span class="comment">// Arbitrarily large gas limit for cron (matching Lotus value)
-            </span>gas_limit: BLOCK_GAS_LIMIT <span class="kw">as </span>u64 * <span class="number">10000</span>,
+            </span>gas_limit: IMPLICIT_MESSAGE_GAS_LIMIT <span class="kw">as </span>u64,
             method_num: cron::Method::EpochTick <span class="kw">as </span>u64,
             params: Default::default(),
             value: Default::default(),
@@ -718,8 +790,13 @@
             <span class="macro">anyhow::bail!</span>(<span class="string">&quot;failed to apply block cron message: {}&quot;</span>, err);
         }
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(callback) = callback {
-            callback(<span class="kw-2">&amp;</span>(cron_msg.cid()<span class="question-mark">?</span>), <span class="kw-2">&amp;</span>ChainMessage::Unsigned(cron_msg), <span class="kw-2">&amp;</span>ret)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>callback) = callback {
+            callback(<span class="kw-2">&amp;</span>MessageCallbackCtx {
+                cid: cron_msg.cid()<span class="question-mark">?</span>,
+                message: <span class="kw-2">&amp;</span>ChainMessage::Unsigned(cron_msg),
+                apply_ret: <span class="kw-2">&amp;</span>ret,
+                at: CalledAt::Cron,
+            })<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -730,9 +807,9 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         messages: <span class="kw-2">&amp;</span>[BlockMessages],
         epoch: ChainEpoch,
-        <span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;
-            <span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>Cid, <span class="kw-2">&amp;</span>ChainMessage, <span class="kw-2">&amp;</span>ApplyRet) -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt;,
-        &gt;,
+        <span class="comment">// note: we take &amp;MessageCallbackCtx rather than MessageCallbackCtx&lt;&#39;_&gt;
+        //       because I&#39;m not smart enough to make the second one work
+        </span><span class="kw-2">mut </span>callback: <span class="prelude-ty">Option</span>&lt;<span class="kw">impl </span>FnMut(<span class="kw-2">&amp;</span>MessageCallbackCtx) -&gt; anyhow::Result&lt;()&gt;&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Receipt&gt;, anyhow::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>receipts = Vec::new();
         <span class="kw">let </span><span class="kw-2">mut </span>processed = HashSet::&lt;Cid&gt;::default();
@@ -741,22 +818,28 @@
             <span class="kw">let </span><span class="kw-2">mut </span>penalty = TokenAmount::zero();
             <span class="kw">let </span><span class="kw-2">mut </span>gas_reward = TokenAmount::zero();
 
-            <span class="kw">let </span><span class="kw-2">mut </span>process_msg = |msg: <span class="kw-2">&amp;</span>ChainMessage| -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
-                <span class="kw">let </span>cid = msg.cid()<span class="question-mark">?</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>process_msg = |message: <span class="kw-2">&amp;</span>ChainMessage| -&gt; <span class="prelude-ty">Result</span>&lt;(), anyhow::Error&gt; {
+                <span class="kw">let </span>cid = message.cid()<span class="question-mark">?</span>;
                 <span class="comment">// Ensure no duplicate processing of a message
                 </span><span class="kw">if </span>processed.contains(<span class="kw-2">&amp;</span>cid) {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
-                <span class="kw">let </span>ret = <span class="self">self</span>.apply_message(msg)<span class="question-mark">?</span>;
+                <span class="kw">let </span>ret = <span class="self">self</span>.apply_message(message)<span class="question-mark">?</span>;
 
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(cb) = <span class="kw-2">&amp;mut </span>callback {
-                    cb(<span class="kw-2">&amp;</span>cid, msg, <span class="kw-2">&amp;</span>ret)<span class="question-mark">?</span>;
+                    cb(<span class="kw-2">&amp;</span>MessageCallbackCtx {
+                        cid,
+                        message,
+                        apply_ret: <span class="kw-2">&amp;</span>ret,
+                        at: CalledAt::Applied,
+                    })<span class="question-mark">?</span>;
                 }
 
                 <span class="comment">// Update totals
                 </span>gas_reward += ret.miner_tip();
                 penalty += ret.penalty();
-                receipts.push(ret.msg_receipt());
+                <span class="kw">let </span>msg_receipt = ret.msg_receipt();
+                receipts.push(msg_receipt.clone());
 
                 <span class="comment">// Add processed Cid to set of processed messages
                 </span>processed.insert(cid);
@@ -786,20 +869,27 @@
                         ret.msg_receipt().exit_code()
                     );
                 }
+
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(callback) = <span class="kw-2">&amp;mut </span>callback {
-                    callback(<span class="kw-2">&amp;</span>(rew_msg.cid()<span class="question-mark">?</span>), <span class="kw-2">&amp;</span>ChainMessage::Unsigned(rew_msg), <span class="kw-2">&amp;</span>ret)<span class="question-mark">?</span>;
-                }
+                    callback(<span class="kw-2">&amp;</span>MessageCallbackCtx {
+                        cid: rew_msg.cid()<span class="question-mark">?</span>,
+                        message: <span class="kw-2">&amp;</span>ChainMessage::Unsigned(rew_msg),
+                        apply_ret: <span class="kw-2">&amp;</span>ret,
+                        at: CalledAt::Reward,
+                    })<span class="question-mark">?
+                </span>}
             }
         }
 
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.run_cron(epoch, callback.as_mut()) {
             <span class="macro">tracing::error!</span>(<span class="string">&quot;End of epoch cron failed to run: {}&quot;</span>, e);
         }
+
         <span class="prelude-val">Ok</span>(receipts)
     }
 
     <span class="doccomment">/// Applies single message through VM and returns result from execution.
-    </span><span class="kw">pub fn </span>apply_implicit_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>Message) -&gt; <span class="prelude-ty">Result</span>&lt;ApplyRet, anyhow::Error&gt; {
+    </span><span class="kw">pub fn </span>apply_implicit_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>Message) -&gt; anyhow::Result&lt;ApplyRet&gt; {
         <span class="comment">// raw_length is not used for Implicit messages.
         </span><span class="kw">let </span>raw_length = to_vec(msg).expect(<span class="string">&quot;encoding error&quot;</span>).len();
 
@@ -826,7 +916,7 @@
     <span class="doccomment">/// Applies the state transition for a single message.
     /// Returns `ApplyRet` structure which contains the message receipt and some
     /// meta data.
-    </span><span class="kw">pub fn </span>apply_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>ChainMessage) -&gt; <span class="prelude-ty">Result</span>&lt;ApplyRet, anyhow::Error&gt; {
+    </span><span class="kw">pub fn </span>apply_message(<span class="kw-2">&amp;mut </span><span class="self">self</span>, msg: <span class="kw-2">&amp;</span>ChainMessage) -&gt; anyhow::Result&lt;ApplyRet&gt; {
         <span class="comment">// Basic validity check
         </span>msg.message().check()<span class="question-mark">?</span>;
 
@@ -891,13 +981,57 @@
             params,
             <span class="comment">// Epoch as sequence is intentional
             </span>sequence: epoch <span class="kw">as </span>u64,
-            gas_limit: <span class="number">1 </span>&lt;&lt; <span class="number">30</span>,
+            gas_limit: IMPLICIT_MESSAGE_GAS_LIMIT <span class="kw">as </span>u64,
             value: Default::default(),
             version: Default::default(),
             gas_fee_cap: Default::default(),
             gas_premium: Default::default(),
         };
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(rew_msg.into()))
+    }
+}
+
+<span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="kw">pub struct </span>MessageCallbackCtx&lt;<span class="lifetime">&#39;a</span>&gt; {
+    <span class="kw">pub </span>cid: Cid,
+    <span class="kw">pub </span>message: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ChainMessage,
+    <span class="kw">pub </span>apply_ret: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>ApplyRet,
+    <span class="kw">pub </span>at: CalledAt,
+}
+
+<span class="attr">#[derive(Debug, Clone, Copy)]
+</span><span class="kw">pub enum </span>CalledAt {
+    Applied,
+    Reward,
+    Cron,
+}
+
+<span class="kw">impl </span>CalledAt {
+    <span class="doccomment">/// Was [`VM::apply_message`] or [`VM::apply_implicit_message`] called?
+    </span><span class="kw">pub fn </span>apply_kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; fvm3::executor::ApplyKind {
+        <span class="kw">use </span>fvm3::executor::ApplyKind;
+        <span class="kw">match </span><span class="self">self </span>{
+            CalledAt::Applied =&gt; ApplyKind::Explicit,
+            CalledAt::Reward | CalledAt::Cron =&gt; ApplyKind::Implicit,
+        }
+    }
+}
+
+<span class="doccomment">/// Tracing a Filecoin VM has a performance penalty.
+/// This controls whether a VM should be traced or not when it is created.
+</span><span class="attr">#[derive(Default, Clone, Copy)]
+</span><span class="kw">pub enum </span>VMTrace {
+    <span class="doccomment">/// Collect trace for the given operation
+    </span>Traced,
+    <span class="doccomment">/// Do not collect trace
+    </span><span class="attr">#[default]
+    </span>NotTraced,
+}
+
+<span class="kw">impl </span>VMTrace {
+    <span class="doccomment">/// Should tracing be collected?
+    </span><span class="kw">pub fn </span>is_traced(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, VMTrace::Traced)
     }
 }
 </code></pre></div></section></main></body></html>

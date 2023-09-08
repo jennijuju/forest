@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["VecU8LotusJson"]};
+window.SIDEBAR_ITEMS = {"struct":["Inner","VecU8LotusJson"]};

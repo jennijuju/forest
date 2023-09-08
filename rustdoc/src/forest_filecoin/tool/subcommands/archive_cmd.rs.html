@@ -431,17 +431,6 @@
 <a href="#431" id="431">431</a>
 <a href="#432" id="432">432</a>
 <a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -664,13 +653,8 @@
     <span class="kw">let </span>root = store.heaviest_tipset()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>genesis = root.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-    <span class="kw">let </span>chain_name = <span class="kw">if </span>genesis.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
-        NetworkChain::Calibnet
-    } <span class="kw">else if </span>genesis.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
-        NetworkChain::Mainnet
-    } <span class="kw">else </span>{
-        <span class="macro">bail!</span>(<span class="string">&quot;Unrecognizable genesis block&quot;</span>);
-    };
+    <span class="kw">let </span>chain_name =
+        NetworkChain::from_genesis(genesis.cid()).context(<span class="string">&quot;Unrecognizable genesis block&quot;</span>)<span class="question-mark">?</span>;
 
     <span class="macro">println!</span>(<span class="string">&quot;{}:&quot;</span>, chain_name);
     <span class="kw">for </span>(epoch, cid) <span class="kw">in </span>list_checkpoints(store, root) {
@@ -734,13 +718,7 @@
     <span class="kw">let </span>ts = Arc::new(root);
 
     <span class="kw">let </span>genesis = ts.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-    <span class="kw">let </span>network = <span class="kw">if </span>genesis.cid() == <span class="kw-2">&amp;*</span>calibnet::GENESIS_CID {
-        NetworkChain::Calibnet
-    } <span class="kw">else if </span>genesis.cid() == <span class="kw-2">&amp;*</span>mainnet::GENESIS_CID {
-        NetworkChain::Mainnet
-    } <span class="kw">else </span>{
-        NetworkChain::Devnet(<span class="string">&quot;devnet&quot;</span>.to_string())
-    };
+    <span class="kw">let </span>network = NetworkChain::from_genesis_or_devnet_placeholder(genesis.cid());
 
     <span class="kw">let </span>epoch = epoch_option.unwrap_or(ts.epoch());
 

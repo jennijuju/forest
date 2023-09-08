@@ -114,10 +114,38 @@
 <a href="#114" id="114">114</a>
 <a href="#115" id="115">115</a>
 <a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>fvm_ipld_encoding::RawBytes;
+</span><span class="kw">use </span>::cid::Cid;
+<span class="kw">use </span>fvm_ipld_encoding::RawBytes;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::shim::executor::Receipt;
@@ -128,25 +156,46 @@
     exit_code: LotusJson&lt;u32&gt;,
     r#return: LotusJson&lt;RawBytes&gt;,
     gas_used: LotusJson&lt;u64&gt;,
+    <span class="attr">#[serde(default)] </span><span class="comment">// Lotus still does `&quot;EventsRoot&quot;: null`
+    </span>events_root: LotusJson&lt;<span class="prelude-ty">Option</span>&lt;Cid&gt;&gt;,
 }
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>Receipt {
     <span class="kw">type </span>LotusJson = ReceiptLotusJson;
 
     <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
-        <span class="macro">vec!</span>[(
-            <span class="macro">json!</span>({
-                <span class="string">&quot;ExitCode&quot;</span>: <span class="number">0</span>,
-                <span class="string">&quot;Return&quot;</span>: <span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>,
-                <span class="string">&quot;GasUsed&quot;</span>: <span class="number">0</span>,
-            }),
-            <span class="self">Self</span>::V3(fvm_shared3::receipt::Receipt {
-                exit_code: fvm_shared3::error::ExitCode::new(<span class="number">0</span>),
-                return_data: RawBytes::new(Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>)),
-                gas_used: <span class="number">0</span>,
-                events_root: <span class="prelude-val">None</span>,
-            }),
-        )]
+        <span class="macro">vec!</span>[
+            (
+                <span class="macro">json!</span>({
+                    <span class="string">&quot;ExitCode&quot;</span>: <span class="number">0</span>,
+                    <span class="string">&quot;Return&quot;</span>: <span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>,
+                    <span class="string">&quot;GasUsed&quot;</span>: <span class="number">0</span>,
+                    <span class="string">&quot;EventsRoot&quot;</span>: null,
+                }),
+                <span class="self">Self</span>::V3(fvm_shared3::receipt::Receipt {
+                    exit_code: fvm_shared3::error::ExitCode::new(<span class="number">0</span>),
+                    return_data: RawBytes::new(Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>)),
+                    gas_used: <span class="number">0</span>,
+                    events_root: <span class="prelude-val">None</span>,
+                }),
+            ),
+            (
+                <span class="macro">json!</span>({
+                    <span class="string">&quot;ExitCode&quot;</span>: <span class="number">0</span>,
+                    <span class="string">&quot;Return&quot;</span>: <span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>,
+                    <span class="string">&quot;GasUsed&quot;</span>: <span class="number">0</span>,
+                    <span class="string">&quot;EventsRoot&quot;</span>: {
+                        <span class="string">&quot;/&quot;</span>: <span class="string">&quot;baeaaaaa&quot;
+                    </span>}
+                }),
+                <span class="self">Self</span>::V3(fvm_shared3::receipt::Receipt {
+                    exit_code: fvm_shared3::error::ExitCode::new(<span class="number">0</span>),
+                    return_data: RawBytes::new(Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>)),
+                    gas_used: <span class="number">0</span>,
+                    events_root: <span class="prelude-val">Some</span>(Cid::default()),
+                }),
+            ),
+        ]
     }
 
     <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
@@ -154,6 +203,7 @@
             exit_code: <span class="self">self</span>.exit_code().value().into(),
             r#return: <span class="self">self</span>.return_data().into(),
             gas_used: <span class="self">self</span>.gas_used().into(),
+            events_root: <span class="self">self</span>.events_root().into(),
         }
     }
 
@@ -162,12 +212,13 @@
             exit_code,
             r#return,
             gas_used,
+            events_root,
         } = lotus_json;
         <span class="self">Self</span>::V3(fvm_shared3::receipt::Receipt {
             exit_code: fvm_shared3::error::ExitCode::new(exit_code.into_inner()),
             return_data: r#return.into_inner(),
             gas_used: gas_used.into_inner(),
-            events_root: <span class="prelude-val">None</span>,
+            events_root: events_root.into_inner(),
         })
     }
 }
@@ -182,6 +233,8 @@
 /// so [`assert_unchanged_via_json`] tests with arbitrary input will fail.
 ///
 /// This can only be fixed by rewriting [Receipt].
+///
+/// See &lt;https://github.com/ChainSafe/forest/issues/3459&gt;.
 </span><span class="attr">#[test]
 #[should_panic = <span class="string">&quot;cannot serialize to v2 AND v3 from the same input&quot;</span>]
 </span><span class="kw">fn </span>cannot_call_arbitrary_tests_on_receipt() {
@@ -202,6 +255,7 @@
         <span class="string">&quot;ExitCode&quot;</span>: <span class="number">0</span>,
         <span class="string">&quot;Return&quot;</span>: <span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>,
         <span class="string">&quot;GasUsed&quot;</span>: <span class="number">0</span>,
+        <span class="string">&quot;EventsRoot&quot;</span>: null,
     });
 
     <span class="comment">// they serialize to the same thing...

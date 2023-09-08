@@ -372,6 +372,16 @@
 <a href="#372" id="372">372</a>
 <a href="#373" id="373">373</a>
 <a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -476,7 +486,10 @@
 //! - Use destructuring to ensure exhaustiveness
 //!
 //! ### Optional fields
-//! Optional fields must have the following annotations:
+//! It&#39;s not clear if optional fields should be serialized as `null` or not.
+//! See e.g `LotusJson&lt;Receipt&gt;`.
+//!
+//! For now, fields are recommended to have the following annotations:
 //! ```rust,ignore
 //! # struct Foo {
 //! #[serde(skip_serializing_if = &quot;LotusJson::is_none&quot;, default)]
@@ -745,5 +758,12 @@
     }
 }
 
-<span class="macro">lotus_json_with_self!</span>(u32, u64, i64, String, chrono::DateTime&lt;chrono::Utc&gt;);
+<span class="macro">lotus_json_with_self!</span>(
+    u32,
+    u64,
+    i64,
+    String,
+    chrono::DateTime&lt;chrono::Utc&gt;,
+    serde_json::Value,
+);
 </code></pre></div></section></main></body></html>

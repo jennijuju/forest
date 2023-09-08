@@ -566,6 +566,8 @@
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
 <a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -574,6 +576,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys, TxMeta};
 <span class="kw">use </span><span class="kw">crate</span>::fil_cns;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::BlockMessages;
+<span class="kw">use </span><span class="kw">crate</span>::interpreter::VMTrace;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::FrozenCids;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
 <span class="kw">use </span><span class="kw">crate</span>::message::{ChainMessage, Message <span class="kw">as </span>MessageTrait, SignedMessage};
@@ -860,6 +863,7 @@
                 </span><span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::machine::MultiEngine::default(),
                 Arc::clone(<span class="kw-2">&amp;</span>heaviest_tipset),
                 <span class="kw">crate</span>::state_manager::NO_CALLBACK,
+                VMTrace::NotTraced,
             )
             .map_err(|e| Error::Other(e.to_string()))<span class="question-mark">?</span>;
             <span class="kw">return </span><span class="prelude-val">Ok</span>((heaviest_tipset, state));

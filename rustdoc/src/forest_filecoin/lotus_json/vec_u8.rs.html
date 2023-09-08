@@ -21,27 +21,57 @@
 <a href="#21" id="21">21</a>
 <a href="#22" id="22">22</a>
 <a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 
+<span class="comment">// This code looks odd so we can
+// - use #[serde(with = &quot;...&quot;)]
+// - de/ser empty vecs as null
+</span><span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="kw">pub struct </span>VecU8LotusJson(<span class="prelude-ty">Option</span>&lt;Inner&gt;);
+
 <span class="attr">#[derive(Serialize, Deserialize)]
-</span><span class="kw">pub struct </span>VecU8LotusJson(<span class="attr">#[serde(with = <span class="string">&quot;base64_standard&quot;</span>)] </span>Vec&lt;u8&gt;);
+</span><span class="kw">struct </span>Inner(<span class="attr">#[serde(with = <span class="string">&quot;base64_standard&quot;</span>)] </span>Vec&lt;u8&gt;);
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>Vec&lt;u8&gt; {
     <span class="kw">type </span>LotusJson = VecU8LotusJson;
 
     <span class="kw">fn </span>snapshots() -&gt; Vec&lt;(serde_json::Value, <span class="self">Self</span>)&gt; {
-        <span class="macro">vec!</span>[(<span class="macro">json!</span>(<span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>), Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>))]
+        <span class="macro">vec!</span>[
+            (<span class="macro">json!</span>(<span class="string">&quot;aGVsbG8gd29ybGQh&quot;</span>), Vec::from_iter(<span class="kw-2">*</span><span class="string">b&quot;hello world!&quot;</span>)),
+            (<span class="macro">json!</span>(null), Vec::new()),
+        ]
     }
 
     <span class="kw">fn </span>into_lotus_json(<span class="self">self</span>) -&gt; <span class="self">Self</span>::LotusJson {
-        VecU8LotusJson(<span class="self">self</span>)
+        <span class="kw">match </span><span class="self">self</span>.is_empty() {
+            <span class="bool-val">true </span>=&gt; VecU8LotusJson(<span class="prelude-val">None</span>),
+            <span class="bool-val">false </span>=&gt; VecU8LotusJson(<span class="prelude-val">Some</span>(Inner(<span class="self">self</span>))),
+        }
     }
 
-    <span class="kw">fn </span>from_lotus_json(VecU8LotusJson(vec): <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
-        vec
+    <span class="kw">fn </span>from_lotus_json(value: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>value {
+            VecU8LotusJson(<span class="prelude-val">Some</span>(Inner(vec))) =&gt; vec,
+            VecU8LotusJson(<span class="prelude-val">None</span>) =&gt; Vec::new(),
+        }
     }
 }
 </code></pre></div></section></main></body></html>
