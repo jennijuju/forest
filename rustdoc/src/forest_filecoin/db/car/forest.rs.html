@@ -488,6 +488,8 @@
 <a href="#488" id="488">488</a>
 <a href="#489" id="489">489</a>
 <a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -542,7 +544,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_index::{CarIndex, CarIndexBuilder, FrameOffset, Hash};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarHeader};
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
-<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::uvibytes::UviBytes;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::EitherMmapOrRandomAccessFile;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>bytes::{buf::Writer, BufMut <span class="kw">as _</span>, Bytes, BytesMut};
@@ -562,6 +563,7 @@
 };
 <span class="kw">use </span>tokio::io::{AsyncWrite, AsyncWriteExt};
 <span class="kw">use </span>tokio_util::codec::{Decoder, Encoder <span class="kw">as _</span>};
+<span class="kw">use </span>unsigned_varint::codec::UviBytes;
 
 <span class="kw">pub const </span>FOREST_CAR_FILE_EXTENSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;.forest.car.zst&quot;</span>;
 <span class="kw">pub const </span>DEFAULT_FOREST_CAR_FRAME_SIZE: usize = <span class="number">8000_usize</span>.next_power_of_two();
@@ -613,7 +615,7 @@
 
         <span class="kw">let </span>cursor = Cursor::new_pos(<span class="kw-2">&amp;</span>reader, <span class="number">0</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>header_zstd_frame = decode_zstd_single_frame(cursor)<span class="question-mark">?</span>;
-        <span class="kw">let </span>block_frame = UviBytes::default()
+        <span class="kw">let </span>block_frame = UviBytes::&lt;Bytes&gt;::default()
             .decode(<span class="kw-2">&amp;mut </span>header_zstd_frame)<span class="question-mark">?
             </span>.ok_or(invalid_data(<span class="string">&quot;malformed uvibytes&quot;</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>header = from_slice_with_fallback::&lt;CarHeader&gt;(<span class="kw-2">&amp;</span>block_frame)
@@ -688,7 +690,9 @@
                     <span class="kw">let </span><span class="kw-2">mut </span>zstd_frame = decode_zstd_single_frame(cursor)<span class="question-mark">?</span>;
                     <span class="comment">// Parse all key-value pairs and insert them into a map
                     </span><span class="kw">let </span><span class="kw-2">mut </span>block_map = HashMap::new();
-                    <span class="kw">while let </span><span class="prelude-val">Some</span>(block_frame) = UviBytes::default().decode_eof(<span class="kw-2">&amp;mut </span>zstd_frame)<span class="question-mark">? </span>{
+                    <span class="kw">while let </span><span class="prelude-val">Some</span>(block_frame) =
+                        UviBytes::&lt;Bytes&gt;::default().decode_eof(<span class="kw-2">&amp;mut </span>zstd_frame)<span class="question-mark">?
+                    </span>{
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(Block { cid, data }) = Block::from_bytes(block_frame) {
                             block_map.insert(cid, data);
                         } <span class="kw">else </span>{

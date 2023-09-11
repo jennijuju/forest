@@ -185,6 +185,8 @@
 <a href="#185" id="185">185</a>
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
@@ -203,8 +205,9 @@
 <span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncSeekExt};
 <span class="kw">use </span>tokio_util::codec::FramedRead;
 <span class="kw">use </span>tokio_util::either::Either;
+<span class="kw">use </span>unsigned_varint::codec::UviBytes;
 
-<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::{from_slice_with_fallback, uvibytes::UviBytes};
+<span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
 
 <span class="attr">#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq)]
 </span><span class="kw">pub struct </span>CarHeader {
@@ -230,7 +233,8 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>from_bytes(bytes: Bytes) -&gt; <span class="prelude-ty">Option</span>&lt;Block&gt; {
+    <span class="kw">pub fn </span>from_bytes(bytes: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;Block&gt; {
+        <span class="kw">let </span>bytes: Bytes = bytes.into();
         <span class="kw">let </span><span class="kw-2">mut </span>cursor = Cursor::new(bytes);
         <span class="kw">let </span>cid = Cid::read_bytes(<span class="kw-2">&amp;mut </span>cursor).ok()<span class="question-mark">?</span>;
         <span class="kw">let </span>data_offset = cursor.position();
@@ -325,7 +329,7 @@
 }
 
 <span class="kw">async fn </span>read_header&lt;ReaderT: AsyncRead + Unpin&gt;(reader: <span class="kw-2">&amp;mut </span>ReaderT) -&gt; <span class="prelude-ty">Option</span>&lt;CarHeader&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>framed_reader = FramedRead::new(reader, UviBytes::default());
+    <span class="kw">let </span><span class="kw-2">mut </span>framed_reader = FramedRead::new(reader, UviBytes::&lt;Bytes&gt;::default());
     <span class="kw">let </span>header = from_slice_with_fallback::&lt;CarHeader&gt;(<span class="kw-2">&amp;</span>framed_reader.next().<span class="kw">await</span><span class="question-mark">?</span>.ok()<span class="question-mark">?</span>).ok()<span class="question-mark">?</span>;
     <span class="kw">if </span>header.version != <span class="number">1 </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;

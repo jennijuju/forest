@@ -2,7 +2,7 @@
 <p>CARs are made of concatenations of <em>varint frames</em>. Each varint frame is a concatenation of the
 <em>body length</em> as an
 <a href="https://docs.rs/integer-encoding/4.0.0/integer_encoding/trait.VarInt.html">varint</a>, and the
-<em>frame body</em> itself. <a href="../../../utils/encoding/uvibytes/struct.UviBytes.html" title="struct forest_filecoin::utils::encoding::uvibytes::UviBytes"><code>crate::utils::encoding::uvibytes::UviBytes</code></a> can be used to read frames
+<em>frame body</em> itself. [<code>unsigned_varint::codec::UviBytes</code>] can be used to read frames
 piecewise into memory.</p>
 <div class="example-wrap"><pre class="language-text"><code>       varint frame
 │◄───────────────────────►│
