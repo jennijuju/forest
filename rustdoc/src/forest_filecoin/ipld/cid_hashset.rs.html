@@ -30,7 +30,7 @@
 </span><span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashMap;
 <span class="kw">use </span>cid::Cid;
 
-<span class="attr">#[derive(Default)]
+<span class="attr">#[derive(Default, Clone)]
 </span><span class="kw">pub struct </span>CidHashSet(CidHashMap&lt;()&gt;);
 
 <span class="kw">impl </span>CidHashSet {

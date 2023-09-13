@@ -501,6 +501,11 @@
 <a href="#501" id="501">501</a>
 <a href="#502" id="502">502</a>
 <a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
+<a href="#507" id="507">507</a>
+<a href="#508" id="508">508</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -512,7 +517,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::{AnyCar, RandomAccessFileReader};
-<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, CidHashSet};
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, unordered_stream_graph, CidHashSet};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY, EPOCH_DURATION_SECONDS};
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
@@ -804,6 +809,7 @@
     force: bool,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="kw">let </span>ts = Arc::new(root);
+    <span class="kw">let </span>store = Arc::new(store);
 
     <span class="kw">let </span>genesis = ts.genesis(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
     <span class="kw">let </span>network = NetworkChain::from_genesis_or_devnet_placeholder(genesis.cid());
@@ -832,7 +838,11 @@
             .context(<span class="string">&quot;diff epoch must be smaller than target epoch&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>diff_ts: <span class="kw-2">&amp;</span>Tipset = <span class="kw-2">&amp;</span>diff_ts;
         <span class="kw">let </span>diff_limit = diff_depth.map(|depth| diff_ts.epoch() - depth).unwrap_or(<span class="number">0</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>stream = stream_graph(<span class="kw-2">&amp;</span>store, diff_ts.clone().chain(<span class="kw-2">&amp;</span>store), diff_limit);
+        <span class="kw">let </span><span class="kw-2">mut </span>stream = unordered_stream_graph(
+            store.clone(),
+            diff_ts.clone().chain(store.clone()),
+            diff_limit,
+        );
         <span class="kw">while </span>stream.try_next().<span class="kw">await</span><span class="question-mark">?</span>.is_some() {}
         stream.into_seen()
     } <span class="kw">else </span>{
@@ -878,7 +888,7 @@
     pb.enable_steady_tick(std::time::Duration::from_secs_f32(<span class="number">0.1</span>));
     <span class="kw">let </span>writer = pb.wrap_async_write(writer);
 
-    <span class="kw">crate</span>::chain::export::&lt;Sha256&gt;(store, <span class="kw-2">&amp;</span>ts, depth, writer, seen, <span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">crate</span>::chain::export::&lt;Sha256&gt;(store.clone(), <span class="kw-2">&amp;</span>ts, depth, writer, seen, <span class="bool-val">true</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
 }
