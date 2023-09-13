@@ -187,6 +187,16 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -231,14 +241,15 @@
 ///
 /// The `Generic` variant is used for CIDs that do not fit into the other variants.
 /// These variants are used for optimizing storage of CIDs in the `FrozenCids` structure.
-</span><span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+///
+/// The contained [`SmallCidInner`] is guaranteed to be canonical.
+</span><span class="attr">#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 </span><span class="kw">pub struct </span>SmallCid(SmallCidInner);
 
 <span class="kw">impl </span>SmallCid {
     <span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cid {
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0 </span>{
-            SmallCidInner::Generic(cid) =&gt; <span class="kw-2">**</span>cid,
+            SmallCidInner::Other(cid) =&gt; <span class="kw-2">**</span>cid,
             SmallCidInner::V1DagCborBlake2b(digest) =&gt; Cid::new_v1(
                 DAG_CBOR,
                 multihash::Multihash::wrap(Blake2b256.into(), digest)
@@ -248,10 +259,28 @@
     }
 }
 
-<span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
+<span class="kw">impl </span>SmallCidInner {
+    <span class="doccomment">/// [`SmallCidInner::Other`] should not contain a CID which could be represented by more specialized variants.
+    </span><span class="kw">fn </span>canonical(cid: Cid) -&gt; SmallCidInner {
+        <span class="kw">if </span>cid.version() == Version::V1 &amp;&amp; cid.codec() == DAG_CBOR {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(small_hash) = cid.hash().resize() {
+                <span class="kw">let </span>(code, bytes, size) = small_hash.into_inner();
+                <span class="kw">if </span>code == u64::from(Code::Blake2b256) &amp;&amp; size <span class="kw">as </span>usize == BLAKE2B256_SIZE {
+                    <span class="kw">return </span>SmallCidInner::V1DagCborBlake2b(bytes);
+                }
+            }
+        }
+        SmallCidInner::Other(Box::new(cid))
+    }
+}
+
+<span class="doccomment">/// No guarantees are made about canonicalization with this struct
+/// That is, you may have a [`Self::Other`] variant which could be represented as a [`Self::V1DagCborBlake2b`]
+/// (typically as a result of calling `quickcheck::Arbitrary::arbitrary`)
+</span><span class="attr">#[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 </span><span class="kw">enum </span>SmallCidInner {
-    Generic(Box&lt;Cid&gt;),
+    Other(Box&lt;Cid&gt;),
     V1DagCborBlake2b(
         <span class="attr">#[cfg_attr(test, arbitrary(gen(|g: <span class="kw-2">&amp;mut </span>quickcheck::Gen| std::array::from_fn(|_ix| Arbitrary::arbitrary(g)))))]
          </span>[u8; BLAKE2B256_SIZE],
@@ -278,15 +307,7 @@
 
 <span class="kw">impl </span>From&lt;Cid&gt; <span class="kw">for </span>SmallCid {
     <span class="kw">fn </span>from(cid: Cid) -&gt; <span class="self">Self </span>{
-        <span class="kw">if </span>cid.version() == Version::V1 &amp;&amp; cid.codec() == DAG_CBOR {
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(small_hash) = cid.hash().resize() {
-                <span class="kw">let </span>(code, bytes, size) = small_hash.into_inner();
-                <span class="kw">if </span>code == u64::from(Code::Blake2b256) &amp;&amp; size <span class="kw">as </span>usize == BLAKE2B256_SIZE {
-                    <span class="kw">return </span>SmallCid(SmallCidInner::V1DagCborBlake2b(bytes));
-                }
-            }
-        }
-        SmallCid(SmallCidInner::Generic(Box::new(cid)))
+        SmallCid(SmallCidInner::canonical(cid))
     }
 }
 
@@ -298,14 +319,7 @@
 
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>SmallCid&gt; <span class="kw">for </span>Cid {
     <span class="kw">fn </span>from(variant: <span class="kw-2">&amp;</span>SmallCid) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>variant {
-            SmallCid(SmallCidInner::Generic(cid)) =&gt; <span class="kw-2">**</span>cid,
-            SmallCid(SmallCidInner::V1DagCborBlake2b(digest)) =&gt; Cid::new_v1(
-                DAG_CBOR,
-                multihash::Multihash::wrap(Blake2b256.into(), digest)
-                    .expect(<span class="string">&quot;failed to convert Blake2b digest to Multihash for creation of V1 DAG-CBOR Blake2b CID&quot;</span>),
-            ),
-        }
+        variant.cid()
     }
 }
 
@@ -323,6 +337,12 @@
     <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
     <span class="kw">use </span>quickcheck_macros::quickcheck;
     <span class="kw">use </span>std::mem::size_of;
+
+    <span class="kw">impl </span>Arbitrary <span class="kw">for </span>SmallCid {
+        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
+            SmallCid(SmallCidInner::canonical(Cid::arbitrary(g)))
+        }
+    }
 
     <span class="attr">#[quickcheck]
     </span><span class="kw">fn </span>test_cid_cbor_ext(s: String) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {

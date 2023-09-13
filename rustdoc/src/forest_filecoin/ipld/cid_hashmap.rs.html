@@ -253,18 +253,6 @@
 <a href="#253" id="253">253</a>
 <a href="#254" id="254">254</a>
 <a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -414,31 +402,21 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>cid::multihash::{<span class="self">self</span>, MultihashDigest};
-    <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
+    <span class="kw">use </span>quickcheck::Arbitrary;
+    <span class="kw">use </span>quickcheck::Gen;
     <span class="kw">use </span>quickcheck_macros::quickcheck;
 
-    <span class="kw">fn </span>generate_hash_maps(cid_vector: Vec&lt;(Cid, u64)&gt;) -&gt; (CidHashMap&lt;u64&gt;, HashMap&lt;Cid, u64&gt;) {
-        <span class="kw">let </span><span class="kw-2">mut </span>cid_hash_map = CidHashMap::new();
-        <span class="kw">let </span><span class="kw-2">mut </span>hash_map = HashMap::new();
-        <span class="kw">for </span>item <span class="kw">in </span>cid_vector.iter() {
-            cid_hash_map.insert(item.<span class="number">0</span>, item.<span class="number">1</span>);
-            hash_map.insert(item.<span class="number">0</span>, item.<span class="number">1</span>);
-
-            <span class="comment">// Quickcheck does not reliably generate the DAG_CBOR/Blake2b variant of V1 CIDs; need to ensure we have enough samples of this variant in the map for testing, so generate this variant from the values in the key-value pairs.
-            </span><span class="kw">let </span>cid_v1 = Cid::new_v1(
-                DAG_CBOR,
-                multihash::Code::Blake2b256.digest(<span class="kw-2">&amp;</span>item.<span class="number">1</span>.to_be_bytes()),
-            );
-            cid_hash_map.insert(cid_v1, item.<span class="number">1</span>);
-            hash_map.insert(cid_v1, item.<span class="number">1</span>);
+    <span class="kw">impl</span>&lt;V&gt; Arbitrary <span class="kw">for </span>CidHashMap&lt;V&gt;
+    <span class="kw">where
+        </span>V: Arbitrary,
+    {
+        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; <span class="self">Self </span>{
+            <span class="self">Self</span>(HashMap::arbitrary(g))
         }
-        (cid_hash_map, hash_map)
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>insert_new_key_is_none(cid_vector: Vec&lt;(Cid, u64)&gt;, cid: Cid, payload: u64) {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>cid_hash_map, <span class="kw">_</span>) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>insert_new_key_is_none(<span class="kw-2">mut </span>cid_hash_map: CidHashMap&lt;u64&gt;, cid: Cid, payload: u64) {
         <span class="comment">// Quickcheck occasionally generates a key that is already present in the map, so remove it if it is present.
         </span><span class="kw">if </span>cid_hash_map.contains_key(cid) {
             cid_hash_map.remove(cid);
@@ -447,15 +425,14 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>insert_existing_key_is_some(cid_vector: Vec&lt;(Cid, u64)&gt;, cid: Cid, payload: u64) {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>cid_hash_map, <span class="kw">_</span>) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>insert_existing_key_is_some(<span class="kw-2">mut </span>cid_hash_map: CidHashMap&lt;u64&gt;, cid: Cid, payload: u64) {
         cid_hash_map.insert(cid, payload);
         <span class="macro">assert!</span>(cid_hash_map.insert(cid, payload).is_some());
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>contains_key(cid_vector: Vec&lt;(Cid, u64)&gt;, cid: Cid, insert: bool) {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>cid_hash_map, <span class="kw-2">mut </span>hash_map) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>contains_key(<span class="kw-2">mut </span>cid_hash_map: CidHashMap&lt;u64&gt;, cid: Cid, insert: bool) {
+        <span class="kw">let </span><span class="kw-2">mut </span>hash_map = HashMap::from(cid_hash_map.clone().into_iter().collect());
         <span class="comment">// Quickcheck rarely generates a key that is already present in the maps, so insert it with 50% probability to test `contains_key` with an equal distribution of results.
         </span><span class="kw">if </span>insert {
             cid_hash_map.insert(cid, <span class="number">0</span>);
@@ -465,8 +442,8 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>remove_key(cid_vector: Vec&lt;(Cid, u64)&gt;, cid: Cid, insert: bool) {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>cid_hash_map, <span class="kw-2">mut </span>hash_map) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>remove_key(<span class="kw-2">mut </span>cid_hash_map: CidHashMap&lt;u64&gt;, cid: Cid, insert: bool) {
+        <span class="kw">let </span><span class="kw-2">mut </span>hash_map = HashMap::from_iter(cid_hash_map.clone());
         <span class="comment">// Quickcheck rarely generates a key that is already present in the maps, so insert it with 50% probability to test `remove` with an equal distribution of results.
         </span><span class="kw">if </span>insert {
             cid_hash_map.insert(cid, <span class="number">0</span>);
@@ -476,8 +453,8 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>get_value_at_key(cid_vector: Vec&lt;(Cid, u64)&gt;, cid: Cid, insert: bool) {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>cid_hash_map, <span class="kw-2">mut </span>hash_map) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>get_value_at_key(<span class="kw-2">mut </span>cid_hash_map: CidHashMap&lt;u64&gt;, cid: Cid, insert: bool) {
+        <span class="kw">let </span><span class="kw-2">mut </span>hash_map = HashMap::from(cid_hash_map.clone().into_iter().collect());
         <span class="comment">// Quickcheck rarely generates a key that is already present in the maps, so insert it with 50% probability to test `get` with an equal distribution of results.
         </span><span class="kw">if </span>insert {
             cid_hash_map.insert(cid, <span class="number">0</span>);
@@ -487,14 +464,14 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>len(cid_vector: Vec&lt;(Cid, u64)&gt;) {
-        <span class="kw">let </span>(cid_hash_map, hash_map) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>len(cid_hash_map: CidHashMap&lt;u64&gt;) {
+        <span class="kw">let </span>hash_map = HashMap::from(cid_hash_map.clone().into_iter().collect());
         <span class="macro">assert_eq!</span>(cid_hash_map.len(), hash_map.len());
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>check_entry(cid_vector: Vec&lt;(Cid, u64)&gt;, cid: Cid, insert: bool) {
-        <span class="kw">let </span>(<span class="kw-2">mut </span>cid_hash_map, <span class="kw-2">mut </span>hash_map) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>check_entry(<span class="kw-2">mut </span>cid_hash_map: CidHashMap&lt;u64&gt;, cid: Cid, insert: bool) {
+        <span class="kw">let </span><span class="kw-2">mut </span>hash_map = HashMap::from(cid_hash_map.clone().into_iter().collect());
         <span class="comment">// Insert key half of the time to ensure equal probability of entry being occupied or vacant; occasionally the key will already be present when quickcheck generates the maps, so we also remove the key with 50% probability.
         </span><span class="kw">if </span>insert {
             cid_hash_map.insert(cid, <span class="number">0</span>);
@@ -514,8 +491,8 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>keys(cid_vector: Vec&lt;(Cid, u64)&gt;) {
-        <span class="kw">let </span>(cid_hash_map, hash_map) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>keys(cid_hash_map: CidHashMap&lt;u64&gt;) {
+        <span class="kw">let </span>hash_map = HashMap::from(cid_hash_map.clone().into_iter().collect());
         <span class="comment">// Hash maps are not required to be ordered, but it is important for vectors, so sort the vectors of keys before comparing.
         </span><span class="kw">let </span><span class="kw-2">mut </span>cid_hash_map = cid_hash_map.keys().collect::&lt;Vec&lt;Cid&gt;&gt;();
         cid_hash_map.sort();
@@ -525,8 +502,7 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>cidhashmap_to_hashmap_to_cidhashmap(cid_vector: Vec&lt;(Cid, u64)&gt;) {
-        <span class="kw">let </span>(cid_hash_map, <span class="kw">_</span>) = generate_hash_maps(cid_vector);
+    </span><span class="kw">fn </span>cidhashmap_to_hashmap_to_cidhashmap(cid_hash_map: CidHashMap&lt;u64&gt;) {
         <span class="kw">let </span>hash_map: HashMap&lt;Cid, u64&gt; = cid_hash_map.clone().into_iter().collect();
         <span class="kw">let </span>cid_hash_map_2: CidHashMap&lt;u64&gt; = hash_map.into_iter().collect();
         <span class="macro">assert_eq!</span>(cid_hash_map, cid_hash_map_2);
