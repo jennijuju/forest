@@ -11,6 +11,7 @@ pub mod net;
 pub mod proofs_api;
 pub mod stream;
 pub mod version;
+mod car_sink;
 
 use futures::{
     future::{pending, FusedFuture},
