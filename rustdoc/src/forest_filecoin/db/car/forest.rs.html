@@ -542,7 +542,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::plain::write_skip_frame_header_async;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_index::{CarIndex, CarIndexBuilder, FrameOffset, Hash};
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarHeader};
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarHeader};
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::from_slice_with_fallback;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::EitherMmapOrRandomAccessFile;
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
@@ -693,7 +693,7 @@
                     <span class="kw">while let </span><span class="prelude-val">Some</span>(block_frame) =
                         UviBytes::&lt;Bytes&gt;::default().decode_eof(<span class="kw-2">&amp;mut </span>zstd_frame)<span class="question-mark">?
                     </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(Block { cid, data }) = Block::from_bytes(block_frame) {
+                        <span class="kw">if let </span><span class="prelude-val">Some</span>(CarBlock { cid, data }) = CarBlock::from_bytes(block_frame) {
                             block_map.insert(cid, data);
                         } <span class="kw">else </span>{
                             <span class="kw">return </span><span class="prelude-val">Err</span>(invalid_data(<span class="string">&quot;corrupted key-value block&quot;</span>))<span class="question-mark">?</span>;
@@ -716,7 +716,7 @@
 
     <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip(<span class="self">self</span>, block))]
     </span><span class="kw">fn </span>put_keyed(<span class="kw-2">&amp;</span><span class="self">self</span>, k: <span class="kw-2">&amp;</span>Cid, block: <span class="kw-2">&amp;</span>[u8]) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="macro">debug_assert!</span>(Block {
+        <span class="macro">debug_assert!</span>(CarBlock {
             cid: <span class="kw-2">*</span>k,
             data: block.to_vec()
         }
@@ -786,7 +786,7 @@
 
     <span class="doccomment">/// `compress_stream` with [`DEFAULT_FOREST_CAR_FRAME_SIZE`] as default frame size and [`DEFAULT_FOREST_CAR_COMPRESSION_LEVEL`] as default compression level.
     </span><span class="kw">pub fn </span>compress_stream_default(
-        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= Block, Error = anyhow::Error&gt;,
+        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= CarBlock, Error = anyhow::Error&gt;,
     ) -&gt; <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = anyhow::Error&gt; {
         <span class="self">Self</span>::compress_stream(
             DEFAULT_FOREST_CAR_FRAME_SIZE,
@@ -800,7 +800,7 @@
     </span><span class="kw">pub fn </span>compress_stream(
         zstd_frame_size_tripwire: usize,
         zstd_compression_level: u16,
-        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= Block, Error = anyhow::Error&gt;,
+        stream: <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= CarBlock, Error = anyhow::Error&gt;,
     ) -&gt; <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= (Vec&lt;Cid&gt;, Bytes), Error = anyhow::Error&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>encoder_store = new_encoder(zstd_compression_level);
         <span class="kw">let </span><span class="kw-2">mut </span>frame_cids = <span class="macro">vec!</span>[];
@@ -919,7 +919,7 @@
         zstd_frame_size_tripwire: usize,
         zstd_compression_level: u16,
         roots: Vec&lt;Cid&gt;,
-        block: Vec&lt;Block&gt;,
+        block: Vec&lt;CarBlock&gt;,
     ) -&gt; Vec&lt;u8&gt; {
         block_on(<span class="kw">async </span>{
             <span class="kw">let </span>frame_stream = Encoder::compress_stream(
@@ -936,7 +936,7 @@
     }
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>forest_car_create_basic(head: Block, <span class="kw-2">mut </span>tail: Vec&lt;Block&gt;, roots: Vec&lt;Cid&gt;) {
+    </span><span class="kw">fn </span>forest_car_create_basic(head: CarBlock, <span class="kw-2">mut </span>tail: Vec&lt;CarBlock&gt;, roots: Vec&lt;Cid&gt;) {
         tail.push(head);
         <span class="kw">let </span>forest_car =
             ForestCar::new(mk_encoded_car(<span class="number">1024 </span>* <span class="number">4</span>, <span class="number">3</span>, roots.clone(), tail.clone())).unwrap();
@@ -948,8 +948,8 @@
 
     <span class="attr">#[quickcheck]
     </span><span class="kw">fn </span>forest_car_create_options(
-        head: Block,
-        <span class="kw-2">mut </span>tail: Vec&lt;Block&gt;,
+        head: CarBlock,
+        <span class="kw-2">mut </span>tail: Vec&lt;CarBlock&gt;,
         roots: Vec&lt;Cid&gt;,
         frame_size: usize,
         <span class="kw-2">mut </span>compression_level: u16,

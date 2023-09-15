@@ -161,11 +161,11 @@
 <span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncSeek};
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarStream};
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarStream};
 
 <span class="kw">pub fn </span>merge_car_streams&lt;R&gt;(
     car_streams: Vec&lt;CarStream&lt;R&gt;&gt;,
-) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt;
+) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;CarBlock&gt;&gt;
 <span class="kw">where
     </span>R: AsyncSeek + AsyncBufRead + Unpin,
 {
@@ -173,10 +173,10 @@
 }
 
 <span class="kw">pub fn </span>dedup_block_stream(
-    stream: <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt;,
-) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt; {
+    stream: <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;CarBlock&gt;&gt;,
+) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;CarBlock&gt;&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
-    stream.try_filter(<span class="kw">move </span>|Block { cid, data: <span class="kw">_ </span>}| futures::future::ready(seen.insert(<span class="kw-2">*</span>cid)))
+    stream.try_filter(<span class="kw">move </span>|CarBlock { cid, data: <span class="kw">_ </span>}| futures::future::ready(seen.insert(<span class="kw-2">*</span>cid)))
 }
 
 <span class="attr">#[cfg(test)]
@@ -194,7 +194,7 @@
     <span class="kw">use </span>quickcheck_macros::quickcheck;
 
     <span class="attr">#[derive(Debug, Clone)]
-    </span><span class="kw">struct </span>Blocks(Vec&lt;Block&gt;);
+    </span><span class="kw">struct </span>Blocks(Vec&lt;CarBlock&gt;);
 
     <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Blocks&gt; <span class="kw">for </span>HashSet&lt;Cid&gt; {
         <span class="kw">fn </span>from(blocks: <span class="kw-2">&amp;</span>Blocks) -&gt; <span class="self">Self </span>{
@@ -217,12 +217,12 @@
             writer
         }
 
-        <span class="kw">fn </span>into_stream(<span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt; {
+        <span class="kw">fn </span>into_stream(<span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;CarBlock&gt;&gt; {
             futures::stream::iter(<span class="self">self</span>.<span class="number">0</span>).map(<span class="prelude-val">Ok</span>)
         }
 
         <span class="doccomment">/// Implicit clone is performed inside to simplify caller code
-        </span><span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;Block&gt;&gt; {
+        </span><span class="kw">fn </span>to_stream(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;CarBlock&gt;&gt; {
             <span class="self">self</span>.clone().into_stream()
         }
     }
@@ -236,7 +236,7 @@
                 <span class="comment">// use small len here to increase the chance of duplication
                 </span><span class="kw">let </span>data = [u8::arbitrary(g), u8::arbitrary(g)];
                 <span class="kw">let </span>cid = Cid::new_v1(DAG_CBOR, multihash::Code::Blake2b256.digest(<span class="kw-2">&amp;</span>data));
-                <span class="kw">let </span>block = Block {
+                <span class="kw">let </span>block = CarBlock {
                     cid,
                     data: data.to_vec(),
                 };

@@ -715,7 +715,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{CidHashSet, Ipld};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::Block;
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarBlock;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::progress_log::WithProgressRaw;
 <span class="kw">use crate</span>::{
@@ -1046,7 +1046,7 @@
 }
 
 <span class="kw">impl</span>&lt;DB: Blockstore, T: Iterator&lt;Item = Tipset&gt; + Unpin&gt; Stream <span class="kw">for </span>ChainStream&lt;DB, T&gt; {
-    <span class="kw">type </span>Item = anyhow::Result&lt;Block&gt;;
+    <span class="kw">type </span>Item = anyhow::Result&lt;CarBlock&gt;;
 
     <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">use </span>Task::<span class="kw-2">*</span>;
@@ -1067,7 +1067,7 @@
                         <span class="kw">let </span>cid = <span class="kw-2">*</span>cid;
                         this.dfs.pop_front();
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
-                            <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Block { cid, data })));
+                            <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(CarBlock { cid, data })));
                         } <span class="kw">else if </span><span class="kw-2">*</span>this.fail_on_dead_links {
                             <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key: {}&quot;</span>, cid))));
                         }
@@ -1089,7 +1089,7 @@
                                             cid_vec.push_front(v)
                                         }
                                     }
-                                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Block { cid, data })));
+                                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(CarBlock { cid, data })));
                                 } <span class="kw">else if </span><span class="kw-2">*</span>this.fail_on_dead_links {
                                     <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(
                                         <span class="string">&quot;missing key: {}&quot;</span>,
@@ -1155,7 +1155,7 @@
         db: Arc&lt;DB&gt;,
         seen: Arc&lt;Mutex&lt;CidHashSet&gt;&gt;,
         worker_handle: JoinHandle&lt;anyhow::Result&lt;()&gt;&gt;,
-        block_receiver: kanal::Receiver&lt;anyhow::Result&lt;Block&gt;&gt;,
+        block_receiver: kanal::Receiver&lt;anyhow::Result&lt;CarBlock&gt;&gt;,
         extract_sender: kanal::Sender&lt;Cid&gt;,
         stateroot_limit: ChainEpoch,
         queue: Vec&lt;Cid&gt;,
@@ -1256,7 +1256,7 @@
 {
     <span class="kw">fn </span>start_workers(
         db: Arc&lt;DB&gt;,
-        block_sender: Sender&lt;anyhow::Result&lt;Block&gt;&gt;,
+        block_sender: Sender&lt;anyhow::Result&lt;CarBlock&gt;&gt;,
         extract_receiver: Receiver&lt;Cid&gt;,
         seen: Arc&lt;Mutex&lt;CidHashSet&gt;&gt;,
         fail_on_dead_links: bool,
@@ -1281,7 +1281,7 @@
                                         cid_vec.append(<span class="kw-2">&amp;mut </span>new_values);
                                     }
                                     block_sender
-                                        .send(<span class="prelude-val">Ok</span>(Block { cid, data }))
+                                        .send(<span class="prelude-val">Ok</span>(CarBlock { cid, data }))
                                         .expect(<span class="string">&quot;unreachable&quot;</span>);
                                 } <span class="kw">else if </span>fail_on_dead_links {
                                     block_sender
@@ -1312,7 +1312,7 @@
 <span class="kw">impl</span>&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>, T: Iterator&lt;Item = Tipset&gt; + Unpin&gt; Stream
     <span class="kw">for </span>UnorderedChainStream&lt;DB, T&gt;
 {
-    <span class="kw">type </span>Item = anyhow::Result&lt;Block&gt;;
+    <span class="kw">type </span>Item = anyhow::Result&lt;CarBlock&gt;;
 
     <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, _cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.project();
@@ -1325,7 +1325,7 @@
         <span class="kw">loop </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(cid) = this.queue.pop() {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
-                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(Block { cid, data })));
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(CarBlock { cid, data })));
                 } <span class="kw">else if </span><span class="kw-2">*</span>this.fail_on_dead_links {
                     <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(<span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;missing key: {}&quot;</span>, cid))));
                 }

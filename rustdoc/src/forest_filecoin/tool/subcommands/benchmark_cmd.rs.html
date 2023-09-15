@@ -295,7 +295,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_chain, stream_graph, unordered_stream_graph};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{Block, CarStream};
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarStream};
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
 <span class="kw">use </span><span class="kw">crate</span>::utils::stream::par_buffer;
 <span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
@@ -432,7 +432,7 @@
             .try_flatten(),
     );
     <span class="kw">while let </span><span class="prelude-val">Some</span>(block) = s.try_next().<span class="kw">await</span><span class="question-mark">? </span>{
-        <span class="kw">let </span>block: Block = block;
+        <span class="kw">let </span>block: CarBlock = block;
         <span class="kw">if </span>block.cid.codec() == DAG_CBOR {
             <span class="kw">let </span>cid_vec: Vec&lt;Cid&gt; = extract_cids(<span class="kw-2">&amp;</span>block.data)<span class="question-mark">?</span>;
             <span class="kw">let _ </span>= cid_vec.iter().unique().count();

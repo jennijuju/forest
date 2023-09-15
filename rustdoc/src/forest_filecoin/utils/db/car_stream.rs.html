@@ -216,12 +216,12 @@
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Block {
+</span><span class="kw">pub struct </span>CarBlock {
     <span class="kw">pub </span>cid: Cid,
     <span class="kw">pub </span>data: Vec&lt;u8&gt;,
 }
 
-<span class="kw">impl </span>Block {
+<span class="kw">impl </span>CarBlock {
     <span class="comment">// Write a varint frame containing the cid and the data
     </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>std::io::Write) -&gt; io::Result&lt;()&gt; {
         <span class="kw">let </span>frame_length = <span class="self">self</span>.cid.encoded_len() + <span class="self">self</span>.data.len();
@@ -233,14 +233,14 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>from_bytes(bytes: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;Block&gt; {
+    <span class="kw">pub fn </span>from_bytes(bytes: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;CarBlock&gt; {
         <span class="kw">let </span>bytes: Bytes = bytes.into();
         <span class="kw">let </span><span class="kw-2">mut </span>cursor = Cursor::new(bytes);
         <span class="kw">let </span>cid = Cid::read_bytes(<span class="kw-2">&amp;mut </span>cursor).ok()<span class="question-mark">?</span>;
         <span class="kw">let </span>data_offset = cursor.position();
         <span class="kw">let </span><span class="kw-2">mut </span>bytes = cursor.into_inner();
         bytes.advance(data_offset <span class="kw">as </span>usize);
-        <span class="prelude-val">Some</span>(Block {
+        <span class="prelude-val">Some</span>(CarBlock {
             cid,
             data: bytes.to_vec(),
         })
@@ -306,7 +306,7 @@
 }
 
 <span class="kw">impl</span>&lt;ReaderT: AsyncBufRead&gt; Stream <span class="kw">for </span>CarStream&lt;ReaderT&gt; {
-    <span class="kw">type </span>Item = io::Result&lt;Block&gt;;
+    <span class="kw">type </span>Item = io::Result&lt;CarBlock&gt;;
 
     <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.project();
@@ -319,7 +319,7 @@
                 <span class="kw">let </span>data_offset = cursor.position();
                 <span class="kw">let </span><span class="kw-2">mut </span>bytes = cursor.into_inner();
                 bytes.advance(data_offset <span class="kw">as </span>usize);
-                <span class="prelude-val">Ok</span>(Block {
+                <span class="prelude-val">Ok</span>(CarBlock {
                     cid,
                     data: bytes.to_vec(),
                 })
@@ -334,7 +334,7 @@
     <span class="kw">if </span>header.version != <span class="number">1 </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
-    <span class="kw">let </span>first_block = Block::from_bytes(framed_reader.next().<span class="kw">await</span><span class="question-mark">?</span>.ok()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+    <span class="kw">let </span>first_block = CarBlock::from_bytes(framed_reader.next().<span class="kw">await</span><span class="question-mark">?</span>.ok()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
     <span class="kw">if </span>!first_block.valid() {
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
@@ -360,8 +360,8 @@
     <span class="kw">use </span>quickcheck::{Arbitrary, Gen};
     <span class="comment">// use quickcheck_macros::quickcheck;
 
-    </span><span class="kw">impl </span>Arbitrary <span class="kw">for </span>Block {
-        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; Block {
+    </span><span class="kw">impl </span>Arbitrary <span class="kw">for </span>CarBlock {
+        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; CarBlock {
             <span class="kw">let </span>data = Vec::&lt;u8&gt;::arbitrary(g);
             <span class="kw">let </span>encoding = g
                 .choose(<span class="kw-2">&amp;</span>[
@@ -372,7 +372,7 @@
                 .unwrap();
             <span class="kw">let </span>code = g.choose(<span class="kw-2">&amp;</span>[Code::Blake2b256, Code::Sha2_256]).unwrap();
             <span class="kw">let </span>cid = Cid::new_v1(<span class="kw-2">*</span>encoding, code.digest(<span class="kw-2">&amp;</span>data));
-            Block { cid, data }
+            CarBlock { cid, data }
         }
     }
 }
