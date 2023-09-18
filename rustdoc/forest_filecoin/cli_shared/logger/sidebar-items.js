@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["default_env_filter","get_env_filter","setup_logger"]};
+window.SIDEBAR_ITEMS = {"fn":["default_env_filter","default_tool_filter","get_env_filter","setup_logger","setup_minimal_logger"]};

@@ -472,32 +472,11 @@
 <a href="#472" id="472">472</a>
 <a href="#473" id="473">473</a>
 <a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
-<a href="#478" id="478">478</a>
-<a href="#479" id="479">479</a>
-<a href="#480" id="480">480</a>
-<a href="#481" id="481">481</a>
-<a href="#482" id="482">482</a>
-<a href="#483" id="483">483</a>
-<a href="#484" id="484">484</a>
-<a href="#485" id="485">485</a>
-<a href="#486" id="486">486</a>
-<a href="#487" id="487">487</a>
-<a href="#488" id="488">488</a>
-<a href="#489" id="489">489</a>
-<a href="#490" id="490">490</a>
-<a href="#491" id="491">491</a>
-<a href="#492" id="492">492</a>
-<a href="#493" id="493">493</a>
-<a href="#494" id="494">494</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{
     fmt::Display,
-    io,
     path::{Path, PathBuf},
     str::FromStr,
 };
@@ -506,9 +485,9 @@
     networks::NetworkChain,
     utils::{retry, RetryArgs},
 };
-<span class="kw">use </span>anyhow::{anyhow, bail, Context <span class="kw">as _</span>};
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDate;
-<span class="kw">use </span>tracing::{info, warn};
+<span class="kw">use </span>tracing::event;
 <span class="kw">use </span>url::Url;
 
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::parse::ParsedFilename;
@@ -556,17 +535,17 @@
     .to_string()
 }
 
-<span class="doccomment">/// Fetch a compressed snapshot with `aria2c`, falling back to our own HTTP client.
-/// Returns the path to the downloaded file, which matches the format in .
+<span class="doccomment">/// Returns the path to the downloaded file.
 </span><span class="kw">pub async fn </span>fetch(
     directory: <span class="kw-2">&amp;</span>Path,
     chain: <span class="kw-2">&amp;</span>NetworkChain,
     vendor: TrustedVendor,
 ) -&gt; anyhow::Result&lt;PathBuf&gt; {
-    <span class="kw">let </span>(_len, url) = peek(vendor, chain).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">let </span>(date, height, forest_format) = ParsedFilename::parse_url(<span class="kw-2">&amp;</span>url)
-        .context(<span class="string">&quot;unexpected url format&quot;</span>)<span class="question-mark">?
+    <span class="kw">let </span>(_len, path) = peek(vendor, chain).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let </span>(date, height, forest_format) = ParsedFilename::parse_str(<span class="kw-2">&amp;</span>path)
+        .context(<span class="string">&quot;unexpected path format&quot;</span>)<span class="question-mark">?
         </span>.date_and_height_and_forest();
+    <span class="kw">let </span>url = stable_url(vendor, chain)<span class="question-mark">?</span>;
     <span class="kw">let </span>filename = filename(vendor, chain, date, height, forest_format);
 
     download_file_with_retry(<span class="kw-2">&amp;</span>url, directory, <span class="kw-2">&amp;</span>filename).<span class="kw">await
@@ -582,26 +561,15 @@
             timeout: <span class="prelude-val">None</span>,
             ..Default::default()
         },
-        || download_file(url.clone(), directory, filename),
+        || download_http(url, directory, filename),
     )
     .<span class="kw">await</span><span class="question-mark">?</span>)
 }
 
-<span class="kw">pub async fn </span>download_file(url: Url, directory: <span class="kw-2">&amp;</span>Path, filename: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;PathBuf&gt; {
-    <span class="kw">match </span>download_aria2c(<span class="kw-2">&amp;</span>url, directory, filename).<span class="kw">await </span>{
-        <span class="prelude-val">Ok</span>(path) =&gt; <span class="prelude-val">Ok</span>(path),
-        <span class="prelude-val">Err</span>(AriaErr::CouldNotExec(reason)) =&gt; {
-            <span class="macro">warn!</span>(%reason, <span class="string">&quot;couldn&#39;t run aria2c. Falling back to conventional download, which will be much slower - consider installing aria2c.&quot;</span>);
-            download_http(url, directory, filename).<span class="kw">await
-        </span>}
-        <span class="prelude-val">Err</span>(AriaErr::Other(o)) =&gt; <span class="prelude-val">Err</span>(o),
-    }
-}
-
 <span class="doccomment">/// Returns
 /// - The size of the snapshot from this vendor on this chain
-/// - The final URL of the snapshot
-</span><span class="kw">pub async fn </span>peek(vendor: TrustedVendor, chain: <span class="kw-2">&amp;</span>NetworkChain) -&gt; anyhow::Result&lt;(u64, Url)&gt; {
+/// - The filename of the snapshot
+</span><span class="kw">pub async fn </span>peek(vendor: TrustedVendor, chain: <span class="kw-2">&amp;</span>NetworkChain) -&gt; anyhow::Result&lt;(u64, String)&gt; {
     <span class="kw">let </span>stable_url = stable_url(vendor, chain)<span class="question-mark">?</span>;
     <span class="comment">// issue an actual GET, so the content length will be of the body
     // (we never actually fetch the body)
@@ -612,58 +580,33 @@
         .<span class="kw">await</span><span class="question-mark">?
         </span>.error_for_status()
         .context(<span class="string">&quot;server returned an error response&quot;</span>)<span class="question-mark">?</span>;
-
+    <span class="kw">let </span>cd_path = response
+        .headers()
+        .get(reqwest::header::CONTENT_DISPOSITION)
+        .and_then(parse_content_disposition);
     <span class="prelude-val">Ok</span>((
         response
             .content_length()
             .context(<span class="string">&quot;no content-length header&quot;</span>)<span class="question-mark">?</span>,
-        response.url().clone(),
+        cd_path.context(<span class="string">&quot;no content-disposition filepath&quot;</span>)<span class="question-mark">?</span>,
     ))
 }
 
-<span class="kw">enum </span>AriaErr {
-    CouldNotExec(io::Error),
-    Other(anyhow::Error),
-}
-
-<span class="doccomment">/// Run `aria2c`, with inherited stdout and stderr (so output will be printed).
-</span><span class="kw">async fn </span>download_aria2c(url: <span class="kw-2">&amp;</span>Url, directory: <span class="kw-2">&amp;</span>Path, filename: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;PathBuf, AriaErr&gt; {
-    <span class="kw">let </span>exit_status = tokio::process::Command::new(<span class="string">&quot;aria2c&quot;</span>)
-        .args([
-            <span class="string">&quot;--continue=true&quot;</span>,
-            <span class="string">&quot;--max-tries=0&quot;</span>,
-            <span class="comment">// Download chunks concurrently, resulting in dramatically faster downloads
-            </span><span class="string">&quot;--split=5&quot;</span>,
-            <span class="string">&quot;--max-connection-per-server=5&quot;</span>,
-            <span class="macro">format!</span>(<span class="string">&quot;--out={filename}&quot;</span>).as_str(),
-            <span class="string">&quot;--dir&quot;</span>,
-        ])
-        .arg(directory)
-        .arg(url.as_str())
-        .kill_on_drop(<span class="bool-val">true</span>) <span class="comment">// allow cancellation
-        </span>.spawn() <span class="comment">// defaults to inherited stdio
-        </span>.map_err(AriaErr::CouldNotExec)<span class="question-mark">?
-        </span>.wait()
-        .<span class="kw">await
-        </span>.map_err(|it| AriaErr::Other(it.into()))<span class="question-mark">?</span>;
-
-    <span class="kw">match </span>exit_status.success() {
-        <span class="bool-val">true </span>=&gt; <span class="prelude-val">Ok</span>(directory.join(filename)),
-        <span class="bool-val">false </span>=&gt; {
-            <span class="kw">let </span>msg = exit_status
-                .code()
-                .map(|it| it.to_string())
-                .unwrap_or_else(|| String::from(<span class="string">&quot;&lt;killed&gt;&quot;</span>));
-            <span class="prelude-val">Err</span>(AriaErr::Other(<span class="macro">anyhow!</span>(<span class="string">&quot;running aria2c failed: {msg}&quot;</span>)))
-        }
-    }
+<span class="comment">// Extract file paths from content-disposition values:
+//   &quot;attachment; filename=\&quot;911520_2023_09_14T06_13_00Z.car.zst\&quot;&quot;
+// =&gt; &quot;911520_2023_09_14T06_13_00Z.car.zst&quot;
+</span><span class="kw">fn </span>parse_content_disposition(value: <span class="kw-2">&amp;</span>reqwest::header::HeaderValue) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
+    <span class="kw">use </span>regex::Regex;
+    <span class="kw">let </span>re = Regex::new(<span class="string">&quot;filename=\&quot;([^\&quot;]+)\&quot;&quot;</span>).ok()<span class="question-mark">?</span>;
+    <span class="kw">let </span>cap = re.captures(value.to_str().ok()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
+    <span class="prelude-val">Some</span>(cap.get(<span class="number">1</span>)<span class="question-mark">?</span>.as_str().to_owned())
 }
 
 <span class="doccomment">/// Download the file at `url` with a private HTTP client, returning the path to the downloaded file
-</span><span class="kw">async fn </span>download_http(url: Url, directory: <span class="kw-2">&amp;</span>Path, filename: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;PathBuf&gt; {
+</span><span class="kw">async fn </span>download_http(url: <span class="kw-2">&amp;</span>Url, directory: <span class="kw-2">&amp;</span>Path, filename: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;PathBuf&gt; {
     <span class="kw">let </span>dst_path = directory.join(filename);
 
-    <span class="macro">info!</span>(%url, <span class="string">&quot;downloading snapshot&quot;</span>);
+    <span class="macro">event!</span>(target: <span class="string">&quot;forest::snapshot&quot;</span>, tracing::Level::INFO, %url, <span class="string">&quot;downloading snapshot&quot;</span>);
     <span class="kw">let </span><span class="kw-2">mut </span>reader = <span class="kw">crate</span>::utils::net::reader(url.as_str()).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>dst = tokio::fs::File::create(<span class="kw-2">&amp;</span>dst_path)
@@ -689,17 +632,16 @@
 }
 
 <span class="macro">define_urls!</span>(
-    <span class="kw">const </span>FOREST_MAINNET_COMPRESSED: <span class="kw-2">&amp;</span>str =
-        <span class="string">&quot;https://forest.chainsafe.io/mainnet/snapshot-latest.car.zst&quot;</span>;
+    <span class="kw">const </span>FOREST_MAINNET_COMPRESSED: <span class="kw-2">&amp;</span>str = <span class="string">&quot;https://forest-archive.chainsafe.dev/latest/mainnet/&quot;</span>;
     <span class="kw">const </span>FOREST_CALIBNET_COMPRESSED: <span class="kw-2">&amp;</span>str =
-        <span class="string">&quot;https://forest.chainsafe.io/calibnet/snapshot-latest.car.zst&quot;</span>;
+        <span class="string">&quot;https://forest-archive.chainsafe.dev/latest/calibnet/&quot;</span>;
     <span class="kw">const </span>FILOPS_MAINNET_COMPRESSED: <span class="kw-2">&amp;</span>str =
         <span class="string">&quot;https://snapshots.mainnet.filops.net/minimal/latest.zst&quot;</span>;
     <span class="kw">const </span>FILOPS_CALIBNET_COMPRESSED: <span class="kw-2">&amp;</span>str =
         <span class="string">&quot;https://snapshots.calibrationnet.filops.net/minimal/latest.zst&quot;</span>;
 );
 
-<span class="kw">fn </span>stable_url(vendor: TrustedVendor, chain: <span class="kw-2">&amp;</span>NetworkChain) -&gt; anyhow::Result&lt;Url&gt; {
+<span class="kw">pub fn </span>stable_url(vendor: TrustedVendor, chain: <span class="kw-2">&amp;</span>NetworkChain) -&gt; anyhow::Result&lt;Url&gt; {
     <span class="kw">let </span>s = <span class="kw">match </span>(vendor, chain) {
         (TrustedVendor::Forest, NetworkChain::Mainnet) =&gt; FOREST_MAINNET_COMPRESSED,
         (TrustedVendor::Forest, NetworkChain::Calibnet) =&gt; FOREST_CALIBNET_COMPRESSED,
@@ -728,7 +670,7 @@
 
     </span><span class="kw">use </span>std::{fmt::Display, str::FromStr};
 
-    <span class="kw">use </span>anyhow::{anyhow, bail, Context};
+    <span class="kw">use </span>anyhow::{anyhow, bail};
     <span class="kw">use </span>chrono::{NaiveDate, NaiveDateTime, NaiveTime};
     <span class="kw">use </span>nom::{
         branch::alt,
@@ -741,7 +683,6 @@
         sequence::tuple,
         <span class="prelude-val">Err</span>,
     };
-    <span class="kw">use </span>url::Url;
 
     <span class="kw">use </span><span class="kw">crate</span>::db::car::forest::FOREST_CAR_FILE_EXTENSION;
 
@@ -798,15 +739,6 @@
 
         <span class="kw">pub fn </span>parse_str(input: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
             enter_nom(alt((short, full)), input)
-        }
-
-        <span class="kw">pub fn </span>parse_url(url: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Url) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-            <span class="kw">let </span>filename = url
-                .path_segments()
-                .context(<span class="string">&quot;url cannot be a base&quot;</span>)<span class="question-mark">?
-                </span>.last()
-                .context(<span class="string">&quot;url has no path&quot;</span>)<span class="question-mark">?</span>;
-            <span class="self">Self</span>::parse_str(filename)
         }
     }
 
@@ -984,6 +916,34 @@
             </span>);
             <span class="macro">assert_eq!</span>(value.to_string(), text, <span class="string">&quot;mismatch in serialize&quot;</span>);
         }
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span><span class="kw">super</span>::parse_content_disposition;
+    <span class="kw">use </span>reqwest::header::HeaderValue;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>content_disposition_forest() {
+        <span class="macro">assert_eq!</span>(
+            parse_content_disposition(<span class="kw-2">&amp;</span>HeaderValue::from_static(
+                <span class="string">&quot;attachment; filename*=UTF-8&#39;&#39;forest_snapshot_calibnet_2023-09-14_height_911888.forest.car.zst; \
+                 filename=\&quot;forest_snapshot_calibnet_2023-09-14_height_911888.forest.car.zst\&quot;&quot;
+            </span>)).unwrap(),
+            <span class="string">&quot;forest_snapshot_calibnet_2023-09-14_height_911888.forest.car.zst&quot;
+        </span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>content_disposition_filops() {
+        <span class="macro">assert_eq!</span>(
+            parse_content_disposition(<span class="kw-2">&amp;</span>HeaderValue::from_static(
+                <span class="string">&quot;attachment; filename=\&quot;911520_2023_09_14T06_13_00Z.car.zst\&quot;&quot;
+            </span>))
+            .unwrap(),
+            <span class="string">&quot;911520_2023_09_14T06_13_00Z.car.zst&quot;
+        </span>);
     }
 }
 </code></pre></div></section></main></body></html>

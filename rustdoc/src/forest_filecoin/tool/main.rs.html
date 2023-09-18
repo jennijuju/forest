@@ -31,12 +31,15 @@
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::ffi::OsString;
 
 <span class="kw">use </span><span class="kw">super</span>::subcommands::Cli;
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::logger::setup_minimal_logger;
 <span class="kw">use </span>clap::Parser;
 
 <span class="kw">use </span><span class="kw">super</span>::subcommands::Subcommand;
@@ -47,6 +50,7 @@
 {
     <span class="comment">// Capture Cli inputs
     </span><span class="kw">let </span>Cli { cmd } = Cli::parse_from(args);
+    setup_minimal_logger();
 
     tokio::runtime::Builder::new_multi_thread()
         .enable_all()

@@ -698,6 +698,8 @@
 <a href="#698" id="698">698</a>
 <a href="#699" id="699">699</a>
 <a href="#700" id="700">700</a>
+<a href="#701" id="701">701</a>
+<a href="#702" id="702">702</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1188,15 +1190,17 @@
         (<span class="bool-val">false</span>, <span class="kw">_</span>, <span class="kw">_</span>) =&gt; {}   <span class="comment">// noop - don&#39;t need a snapshot
         </span>(<span class="bool-val">true</span>, <span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; {} <span class="comment">// noop - we need a snapshot, and we have one
         </span>(<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">true</span>) =&gt; {
-            <span class="kw">let </span>(_len, url) = <span class="kw">crate</span>::cli_shared::snapshot::peek(vendor, chain).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>url = <span class="kw">crate</span>::cli_shared::snapshot::stable_url(vendor, chain)<span class="question-mark">?</span>;
             config.client.snapshot_path = <span class="prelude-val">Some</span>(url.to_string().into());
             config.client.snapshot = <span class="bool-val">true</span>;
         }
         (<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; {
             <span class="comment">// we need a snapshot, don&#39;t have one, and don&#39;t have permission to download one, so ask the user
-            </span><span class="kw">let </span>(num_bytes, url) = <span class="kw">crate</span>::cli_shared::snapshot::peek(vendor, <span class="kw-2">&amp;</span>config.chain.network)
-                .<span class="kw">await
-                </span>.context(<span class="string">&quot;couldn&#39;t get snapshot size&quot;</span>)<span class="question-mark">?</span>;
+            </span><span class="kw">let </span>url = <span class="kw">crate</span>::cli_shared::snapshot::stable_url(vendor, chain)<span class="question-mark">?</span>;
+            <span class="kw">let </span>(num_bytes, _path) =
+                <span class="kw">crate</span>::cli_shared::snapshot::peek(vendor, <span class="kw-2">&amp;</span>config.chain.network)
+                    .<span class="kw">await
+                    </span>.context(<span class="string">&quot;couldn&#39;t get snapshot size&quot;</span>)<span class="question-mark">?</span>;
             <span class="comment">// dialoguer will double-print long lines, so manually print the first clause ourselves,
             // then let `Confirm` handle the second.
             </span><span class="macro">println!</span>(<span class="string">&quot;Forest requires a snapshot to sync with the network, but automatic fetching is disabled.&quot;</span>);
