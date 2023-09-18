@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"forest_filecoin":[["impl&lt;W: AsyncWrite&gt; Sink&lt;<a class=\"struct\" href=\"forest_filecoin/utils/db/car_stream/struct.CarBlock.html\" title=\"struct forest_filecoin::utils::db::car_stream::CarBlock\">CarBlock</a>&gt; for <a class=\"struct\" href=\"forest_filecoin/utils/db/car_stream/struct.CarWriter.html\" title=\"struct forest_filecoin::utils::db::car_stream::CarWriter\">CarWriter</a>&lt;W&gt;"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

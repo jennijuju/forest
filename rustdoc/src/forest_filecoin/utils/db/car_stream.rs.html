@@ -187,22 +187,76 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
-<span class="kw">use </span>bytes::{Buf, Bytes};
+<span class="kw">use </span>bytes::{Buf, BufMut, Bytes, BytesMut};
 <span class="kw">use </span>cid::{
     multihash::{Code, MultihashDigest},
     Cid,
 };
-<span class="kw">use </span>futures::{Stream, StreamExt};
+<span class="kw">use </span>futures::ready;
+<span class="kw">use </span>futures::{sink::Sink, Stream, StreamExt};
+<span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>integer_encoding::VarInt;
 <span class="kw">use </span>pin_project_lite::pin_project;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::io::{<span class="self">self</span>, Cursor, SeekFrom};
 <span class="kw">use </span>std::pin::Pin;
 <span class="kw">use </span>std::task::{Context, Poll};
-<span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncSeekExt};
+<span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncSeekExt, AsyncWrite};
+<span class="kw">use </span>tokio_util::codec::Encoder;
 <span class="kw">use </span>tokio_util::codec::FramedRead;
 <span class="kw">use </span>tokio_util::either::Either;
 <span class="kw">use </span>unsigned_varint::codec::UviBytes;
@@ -215,7 +269,7 @@
     <span class="kw">pub </span>version: u64,
 }
 
-<span class="attr">#[derive(Debug, Clone)]
+<span class="attr">#[derive(Debug, Clone, PartialEq)]
 </span><span class="kw">pub struct </span>CarBlock {
     <span class="kw">pub </span>cid: Cid,
     <span class="kw">pub </span>data: Vec&lt;u8&gt;,
@@ -325,6 +379,54 @@
                 })
             })
         }))
+    }
+}
+
+<span class="macro">pin_project! </span>{
+    <span class="kw">pub struct </span>CarWriter&lt;W&gt; {
+        <span class="attr">#[pin]
+        </span>inner: W,
+        buffer: BytesMut,
+    }
+}
+
+<span class="kw">impl</span>&lt;W: AsyncWrite&gt; CarWriter&lt;W&gt; {
+    <span class="kw">pub fn </span>new_carv1(roots: Vec&lt;Cid&gt;, writer: W) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>car_header = CarHeader { roots, version: <span class="number">1 </span>};
+
+        <span class="kw">let </span><span class="kw-2">mut </span>header_uvi_frame = BytesMut::new();
+        UviBytes::default().encode(Bytes::from(to_vec(<span class="kw-2">&amp;</span>car_header)<span class="question-mark">?</span>), <span class="kw-2">&amp;mut </span>header_uvi_frame)<span class="question-mark">?</span>;
+
+        <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            inner: writer,
+            buffer: header_uvi_frame,
+        })
+    }
+}
+
+<span class="kw">impl</span>&lt;W: AsyncWrite&gt; Sink&lt;CarBlock&gt; <span class="kw">for </span>CarWriter&lt;W&gt; {
+    <span class="kw">type </span>Error = io::Error;
+
+    <span class="kw">fn </span>poll_ready(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>this = <span class="self">self</span>.as_mut().project();
+
+        <span class="kw">while </span>!this.buffer.is_empty() {
+            this = <span class="self">self</span>.as_mut().project();
+            <span class="kw">let </span>bytes_written = <span class="macro">ready!</span>(this.inner.poll_write(cx, this.buffer))<span class="question-mark">?</span>;
+            this.buffer.advance(bytes_written);
+        }
+        Poll::Ready(<span class="prelude-val">Ok</span>(()))
+    }
+    <span class="kw">fn </span>start_send(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, item: CarBlock) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt; {
+        item.write(<span class="kw-2">&amp;mut </span><span class="self">self</span>.project().buffer.writer())
+    }
+    <span class="kw">fn </span>poll_flush(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;&gt; {
+        <span class="macro">ready!</span>(<span class="self">self</span>.as_mut().poll_ready(cx))<span class="question-mark">?</span>;
+        <span class="self">self</span>.project().inner.poll_flush(cx)
+    }
+    <span class="kw">fn </span>poll_close(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), <span class="self">Self</span>::Error&gt;&gt; {
+        <span class="macro">ready!</span>(<span class="self">self</span>.as_mut().poll_ready(cx))<span class="question-mark">?</span>;
+        <span class="self">self</span>.project().inner.poll_shutdown(cx)
     }
 }
 

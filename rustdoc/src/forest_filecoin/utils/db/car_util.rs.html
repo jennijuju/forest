@@ -154,6 +154,34 @@
 <a href="#154" id="154">154</a>
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -182,11 +210,14 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarWriter;
     <span class="kw">use </span>ahash::HashSet;
+    <span class="kw">use </span>async_compression::tokio::write::ZstdEncoder;
     <span class="kw">use </span>cid::multihash;
     <span class="kw">use </span>cid::multihash::MultihashDigest;
     <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>futures::executor::{block_on, block_on_stream};
+    <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
     <span class="kw">use </span>fvm_ipld_encoding::DAG_CBOR;
     <span class="kw">use </span>itertools::Itertools;
     <span class="kw">use </span>pretty_assertions::assert_eq;
@@ -204,6 +235,10 @@
 
     <span class="kw">impl </span>Blocks {
         <span class="kw">async fn </span>into_forest_car_zst_bytes(<span class="self">self</span>) -&gt; Vec&lt;u8&gt; {
+            <span class="self">self</span>.into_forest_car_zst_bytes_with_roots().<span class="kw">await</span>.<span class="number">1
+        </span>}
+
+        <span class="kw">async fn </span>into_forest_car_zst_bytes_with_roots(<span class="self">self</span>) -&gt; (Vec&lt;Cid&gt;, Vec&lt;u8&gt;) {
             <span class="kw">let </span>roots = <span class="macro">vec!</span>[<span class="self">self</span>.<span class="number">0</span>[<span class="number">0</span>].cid];
             <span class="kw">let </span>frames = <span class="kw">crate</span>::db::car::forest::Encoder::compress_stream(
                 <span class="number">8000_usize</span>.next_power_of_two(),
@@ -211,10 +246,10 @@
                 <span class="self">self</span>.into_stream().map_err(anyhow::Error::from),
             );
             <span class="kw">let </span><span class="kw-2">mut </span>writer = <span class="macro">vec!</span>[];
-            <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>writer, roots, frames)
+            <span class="kw">crate</span>::db::car::forest::Encoder::write(<span class="kw-2">&amp;mut </span>writer, roots.clone(), frames)
                 .<span class="kw">await
                 </span>.unwrap();
-            writer
+            (roots, writer)
         }
 
         <span class="kw">fn </span>into_stream(<span class="self">self</span>) -&gt; <span class="kw">impl </span>Stream&lt;Item = std::io::Result&lt;CarBlock&gt;&gt; {
@@ -255,6 +290,27 @@
             <span class="kw">let </span>car2 = blocks2.into_forest_car_zst_bytes().<span class="kw">await</span>;
 
             <span class="macro">assert_eq!</span>(car, car2);
+
+            <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, anyhow::Error&gt;(())
+        })
+    }
+
+    <span class="attr">#[quickcheck]
+    </span><span class="kw">fn </span>car_writer_roundtrip(blocks1: Blocks) -&gt; anyhow::Result&lt;()&gt; {
+        block_on(<span class="kw">async move </span>{
+            <span class="kw">let </span>(all_roots, car) = blocks1.clone().into_forest_car_zst_bytes_with_roots().<span class="kw">await</span>;
+            <span class="kw">let </span>reader = CarStream::new(std::io::Cursor::new(<span class="kw-2">&amp;</span>car)).<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">let </span><span class="kw-2">mut </span>buff: Vec&lt;u8&gt; = <span class="macro">vec!</span>[];
+            <span class="kw">let </span>zstd_encoder = ZstdEncoder::new(<span class="kw-2">&amp;mut </span>buff);
+            reader
+                .forward(CarWriter::new_carv1(all_roots, zstd_encoder)<span class="question-mark">?</span>)
+                .<span class="kw">await</span><span class="question-mark">?</span>;
+
+            <span class="kw">let </span>stream = CarStream::new(std::io::Cursor::new(buff)).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>blocks2 = Blocks(stream.try_collect().<span class="kw">await</span><span class="question-mark">?</span>);
+
+            <span class="macro">assert_eq!</span>(blocks1.<span class="number">0</span>, blocks2.<span class="number">0</span>);
 
             <span class="prelude-val">Ok</span>::&lt;<span class="kw">_</span>, anyhow::Error&gt;(())
         })
