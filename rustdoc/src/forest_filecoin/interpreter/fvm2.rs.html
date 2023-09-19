@@ -357,16 +357,6 @@
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
 <a href="#359" id="359">359</a>
-<a href="#360" id="360">360</a>
-<a href="#361" id="361">361</a>
-<a href="#362" id="362">362</a>
-<a href="#363" id="363">363</a>
-<a href="#364" id="364">364</a>
-<a href="#365" id="365">365</a>
-<a href="#366" id="366">366</a>
-<a href="#367" id="367">367</a>
-<a href="#368" id="368">368</a>
-<a href="#369" id="369">369</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -493,22 +483,12 @@
 <span class="kw">impl</span>&lt;DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>&gt; Externs <span class="kw">for </span>ForestExternsV2&lt;DB&gt; {}
 
 <span class="kw">impl</span>&lt;DB&gt; Rand <span class="kw">for </span>ForestExternsV2&lt;DB&gt; {
-    <span class="kw">fn </span>get_chain_randomness(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.rand.get_chain_randomness(pers, round, entropy)
+    <span class="kw">fn </span>get_chain_randomness(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.rand.get_chain_randomness(round)
     }
 
-    <span class="kw">fn </span>get_beacon_randomness(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.rand.get_beacon_randomness(pers, round, entropy)
+    <span class="kw">fn </span>get_beacon_randomness(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.rand.get_beacon_randomness(round)
     }
 }
 

@@ -93,6 +93,14 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span><span class="self">self</span>::ExecutionEvent <span class="kw">as </span>EShim;
@@ -131,6 +139,8 @@
     <span class="kw">pub </span>method_num: u64,
     <span class="kw">pub </span>params: Either&lt;RawBytes, <span class="prelude-ty">Option</span>&lt;IpldBlock&gt;&gt;,
     <span class="kw">pub </span>value: ShimTokenAmount,
+    <span class="kw">pub </span>gas_limit: <span class="prelude-ty">Option</span>&lt;u64&gt;,
+    <span class="kw">pub </span>read_only: <span class="prelude-ty">Option</span>&lt;bool&gt;,
 }
 
 <span class="kw">impl </span>From&lt;E2&gt; <span class="kw">for </span>ExecutionEvent {
@@ -149,6 +159,8 @@
                 method_num: method,
                 params: Either::Left(params),
                 value: value.into(),
+                gas_limit: <span class="prelude-val">None</span>,
+                read_only: <span class="prelude-val">None</span>,
             }),
             E2::CallReturn(data) =&gt; EShim::CallReturn(CallReturn {
                 exit_code: <span class="prelude-val">None</span>,
@@ -172,12 +184,16 @@
                 method,
                 params,
                 value,
+                gas_limit,
+                read_only,
             } =&gt; EShim::Call(Call {
                 from,
                 to: to.into(),
                 method_num: method,
                 params: Either::Right(params),
                 value: value.into(),
+                gas_limit: <span class="prelude-val">Some</span>(gas_limit),
+                read_only: <span class="prelude-val">Some</span>(read_only),
             }),
             E3::CallReturn(exit_code, data) =&gt; EShim::CallReturn(CallReturn {
                 exit_code: <span class="prelude-val">Some</span>(exit_code.into()),

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["draw_randomness"],"struct":["ChainRand"]};
+window.SIDEBAR_ITEMS = {"fn":["digest","draw_randomness"],"struct":["ChainRand"]};

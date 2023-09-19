@@ -220,8 +220,8 @@
     utils::cid::CidCborExt,
 };
 <span class="kw">use </span>cid::Cid;
+<span class="kw">use </span>fil_actors_shared::fvm_ipld_hamt::BytesKey;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_hamt::BytesKey;
 
 <span class="doccomment">/// Translated from &lt;https://github.com/filecoin-project/go-state-types/blob/master/builtin/v9/migration/util.go#L72&gt;
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>get_pending_verified_deals_and_total_size(

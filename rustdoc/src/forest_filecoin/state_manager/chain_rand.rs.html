@@ -203,32 +203,6 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
-<a href="#216" id="216">216</a>
-<a href="#217" id="217">217</a>
-<a href="#218" id="218">218</a>
-<a href="#219" id="219">219</a>
-<a href="#220" id="220">220</a>
-<a href="#221" id="221">221</a>
-<a href="#222" id="222">222</a>
-<a href="#223" id="223">223</a>
-<a href="#224" id="224">224</a>
-<a href="#225" id="225">225</a>
-<a href="#226" id="226">226</a>
-<a href="#227" id="227">227</a>
-<a href="#228" id="228">228</a>
-<a href="#229" id="229">229</a>
-<a href="#230" id="230">230</a>
-<a href="#231" id="231">231</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -287,9 +261,7 @@
     /// `DomainSeparationTag`, `ChainEpoch`, Entropy from the ticket chain.
     </span><span class="kw">pub fn </span>get_chain_randomness(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
         round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
         lookback: bool,
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
         <span class="kw">let </span>ts = Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.tipset);
@@ -309,51 +281,33 @@
             </span>.chain_index
             .tipset_by_height(search_height, ts, resolve)<span class="question-mark">?</span>;
 
-        draw_randomness(
+        <span class="prelude-val">Ok</span>(digest(
             rand_ts
                 .min_ticket()
                 .context(<span class="string">&quot;No ticket exists for block&quot;</span>)<span class="question-mark">?
                 </span>.vrfproof
                 .as_bytes(),
-            pers,
-            round,
-            entropy,
-        )
+        ))
     }
 
     <span class="doccomment">/// network version 13 onward
-    </span><span class="kw">pub fn </span>get_chain_randomness_v2(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_chain_randomness(pers, round, entropy, <span class="bool-val">false</span>)
+    </span><span class="kw">pub fn </span>get_chain_randomness_v2(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.get_chain_randomness(round, <span class="bool-val">false</span>)
     }
 
     <span class="doccomment">/// network version 13; without look-back
-    </span><span class="kw">pub fn </span>get_beacon_randomness_v2(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_beacon_randomness(pers, round, entropy, <span class="bool-val">false</span>)
+    </span><span class="kw">pub fn </span>get_beacon_randomness_v2(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.get_beacon_randomness(round, <span class="bool-val">false</span>)
     }
 
     <span class="doccomment">/// network version 14 onward
-    </span><span class="kw">pub fn </span>get_beacon_randomness_v3(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+    </span><span class="kw">pub fn </span>get_beacon_randomness_v3(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
         <span class="kw">if </span>round &lt; <span class="number">0 </span>{
-            <span class="kw">return </span><span class="self">self</span>.get_beacon_randomness_v2(pers, round, entropy);
+            <span class="kw">return </span><span class="self">self</span>.get_beacon_randomness_v2(round);
         }
 
         <span class="kw">let </span>beacon_entry = <span class="self">self</span>.extract_beacon_entry_for_epoch(round)<span class="question-mark">?</span>;
-        draw_randomness(beacon_entry.data(), pers, round, entropy)
+        <span class="prelude-val">Ok</span>(digest(beacon_entry.data()))
     }
 
     <span class="doccomment">/// Gets 32 bytes of randomness for `ChainRand` parameterized by the
@@ -361,14 +315,12 @@
     /// entry.
     </span><span class="kw">pub fn </span>get_beacon_randomness(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
         round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
         lookback: bool,
     ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
         <span class="kw">let </span>rand_ts: Arc&lt;Tipset&gt; = <span class="self">self</span>.get_beacon_randomness_tipset(round, lookback)<span class="question-mark">?</span>;
         <span class="kw">let </span>be = <span class="self">self</span>.chain_index.latest_beacon_entry(<span class="kw-2">&amp;</span>rand_ts)<span class="question-mark">?</span>;
-        draw_randomness(be.data(), pers, round, entropy)
+        <span class="prelude-val">Ok</span>(digest(be.data()))
     }
 
     <span class="kw">pub fn </span>extract_beacon_entry_for_epoch(<span class="kw-2">&amp;</span><span class="self">self</span>, epoch: ChainEpoch) -&gt; anyhow::Result&lt;BeaconEntry&gt; {
@@ -424,22 +376,12 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">fn </span>get_chain_randomness(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_chain_randomness_v2(pers, round, entropy)
+    <span class="kw">fn </span>get_chain_randomness(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.get_chain_randomness_v2(round)
     }
 
-    <span class="kw">fn </span>get_beacon_randomness(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        pers: i64,
-        round: ChainEpoch,
-        entropy: <span class="kw-2">&amp;</span>[u8],
-    ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
-        <span class="self">self</span>.get_beacon_randomness_v3(pers, round, entropy)
+    <span class="kw">fn </span>get_beacon_randomness(<span class="kw-2">&amp;</span><span class="self">self</span>, round: ChainEpoch) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
+        <span class="self">self</span>.get_beacon_randomness_v3(round)
     }
 }
 
@@ -452,12 +394,18 @@
 ) -&gt; anyhow::Result&lt;[u8; <span class="number">32</span>]&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>state = Params::new().hash_length(<span class="number">32</span>).to_state();
     state.write_i64::&lt;BigEndian&gt;(pers)<span class="question-mark">?</span>;
-    <span class="kw">let </span>vrf_digest = blake2b_256(rbase);
+    <span class="kw">let </span>vrf_digest = digest(rbase);
     state.write_all(<span class="kw-2">&amp;</span>vrf_digest)<span class="question-mark">?</span>;
     state.write_i64::&lt;BigEndian&gt;(round)<span class="question-mark">?</span>;
     state.write_all(entropy)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>ret = [<span class="number">0u8</span>; <span class="number">32</span>];
     ret.clone_from_slice(state.finalize().as_bytes());
     <span class="prelude-val">Ok</span>(ret)
+}
+
+<span class="doccomment">/// Computes a 256-bit digest.
+/// See &lt;https://github.com/filecoin-project/ref-fvm/blob/master/fvm/CHANGELOG.md#360-2023-08-18&gt;
+</span><span class="kw">pub fn </span>digest(rbase: <span class="kw-2">&amp;</span>[u8]) -&gt; [u8; <span class="number">32</span>] {
+    blake2b_256(rbase)
 }
 </code></pre></div></section></main></body></html>

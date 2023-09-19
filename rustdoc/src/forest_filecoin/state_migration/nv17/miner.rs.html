@@ -919,6 +919,7 @@
 <a href="#919" id="919">919</a>
 <a href="#920" id="920">920</a>
 <a href="#921" id="921">921</a>
+<a href="#922" id="922">922</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -938,6 +939,7 @@
     v9::{util::sector_key, State <span class="kw">as </span>MinerStateNew},
 };
 <span class="kw">use </span>fil_actors_shared::abi::commp::compute_unsealed_sector_cid_v2;
+<span class="kw">use </span>fil_actors_shared::fvm_ipld_amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 
@@ -1296,8 +1298,8 @@
     <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
     <span class="kw">use </span>cid::multihash::{Multihash, MultihashDigest};
     <span class="kw">use </span>fil_actor_interface::BURNT_FUNDS_ACTOR_ADDR;
+    <span class="kw">use </span>fil_actors_shared::fvm_ipld_hamt::BytesKey;
     <span class="kw">use </span>fvm_ipld_encoding::IPLD_RAW;
-    <span class="kw">use </span>fvm_ipld_hamt::BytesKey;
     <span class="kw">use </span>fvm_shared2::{
         bigint::Zero,
         commcid::{

@@ -93,8 +93,8 @@
 
 <span class="kw">use </span><span class="kw">super</span>::state_tree::StateTreeVersion;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
+<span class="kw">use </span>fil_actors_shared::fvm_ipld_hamt::Hamtv0 <span class="kw">as </span>Hamt;
 <span class="kw">pub use </span>fvm2::state_tree::ActorState <span class="kw">as </span>ActorStateV2;
-<span class="kw">use </span>fvm_ipld_hamt::Hamtv0 <span class="kw">as </span>Hamt;
 <span class="kw">pub use </span>fvm_shared3::state::StateRoot;
 
 <span class="kw">const </span>HAMTV0_BIT_WIDTH: u32 = <span class="number">5</span>;

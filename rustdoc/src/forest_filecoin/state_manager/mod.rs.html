@@ -1353,9 +1353,9 @@
 <span class="kw">use </span>chain_rand::ChainRand;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::<span class="kw-2">*</span>;
+<span class="kw">use </span>fil_actors_shared::fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fil_actors_shared::v10::runtime::Policy;
 <span class="kw">use </span>futures::{channel::oneshot, select, FutureExt};
-<span class="kw">use </span>fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>itertools::Itertools <span class="kw">as _</span>;
 <span class="kw">use </span>lru::LruCache;
