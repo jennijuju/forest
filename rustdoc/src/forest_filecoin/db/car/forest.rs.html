@@ -487,9 +487,6 @@
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
 <a href="#489" id="489">489</a>
-<a href="#490" id="490">490</a>
-<a href="#491" id="491">491</a>
-<a href="#492" id="492">492</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -693,11 +690,8 @@
                     <span class="kw">while let </span><span class="prelude-val">Some</span>(block_frame) =
                         UviBytes::&lt;Bytes&gt;::default().decode_eof(<span class="kw-2">&amp;mut </span>zstd_frame)<span class="question-mark">?
                     </span>{
-                        <span class="kw">if let </span><span class="prelude-val">Some</span>(CarBlock { cid, data }) = CarBlock::from_bytes(block_frame) {
-                            block_map.insert(cid, data);
-                        } <span class="kw">else </span>{
-                            <span class="kw">return </span><span class="prelude-val">Err</span>(invalid_data(<span class="string">&quot;corrupted key-value block&quot;</span>))<span class="question-mark">?</span>;
-                        }
+                        <span class="kw">let </span>CarBlock { cid, data } = CarBlock::from_bytes(block_frame)<span class="question-mark">?</span>;
+                        block_map.insert(cid, data);
                     }
                     <span class="kw">let </span>get_result = block_map.get(k).cloned();
                     <span class="self">self</span>.frame_cache

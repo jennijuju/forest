@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["read_header","reset_bufread"],"struct":["CarBlock","CarHeader","CarStream","CarWriter"]};
+window.SIDEBAR_ITEMS = {"fn":["is_zstd","read_header"],"struct":["CarBlock","CarHeader","CarStream","CarWriter"]};

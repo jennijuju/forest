@@ -238,6 +238,9 @@
 <a href="#238" id="238">238</a>
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
@@ -252,10 +255,10 @@
 <span class="kw">use </span>integer_encoding::VarInt;
 <span class="kw">use </span>pin_project_lite::pin_project;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>std::io::{<span class="self">self</span>, Cursor, SeekFrom};
+<span class="kw">use </span>std::io;
 <span class="kw">use </span>std::pin::Pin;
 <span class="kw">use </span>std::task::{Context, Poll};
-<span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncRead, AsyncSeek, AsyncSeekExt, AsyncWrite};
+<span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncBufReadExt, AsyncRead, AsyncWrite};
 <span class="kw">use </span>tokio_util::codec::Encoder;
 <span class="kw">use </span>tokio_util::codec::FramedRead;
 <span class="kw">use </span>tokio_util::either::Either;
@@ -277,7 +280,7 @@
 
 <span class="kw">impl </span>CarBlock {
     <span class="comment">// Write a varint frame containing the cid and the data
-    </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>std::io::Write) -&gt; io::Result&lt;()&gt; {
+    </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>writer: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>io::Write) -&gt; io::Result&lt;()&gt; {
         <span class="kw">let </span>frame_length = <span class="self">self</span>.cid.encoded_len() + <span class="self">self</span>.data.len();
         writer.write_all(<span class="kw-2">&amp;</span>frame_length.encode_var_vec())<span class="question-mark">?</span>;
         <span class="self">self</span>.cid
@@ -287,14 +290,13 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>from_bytes(bytes: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;CarBlock&gt; {
+    <span class="kw">pub fn </span>from_bytes(bytes: <span class="kw">impl </span>Into&lt;Bytes&gt;) -&gt; io::Result&lt;CarBlock&gt; {
         <span class="kw">let </span>bytes: Bytes = bytes.into();
-        <span class="kw">let </span><span class="kw-2">mut </span>cursor = Cursor::new(bytes);
-        <span class="kw">let </span>cid = Cid::read_bytes(<span class="kw-2">&amp;mut </span>cursor).ok()<span class="question-mark">?</span>;
-        <span class="kw">let </span>data_offset = cursor.position();
-        <span class="kw">let </span><span class="kw-2">mut </span>bytes = cursor.into_inner();
-        bytes.advance(data_offset <span class="kw">as </span>usize);
-        <span class="prelude-val">Some</span>(CarBlock {
+        <span class="kw">let </span><span class="kw-2">mut </span>cursor = bytes.reader();
+        <span class="kw">let </span>cid = Cid::read_bytes(<span class="kw-2">&amp;mut </span>cursor)
+            .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))<span class="question-mark">?</span>;
+        <span class="kw">let </span>bytes = cursor.into_inner();
+        <span class="prelude-val">Ok</span>(CarBlock {
             cid,
             data: bytes.to_vec(),
         })
@@ -317,44 +319,53 @@
         <span class="attr">#[pin]
         </span>reader: FramedRead&lt;Either&lt;ReaderT, ZstdDecoder&lt;ReaderT&gt;&gt;, UviBytes&gt;,
         <span class="kw">pub </span>header: CarHeader,
+        first_block: <span class="prelude-ty">Option</span>&lt;CarBlock&gt;,
     }
 }
 
-<span class="kw">impl</span>&lt;ReaderT: AsyncSeek + AsyncBufRead + Unpin&gt; CarStream&lt;ReaderT&gt; {
+<span class="comment">// This method checks the header in order to see whether or not we are operating on a zstd
+// archive. The zstd header has a maximum size of 18 bytes:
+// https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md#zstandard-frames.
+</span><span class="kw">fn </span>is_zstd(buf: <span class="kw-2">&amp;</span>[u8]) -&gt; bool {
+    zstd::zstd_safe::get_frame_content_size(buf).is_ok()
+}
+
+<span class="kw">impl</span>&lt;ReaderT: AsyncBufRead + Unpin&gt; CarStream&lt;ReaderT&gt; {
     <span class="kw">pub async fn </span>new(<span class="kw-2">mut </span>reader: ReaderT) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>start_position = reader.stream_position().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(header) = read_header(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await </span>{
-            reader.seek(SeekFrom::Start(start_position)).<span class="kw">await</span><span class="question-mark">?</span>;
-            <span class="kw">let </span><span class="kw-2">mut </span>framed_reader = FramedRead::new(Either::Left(reader), UviBytes::default());
-            <span class="kw">let _ </span>= framed_reader.next().<span class="kw">await</span>;
-            <span class="prelude-val">Ok</span>(CarStream {
-                reader: framed_reader,
-                header,
-            })
-        } <span class="kw">else </span>{
-            reader.seek(SeekFrom::Start(start_position)).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>is_compressed = is_zstd(reader.fill_buf().<span class="kw">await</span><span class="question-mark">?</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>reader = <span class="kw">if </span>is_compressed {
             <span class="kw">let </span><span class="kw-2">mut </span>zstd = ZstdDecoder::new(reader);
             zstd.multiple_members(<span class="bool-val">true</span>);
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(header) = read_header(<span class="kw-2">&amp;mut </span>zstd).<span class="kw">await </span>{
-                <span class="kw">let </span><span class="kw-2">mut </span>reader = zstd.into_inner();
+            FramedRead::new(Either::Right(zstd), UviBytes::default())
+        } <span class="kw">else </span>{
+            FramedRead::new(Either::Left(reader), UviBytes::default())
+        };
+        <span class="kw">let </span>header = read_header(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span>.ok_or(io::Error::new(
+            io::ErrorKind::InvalidData,
+            <span class="string">&quot;invalid header block&quot;</span>,
+        ))<span class="question-mark">?</span>;
 
-                reset_bufread(<span class="kw-2">&amp;mut </span>reader).<span class="kw">await</span><span class="question-mark">?</span>;
-
-                reader.seek(SeekFrom::Start(start_position)).<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="kw">let </span><span class="kw-2">mut </span>zstd = ZstdDecoder::new(reader);
-                zstd.multiple_members(<span class="bool-val">true</span>);
-                <span class="kw">let </span><span class="kw-2">mut </span>framed_reader = FramedRead::new(Either::Right(zstd), UviBytes::default());
-                <span class="kw">let _ </span>= framed_reader.next().<span class="kw">await</span>;
-                <span class="prelude-val">Ok</span>(CarStream {
-                    reader: framed_reader,
-                    header,
-                })
-            } <span class="kw">else </span>{
-                <span class="prelude-val">Err</span>(io::Error::new(
+        <span class="comment">// Read the first block and check if it is valid. This check helps to
+        // catch invalid CAR files as soon as we open.
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(first_entry) = reader.next().<span class="kw">await</span>.transpose()<span class="question-mark">? </span>{
+            <span class="kw">let </span>block = CarBlock::from_bytes(first_entry)<span class="question-mark">?</span>;
+            <span class="kw">if </span>!block.valid() {
+                <span class="kw">return </span><span class="prelude-val">Err</span>(io::Error::new(
                     io::ErrorKind::InvalidData,
-                    <span class="string">&quot;CAR data not recognized&quot;</span>,
-                ))
+                    <span class="string">&quot;invalid first block&quot;</span>,
+                ));
             }
+            <span class="prelude-val">Ok</span>(CarStream {
+                reader,
+                header,
+                first_block: <span class="prelude-val">Some</span>(block),
+            })
+        } <span class="kw">else </span>{
+            <span class="prelude-val">Ok</span>(CarStream {
+                reader,
+                header,
+                first_block: <span class="prelude-val">None</span>,
+            })
         }
     }
 }
@@ -364,21 +375,11 @@
 
     <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.project();
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(block) = this.first_block.take() {
+            <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(block)));
+        }
         <span class="kw">let </span>item = <span class="macro">futures::ready!</span>(this.reader.poll_next(cx));
-        Poll::Ready(item.map(|ret| {
-            ret.and_then(|bytes| {
-                <span class="kw">let </span><span class="kw-2">mut </span>cursor = Cursor::new(bytes);
-                <span class="kw">let </span>cid = Cid::read_bytes(<span class="kw-2">&amp;mut </span>cursor)
-                    .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))<span class="question-mark">?</span>;
-                <span class="kw">let </span>data_offset = cursor.position();
-                <span class="kw">let </span><span class="kw-2">mut </span>bytes = cursor.into_inner();
-                bytes.advance(data_offset <span class="kw">as </span>usize);
-                <span class="prelude-val">Ok</span>(CarBlock {
-                    cid,
-                    data: bytes.to_vec(),
-                })
-            })
-        }))
+        Poll::Ready(item.map(|ret| ret.and_then(CarBlock::from_bytes)))
     }
 }
 
@@ -430,39 +431,24 @@
     }
 }
 
-<span class="kw">async fn </span>read_header&lt;ReaderT: AsyncRead + Unpin&gt;(reader: <span class="kw-2">&amp;mut </span>ReaderT) -&gt; <span class="prelude-ty">Option</span>&lt;CarHeader&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>framed_reader = FramedRead::new(reader, UviBytes::&lt;Bytes&gt;::default());
+<span class="kw">async fn </span>read_header&lt;ReaderT: AsyncRead + Unpin&gt;(
+    framed_reader: <span class="kw-2">&amp;mut </span>FramedRead&lt;ReaderT, UviBytes&gt;,
+) -&gt; <span class="prelude-ty">Option</span>&lt;CarHeader&gt; {
     <span class="kw">let </span>header = from_slice_with_fallback::&lt;CarHeader&gt;(<span class="kw-2">&amp;</span>framed_reader.next().<span class="kw">await</span><span class="question-mark">?</span>.ok()<span class="question-mark">?</span>).ok()<span class="question-mark">?</span>;
     <span class="kw">if </span>header.version != <span class="number">1 </span>{
         <span class="kw">return </span><span class="prelude-val">None</span>;
     }
-    <span class="kw">let </span>first_block = CarBlock::from_bytes(framed_reader.next().<span class="kw">await</span><span class="question-mark">?</span>.ok()<span class="question-mark">?</span>)<span class="question-mark">?</span>;
-    <span class="kw">if </span>!first_block.valid() {
-        <span class="kw">return </span><span class="prelude-val">None</span>;
-    }
-
     <span class="prelude-val">Some</span>(header)
-}
-
-<span class="comment">// Seeking fails after we&#39;ve used the Reader for zstd decoding. Flushing the
-// buffer &quot;fixes&quot; the problem.
-</span><span class="kw">async fn </span>reset_bufread&lt;ReaderT: AsyncBufRead + Unpin&gt;(<span class="kw-2">mut </span>reader: <span class="kw-2">&amp;mut </span>ReaderT) -&gt; io::Result&lt;()&gt; {
-    <span class="kw">let </span>size = futures::future::poll_fn(|cx| {
-        <span class="kw">let </span>buf = <span class="macro">futures::ready!</span>(Pin::new(<span class="kw-2">&amp;mut </span>reader).poll_fill_buf(cx))<span class="question-mark">?</span>;
-        Poll::Ready(<span class="prelude-val">Ok</span>::&lt;usize, io::Error&gt;(buf.len()))
-    })
-    .<span class="kw">await</span><span class="question-mark">?</span>;
-    Pin::new(<span class="kw-2">&amp;mut </span>reader).consume(size);
-    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet};
+    <span class="kw">use </span>futures::TryStreamExt;
     <span class="kw">use </span>quickcheck::{Arbitrary, Gen};
-    <span class="comment">// use quickcheck_macros::quickcheck;
 
-    </span><span class="kw">impl </span>Arbitrary <span class="kw">for </span>CarBlock {
+    <span class="kw">impl </span>Arbitrary <span class="kw">for </span>CarBlock {
         <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; CarBlock {
             <span class="kw">let </span>data = Vec::&lt;u8&gt;::arbitrary(g);
             <span class="kw">let </span>encoding = g
@@ -475,6 +461,26 @@
             <span class="kw">let </span>code = g.choose(<span class="kw-2">&amp;</span>[Code::Blake2b256, Code::Sha2_256]).unwrap();
             <span class="kw">let </span>cid = Cid::new_v1(<span class="kw-2">*</span>encoding, code.digest(<span class="kw-2">&amp;</span>data));
             CarBlock { cid, data }
+        }
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>stream_calibnet_genesis() {
+        <span class="kw">let </span>stream = CarStream::new(calibnet::DEFAULT_GENESIS).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>blocks: Vec&lt;CarBlock&gt; = stream.try_collect().<span class="kw">await</span>.unwrap();
+        <span class="macro">assert_eq!</span>(blocks.len(), <span class="number">1207</span>);
+        <span class="kw">for </span>block <span class="kw">in </span>blocks {
+            <span class="macro">assert!</span>(block.valid());
+        }
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>stream_mainnet_genesis() {
+        <span class="kw">let </span>stream = CarStream::new(mainnet::DEFAULT_GENESIS).<span class="kw">await</span>.unwrap();
+        <span class="kw">let </span>blocks: Vec&lt;CarBlock&gt; = stream.try_collect().<span class="kw">await</span>.unwrap();
+        <span class="macro">assert_eq!</span>(blocks.len(), <span class="number">1222</span>);
+        <span class="kw">for </span>block <span class="kw">in </span>blocks {
+            <span class="macro">assert!</span>(block.valid());
         }
     }
 }
