@@ -68,15 +68,6 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
-<a href="#79" id="79">79</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -84,7 +75,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::crypto::SignatureType;
 <span class="kw">use </span>chrono::{Duration, Utc};
 <span class="kw">use </span>jsonwebtoken::{decode, encode, errors::Result <span class="kw">as </span>JWTResult, DecodingKey, EncodingKey, Header};
-<span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>rand::Rng;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>thiserror::Error;
@@ -92,21 +82,13 @@
 <span class="doccomment">/// constant string that is used to identify the JWT secret key in `KeyStore`
 </span><span class="kw">pub const </span>JWT_IDENTIFIER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;auth-jwt-private&quot;</span>;
 <span class="doccomment">/// Admin permissions
-</span><span class="kw">pub static </span>ADMIN: Lazy&lt;Vec&lt;String&gt;&gt; = Lazy::new(|| {
-    <span class="macro">vec!</span>[
-        <span class="string">&quot;read&quot;</span>.to_string(),
-        <span class="string">&quot;write&quot;</span>.to_string(),
-        <span class="string">&quot;sign&quot;</span>.to_string(),
-        <span class="string">&quot;admin&quot;</span>.to_string(),
-    ]
-});
+</span><span class="kw">pub static </span>ADMIN: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[<span class="string">&quot;read&quot;</span>, <span class="string">&quot;write&quot;</span>, <span class="string">&quot;sign&quot;</span>, <span class="string">&quot;admin&quot;</span>];
 <span class="doccomment">/// Signing permissions
-</span><span class="kw">pub static </span>SIGN: Lazy&lt;Vec&lt;String&gt;&gt; =
-    Lazy::new(|| <span class="macro">vec!</span>[<span class="string">&quot;read&quot;</span>.to_string(), <span class="string">&quot;write&quot;</span>.to_string(), <span class="string">&quot;sign&quot;</span>.to_string()]);
+</span><span class="kw">pub static </span>SIGN: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[<span class="string">&quot;read&quot;</span>, <span class="string">&quot;write&quot;</span>, <span class="string">&quot;sign&quot;</span>];
 <span class="doccomment">/// Writing permissions
-</span><span class="kw">pub static </span>WRITE: Lazy&lt;Vec&lt;String&gt;&gt; = Lazy::new(|| <span class="macro">vec!</span>[<span class="string">&quot;read&quot;</span>.to_string(), <span class="string">&quot;write&quot;</span>.to_string()]);
+</span><span class="kw">pub static </span>WRITE: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[<span class="string">&quot;read&quot;</span>, <span class="string">&quot;write&quot;</span>];
 <span class="doccomment">/// Reading permissions
-</span><span class="kw">pub static </span>READ: Lazy&lt;Vec&lt;String&gt;&gt; = Lazy::new(|| <span class="macro">vec!</span>[<span class="string">&quot;read&quot;</span>.to_string()]);
+</span><span class="kw">pub static </span>READ: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[<span class="string">&quot;read&quot;</span>];
 
 <span class="doccomment">/// Error enumeration for Authentication
 </span><span class="attr">#[derive(Debug, Error, Serialize, Deserialize)]

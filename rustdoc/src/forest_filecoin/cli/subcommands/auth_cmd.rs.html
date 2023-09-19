@@ -68,6 +68,9 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -97,13 +100,16 @@
 }
 
 <span class="kw">fn </span>process_perms(perm: String) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;String&gt;, JsonRpcError&gt; {
-    <span class="kw">match </span>perm.as_str() {
-        <span class="string">&quot;admin&quot; </span>=&gt; <span class="prelude-val">Ok</span>(ADMIN.to_owned()),
-        <span class="string">&quot;sign&quot; </span>=&gt; <span class="prelude-val">Ok</span>(SIGN.to_owned()),
-        <span class="string">&quot;write&quot; </span>=&gt; <span class="prelude-val">Ok</span>(WRITE.to_owned()),
-        <span class="string">&quot;read&quot; </span>=&gt; <span class="prelude-val">Ok</span>(READ.to_owned()),
-        <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(JsonRpcError::INVALID_PARAMS),
+    <span class="prelude-val">Ok</span>(<span class="kw">match </span>perm.as_str() {
+        <span class="string">&quot;admin&quot; </span>=&gt; ADMIN,
+        <span class="string">&quot;sign&quot; </span>=&gt; SIGN,
+        <span class="string">&quot;write&quot; </span>=&gt; WRITE,
+        <span class="string">&quot;read&quot; </span>=&gt; READ,
+        <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(JsonRpcError::INVALID_PARAMS),
     }
+    .iter()
+    .map(ToString::to_string)
+    .collect())
 }
 
 <span class="kw">impl </span>AuthCommands {

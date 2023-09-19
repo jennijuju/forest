@@ -700,6 +700,10 @@
 <a href="#700" id="700">700</a>
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1233,7 +1237,11 @@
 </span><span class="kw">fn </span>handle_admin_token(opts: <span class="kw-2">&amp;</span>CliOpts, config: <span class="kw-2">&amp;</span>Config, keystore: <span class="kw-2">&amp;</span>KeyStore) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>ki = keystore.get(JWT_IDENTIFIER)<span class="question-mark">?</span>;
     <span class="kw">let </span>token_exp = config.client.token_exp;
-    <span class="kw">let </span>token = create_token(ADMIN.to_owned(), ki.private_key(), token_exp)<span class="question-mark">?</span>;
+    <span class="kw">let </span>token = create_token(
+        ADMIN.iter().map(ToString::to_string).collect(),
+        ki.private_key(),
+        token_exp,
+    )<span class="question-mark">?</span>;
     <span class="macro">info!</span>(<span class="string">&quot;Admin token: {token}&quot;</span>);
     <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = opts.save_token.as_ref() {
         std::fs::write(path, token)<span class="question-mark">?</span>;
