@@ -1344,7 +1344,7 @@
                 metrics::LIBP2P_MESSAGE_TOTAL
                     .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::HELLO_RESPONSE_OUTBOUND])
                     .inc();
-                <span class="kw">let </span>tipset_keys = TipsetKeys::from(request.heaviest_tip_set);
+                <span class="kw">let </span>tipset_keys = TipsetKeys::from_iter(request.heaviest_tip_set);
                 <span class="kw">let </span>tipset = <span class="kw">match </span><span class="self">Self</span>::get_full_tipset(
                     network.clone(),
                     chain_store.clone(),

@@ -265,6 +265,7 @@
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -276,7 +277,7 @@
     time::{Duration, Instant},
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashMap;
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashMap;
 <span class="kw">use </span>ahash::{HashSet, HashSetExt};
 <span class="kw">use </span>flume::TryRecvError;
 <span class="kw">use </span>libipld::{Block, Cid};
@@ -389,7 +390,7 @@
         deadline: Instant,
     ) -&gt; bool {
         <span class="comment">// Fail fast here when the given `cid` is being processed by other tasks
-        </span><span class="kw">if </span><span class="self">self</span>.response_channels.read().contains_key(cid) {
+        </span><span class="kw">if </span><span class="self">self</span>.response_channels.read().contains_key(<span class="kw-2">&amp;</span>cid) {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
 
@@ -463,8 +464,9 @@
         <span class="comment">// Cleanup
         </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>response_channels = <span class="self">self</span>.response_channels.write();
-            response_channels.remove(cid);
-            metrics::response_channel_container_capacity().set(response_channels.capacity() <span class="kw">as _</span>);
+            response_channels.remove(<span class="kw-2">&amp;</span>cid);
+            metrics::response_channel_container_capacity()
+                .set(response_channels.total_capacity() <span class="kw">as _</span>);
         }
 
         success
@@ -479,12 +481,12 @@
 
         <span class="kw">match </span>response {
             HaveBlock(peer, cid) =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(chans) = <span class="self">self</span>.response_channels.read().get(cid) {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(chans) = <span class="self">self</span>.response_channels.read().get(<span class="kw-2">&amp;</span>cid) {
                     <span class="kw">_ </span>= chans.block_have.send(peer);
                 }
             }
             DataBlock(_peer, cid, data) =&gt; {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(chans) = <span class="self">self</span>.response_channels.read().get(cid) {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(chans) = <span class="self">self</span>.response_channels.read().get(<span class="kw-2">&amp;</span>cid) {
                     <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) = store.contains(<span class="kw-2">&amp;</span>cid) {
                         <span class="comment">// Avoid duplicate writes, still notify the receiver
                         </span>metrics::message_counter_inbound_response_block_already_exists_in_db()

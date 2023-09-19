@@ -718,14 +718,13 @@
 <a href="#718" id="718">718</a>
 <a href="#719" id="719">719</a>
 <a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::{fmt, sync::OnceLock};
 
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::FrozenCidVec;
 <span class="kw">use </span><span class="kw">crate</span>::db::{SettingsStore, SettingsStoreExt};
-<span class="kw">use </span><span class="kw">crate</span>::ipld::FrozenCids;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, clock::ChainEpoch};
 <span class="kw">use </span><span class="kw">crate</span>::utils::cid::CidCborExt;
@@ -749,28 +748,26 @@
 #[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>TipsetKeys {
-    <span class="kw">pub </span>cids: FrozenCids,
+    <span class="kw">pub </span>cids: FrozenCidVec,
 }
 
 <span class="kw">impl </span>TipsetKeys {
-    <span class="kw">pub fn </span>new(cids: FrozenCids) -&gt; <span class="self">Self </span>{
-        <span class="self">Self </span>{ cids }
-    }
-
     <span class="comment">// Special encoding to match Lotus.
     </span><span class="kw">pub fn </span>cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;Cid&gt; {
         <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
         <span class="kw">let </span><span class="kw-2">mut </span>bytes = Vec::new();
-        <span class="kw">for </span>cid <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.cids {
+        <span class="kw">for </span>cid <span class="kw">in </span><span class="self">self</span>.cids.clone() {
             bytes.append(<span class="kw-2">&amp;mut </span>cid.to_bytes())
         }
         <span class="prelude-val">Ok</span>(Cid::from_cbor_blake2b256(<span class="kw-2">&amp;</span>RawBytes::new(bytes))<span class="question-mark">?</span>)
     }
 }
 
-<span class="kw">impl </span>From&lt;Vec&lt;Cid&gt;&gt; <span class="kw">for </span>TipsetKeys {
-    <span class="kw">fn </span>from(cids: Vec&lt;Cid&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::new(FrozenCids::from(cids))
+<span class="kw">impl </span>FromIterator&lt;Cid&gt; <span class="kw">for </span>TipsetKeys {
+    <span class="kw">fn </span>from_iter&lt;T: IntoIterator&lt;Item = Cid&gt;&gt;(iter: T) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            cids: iter.into_iter().collect(),
+        }
     }
 }
 
@@ -778,6 +775,7 @@
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
         <span class="kw">let </span>s = <span class="self">self
             </span>.cids
+            .clone()
             .into_iter()
             .map(|cid| cid.to_string())
             .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
@@ -866,6 +864,7 @@
     </span><span class="kw">pub fn </span>load(store: <span class="kw">impl </span>Blockstore, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Tipset&gt;&gt; {
         <span class="prelude-val">Ok</span>(tsk
             .cids
+            .clone()
             .into_iter()
             .map(|key| BlockHeader::load(<span class="kw-2">&amp;</span>store, key))
             .collect::&lt;anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;<span class="kw">_</span>&gt;&gt;&gt;()<span class="question-mark">?
@@ -959,12 +958,12 @@
     <span class="doccomment">/// Returns a key for the tipset.
     </span><span class="kw">pub fn </span>key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TipsetKeys {
         <span class="self">self</span>.key.get_or_init(|| {
-            TipsetKeys::new(<span class="self">self</span>.headers.iter().map(BlockHeader::cid).cloned().collect())
+            TipsetKeys::from_iter(<span class="self">self</span>.headers.iter().map(BlockHeader::cid).copied())
         })
     }
     <span class="doccomment">/// Returns slice of `CIDs` for the current tipset
     </span><span class="kw">pub fn </span>cids(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Vec&lt;Cid&gt; {
-        Vec::&lt;Cid&gt;::from(<span class="kw-2">&amp;</span><span class="self">self</span>.key().cids)
+        <span class="self">self</span>.key().cids.clone().into_iter().collect()
     }
     <span class="doccomment">/// Returns the keys of the parents of the blocks in the tipset.
     </span><span class="kw">pub fn </span>parents(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TipsetKeys {
@@ -1108,7 +1107,7 @@
     <span class="doccomment">/// Returns a key for the tipset.
     </span><span class="kw">pub fn </span>key(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>TipsetKeys {
         <span class="self">self</span>.key
-            .get_or_init(|| TipsetKeys::new(<span class="self">self</span>.blocks.iter().map(Block::cid).cloned().collect()))
+            .get_or_init(|| TipsetKeys::from_iter(<span class="self">self</span>.blocks.iter().map(Block::cid).copied()))
     }
     <span class="doccomment">/// Returns the state root for the tipset parent.
     </span><span class="kw">pub fn </span>parent_state(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Cid {
@@ -1273,7 +1272,6 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
     <span class="kw">use </span><span class="kw">crate</span>::blocks::VRFProof;
-    <span class="kw">use </span><span class="kw">crate</span>::ipld::FrozenCids;
     <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
     <span class="kw">use </span>cid::{
         multihash::{Code::Identity, MultihashDigest},
@@ -1423,10 +1421,10 @@
             .unwrap();
         <span class="kw">let </span>h1 = BlockHeader::builder()
             .miner_address(Address::new_id(<span class="number">1</span>))
-            .parents(TipsetKeys::new(FrozenCids::from_iter([Cid::new_v1(
+            .parents(TipsetKeys::from_iter([Cid::new_v1(
                 DAG_CBOR,
                 Identity.digest(<span class="kw-2">&amp;</span>[]),
-            )])))
+            )]))
             .build()
             .unwrap();
         <span class="macro">assert_eq!</span>(

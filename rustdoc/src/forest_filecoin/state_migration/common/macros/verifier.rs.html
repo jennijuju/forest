@@ -61,7 +61,7 @@
 </span><span class="macro">macro_rules! </span>impl_verifier {
     () =&gt; {
         <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>verifier {
-            <span class="kw">use </span><span class="macro-nonterminal">$crate::ipld::CidHashMap</span>;
+            <span class="kw">use </span><span class="macro-nonterminal">$crate::cid_collections::CidHashMap</span>;
             <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
             <span class="kw">use </span>fvm_ipld_encoding::CborStore;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::shim</span>::{address::Address, machine::Manifest, state_tree::StateTree};

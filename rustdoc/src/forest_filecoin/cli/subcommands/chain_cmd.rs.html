@@ -135,6 +135,9 @@
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -231,9 +234,12 @@
                 force: no_confirm,
             } =&gt; {
                 maybe_confirm(<span class="kw-2">*</span>no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
-                chain_set_head((TipsetKeys::from(cids.clone()),), <span class="kw-2">&amp;</span>config.client.rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)
+                chain_set_head(
+                    (TipsetKeys::from_iter(cids.clone()),),
+                    <span class="kw-2">&amp;</span>config.client.rpc_token,
+                )
+                .<span class="kw">await
+                </span>.map_err(handle_rpc_err)
             }
         }
     }

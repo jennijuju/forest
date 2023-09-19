@@ -164,7 +164,7 @@
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">let </span>(LotusJson(cid_vec),) = params;
-    <span class="kw">let </span>tsk = TipsetKeys::new(cid_vec.into());
+    <span class="kw">let </span>tsk = TipsetKeys::from_iter(cid_vec);
     <span class="kw">let </span><span class="kw-2">mut </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(<span class="kw-2">mut </span>pending, mpts) = data.mpool.pending()<span class="question-mark">?</span>;

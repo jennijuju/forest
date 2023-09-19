@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["CidV1DagCborBlake2b256","Uncompactable"]};

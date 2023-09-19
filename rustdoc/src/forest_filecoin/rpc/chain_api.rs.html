@@ -283,7 +283,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     chain_api::<span class="kw-2">*</span>,
@@ -518,7 +518,7 @@
     <span class="kw">let </span>new_head = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>current = data.state_manager.chain_store().heaviest_tipset();
     <span class="kw">while </span>current.epoch() &gt;= new_head.epoch() {
-        <span class="kw">for </span>cid <span class="kw">in </span><span class="kw-2">&amp;</span>current.key().cids {
+        <span class="kw">for </span>cid <span class="kw">in </span>current.key().cids.clone() {
             data.state_manager
                 .chain_store()
                 .unmark_block_as_validated(<span class="kw-2">&amp;</span>cid);

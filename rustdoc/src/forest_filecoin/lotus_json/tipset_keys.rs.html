@@ -31,7 +31,7 @@
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
-<span class="kw">use </span><span class="kw">crate</span>::ipld::FrozenCids;
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::FrozenCidVec;
 <span class="kw">use </span>::cid::Cid;
 
 <span class="kw">impl </span>HasLotusJson <span class="kw">for </span>TipsetKeys {
@@ -41,7 +41,7 @@
         <span class="macro">vec!</span>[(
             <span class="macro">json!</span>([{<span class="string">&quot;/&quot;</span>: <span class="string">&quot;baeaaaaa&quot;</span>}]),
             TipsetKeys {
-                cids: FrozenCids::from(<span class="macro">vec!</span>[::cid::Cid::default()]),
+                cids: FrozenCidVec::from_iter([::cid::Cid::default()]),
             },
         )]
     }
@@ -51,7 +51,7 @@
     }
 
     <span class="kw">fn </span>from_lotus_json(lotus_json: <span class="self">Self</span>::LotusJson) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::from(lotus_json.into_inner())
+        <span class="self">Self</span>::from_iter(lotus_json.into_inner())
     }
 }
 </code></pre></div></section></main></body></html>

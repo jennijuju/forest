@@ -701,6 +701,7 @@
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -713,7 +714,8 @@
     },
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::ipld::{CidHashSet, Ipld};
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::Ipld;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarBlock;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
@@ -881,11 +883,11 @@
         }
 
         <span class="kw">if </span>h.epoch() &gt; <span class="number">0 </span>{
-            <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>h.parents().cids {
+            <span class="kw">for </span>p <span class="kw">in </span>h.parents().cids.clone() {
                 blocks_to_walk.push_back(p);
             }
         } <span class="kw">else </span>{
-            <span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>h.parents().cids {
+            <span class="kw">for </span>p <span class="kw">in </span>h.parents().cids.clone() {
                 load_block(p).<span class="kw">await</span><span class="question-mark">?</span>;
             }
         }
@@ -1114,7 +1116,7 @@
 
                         <span class="kw">if </span>block.epoch() == <span class="number">0 </span>{
                             <span class="comment">// The genesis block has some kind of dummy parent that needs to be emitted.
-                            </span><span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>block.parents().cids {
+                            </span><span class="kw">for </span>p <span class="kw">in </span>block.parents().cids.clone() {
                                 this.dfs.push_back(Emit(p));
                             }
                         }
@@ -1348,7 +1350,7 @@
 
                         <span class="kw">if </span>block.epoch() == <span class="number">0 </span>{
                             <span class="comment">// The genesis block has some kind of dummy parent that needs to be emitted.
-                            </span><span class="kw">for </span>p <span class="kw">in </span><span class="kw-2">&amp;</span>block.parents().cids {
+                            </span><span class="kw">for </span>p <span class="kw">in </span>block.parents().cids.clone() {
                                 this.queue.push(p);
                             }
                         }

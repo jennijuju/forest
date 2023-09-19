@@ -314,7 +314,7 @@
                 .set_heaviest_tipset(Arc::new(ts.clone()))
                 .unwrap();
 
-            <span class="kw">for </span>i <span class="kw">in </span>tsk.cids.into_iter() {
+            <span class="kw">for </span>i <span class="kw">in </span>tsk.cids.clone().into_iter() {
                 <span class="kw">let </span>bz2 = bz.clone();
                 db.put_keyed(<span class="kw-2">&amp;</span>i, <span class="kw-2">&amp;</span>bz2).unwrap();
             }

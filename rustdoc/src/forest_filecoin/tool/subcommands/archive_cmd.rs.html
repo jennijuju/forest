@@ -514,15 +514,15 @@
     index::{ChainIndex, ResolveNullTipset},
     ChainEpochDelta,
 };
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::{snapshot, snapshot::TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::{AnyCar, RandomAccessFileReader};
-<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, unordered_stream_graph, CidHashSet};
+<span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, unordered_stream_graph};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY, EPOCH_DURATION_SECONDS};
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>chrono::NaiveDateTime;
-<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
 <span class="kw">use </span>futures::TryStreamExt;
@@ -906,7 +906,7 @@
 
     <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;
     <span class="kw">let </span>heaviest_tipset = store.heaviest_tipset()<span class="question-mark">?</span>;
-    <span class="kw">let </span>roots = Vec::&lt;Cid&gt;::from(<span class="kw-2">&amp;</span>heaviest_tipset.key().cids);
+    <span class="kw">let </span>roots = heaviest_tipset.key().cids.clone().into_iter().collect();
 
     <span class="kw">if </span>!force &amp;&amp; output_path.exists() {
         <span class="kw">let </span>have_permission = Confirm::with_theme(<span class="kw-2">&amp;</span>ColorfulTheme::default())

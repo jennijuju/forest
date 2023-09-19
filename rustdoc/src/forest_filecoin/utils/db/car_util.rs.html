@@ -188,7 +188,7 @@
 </span><span class="kw">use </span>futures::{Stream, StreamExt, TryStreamExt};
 <span class="kw">use </span>tokio::io::{AsyncBufRead, AsyncSeek};
 
-<span class="kw">use </span><span class="kw">crate</span>::ipld::CidHashSet;
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarStream};
 
 <span class="kw">pub fn </span>merge_car_streams&lt;R&gt;(

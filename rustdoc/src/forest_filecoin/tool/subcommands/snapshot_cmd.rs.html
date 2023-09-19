@@ -768,18 +768,20 @@
 <a href="#768" id="768">768</a>
 <a href="#769" id="769">769</a>
 <a href="#770" id="770">770</a>
+<a href="#771" id="771">771</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::{ChainIndex, ResolveNullTipset};
+<span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot;
 <span class="kw">use </span><span class="kw">crate</span>::daemon::bundle::load_actor_bundles;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::db::car::{AnyCar, ManyCar};
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{MessageCallbackCtx, VMTrace};
-<span class="kw">use </span><span class="kw">crate</span>::ipld::{recurse_links_hash, CidHashSet};
+<span class="kw">use </span><span class="kw">crate</span>::ipld::recurse_links_hash;
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::CurrentNetwork;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;

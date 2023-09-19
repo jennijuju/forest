@@ -268,7 +268,7 @@
 
     <span class="kw">loop </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>tipset_bundle: TipsetBundle = TipsetBundle::default();
-        <span class="kw">let </span>tipset = <span class="kw">match </span>cs.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::from(curr_tipset_cids)) {
+        <span class="kw">let </span>tipset = <span class="kw">match </span>cs.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::from_iter(curr_tipset_cids)) {
             <span class="prelude-val">Ok</span>(tipset) =&gt; tipset,
             <span class="prelude-val">Err</span>(err) =&gt; {
                 <span class="macro">debug!</span>(<span class="string">&quot;Cannot get tipset from keys: {}&quot;</span>, err);
@@ -296,7 +296,7 @@
             }
         }
 
-        curr_tipset_cids = Vec::&lt;Cid&gt;::from(<span class="kw-2">&amp;</span>tipset.parents().cids);
+        curr_tipset_cids = tipset.parents().cids.clone().into_iter().collect();
         <span class="kw">let </span>tipset_epoch = tipset.epoch();
 
         <span class="kw">if </span>request.include_blocks() {

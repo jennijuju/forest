@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["__CFG_VIS_ACCUMULATOR_MUST_EXPAND_ONCE_OTHERWISE_IS_A_BUG_7525145475387662957"],"enum":["SmallCid"],"struct":["FrozenCidVec","IntoIter"]};
