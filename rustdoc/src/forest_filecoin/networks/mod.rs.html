@@ -392,18 +392,6 @@
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
 <a href="#394" id="394">394</a>
-<a href="#395" id="395">395</a>
-<a href="#396" id="396">396</a>
-<a href="#397" id="397">397</a>
-<a href="#398" id="398">398</a>
-<a href="#399" id="399">399</a>
-<a href="#400" id="400">400</a>
-<a href="#401" id="401">401</a>
-<a href="#402" id="402">402</a>
-<a href="#403" id="403">403</a>
-<a href="#404" id="404">404</a>
-<a href="#405" id="405">405</a>
-<a href="#406" id="406">406</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -766,48 +754,36 @@
     <span class="kw">pub </span>url: Url,
 }
 
-<span class="kw">pub static </span>ACTOR_BUNDLES: Lazy&lt;[ActorBundleInfo; <span class="number">9</span>]&gt; = Lazy::new(|| {
-    [
-        <span class="comment">// calibnet
-        </span>ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedbedgynklc4dgpyxippkxmba2mgtw7ecntoneclsvvl4klqwuyyy&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
-        },
-        ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0-rc.1/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
-        },
-        ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedhuowetjy2h4cxnijz2l64h4mzpk5m256oywp4evarpono3cjhco&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0-rc2/builtin-actors-calibrationnet.car&quot;</span>).unwrap(),
-        },
-        <span class="comment">// devnet 
-        </span>ActorBundleInfo {
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacedozk3jh2j4nobqotkbofodq4chbrabioxbfrygpldgoxs3zwgggk&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-devnet.car&quot;</span>).unwrap(),
-        },
-        <span class="comment">// devnet
-        </span>ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacebzz376j5kizfck56366kdz5aut6ktqrvqbi3efa2d4l2o2m653ts&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0/builtin-actors-devnet.car&quot;</span>).unwrap(),
-        },
-        ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaceay35go4xbjb45km6o46e5bib3bi46panhovcbedrynzwmm3drr4i&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0/builtin-actors-devnet.car&quot;</span>).unwrap(),
-        },
-        <span class="comment">// mainnet
-        </span>ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzaceb6j6666h36xnhksu3ww4kxb6e25niayfgkdnifaqi6m6ooc66i6i&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v9.0.3/builtin-actors-mainnet.car&quot;</span>).unwrap(),
-        },
-        ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacecsuyf7mmvrhkx2evng5gnz5canlnz2fdlzu2lvcgptiq2pzuovos&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v10.0.0/builtin-actors-mainnet.car&quot;</span>).unwrap(),
-        },
-        ActorBundleInfo{
-            manifest: Cid::try_from(<span class="string">&quot;bafy2bzacecnhaiwcrpyjvzl4uv4q3jzoif26okl3m66q3cijp3dfwlcxwztwo&quot;</span>).unwrap(),
-            url: Url::parse(<span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/v11.0.0/builtin-actors-mainnet.car&quot;</span>).unwrap(),
-        },
-    ]
+<span class="macro">macro_rules! </span>actor_bundle_info {
+    ($(<span class="macro-nonterminal">$cid</span>:literal @ <span class="macro-nonterminal">$version</span>:literal <span class="kw">for </span><span class="macro-nonterminal">$network</span>:literal),* $(,)<span class="question-mark">?</span>) =&gt; {
+        [
+            $(
+                ActorBundleInfo {
+                    manifest: <span class="macro-nonterminal">$cid</span>.parse().unwrap(),
+                    url: <span class="macro">concat!</span>(
+                            <span class="string">&quot;https://github.com/filecoin-project/builtin-actors/releases/download/&quot;</span>,
+                            <span class="macro-nonterminal">$version</span>,
+                            <span class="string">&quot;/builtin-actors-&quot;</span>,
+                            <span class="macro-nonterminal">$network</span>,
+                            <span class="string">&quot;.car&quot;
+                        </span>).parse().unwrap()
+                },
+            )*
+        ]
+    }
+}
+
+<span class="kw">pub static </span>ACTOR_BUNDLES: Lazy&lt;Box&lt;[ActorBundleInfo]&gt;&gt; = Lazy::new(|| {
+    Box::new(<span class="macro">actor_bundle_info!</span>[
+        <span class="string">&quot;bafy2bzacedbedgynklc4dgpyxippkxmba2mgtw7ecntoneclsvvl4klqwuyyy&quot; </span>@ <span class="string">&quot;v9.0.3&quot; </span><span class="kw">for </span><span class="string">&quot;calibrationnet&quot;</span>,
+        <span class="string">&quot;bafy2bzaced25ta3j6ygs34roprilbtb3f6mxifyfnm7z7ndquaruxzdq3y7lo&quot; </span>@ <span class="string">&quot;v10.0.0-rc.1&quot; </span><span class="kw">for </span><span class="string">&quot;calibrationnet&quot;</span>,
+        <span class="string">&quot;bafy2bzacedhuowetjy2h4cxnijz2l64h4mzpk5m256oywp4evarpono3cjhco&quot; </span>@ <span class="string">&quot;v11.0.0-rc2&quot; </span><span class="kw">for </span><span class="string">&quot;calibrationnet&quot;</span>,
+        <span class="string">&quot;bafy2bzacedozk3jh2j4nobqotkbofodq4chbrabioxbfrygpldgoxs3zwgggk&quot; </span>@ <span class="string">&quot;v9.0.3&quot; </span><span class="kw">for </span><span class="string">&quot;devnet&quot;</span>,
+        <span class="string">&quot;bafy2bzacebzz376j5kizfck56366kdz5aut6ktqrvqbi3efa2d4l2o2m653ts&quot; </span>@ <span class="string">&quot;v10.0.0&quot; </span><span class="kw">for </span><span class="string">&quot;devnet&quot;</span>,
+        <span class="string">&quot;bafy2bzaceay35go4xbjb45km6o46e5bib3bi46panhovcbedrynzwmm3drr4i&quot; </span>@ <span class="string">&quot;v11.0.0&quot; </span><span class="kw">for </span><span class="string">&quot;devnet&quot;</span>,
+        <span class="string">&quot;bafy2bzaceb6j6666h36xnhksu3ww4kxb6e25niayfgkdnifaqi6m6ooc66i6i&quot; </span>@ <span class="string">&quot;v9.0.3&quot; </span><span class="kw">for </span><span class="string">&quot;mainnet&quot;</span>,
+        <span class="string">&quot;bafy2bzacecsuyf7mmvrhkx2evng5gnz5canlnz2fdlzu2lvcgptiq2pzuovos&quot; </span>@ <span class="string">&quot;v10.0.0&quot; </span><span class="kw">for </span><span class="string">&quot;mainnet&quot;</span>,
+        <span class="string">&quot;bafy2bzacecnhaiwcrpyjvzl4uv4q3jzoif26okl3m66q3cijp3dfwlcxwztwo&quot; </span>@ <span class="string">&quot;v11.0.0&quot; </span><span class="kw">for </span><span class="string">&quot;mainnet&quot;</span>,
+    ])
 });
 </code></pre></div></section></main></body></html>

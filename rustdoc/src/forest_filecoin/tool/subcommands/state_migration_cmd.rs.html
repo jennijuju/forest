@@ -100,162 +100,106 @@
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
-<a href="#103" id="103">103</a>
-<a href="#104" id="104">104</a>
-<a href="#105" id="105">105</a>
-<a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
-<a href="#109" id="109">109</a>
-<a href="#110" id="110">110</a>
-<a href="#111" id="111">111</a>
-<a href="#112" id="112">112</a>
-<a href="#113" id="113">113</a>
-<a href="#114" id="114">114</a>
-<a href="#115" id="115">115</a>
-<a href="#116" id="116">116</a>
-<a href="#117" id="117">117</a>
-<a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
-<a href="#122" id="122">122</a>
-<a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
-<a href="#125" id="125">125</a>
-<a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::networks::{ActorBundleInfo, ACTOR_BUNDLES};
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarWriter;
-<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_util::merge_car_streams;
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarStream, CarWriter};
 <span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
-<span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::ensure;
 <span class="kw">use </span>async_compression::tokio::write::ZstdEncoder;
-<span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>clap::Subcommand;
-<span class="kw">use </span>futures::io::{BufReader, BufWriter};
-<span class="kw">use </span>futures::{AsyncRead, AsyncWriteExt, StreamExt, TryStreamExt};
-<span class="kw">use </span>fvm_ipld_car::CarReader;
-<span class="kw">use </span>itertools::Itertools;
-<span class="kw">use </span>once_cell::sync::Lazy;
-<span class="kw">use </span>reqwest::Url;
-<span class="kw">use </span>std::env;
-<span class="kw">use </span>std::path::{Path, PathBuf};
-<span class="kw">use </span>std::{fs, io};
+<span class="kw">use </span>futures::{stream, StreamExt <span class="kw">as _</span>, TryStreamExt <span class="kw">as _</span>};
+<span class="kw">use </span>itertools::Itertools <span class="kw">as _</span>;
+<span class="kw">use </span>std::io::{<span class="self">self</span>, Cursor};
+<span class="kw">use </span>std::path::PathBuf;
+<span class="kw">use </span>tokio::fs::File;
+<span class="kw">use </span>tracing::info;
 
-<span class="kw">const </span>DEFAULT_BUNDLE_FILE_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;actor_bundles.car.zst&quot;</span>;
-
-<span class="kw">static </span>ACTOR_BUNDLE_CACHE_DIR: Lazy&lt;PathBuf&gt; =
-    Lazy::new(|| env::temp_dir().join(<span class="string">&quot;.forest_actor_bundles/&quot;</span>));
-
-<span class="attr">#[derive(Debug, Subcommand)]
+<span class="attr">#[derive(Debug, clap::Subcommand)]
 </span><span class="kw">pub enum </span>StateMigrationCommands {
-    <span class="doccomment">/// Generate a merged actor bundle in `.car.zst` format under the current working directory.
-    </span>ActorBundle,
+    <span class="doccomment">/// Generate a merged actor bundle from the hard-coded sources in forest
+    </span>ActorBundle {
+        <span class="attr">#[arg(default_value = <span class="string">&quot;actor_bundles.car.zst&quot;</span>)]
+        </span>output: PathBuf,
+    },
 }
 
 <span class="kw">impl </span>StateMigrationCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">use </span>StateMigrationCommands::<span class="kw-2">*</span>;
-
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            ActorBundle =&gt; generate_actor_bundle().<span class="kw">await</span>,
+            <span class="self">Self</span>::ActorBundle { output } =&gt; generate_actor_bundle(output).<span class="kw">await</span>,
         }
     }
 }
 
-<span class="kw">async fn </span>generate_actor_bundle() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>tasks = Vec::with_capacity(ACTOR_BUNDLES.len());
-    <span class="kw">for </span>ActorBundleInfo { manifest, url } <span class="kw">in </span>ACTOR_BUNDLES.iter() {
-        tasks.push(tokio::spawn(<span class="kw">async move </span>{
-            download_bundle_if_needed(manifest, url)
-                .<span class="kw">await
-                </span>.with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Failed to get {manifest}.car from {url}&quot;</span>))
-        }));
+<span class="kw">async fn </span>generate_actor_bundle(output: PathBuf) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">let </span>(<span class="kw-2">mut </span>roots, blocks) = stream::iter(ACTOR_BUNDLES.iter())
+        .then(
+            |ActorBundleInfo {
+                 manifest: root,
+                 url,
+             }| <span class="kw">async move </span>{
+                <span class="macro">info!</span>(%url, <span class="string">&quot;downloading bundle&quot;</span>);
+                <span class="kw">let </span>response = global_http_client()
+                    .get(url.clone())
+                    .send()
+                    .<span class="kw">await</span><span class="question-mark">?
+                    </span>.error_for_status()<span class="question-mark">?</span>;
+                <span class="kw">let </span>bytes = response.bytes().<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>car = CarStream::new(Cursor::new(bytes)).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="macro">ensure!</span>(car.header.version == <span class="number">1</span>);
+                <span class="macro">ensure!</span>(car.header.roots.len() == <span class="number">1</span>);
+                <span class="macro">ensure!</span>(<span class="kw-2">&amp;</span>car.header.roots[<span class="number">0</span>] == root);
+                anyhow::Ok((<span class="kw-2">*</span>root, car.try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().<span class="kw">await</span><span class="question-mark">?</span>))
+            },
+        )
+        .try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.into_iter()
+        .unzip::&lt;<span class="kw">_</span>, <span class="kw">_</span>, Vec&lt;<span class="kw">_</span>&gt;, Vec&lt;<span class="kw">_</span>&gt;&gt;();
+
+    <span class="macro">ensure!</span>(roots.iter().all_unique());
+
+    roots.sort(); <span class="comment">// deterministic
+
+    </span><span class="kw">let </span><span class="kw-2">mut </span>blocks = blocks.into_iter().flatten().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+    blocks.sort();
+    blocks.dedup();
+
+    <span class="kw">for </span>block <span class="kw">in </span>blocks.iter() {
+        <span class="macro">ensure!</span>(
+            block.valid(),
+            <span class="string">&quot;sources contain an invalid block, cid {}&quot;</span>,
+            block.cid
+        )
     }
 
-    <span class="kw">let </span><span class="kw-2">mut </span>car_streams = <span class="macro">vec!</span>[];
-    <span class="kw">for </span>task <span class="kw">in </span>tasks {
-        <span class="kw">let </span>path = task.<span class="kw">await</span><span class="question-mark">??</span>;
-        <span class="kw">let </span>car_stream = CarStream::new(tokio::io::BufReader::new(
-            tokio::fs::File::open(path).<span class="kw">await</span><span class="question-mark">?</span>,
-        ))
+    stream::iter(blocks)
+        .map(io::Result::Ok)
+        .forward(CarWriter::new_carv1(
+            roots.into_iter().collect(),
+            ZstdEncoder::with_quality(
+                File::create(output).<span class="kw">await</span><span class="question-mark">?</span>,
+                async_compression::Level::Precise(<span class="number">17</span>),
+            ),
+        )<span class="question-mark">?</span>)
         .<span class="kw">await</span><span class="question-mark">?</span>;
-        car_streams.push(car_stream);
-    }
 
-    <span class="kw">let </span>all_roots = car_streams
-        .iter()
-        .flat_map(|it| it.header.roots.iter())
-        .unique()
-        .cloned()
-        .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-
-    <span class="kw">let </span>zstd_encoder = ZstdEncoder::with_quality(
-        tokio::fs::File::create(Path::new(DEFAULT_BUNDLE_FILE_NAME)).<span class="kw">await</span><span class="question-mark">?</span>,
-        async_compression::Level::Precise(zstd::zstd_safe::max_c_level()),
-    );
-
-    merge_car_streams(car_streams)
-        .forward(CarWriter::new_carv1(all_roots, zstd_encoder)<span class="question-mark">?</span>)
-        .<span class="kw">await</span><span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async fn </span>download_bundle_if_needed(root: <span class="kw-2">&amp;</span>Cid, url: <span class="kw-2">&amp;</span>Url) -&gt; anyhow::Result&lt;PathBuf&gt; {
-    <span class="kw">if </span>!ACTOR_BUNDLE_CACHE_DIR.is_dir() {
-        fs::create_dir_all(ACTOR_BUNDLE_CACHE_DIR.as_path())<span class="question-mark">?</span>;
-    }
-    <span class="kw">let </span>cached_car_path = ACTOR_BUNDLE_CACHE_DIR.join(<span class="macro">format!</span>(<span class="string">&quot;{root}.car&quot;</span>));
-    <span class="kw">if </span>cached_car_path.is_file() {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(file) = async_fs::File::open(<span class="kw-2">&amp;</span>cached_car_path).<span class="kw">await </span>{
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>) = is_bundle_valid(root, BufReader::new(file)).<span class="kw">await </span>{
-                <span class="kw">return </span><span class="prelude-val">Ok</span>(cached_car_path);
-            }
-        }
-    }
-
-    <span class="kw">let </span>tmp = tempfile::NamedTempFile::new_in(ACTOR_BUNDLE_CACHE_DIR.as_path())<span class="question-mark">?</span>.into_temp_path();
-    {
-        <span class="kw">let </span>response = global_http_client().get(url.clone()).send().<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span><span class="kw-2">mut </span>writer = BufWriter::new(async_fs::File::create(<span class="kw-2">&amp;</span>tmp).<span class="kw">await</span><span class="question-mark">?</span>);
-        futures::io::copy(
-            response
-                .bytes_stream()
-                .map_err(|reqwest_error| io::Error::new(io::ErrorKind::Other, reqwest_error))
-                .into_async_read(),
-            <span class="kw-2">&amp;mut </span>writer,
-        )
-        .<span class="kw">await</span><span class="question-mark">?</span>;
-        writer.flush().<span class="kw">await</span><span class="question-mark">?</span>;
-        writer.close().<span class="kw">await</span><span class="question-mark">?</span>;
-    }
-    <span class="kw">if </span>is_bundle_valid(root, BufReader::new(async_fs::File::open(<span class="kw-2">&amp;</span>tmp).<span class="kw">await</span><span class="question-mark">?</span>)).<span class="kw">await</span><span class="question-mark">? </span>{
-        tmp.persist(<span class="kw-2">&amp;</span>cached_car_path)<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(cached_car_path)
-    } <span class="kw">else </span>{
-        <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Invalid bundle: {url}&quot;</span>);
-    }
-}
-
-<span class="kw">async fn </span>is_bundle_valid&lt;R&gt;(root: <span class="kw-2">&amp;</span>Cid, reader: R) -&gt; anyhow::Result&lt;bool&gt;
-<span class="kw">where
-    </span>R: AsyncRead + Send + Unpin,
-{
-    is_bundle_car_valid(root, CarReader::new(reader).<span class="kw">await</span><span class="question-mark">?</span>)
-}
-
-<span class="kw">fn </span>is_bundle_car_valid&lt;R&gt;(root: <span class="kw-2">&amp;</span>Cid, car_reader: CarReader&lt;R&gt;) -&gt; anyhow::Result&lt;bool&gt;
-<span class="kw">where
-    </span>R: AsyncRead + Send + Unpin,
-{
-    <span class="prelude-val">Ok</span>(car_reader.header.roots.len() == <span class="number">1 </span>&amp;&amp; <span class="kw-2">&amp;</span>car_reader.header.roots[<span class="number">0</span>] == root)
+<span class="doccomment">/// If this test fails locally, check you&#39;ve got `git-lfs` installed and working
+</span><span class="attr">#[test]
+</span><span class="kw">fn </span>asset_integrity() {
+    futures::executor::block_on(<span class="kw">async </span>{
+        CarStream::new(Cursor::new(<span class="macro">include_bytes!</span>(
+            <span class="string">&quot;../../../assets/actor_bundles.car.zst&quot;
+        </span>)))
+        .<span class="kw">await
+        </span>.unwrap()
+        .try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+        .<span class="kw">await
+        </span>.unwrap();
+    });
 }
 </code></pre></div></section></main></body></html>

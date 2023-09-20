@@ -272,7 +272,7 @@
     <span class="kw">pub </span>version: u64,
 }
 
-<span class="attr">#[derive(Debug, Clone, PartialEq)]
+<span class="attr">#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 </span><span class="kw">pub struct </span>CarBlock {
     <span class="kw">pub </span>cid: Cid,
     <span class="kw">pub </span>data: Vec&lt;u8&gt;,
