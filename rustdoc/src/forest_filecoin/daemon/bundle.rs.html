@@ -31,30 +31,21 @@
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
-<a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>anyhow::Context;
-<span class="kw">use </span>async_compression::tokio::bufread::ZstdDecoder;
-<span class="kw">use </span>cid::Cid;
+</span><span class="kw">use </span><span class="kw">crate</span>::utils::db::{car_stream::CarHeader, car_util::load_car};
+<span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
-<span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;Vec&lt;Cid&gt;&gt; {
+<span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;CarHeader&gt; {
     <span class="kw">const </span>ERROR_MESSAGE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Actor bundles assets are not properly downloaded, make sure git-lfs is installed and run `git lfs pull` again. See &lt;https://github.com/git-lfs/git-lfs/blob/main/INSTALLING.md&gt;&quot;</span>;
 
     <span class="kw">const </span>ACTOR_BUNDLES_CAR_ZST: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">&quot;../../assets/actor_bundles.car.zst&quot;</span>);
 
-    fvm_ipld_car::load_car(
-        db,
-        ZstdDecoder::new(tokio::io::BufReader::new(ACTOR_BUNDLES_CAR_ZST)).compat(),
-    )
-    .<span class="kw">await
-    </span>.context(ERROR_MESSAGE)
+    load_car(db, ACTOR_BUNDLES_CAR_ZST)
+        .<span class="kw">await
+        </span>.context(ERROR_MESSAGE)
 }
 
 <span class="attr">#[cfg(test)]
@@ -62,12 +53,13 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::networks::ACTOR_BUNDLES;
     <span class="kw">use </span>ahash::HashSet;
+    <span class="kw">use </span>cid::Cid;
     <span class="kw">use </span>pretty_assertions::assert_eq;
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_load_actor_bundles() {
         <span class="kw">let </span>db = fvm_ipld_blockstore::MemoryBlockstore::new();
-        <span class="kw">let </span>roots = HashSet::from_iter(load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span>.unwrap());
+        <span class="kw">let </span>roots = HashSet::from_iter(load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span>.unwrap().roots);
         <span class="kw">let </span>roots_expected: HashSet&lt;Cid&gt; = ACTOR_BUNDLES.iter().map(|b| b.manifest).collect();
         <span class="macro">assert_eq!</span>(roots, roots_expected);
     }

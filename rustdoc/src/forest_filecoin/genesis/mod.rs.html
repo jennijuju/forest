@@ -70,23 +70,14 @@
 <a href="#70" id="70">70</a>
 <a href="#71" id="71">71</a>
 <a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
-<span class="kw">use </span>cid::Cid;
-<span class="kw">use </span>futures::AsyncRead;
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_util::load_car;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_car::load_car;
-
-<span class="kw">use </span>tokio::{fs::File, io::BufReader};
-<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
+<span class="kw">use </span>tokio::{fs::File, io::AsyncBufRead, io::BufReader};
 <span class="kw">use </span>tracing::{debug, info};
 
 <span class="attr">#[cfg(test)]
@@ -106,14 +97,13 @@
         <span class="prelude-val">Some</span>(path) =&gt; {
             <span class="kw">let </span>file = File::open(path).<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span>reader = BufReader::new(file);
-            process_car(reader.compat(), db).<span class="kw">await</span><span class="question-mark">?
+            process_car(reader, db).<span class="kw">await</span><span class="question-mark">?
         </span>}
         <span class="prelude-val">None </span>=&gt; {
             <span class="macro">debug!</span>(<span class="string">&quot;No specified genesis in config. Using default genesis.&quot;</span>);
             <span class="kw">let </span>genesis_bytes =
                 genesis_bytes.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;No default genesis.&quot;</span>))<span class="question-mark">?</span>;
-            <span class="kw">let </span>reader = BufReader::&lt;<span class="kw-2">&amp;</span>[u8]&gt;::new(genesis_bytes);
-            process_car(reader.compat(), db).<span class="kw">await</span><span class="question-mark">?
+            process_car(genesis_bytes, db).<span class="kw">await</span><span class="question-mark">?
         </span>}
     };
 
@@ -137,16 +127,16 @@
 
 <span class="kw">async fn </span>process_car&lt;R, BS&gt;(reader: R, db: <span class="kw-2">&amp;</span>BS) -&gt; <span class="prelude-ty">Result</span>&lt;BlockHeader, anyhow::Error&gt;
 <span class="kw">where
-    </span>R: AsyncRead + Send + Unpin,
+    </span>R: AsyncBufRead + Unpin,
     BS: Blockstore,
 {
     <span class="comment">// Load genesis state into the database and get the Cid
-    </span><span class="kw">let </span>genesis_cids: Vec&lt;Cid&gt; = load_car(db, reader).<span class="kw">await</span><span class="question-mark">?</span>;
-    <span class="kw">if </span>genesis_cids.len() != <span class="number">1 </span>{
+    </span><span class="kw">let </span>header = load_car(db, reader).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">if </span>header.roots.len() != <span class="number">1 </span>{
         <span class="macro">panic!</span>(<span class="string">&quot;Invalid Genesis. Genesis Tipset must have only 1 Block.&quot;</span>);
     }
 
-    <span class="kw">let </span>genesis_block = BlockHeader::load(db, genesis_cids[<span class="number">0</span>])<span class="question-mark">?</span>.ok_or_else(|| {
+    <span class="kw">let </span>genesis_block = BlockHeader::load(db, header.roots[<span class="number">0</span>])<span class="question-mark">?</span>.ok_or_else(|| {
         <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Could not find genesis block despite being loaded using a genesis file&quot;</span>)
     })<span class="question-mark">?</span>;
 

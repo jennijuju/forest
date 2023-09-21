@@ -345,6 +345,8 @@
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
 <a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -359,18 +361,18 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::Address;
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::InvocResult;
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarWriter};
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>fil_actor_interface::market;
+<span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_car::CarHeader;
 <span class="kw">use </span>fvm_ipld_encoding::{CborStore, DAG_CBOR};
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>libipld_core::ipld::Ipld;
 <span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>std::{sync::Arc, time::Duration};
 <span class="kw">use </span>tokio::task::JoinSet;
-<span class="kw">use </span>tokio_util::compat::TokioAsyncReadCompatExt;
 
 <span class="comment">// TODO handle using configurable verification implementation in RPC (all
 // defaulting to Full).
@@ -547,13 +549,15 @@
 
     <span class="kw">let </span>(car_tx, car_handle) = <span class="kw">if let </span><span class="prelude-val">Some</span>(save_to_file) = save_to_file {
         <span class="kw">let </span>(car_tx, car_rx) = flume::bounded(<span class="number">100</span>);
-        <span class="kw">let </span>header = CarHeader::from(<span class="macro">vec!</span>[root_cid]);
+        <span class="kw">let </span>roots = <span class="macro">vec!</span>[root_cid];
         <span class="kw">let </span>file = tokio::fs::File::create(save_to_file).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">let </span>car_handle = tokio::spawn(<span class="kw">async move </span>{
-            <span class="kw">let </span><span class="kw-2">mut </span>file = file.compat();
-            <span class="kw">let </span><span class="kw-2">mut </span>stream = car_rx.stream();
-            header.write_stream_async(<span class="kw-2">&amp;mut </span>file, <span class="kw-2">&amp;mut </span>stream).<span class="kw">await
+            car_rx
+                .stream()
+                .map(<span class="prelude-val">Ok</span>)
+                .forward(CarWriter::new_carv1(roots, file)<span class="question-mark">?</span>)
+                .<span class="kw">await
         </span>});
 
         (<span class="prelude-val">Some</span>(car_tx), <span class="prelude-val">Some</span>(car_handle))
@@ -614,12 +618,12 @@
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(next_ipld) = db.get_cbor(<span class="kw-2">&amp;</span>new_cid)<span class="question-mark">? </span>{
                         dfs_guard.push(next_ipld);
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(car_tx) = <span class="kw-2">&amp;</span>car_tx {
-                            car_tx.send((
-                                new_cid,
-                                db.get(<span class="kw-2">&amp;</span>new_cid)<span class="question-mark">?</span>.with_context(|| {
+                            car_tx.send(CarBlock {
+                                cid: new_cid,
+                                data: db.get(<span class="kw-2">&amp;</span>new_cid)<span class="question-mark">?</span>.with_context(|| {
                                     <span class="macro">format!</span>(<span class="string">&quot;Failed to get cid {new_cid} from block store&quot;</span>)
                                 })<span class="question-mark">?</span>,
-                            ))<span class="question-mark">?</span>;
+                            })<span class="question-mark">?</span>;
                         }
                     } <span class="kw">else </span>{
                         to_be_fetched.push(new_cid);
@@ -654,12 +658,12 @@
                             </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Request failed: {cid}&quot;</span>))<span class="question-mark">?</span>;
                         dfs_vec.lock().push(new_ipld);
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(car_tx) = <span class="kw-2">&amp;</span>car_tx {
-                            car_tx.send((
+                            car_tx.send(CarBlock {
                                 cid,
-                                db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>.with_context(|| {
+                                data: db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>.with_context(|| {
                                     <span class="macro">format!</span>(<span class="string">&quot;Failed to get cid {cid} from block store&quot;</span>)
                                 })<span class="question-mark">?</span>,
-                            ))<span class="question-mark">?</span>;
+                            })<span class="question-mark">?</span>;
                         }
 
                         <span class="prelude-val">Ok</span>(())

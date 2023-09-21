@@ -392,7 +392,7 @@
 }
 
 <span class="kw">impl</span>&lt;W: AsyncWrite&gt; CarWriter&lt;W&gt; {
-    <span class="kw">pub fn </span>new_carv1(roots: Vec&lt;Cid&gt;, writer: W) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+    <span class="kw">pub fn </span>new_carv1(roots: Vec&lt;Cid&gt;, writer: W) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>car_header = CarHeader { roots, version: <span class="number">1 </span>};
 
         <span class="kw">let </span><span class="kw-2">mut </span>header_uvi_frame = BytesMut::new();

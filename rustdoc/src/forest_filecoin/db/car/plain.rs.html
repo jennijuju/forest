@@ -440,12 +440,6 @@
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -514,9 +508,9 @@
     utils::encoding::from_slice_with_fallback,
 };
 
+<span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarHeader;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_car::CarHeader;
 <span class="kw">use </span>integer_encoding::VarIntReader;
 
 <span class="kw">use </span>parking_lot::RwLock;
@@ -856,17 +850,16 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-
     <span class="kw">use </span><span class="kw">super</span>::PlainCar;
-
+    <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_util::load_car;
     <span class="kw">use </span>futures::executor::block_on;
     <span class="kw">use </span>fvm_ipld_blockstore::{Blockstore <span class="kw">as _</span>, MemoryBlockstore};
-    <span class="kw">use </span>fvm_ipld_car::{Block, CarReader};
+    <span class="kw">use </span>tokio::io::AsyncBufRead;
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_uncompressed() {
         <span class="kw">let </span>car = chain4_car();
-        <span class="kw">let </span>reference = reference(futures::io::Cursor::new(car));
+        <span class="kw">let </span>reference = reference(car);
         <span class="kw">let </span>car_backed = PlainCar::new(car).unwrap();
 
         <span class="macro">assert_eq!</span>(car_backed.cids().len(), <span class="number">1222</span>);
@@ -879,15 +872,10 @@
         }
     }
 
-    <span class="kw">fn </span>reference(reader: <span class="kw">impl </span>futures::AsyncRead + Send + Unpin) -&gt; MemoryBlockstore {
-        block_on(<span class="kw">async </span>{
-            <span class="kw">let </span>blockstore = MemoryBlockstore::new();
-            <span class="kw">let </span><span class="kw-2">mut </span>blocks = CarReader::new(reader).<span class="kw">await</span>.unwrap();
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(Block { cid, data }) = blocks.next_block().<span class="kw">await</span>.unwrap() {
-                blockstore.put_keyed(<span class="kw-2">&amp;</span>cid, <span class="kw-2">&amp;</span>data).unwrap()
-            }
-            blockstore
-        })
+    <span class="kw">fn </span>reference(reader: <span class="kw">impl </span>AsyncBufRead + Unpin) -&gt; MemoryBlockstore {
+        <span class="kw">let </span>blockstore = MemoryBlockstore::new();
+        block_on(load_car(<span class="kw-2">&amp;</span>blockstore, reader)).unwrap();
+        blockstore
     }
 
     <span class="kw">fn </span>chain4_car() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8] {
