@@ -1595,25 +1595,6 @@
 <a href="#1595" id="1595">1595</a>
 <a href="#1596" id="1596">1596</a>
 <a href="#1597" id="1597">1597</a>
-<a href="#1598" id="1598">1598</a>
-<a href="#1599" id="1599">1599</a>
-<a href="#1600" id="1600">1600</a>
-<a href="#1601" id="1601">1601</a>
-<a href="#1602" id="1602">1602</a>
-<a href="#1603" id="1603">1603</a>
-<a href="#1604" id="1604">1604</a>
-<a href="#1605" id="1605">1605</a>
-<a href="#1606" id="1606">1606</a>
-<a href="#1607" id="1607">1607</a>
-<a href="#1608" id="1608">1608</a>
-<a href="#1609" id="1609">1609</a>
-<a href="#1610" id="1610">1610</a>
-<a href="#1611" id="1611">1611</a>
-<a href="#1612" id="1612">1612</a>
-<a href="#1613" id="1613">1613</a>
-<a href="#1614" id="1614">1614</a>
-<a href="#1615" id="1615">1615</a>
-<a href="#1616" id="1616">1616</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1665,8 +1646,6 @@
     </span>RangeSyncer(<span class="attr">#[from] </span>TipsetRangeSyncerError),
     <span class="attr">#[error(<span class="string">&quot;Tipset stream closed&quot;</span>)]
     </span>StreamClosed,
-    <span class="attr">#[error(<span class="string">&quot;Tipset has already been synced&quot;</span>)]
-    </span>AlreadySynced,
 }
 
 <span class="attr">#[derive(Debug, Error)]
@@ -1885,49 +1864,44 @@
         }
     }
 
-    <span class="kw">fn </span>find_range(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        tipset_group: TipsetGroup,
-    ) -&gt; TipsetProcessorFuture&lt;TipsetRangeSyncer&lt;DB&gt;, TipsetProcessorError&gt; {
+    <span class="kw">fn </span>find_range(<span class="kw-2">&amp;</span><span class="self">self</span>, tipset_group: TipsetGroup) -&gt; <span class="prelude-ty">Option</span>&lt;TipsetRangeSyncer&lt;DB&gt;&gt; {
         <span class="kw">let </span>state_manager = <span class="self">self</span>.state_manager.clone();
         <span class="kw">let </span>chain_store = <span class="self">self</span>.chain_store.clone();
         <span class="kw">let </span>network = <span class="self">self</span>.network.clone();
         <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_block_cache.clone();
         <span class="kw">let </span>tracker = <span class="self">self</span>.tracker.clone();
         <span class="kw">let </span>genesis = <span class="self">self</span>.genesis.clone();
-        Box::pin(<span class="kw">async move </span>{
-            <span class="comment">// Define the low end of the range
-            </span><span class="kw">let </span>current_head = chain_store.heaviest_tipset();
-            <span class="kw">let </span>proposed_head = tipset_group.heaviest_tipset();
 
-            <span class="kw">if </span>current_head.key().eq(proposed_head.key()) {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(TipsetProcessorError::AlreadySynced);
-            }
+        <span class="comment">// Define the low end of the range
+        </span><span class="kw">let </span>current_head = chain_store.heaviest_tipset();
+        <span class="kw">let </span>proposed_head = tipset_group.heaviest_tipset();
 
-            <span class="kw">let </span><span class="kw-2">mut </span>tipset_range_syncer = TipsetRangeSyncer::new(
-                tracker,
-                proposed_head,
-                current_head,
-                state_manager,
-                network,
-                chain_store,
-                bad_block_cache,
-                genesis,
-            )<span class="question-mark">?</span>;
-            <span class="kw">for </span>tipset <span class="kw">in </span>tipset_group.tipsets() {
-                tipset_range_syncer.add_tipset(tipset)<span class="question-mark">?</span>;
-            }
-            <span class="prelude-val">Ok</span>(tipset_range_syncer)
-        })
+        <span class="kw">if </span>current_head.key().eq(proposed_head.key()) {
+            <span class="kw">return </span><span class="prelude-val">None</span>;
+        }
+
+        <span class="kw">let </span><span class="kw-2">mut </span>tipset_range_syncer = TipsetRangeSyncer::new(
+            tracker,
+            proposed_head,
+            current_head,
+            state_manager,
+            network,
+            chain_store,
+            bad_block_cache,
+            genesis,
+        )
+        .ok()<span class="question-mark">?</span>;
+        <span class="kw">for </span>tipset <span class="kw">in </span>tipset_group.tipsets() {
+            tipset_range_syncer.add_tipset(tipset).ok()<span class="question-mark">?</span>;
+        }
+        <span class="prelude-val">Some</span>(tipset_range_syncer)
     }
 }
-
-<span class="kw">type </span>TipsetProcessorFuture&lt;T, E&gt; = Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;T, E&gt;&gt; + Send&gt;&gt;;
 
 <span class="kw">enum </span>TipsetProcessorState&lt;DB&gt; {
     Idle,
     FindRange {
-        range_finder: TipsetProcessorFuture&lt;TipsetRangeSyncer&lt;DB&gt;, TipsetProcessorError&gt;,
+        range_finder: <span class="prelude-ty">Option</span>&lt;TipsetRangeSyncer&lt;DB&gt;&gt;,
         epoch: i64,
         parents: TipsetKeys,
         current_sync: <span class="prelude-ty">Option</span>&lt;TipsetGroup&gt;,
@@ -2120,8 +2094,8 @@
                     <span class="kw-2">ref mut </span>current_sync,
                     <span class="kw-2">ref mut </span>next_sync,
                     ..
-                } =&gt; <span class="kw">match </span>range_finder.as_mut().poll(cx) {
-                    Poll::Ready(<span class="prelude-val">Ok</span>(<span class="kw-2">mut </span>range_syncer)) =&gt; {
+                } =&gt; <span class="kw">match </span>range_finder.take() {
+                    <span class="prelude-val">Some</span>(<span class="kw-2">mut </span>range_syncer) =&gt; {
                         <span class="macro">debug!</span>(
                             <span class="string">&quot;Determined epoch range for next sync: [{}, {}]&quot;</span>,
                             range_syncer.current_head.epoch(),
@@ -2141,21 +2115,9 @@
                             next_sync: next_sync.take(),
                         };
                     }
-                    Poll::Ready(<span class="prelude-val">Err</span>(why)) =&gt; {
-                        <span class="kw">match </span>why {
-                            <span class="comment">// Do not log for these errors since they are expected to occur
-                            // throughout the syncing process
-                            </span>TipsetProcessorError::AlreadySynced
-                            | TipsetProcessorError::RangeSyncer(
-                                TipsetRangeSyncerError::InvalidTipsetRangeLength,
-                            ) =&gt; (),
-                            why =&gt; {
-                                <span class="macro">error!</span>(<span class="string">&quot;Finding tipset range for sync failed: {}&quot;</span>, why);
-                            }
-                        };
+                    <span class="prelude-val">None </span>=&gt; {
                         <span class="self">self</span>.state = TipsetProcessorState::Idle;
                     }
-                    Poll::Pending =&gt; <span class="kw">return </span>Poll::Pending,
                 },
                 TipsetProcessorState::SyncRange {
                     <span class="kw-2">ref mut </span>range_syncer,
