@@ -1052,6 +1052,7 @@
         )
         .notify_handler_buffer_size(std::num::NonZeroUsize::new(<span class="number">20</span>).expect(<span class="string">&quot;Not zero&quot;</span>))
         .per_connection_event_buffer_size(<span class="number">64</span>)
+        .idle_connection_timeout(Duration::from_secs(<span class="number">60 </span>* <span class="number">10</span>))
         .build();
 
         <span class="comment">// Subscribe to gossipsub topics with the network name suffix
@@ -1634,7 +1635,6 @@
         }
         ForestBehaviourEvent::Ping(ping_event) =&gt; handle_ping_event(ping_event, peer_manager).<span class="kw">await</span>,
         ForestBehaviourEvent::Identify(<span class="kw">_</span>) =&gt; {}
-        ForestBehaviourEvent::KeepAlive(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::ConnectionLimits(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::BlockedPeers(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::ChainExchange(ce_event) =&gt; {

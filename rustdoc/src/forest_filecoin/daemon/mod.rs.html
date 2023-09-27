@@ -702,6 +702,8 @@
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
 <a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1351,7 +1353,7 @@
 <span class="doccomment">/// Prompts for password, looping until the [`KeyStore`] is successfully loaded.
 ///
 /// This code makes blocking syscalls.
-</span><span class="kw">fn </span>input_password_to_load_encrypted_keystore(data_dir: PathBuf) -&gt; std::io::Result&lt;KeyStore&gt; {
+</span><span class="kw">fn </span>input_password_to_load_encrypted_keystore(data_dir: PathBuf) -&gt; dialoguer::Result&lt;KeyStore&gt; {
     <span class="kw">let </span>keystore = RefCell::new(<span class="prelude-val">None</span>);
     <span class="kw">let </span>term = Term::stderr();
 
@@ -1362,7 +1364,8 @@
         <span class="kw">return </span><span class="prelude-val">Err</span>(std::io::Error::new(
             std::io::ErrorKind::NotConnected,
             <span class="string">&quot;cannot read password from non-terminal&quot;</span>,
-        ));
+        )
+        .into());
     }
 
     dialoguer::Password::new()
@@ -1385,7 +1388,7 @@
 <span class="doccomment">/// Loops until the user provides two matching passwords.
 ///
 /// This code makes blocking syscalls
-</span><span class="kw">fn </span>create_password(prompt: <span class="kw-2">&amp;</span>str) -&gt; std::io::Result&lt;String&gt; {
+</span><span class="kw">fn </span>create_password(prompt: <span class="kw-2">&amp;</span>str) -&gt; dialoguer::Result&lt;String&gt; {
     <span class="kw">let </span>term = Term::stderr();
 
     <span class="comment">// Unlike `dialoguer::Confirm`, `dialoguer::Password` doesn&#39;t fail if the terminal is not a tty
@@ -1395,7 +1398,8 @@
         <span class="kw">return </span><span class="prelude-val">Err</span>(std::io::Error::new(
             std::io::ErrorKind::NotConnected,
             <span class="string">&quot;cannot read password from non-terminal&quot;</span>,
-        ));
+        )
+        .into());
     }
     dialoguer::Password::new()
         .with_prompt(prompt)
