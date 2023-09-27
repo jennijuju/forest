@@ -97,6 +97,7 @@
 <a href="#97" id="97">97</a>
 <a href="#98" id="98">98</a>
 <a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -116,6 +117,7 @@
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>num_traits::Zero;
 <span class="kw">use </span>once_cell::sync::Lazy;
+<span class="kw">use </span>std::ops::Deref;
 
 <span class="kw">use </span><span class="kw">super</span>::util::hamt_addr_key_to_key;
 
@@ -149,7 +151,7 @@
 
         verified_clients.for_each(|addr_key, value| {
             <span class="kw">let </span>key = hamt_addr_key_to_key(addr_key)<span class="question-mark">?</span>;
-            <span class="kw">let </span>token_amount = value.inner() * DATA_CAP_GRANULARITY;
+            <span class="kw">let </span>token_amount = value.deref() * DATA_CAP_GRANULARITY;
             token_supply = <span class="kw-2">&amp;</span>token_supply + <span class="kw-2">&amp;</span>token_amount;
             balances_map.set(key.clone(), token_amount.into())<span class="question-mark">?</span>;
 
