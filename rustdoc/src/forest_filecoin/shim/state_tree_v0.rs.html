@@ -152,7 +152,7 @@
 
     <span class="doccomment">/// Get an ID address from any Address
     </span><span class="kw">pub fn </span>lookup_id(<span class="kw-2">&amp;</span><span class="self">self</span>, addr: <span class="kw-2">&amp;</span>Address) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;Address&gt;&gt; {
-        <span class="kw">if </span>addr.protocol() == fvm_shared3::address::Protocol::ID {
+        <span class="kw">if </span>addr.protocol() == fvm_shared4::address::Protocol::ID {
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(<span class="kw-2">*</span>addr));
         }
         <span class="macro">anyhow::bail!</span>(<span class="string">&quot;StateTreeV0::lookup_id is only defined for ID addresses&quot;</span>)

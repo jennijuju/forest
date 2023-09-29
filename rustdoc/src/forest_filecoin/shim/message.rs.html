@@ -218,6 +218,25 @@
 <a href="#218" id="218">218</a>
 <a href="#219" id="219">219</a>
 <a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>anyhow::anyhow;
@@ -228,6 +247,7 @@
 <span class="kw">use </span>fvm_shared2::message::Message <span class="kw">as </span>Message_v2;
 <span class="kw">pub use </span>fvm_shared3::message::Message <span class="kw">as </span>Message_v3;
 <span class="kw">pub use </span>fvm_shared3::METHOD_SEND;
+<span class="kw">use </span>fvm_shared4::message::Message <span class="kw">as </span>Message_v4;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, econ::TokenAmount};
@@ -253,9 +273,50 @@
     <span class="kw">pub </span>gas_premium: TokenAmount,
 }
 
+<span class="kw">impl </span>From&lt;Message_v4&gt; <span class="kw">for </span>Message {
+    <span class="kw">fn </span>from(other: Message_v4) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            version: other.version,
+            from: other.from.into(),
+            to: other.to.into(),
+            sequence: other.sequence,
+            value: other.value.into(),
+            method_num: other.method_num,
+            params: other.params,
+            gas_limit: other.gas_limit,
+            gas_fee_cap: other.gas_fee_cap.into(),
+            gas_premium: other.gas_premium.into(),
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;Message&gt; <span class="kw">for </span>Message_v4 {
+    <span class="kw">fn </span>from(other: Message) -&gt; <span class="self">Self </span>{
+        (<span class="kw-2">&amp;</span>other).into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Message&gt; <span class="kw">for </span>Message_v4 {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Message) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>other: Message = other.clone();
+        <span class="self">Self </span>{
+            version: other.version,
+            from: other.from.into(),
+            to: other.to.into(),
+            sequence: other.sequence,
+            value: other.value.into(),
+            method_num: other.method_num,
+            params: other.params,
+            gas_limit: other.gas_limit,
+            gas_fee_cap: other.gas_fee_cap.into(),
+            gas_premium: other.gas_premium.into(),
+        }
+    }
+}
+
 <span class="kw">impl </span>From&lt;Message_v3&gt; <span class="kw">for </span>Message {
     <span class="kw">fn </span>from(other: Message_v3) -&gt; <span class="self">Self </span>{
-        Message {
+        <span class="self">Self </span>{
             version: other.version,
             from: other.from.into(),
             to: other.to.into(),
@@ -272,25 +333,14 @@
 
 <span class="kw">impl </span>From&lt;Message&gt; <span class="kw">for </span>Message_v3 {
     <span class="kw">fn </span>from(other: Message) -&gt; <span class="self">Self </span>{
-        Message_v3 {
-            version: other.version,
-            from: other.from.into(),
-            to: other.to.into(),
-            sequence: other.sequence,
-            value: other.value.into(),
-            method_num: other.method_num,
-            params: other.params,
-            gas_limit: other.gas_limit,
-            gas_fee_cap: other.gas_fee_cap.into(),
-            gas_premium: other.gas_premium.into(),
-        }
+        (<span class="kw-2">&amp;</span>other).into()
     }
 }
 
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Message&gt; <span class="kw">for </span>Message_v3 {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Message) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span>other: Message = other.clone();
-        Message_v3 {
+        <span class="self">Self </span>{
             version: other.version,
             from: other.from.into(),
             to: other.to.into(),
@@ -307,7 +357,7 @@
 
 <span class="kw">impl </span>From&lt;Message_v2&gt; <span class="kw">for </span>Message {
     <span class="kw">fn </span>from(other: Message_v2) -&gt; <span class="self">Self </span>{
-        Message {
+        <span class="self">Self </span>{
             version: other.version <span class="kw">as </span>u64,
             from: other.from.into(),
             to: other.to.into(),
@@ -324,7 +374,7 @@
 
 <span class="kw">impl </span>From&lt;Message&gt; <span class="kw">for </span>Message_v2 {
     <span class="kw">fn </span>from(other: Message) -&gt; <span class="self">Self </span>{
-        Message_v2 {
+        <span class="self">Self </span>{
             version: other.version <span class="kw">as </span>i64,
             from: other.from.into(),
             to: other.to.into(),
@@ -341,19 +391,7 @@
 
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Message&gt; <span class="kw">for </span>Message_v2 {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Message) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>other: Message = other.clone();
-        Message_v2 {
-            version: other.version <span class="kw">as </span>i64,
-            from: other.from.into(),
-            to: other.to.into(),
-            sequence: other.sequence,
-            value: other.value.into(),
-            method_num: other.method_num,
-            params: other.params,
-            gas_limit: other.gas_limit <span class="kw">as </span>i64,
-            gas_fee_cap: other.gas_fee_cap.into(),
-            gas_premium: other.gas_premium.into(),
-        }
+        other.clone().into()
     }
 }
 

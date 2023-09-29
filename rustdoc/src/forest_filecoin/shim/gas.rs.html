@@ -181,26 +181,83 @@
 <a href="#181" id="181">181</a>
 <a href="#182" id="182">182</a>
 <a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::fmt::{Debug, Display};
 
+<span class="kw">pub use </span><span class="kw">super</span>::fvm_latest::gas::{Gas <span class="kw">as </span>Gas_latest, GasCharge <span class="kw">as </span>GasCharge_latest};
 <span class="kw">use </span>fvm2::gas::{
     price_list_by_network_version <span class="kw">as </span>price_list_by_network_version_v2, Gas <span class="kw">as </span>GasV2,
     GasCharge <span class="kw">as </span>GasChargeV2, PriceList <span class="kw">as </span>PriceListV2,
 };
-<span class="kw">pub use </span>fvm3::gas::Gas <span class="kw">as </span>GasV3;
-<span class="kw">pub use </span>fvm3::gas::GasCharge <span class="kw">as </span>GasChargeV3;
-<span class="kw">pub use </span>fvm3::gas::GasTracker;
 <span class="kw">use </span>fvm3::gas::{
-    price_list_by_network_version <span class="kw">as </span>price_list_by_network_version_v3, PriceList <span class="kw">as </span>PriceListV3,
+    price_list_by_network_version <span class="kw">as </span>price_list_by_network_version_v3, Gas <span class="kw">as </span>GasV3,
     MILLIGAS_PRECISION,
+};
+<span class="kw">pub use </span>fvm3::gas::{GasCharge <span class="kw">as </span>GasChargeV3, GasTracker, PriceList <span class="kw">as </span>PriceListV3};
+<span class="kw">use </span>fvm4::gas::price_list_by_network_version <span class="kw">as </span>price_list_by_network_version_v4;
+<span class="kw">pub use </span>fvm4::gas::{
+    Gas <span class="kw">as </span>GasV4, GasCharge <span class="kw">as </span>GasChargeV4, GasDuration <span class="kw">as </span>GasDurationV4, PriceList <span class="kw">as </span>PriceListV4,
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::shim::version::NetworkVersion;
 
 <span class="attr">#[derive(Hash, Eq, PartialEq, Ord, PartialOrd, Copy, Clone, Default)]
-</span><span class="kw">pub struct </span>Gas(GasV3);
+</span><span class="kw">pub struct </span>Gas(Gas_latest);
 
 <span class="kw">impl </span>Debug <span class="kw">for </span>Gas {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
@@ -230,7 +287,7 @@
 
 <span class="kw">impl </span>Gas {
     <span class="kw">pub fn </span>new(gas: u64) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(GasV3::new(gas))
+        <span class="self">Self</span>(Gas_latest::new(gas))
     }
 
     <span class="kw">pub fn </span>round_up(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
@@ -240,13 +297,13 @@
 
 <span class="kw">impl </span>From&lt;GasV2&gt; <span class="kw">for </span>Gas {
     <span class="kw">fn </span>from(value: GasV2) -&gt; <span class="self">Self </span>{
-        Gas(GasV3::from_milligas(value.as_milligas() <span class="kw">as </span>u64))
+        Gas(Gas_latest::from_milligas(value.as_milligas() <span class="kw">as _</span>))
     }
 }
 
 <span class="kw">impl </span>From&lt;Gas&gt; <span class="kw">for </span>GasV2 {
     <span class="kw">fn </span>from(value: Gas) -&gt; <span class="self">Self </span>{
-        GasV2::from_milligas(value.<span class="number">0</span>.as_milligas() <span class="kw">as </span>i64)
+        GasV2::from_milligas(value.<span class="number">0</span>.as_milligas() <span class="kw">as _</span>)
     }
 }
 
@@ -258,12 +315,24 @@
 
 <span class="kw">impl </span>From&lt;GasV3&gt; <span class="kw">for </span>Gas {
     <span class="kw">fn </span>from(value: GasV3) -&gt; <span class="self">Self </span>{
+        Gas(Gas_latest::from_milligas(value.as_milligas() <span class="kw">as _</span>))
+    }
+}
+
+<span class="kw">impl </span>From&lt;Gas&gt; <span class="kw">for </span>GasV4 {
+    <span class="kw">fn </span>from(value: Gas) -&gt; <span class="self">Self </span>{
+        GasV4::from_milligas(value.<span class="number">0</span>.as_milligas())
+    }
+}
+
+<span class="kw">impl </span>From&lt;GasV4&gt; <span class="kw">for </span>Gas {
+    <span class="kw">fn </span>from(value: GasV4) -&gt; <span class="self">Self </span>{
         Gas(value)
     }
 }
 
 <span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>GasCharge(GasChargeV3);
+</span><span class="kw">pub struct </span>GasCharge(GasCharge_latest);
 
 <span class="kw">impl </span>GasCharge {
     <span class="doccomment">/// Calculates total gas charge (in `milligas`) by summing compute and
@@ -296,29 +365,54 @@
 
 <span class="kw">impl </span>From&lt;GasChargeV3&gt; <span class="kw">for </span>GasCharge {
     <span class="kw">fn </span>from(value: GasChargeV3) -&gt; <span class="self">Self </span>{
+        GasChargeV4 {
+            name: value.name,
+            compute_gas: GasV4::from_milligas(value.compute_gas.as_milligas()),
+            other_gas: GasV4::from_milligas(value.other_gas.as_milligas()),
+            elapsed: value.elapsed.get().map(|<span class="kw-2">&amp;</span>d| d.into()).unwrap_or_default(),
+        }
+        .into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;GasChargeV4&gt; <span class="kw">for </span>GasCharge {
+    <span class="kw">fn </span>from(value: GasChargeV4) -&gt; <span class="self">Self </span>{
         GasCharge(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;GasCharge&gt; <span class="kw">for </span>GasChargeV2 {
+    <span class="kw">fn </span>from(value: GasCharge) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            name: value.<span class="number">0</span>.name,
+            compute_gas: GasV2::from_milligas(value.<span class="number">0</span>.compute_gas.as_milligas() <span class="kw">as _</span>),
+            storage_gas: GasV2::from_milligas(value.<span class="number">0</span>.other_gas.as_milligas() <span class="kw">as _</span>),
+        }
     }
 }
 
 <span class="kw">impl </span>From&lt;GasCharge&gt; <span class="kw">for </span>GasChargeV3 {
     <span class="kw">fn </span>from(value: GasCharge) -&gt; <span class="self">Self </span>{
-        value.<span class="number">0
-    </span>}
-}
-
-<span class="kw">impl </span>From&lt;GasCharge&gt; <span class="kw">for </span>GasChargeV2 {
-    <span class="kw">fn </span>from(value: GasCharge) -&gt; <span class="self">Self </span>{
-        GasChargeV2 {
+        <span class="self">Self </span>{
             name: value.<span class="number">0</span>.name,
-            compute_gas: GasV2::from_milligas(value.<span class="number">0</span>.compute_gas.as_milligas() <span class="kw">as </span>i64),
-            storage_gas: GasV2::from_milligas(value.<span class="number">0</span>.other_gas.as_milligas() <span class="kw">as </span>i64),
+            compute_gas: GasV3::from_milligas(value.<span class="number">0</span>.compute_gas.as_milligas() <span class="kw">as _</span>),
+            other_gas: GasV3::from_milligas(value.<span class="number">0</span>.other_gas.as_milligas() <span class="kw">as _</span>),
+            <span class="comment">// FIXME: https://github.com/ChainSafe/forest/issues/3524
+            </span>elapsed: Default::default(),
         }
     }
+}
+
+<span class="kw">impl </span>From&lt;GasCharge&gt; <span class="kw">for </span>GasChargeV4 {
+    <span class="kw">fn </span>from(value: GasCharge) -&gt; <span class="self">Self </span>{
+        value.<span class="number">0
+    </span>}
 }
 
 <span class="kw">pub enum </span>PriceList {
     V2(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV2),
     V3(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV3),
+    V4(<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV4),
 }
 
 <span class="kw">impl </span>PriceList {
@@ -326,6 +420,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             PriceList::V2(list) =&gt; list.on_block_open_base().into(),
             PriceList::V3(list) =&gt; list.on_block_open_base().into(),
+            PriceList::V4(list) =&gt; list.on_block_open_base().into(),
         }
     }
 
@@ -335,6 +430,9 @@
             PriceList::V3(list) =&gt; list
                 .on_block_link(fvm3::kernel::SupportedHashes::Blake2b256, data_size)
                 .into(),
+            PriceList::V4(list) =&gt; list
+                .on_block_link(fvm4::kernel::SupportedHashes::Blake2b256, data_size)
+                .into(),
         }
     }
 
@@ -342,6 +440,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             PriceList::V2(list) =&gt; list.on_chain_message(msg_size).into(),
             PriceList::V3(list) =&gt; list.on_chain_message(msg_size).into(),
+            PriceList::V4(list) =&gt; list.on_chain_message(msg_size).into(),
         }
     }
 }
@@ -351,17 +450,26 @@
         PriceList::V2(value)
     }
 }
+
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV3&gt; <span class="kw">for </span>PriceList {
     <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV3) -&gt; <span class="self">Self </span>{
         PriceList::V3(value)
     }
 }
 
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV4&gt; <span class="kw">for </span>PriceList {
+    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PriceListV4) -&gt; <span class="self">Self </span>{
+        PriceList::V4(value)
+    }
+}
+
 <span class="kw">pub fn </span>price_list_by_network_version(network_version: NetworkVersion) -&gt; PriceList {
     <span class="kw">if </span>network_version &lt; NetworkVersion::V18 {
         price_list_by_network_version_v2(network_version.into()).into()
-    } <span class="kw">else </span>{
+    } <span class="kw">else if </span>network_version &lt; NetworkVersion::V21 {
         price_list_by_network_version_v3(network_version.into()).into()
+    } <span class="kw">else </span>{
+        price_list_by_network_version_v4(network_version.into()).into()
     }
 }
 </code></pre></div></section></main></body></html>

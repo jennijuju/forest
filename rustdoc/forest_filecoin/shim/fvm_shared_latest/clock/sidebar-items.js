@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["EPOCH_DURATION_SECONDS","EPOCH_UNDEFINED","NO_QUANTIZATION"],"struct":["QuantSpec"],"type":["ChainEpoch"]};

@@ -576,7 +576,7 @@
         <span class="kw">let </span>db = MemoryDB::default();
 
         <span class="kw">let </span>account_state = AccountState {
-            address: <span class="kw-2">*</span>Address::new_id(<span class="number">0xdeadbeef</span>),
+            address: Address::new_id(<span class="number">0xdeadbeef</span>).into(),
         };
         <span class="kw">let </span><span class="kw-2">mut </span>state = mk_account_v10(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>account_state);
         state.code = Cid::default(); <span class="comment">// Use an unknown actor CID to force parsing to fail.

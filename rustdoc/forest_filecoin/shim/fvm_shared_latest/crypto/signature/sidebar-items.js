@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BLS_PUB_LEN","BLS_SIG_LEN","SECP_PUB_LEN","SECP_SIG_LEN","SECP_SIG_MESSAGE_HASH_SIZE"],"enum":["Error","SignatureType"],"fn":["verify"],"mod":["ops"],"struct":["Signature"]};

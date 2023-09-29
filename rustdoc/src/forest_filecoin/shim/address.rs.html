@@ -412,6 +412,44 @@
 <a href="#412" id="412">412</a>
 <a href="#413" id="413">413</a>
 <a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -425,7 +463,9 @@
 <span class="kw">use </span>data_encoding_macro::new_encoding;
 <span class="kw">use </span>fvm_shared2::address::Address <span class="kw">as </span>Address_v2;
 <span class="kw">use </span>fvm_shared3::address::Address <span class="kw">as </span>Address_v3;
-<span class="kw">pub use </span>fvm_shared3::address::{Error, Network, Payload, Protocol, BLS_PUB_LEN, PAYLOAD_HASH_LEN};
+<span class="kw">use </span>fvm_shared4::address::Address <span class="kw">as </span>Address_v4;
+<span class="kw">use </span>fvm_shared4::address::Address <span class="kw">as </span>Address_latest;
+<span class="kw">pub use </span>fvm_shared4::address::{Error, Network, Payload, Protocol, BLS_PUB_LEN, PAYLOAD_HASH_LEN};
 <span class="kw">use </span>integer_encoding::VarInt;
 <span class="kw">use </span>num_traits::FromPrimitive;
 <span class="kw">use </span>once_cell::sync::Lazy;
@@ -522,7 +562,7 @@
 )]
 #[serde(transparent)]
 #[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
-</span><span class="kw">pub struct </span>Address(Address_v3);
+</span><span class="kw">pub struct </span>Address(Address_latest);
 
 <span class="kw">impl </span>Address {
     <span class="kw">pub const </span>SYSTEM_ACTOR: Address = Address::new_id(<span class="number">0</span>);
@@ -539,23 +579,23 @@
     <span class="kw">pub const </span>BURNT_FUNDS_ACTOR: Address = Address::new_id(<span class="number">99</span>);
 
     <span class="kw">pub const fn </span>new_id(id: u64) -&gt; <span class="self">Self </span>{
-        Address(Address_v3::new_id(id))
+        Address(Address_latest::new_id(id))
     }
 
     <span class="kw">pub fn </span>new_actor(data: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="self">Self </span>{
-        Address(Address_v3::new_actor(data))
+        Address(Address_latest::new_actor(data))
     }
 
     <span class="kw">pub fn </span>new_bls(pubkey: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        Address_v3::new_bls(pubkey).map(Address::from)
+        Address_latest::new_bls(pubkey).map(Address::from)
     }
 
     <span class="kw">pub fn </span>new_secp256k1(pubkey: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        Address_v3::new_secp256k1(pubkey).map(Address::from)
+        Address_latest::new_secp256k1(pubkey).map(Address::from)
     }
 
     <span class="kw">pub fn </span>new_delegated(ns: u64, subaddress: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">Self</span>(Address_v3::new_delegated(ns, subaddress)<span class="question-mark">?</span>))
+        <span class="prelude-val">Ok</span>(<span class="self">Self</span>(Address_latest::new_delegated(ns, subaddress)<span class="question-mark">?</span>))
     }
 
     <span class="kw">pub fn </span>protocol(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Protocol {
@@ -567,12 +607,12 @@
     }
 
     <span class="kw">pub fn </span>from_bytes(bz: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, Error&gt; {
-        Address_v3::from_bytes(bz).map(Address)
+        Address_latest::from_bytes(bz).map(Address)
     }
 }
 
 <span class="kw">impl </span>FromStr <span class="kw">for </span>Address {
-    <span class="kw">type </span><span class="prelude-val">Err </span>= &lt;Address_v3 <span class="kw">as </span>FromStr&gt;::Err;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= &lt;Address_latest <span class="kw">as </span>FromStr&gt;::Err;
 
     <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
         Network::Testnet
@@ -590,7 +630,7 @@
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Address {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="kw">use </span>fvm_shared3::address::CHECKSUM_HASH_LEN;
+        <span class="kw">use </span>fvm_shared4::address::CHECKSUM_HASH_LEN;
         <span class="kw">const </span>MAINNET_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;f&quot;</span>;
         <span class="kw">const </span>TESTNET_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;t&quot;</span>;
 
@@ -647,7 +687,7 @@
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>Address {
-    <span class="kw">type </span>Target = Address_v3;
+    <span class="kw">type </span>Target = Address_latest;
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -679,7 +719,7 @@
 }
 
 <span class="kw">impl </span>FromStr <span class="kw">for </span>StrictAddress {
-    <span class="kw">type </span><span class="prelude-val">Err </span>= &lt;Address_v3 <span class="kw">as </span>FromStr&gt;::Err;
+    <span class="kw">type </span><span class="prelude-val">Err </span>= &lt;Address_latest <span class="kw">as </span>FromStr&gt;::Err;
 
     <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
         <span class="kw">let </span>fvm_addr = CurrentNetwork::get().parse_address(s)<span class="question-mark">?</span>;
@@ -710,9 +750,47 @@
     }
 }
 
+<span class="kw">impl </span>From&lt;StrictAddress&gt; <span class="kw">for </span>Address_v4 {
+    <span class="kw">fn </span>from(other: StrictAddress) -&gt; <span class="self">Self </span>{
+        other.<span class="number">0</span>.into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;Address_v4&gt; <span class="kw">for </span>Address {
+    <span class="kw">fn </span>from(other: Address_v4) -&gt; <span class="self">Self </span>{
+        Address(other)
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address_v4&gt; <span class="kw">for </span>Address {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address_v4) -&gt; <span class="self">Self </span>{
+        Address(<span class="kw-2">*</span>other)
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address_v3&gt; <span class="kw">for </span>Address {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address_v3) -&gt; <span class="self">Self </span>{
+        Address::from(
+            Address_v4::from_bytes(<span class="kw-2">&amp;</span>other.to_bytes()).unwrap_or_else(|e| {
+                <span class="macro">panic!</span>(<span class="string">&quot;Couldn&#39;t convert from FVM3 address to FVM4 address: {other}, {e}&quot;</span>)
+            }),
+        )
+    }
+}
+
 <span class="kw">impl </span>From&lt;Address_v3&gt; <span class="kw">for </span>Address {
     <span class="kw">fn </span>from(other: Address_v3) -&gt; <span class="self">Self </span>{
-        Address(other)
+        (<span class="kw-2">&amp;</span>other).into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address_v2&gt; <span class="kw">for </span>Address {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address_v2) -&gt; <span class="self">Self </span>{
+        Address::from(
+            Address_v4::from_bytes(<span class="kw-2">&amp;</span>other.to_bytes()).unwrap_or_else(|e| {
+                <span class="macro">panic!</span>(<span class="string">&quot;Couldn&#39;t convert from FVM2 address to FVM4 address: {other}, {e}&quot;</span>)
+            }),
+        )
     }
 }
 
@@ -722,32 +800,22 @@
     }
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address_v2&gt; <span class="kw">for </span>Address {
-    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address_v2) -&gt; <span class="self">Self </span>{
-        Address::from(
-            Address_v3::from_bytes(<span class="kw-2">&amp;</span>other.to_bytes()).unwrap_or_else(|e| {
-                <span class="macro">panic!</span>(<span class="string">&quot;Couldn&#39;t convert from FVM2 address to FVM3 address: {other}, {e}&quot;</span>)
-            }),
-        )
-    }
+<span class="kw">impl </span>From&lt;Address&gt; <span class="kw">for </span>Address_v4 {
+    <span class="kw">fn </span>from(other: Address) -&gt; Address_v4 {
+        other.<span class="number">0
+    </span>}
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address_v3&gt; <span class="kw">for </span>Address {
-    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address_v3) -&gt; <span class="self">Self </span>{
-        Address(<span class="kw-2">*</span>other)
-    }
-}
-
-<span class="kw">impl </span>From&lt;Address&gt; <span class="kw">for </span>Address_v2 {
-    <span class="kw">fn </span>from(other: Address) -&gt; Address_v2 {
-        (<span class="kw-2">&amp;</span>other).into()
-    }
-}
-
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address&gt; <span class="kw">for </span>Address_v2 {
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address&gt; <span class="kw">for </span>Address_v4 {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address) -&gt; <span class="self">Self </span>{
-        Address_v2::from_bytes(<span class="kw-2">&amp;</span>other.to_bytes()).unwrap_or_else(|e| {
-            <span class="macro">panic!</span>(<span class="string">&quot;Couldn&#39;t convert from FVM3 address to FVM2 address: {other}, {e}&quot;</span>)
+        other.<span class="number">0
+    </span>}
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address&gt; <span class="kw">for </span>Address_v3 {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address) -&gt; <span class="self">Self </span>{
+        Address_v3::from_bytes(<span class="kw-2">&amp;</span>other.to_bytes()).unwrap_or_else(|e| {
+            <span class="macro">panic!</span>(<span class="string">&quot;Couldn&#39;t convert from FVM4 address to FVM3 address: {other}, {e}&quot;</span>)
         })
     }
 }
@@ -758,10 +826,18 @@
     }
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address&gt; <span class="kw">for </span>Address_v3 {
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>Address&gt; <span class="kw">for </span>Address_v2 {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>Address) -&gt; <span class="self">Self </span>{
-        other.<span class="number">0
-    </span>}
+        Address_v2::from_bytes(<span class="kw-2">&amp;</span>other.to_bytes()).unwrap_or_else(|e| {
+            <span class="macro">panic!</span>(<span class="string">&quot;Couldn&#39;t convert from FVM4 address to FVM2 address: {other}, {e}&quot;</span>)
+        })
+    }
+}
+
+<span class="kw">impl </span>From&lt;Address&gt; <span class="kw">for </span>Address_v2 {
+    <span class="kw">fn </span>from(other: Address) -&gt; Address_v2 {
+        (<span class="kw-2">&amp;</span>other).into()
+    }
 }
 
 <span class="attr">#[cfg(test)]

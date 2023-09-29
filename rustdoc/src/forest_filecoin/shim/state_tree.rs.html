@@ -399,6 +399,103 @@
 <a href="#399" id="399">399</a>
 <a href="#400" id="400">400</a>
 <a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
+<a href="#473" id="473">473</a>
+<a href="#474" id="474">474</a>
+<a href="#475" id="475">475</a>
+<a href="#476" id="476">476</a>
+<a href="#477" id="477">477</a>
+<a href="#478" id="478">478</a>
+<a href="#479" id="479">479</a>
+<a href="#480" id="480">480</a>
+<a href="#481" id="481">481</a>
+<a href="#482" id="482">482</a>
+<a href="#483" id="483">483</a>
+<a href="#484" id="484">484</a>
+<a href="#485" id="485">485</a>
+<a href="#486" id="486">486</a>
+<a href="#487" id="487">487</a>
+<a href="#488" id="488">488</a>
+<a href="#489" id="489">489</a>
+<a href="#490" id="490">490</a>
+<a href="#491" id="491">491</a>
+<a href="#492" id="492">492</a>
+<a href="#493" id="493">493</a>
+<a href="#494" id="494">494</a>
+<a href="#495" id="495">495</a>
+<a href="#496" id="496">496</a>
+<a href="#497" id="497">497</a>
+<a href="#498" id="498">498</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{
@@ -410,12 +507,15 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">pub use </span>fvm2::state_tree::{ActorState <span class="kw">as </span>ActorStateV2, StateTree <span class="kw">as </span>StateTreeV2};
 <span class="kw">pub use </span>fvm3::state_tree::{ActorState <span class="kw">as </span>ActorStateV3, StateTree <span class="kw">as </span>StateTreeV3};
+<span class="kw">pub use </span>fvm4::state_tree::{ActorState <span class="kw">as </span>ActorStateV4, StateTree <span class="kw">as </span>StateTreeV4};
+<span class="kw">pub use </span>fvm4::state_tree::{ActorState <span class="kw">as </span>ActorState_latest, StateTree <span class="kw">as </span>StateTree_latest};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::repr::{Deserialize_repr, Serialize_repr};
 <span class="kw">use </span>fvm_shared2::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV2;
 <span class="kw">pub use </span>fvm_shared3::state::StateRoot;
 <span class="kw">use </span>fvm_shared3::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV3;
 <span class="kw">pub use </span>fvm_shared3::ActorID;
+<span class="kw">use </span>fvm_shared4::state::StateTreeVersion <span class="kw">as </span>StateTreeVersionV4;
 <span class="kw">use </span>num::FromPrimitive;
 <span class="kw">use </span>num_derive::FromPrimitive;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -435,15 +535,28 @@
     V5,
 }
 
+<span class="kw">impl </span>From&lt;StateTreeVersionV4&gt; <span class="kw">for </span>StateTreeVersion {
+    <span class="kw">fn </span>from(value: StateTreeVersionV4) -&gt; <span class="self">Self </span>{
+        <span class="kw">match </span>value {
+            StateTreeVersionV4::V0 =&gt; <span class="self">Self</span>::V0,
+            StateTreeVersionV4::V1 =&gt; <span class="self">Self</span>::V1,
+            StateTreeVersionV4::V2 =&gt; <span class="self">Self</span>::V2,
+            StateTreeVersionV4::V3 =&gt; <span class="self">Self</span>::V3,
+            StateTreeVersionV4::V4 =&gt; <span class="self">Self</span>::V4,
+            StateTreeVersionV4::V5 =&gt; <span class="self">Self</span>::V5,
+        }
+    }
+}
+
 <span class="kw">impl </span>From&lt;StateTreeVersionV3&gt; <span class="kw">for </span>StateTreeVersion {
     <span class="kw">fn </span>from(value: StateTreeVersionV3) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span>value {
-            StateTreeVersionV3::V0 =&gt; StateTreeVersion::V0,
-            StateTreeVersionV3::V1 =&gt; StateTreeVersion::V1,
-            StateTreeVersionV3::V2 =&gt; StateTreeVersion::V2,
-            StateTreeVersionV3::V3 =&gt; StateTreeVersion::V3,
-            StateTreeVersionV3::V4 =&gt; StateTreeVersion::V4,
-            StateTreeVersionV3::V5 =&gt; StateTreeVersion::V5,
+            StateTreeVersionV3::V0 =&gt; <span class="self">Self</span>::V0,
+            StateTreeVersionV3::V1 =&gt; <span class="self">Self</span>::V1,
+            StateTreeVersionV3::V2 =&gt; <span class="self">Self</span>::V2,
+            StateTreeVersionV3::V3 =&gt; <span class="self">Self</span>::V3,
+            StateTreeVersionV3::V4 =&gt; <span class="self">Self</span>::V4,
+            StateTreeVersionV3::V5 =&gt; <span class="self">Self</span>::V5,
         }
     }
 }
@@ -464,11 +577,11 @@
 
     <span class="kw">fn </span>try_from(value: StateTreeVersion) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="prelude-val">Ok</span>(<span class="kw">match </span>value {
-            StateTreeVersion::V0 =&gt; StateTreeVersionV2::V0,
-            StateTreeVersion::V1 =&gt; StateTreeVersionV2::V1,
-            StateTreeVersion::V2 =&gt; StateTreeVersionV2::V2,
-            StateTreeVersion::V3 =&gt; StateTreeVersionV2::V3,
-            StateTreeVersion::V4 =&gt; StateTreeVersionV2::V4,
+            StateTreeVersion::V0 =&gt; <span class="self">Self</span>::V0,
+            StateTreeVersion::V1 =&gt; <span class="self">Self</span>::V1,
+            StateTreeVersion::V2 =&gt; <span class="self">Self</span>::V2,
+            StateTreeVersion::V3 =&gt; <span class="self">Self</span>::V3,
+            StateTreeVersion::V4 =&gt; <span class="self">Self</span>::V4,
             StateTreeVersion::V5 =&gt; <span class="macro">bail!</span>(<span class="string">&quot;Impossible conversion&quot;</span>),
         })
     }
@@ -479,12 +592,27 @@
 
     <span class="kw">fn </span>try_from(value: StateTreeVersion) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="prelude-val">Ok</span>(<span class="kw">match </span>value {
-            StateTreeVersion::V0 =&gt; StateTreeVersionV3::V0,
-            StateTreeVersion::V1 =&gt; StateTreeVersionV3::V1,
-            StateTreeVersion::V2 =&gt; StateTreeVersionV3::V2,
-            StateTreeVersion::V3 =&gt; StateTreeVersionV3::V3,
-            StateTreeVersion::V4 =&gt; StateTreeVersionV3::V4,
-            StateTreeVersion::V5 =&gt; StateTreeVersionV3::V5,
+            StateTreeVersion::V0 =&gt; <span class="self">Self</span>::V0,
+            StateTreeVersion::V1 =&gt; <span class="self">Self</span>::V1,
+            StateTreeVersion::V2 =&gt; <span class="self">Self</span>::V2,
+            StateTreeVersion::V3 =&gt; <span class="self">Self</span>::V3,
+            StateTreeVersion::V4 =&gt; <span class="self">Self</span>::V4,
+            StateTreeVersion::V5 =&gt; <span class="self">Self</span>::V5,
+        })
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;StateTreeVersion&gt; <span class="kw">for </span>StateTreeVersionV4 {
+    <span class="kw">type </span>Error = anyhow::Error;
+
+    <span class="kw">fn </span>try_from(value: StateTreeVersion) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span>value {
+            StateTreeVersion::V0 =&gt; <span class="self">Self</span>::V0,
+            StateTreeVersion::V1 =&gt; <span class="self">Self</span>::V1,
+            StateTreeVersion::V2 =&gt; <span class="self">Self</span>::V2,
+            StateTreeVersion::V3 =&gt; <span class="self">Self</span>::V3,
+            StateTreeVersion::V4 =&gt; <span class="self">Self</span>::V4,
+            StateTreeVersion::V5 =&gt; <span class="self">Self</span>::V5,
         })
     }
 }
@@ -503,6 +631,8 @@
     </span>FvmV2(StateTreeV2&lt;Arc&lt;S&gt;&gt;),
     <span class="comment">// fvm-3 support state tree versions 5.
     </span>FvmV3(StateTreeV3&lt;Arc&lt;S&gt;&gt;),
+    <span class="comment">// fvm-4 support state tree versions *.
+    </span>FvmV4(StateTreeV4&lt;Arc&lt;S&gt;&gt;),
 }
 
 <span class="kw">impl</span>&lt;S&gt; StateTree&lt;S&gt;
@@ -511,7 +641,9 @@
 {
     <span class="doccomment">/// Constructor for a HAMT state tree given an IPLD store
     </span><span class="kw">pub fn </span>new(store: Arc&lt;S&gt;, version: StateTreeVersion) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new(store.clone(), version.try_into()<span class="question-mark">?</span>) {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV4::new(store.clone(), version.try_into()<span class="question-mark">?</span>) {
+            <span class="prelude-val">Ok</span>(StateTree::FvmV4(st))
+        } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new(store.clone(), version.try_into()<span class="question-mark">?</span>) {
             <span class="prelude-val">Ok</span>(StateTree::FvmV3(st))
         } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new(store, version.try_into()<span class="question-mark">?</span>) {
             <span class="prelude-val">Ok</span>(StateTree::FvmV2(st))
@@ -521,7 +653,9 @@
     }
 
     <span class="kw">pub fn </span>new_from_root(store: Arc&lt;S&gt;, c: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new_from_root(store.clone(), c) {
+        <span class="kw">if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV4::new_from_root(store.clone(), c) {
+            <span class="prelude-val">Ok</span>(StateTree::FvmV4(st))
+        } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV3::new_from_root(store.clone(), c) {
             <span class="prelude-val">Ok</span>(StateTree::FvmV3(st))
         } <span class="kw">else if let </span><span class="prelude-val">Ok</span>(st) = StateTreeV2::new_from_root(store.clone(), c) {
             <span class="prelude-val">Ok</span>(StateTree::FvmV2(st))
@@ -540,6 +674,17 @@
                 .map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
                 </span>.map(Into::into)),
             StateTree::FvmV3(st) =&gt; {
+                <span class="kw">let </span>id = st.lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?</span>;
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = id {
+                    <span class="prelude-val">Ok</span>(st
+                        .get_actor(id)
+                        .map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?
+                        </span>.map(Into::into))
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>)
+                }
+            }
+            StateTree::FvmV4(st) =&gt; {
                 <span class="kw">let </span>id = st.lookup_id(addr)<span class="question-mark">?</span>;
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(id) = id {
                     <span class="prelude-val">Ok</span>(st
@@ -569,6 +714,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             StateTree::FvmV2(st) =&gt; st.store(),
             StateTree::FvmV3(st) =&gt; st.store(),
+            StateTree::FvmV4(st) =&gt; st.store(),
             StateTree::V0(st) =&gt; st.store(),
         }
     }
@@ -578,7 +724,8 @@
         <span class="kw">match </span><span class="self">self </span>{
             StateTree::FvmV2(st) =&gt; st.lookup_id(<span class="kw-2">&amp;</span>addr.into()).map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
             StateTree::FvmV3(st) =&gt; <span class="prelude-val">Ok</span>(st.lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?</span>),
-            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::lookup_id not supported on old state trees&quot;</span>),
+            StateTree::FvmV4(st) =&gt; <span class="prelude-val">Ok</span>(st.lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?</span>),
+            StateTree::V0(<span class="kw">_</span>) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::lookup_id not supported on old state trees&quot;</span>),
         }
     }
 
@@ -599,7 +746,13 @@
                 };
                 st.for_each(inner)
             }
-            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::for_each not supported on old state trees&quot;</span>),
+            StateTree::FvmV4(st) =&gt; {
+                <span class="kw">let </span>inner = |address: fvm_shared4::address::Address, actor_state: <span class="kw-2">&amp;</span>ActorStateV4| {
+                    f(address.into(), <span class="kw-2">&amp;</span>actor_state.into())
+                };
+                st.for_each(inner)
+            }
+            StateTree::V0(<span class="kw">_</span>) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::for_each not supported on old state trees&quot;</span>),
         }
     }
 
@@ -608,7 +761,8 @@
         <span class="kw">match </span><span class="self">self </span>{
             StateTree::FvmV2(st) =&gt; st.flush().map_err(|e| <span class="macro">anyhow!</span>(<span class="string">&quot;{e}&quot;</span>)),
             StateTree::FvmV3(st) =&gt; <span class="prelude-val">Ok</span>(st.flush()<span class="question-mark">?</span>),
-            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::flush not supported on old state trees&quot;</span>),
+            StateTree::FvmV4(st) =&gt; <span class="prelude-val">Ok</span>(st.flush()<span class="question-mark">?</span>),
+            StateTree::V0(<span class="kw">_</span>) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::flush not supported on old state trees&quot;</span>),
         }
     }
 
@@ -625,7 +779,14 @@
                 st.set_actor(id, actor.into());
                 <span class="prelude-val">Ok</span>(())
             }
-            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::set_actor not supported on old state trees&quot;</span>),
+            StateTree::FvmV4(st) =&gt; {
+                <span class="kw">let </span>id = st
+                    .lookup_id(<span class="kw-2">&amp;</span>addr.into())<span class="question-mark">?
+                    </span>.context(<span class="string">&quot;couldn&#39;t find actor id&quot;</span>)<span class="question-mark">?</span>;
+                st.set_actor(id, actor.into());
+                <span class="prelude-val">Ok</span>(())
+            }
+            StateTree::V0(<span class="kw">_</span>) =&gt; <span class="macro">bail!</span>(<span class="string">&quot;StateTree::set_actor not supported on old state trees&quot;</span>),
         }
     }
 }
@@ -645,15 +806,20 @@
 /// let fvm3_actor_state = fvm3::state_tree::ActorState::new(Cid::default(), Cid::default(),
 /// fvm_shared3::econ::TokenAmount::from_atto(42), 0, None);
 ///
+/// // Create a correspndoning FVM4 ActorState
+/// let fvm4_actor_state = fvm4::state_tree::ActorState::new(Cid::default(), Cid::default(),
+/// fvm_shared4::econ::TokenAmount::from_atto(42), 0, None);
+///
 /// // Create a shim out of fvm2 state, ensure conversions are correct
 /// let state_shim = ActorState::from(fvm2_actor_state.clone());
-/// assert_eq!(fvm3_actor_state, *state_shim);
+/// assert_eq!(fvm4_actor_state, *state_shim);
+/// assert_eq!(fvm3_actor_state, state_shim.clone().into());
 /// assert_eq!(fvm2_actor_state, state_shim.into());
 /// ```
 </span><span class="attr">#[derive(PartialEq, Eq, Clone, Debug, Serialize, Deserialize)]
 #[serde(transparent)]
 #[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
-</span><span class="kw">pub struct </span>ActorState(ActorStateV3);
+</span><span class="kw">pub struct </span>ActorState(ActorState_latest);
 
 <span class="kw">impl </span>ActorState {
     <span class="kw">pub fn </span>new(
@@ -663,7 +829,7 @@
         sequence: u64,
         address: <span class="prelude-ty">Option</span>&lt;Address&gt;,
     ) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(ActorStateV3::new(
+        <span class="self">Self</span>(ActorState_latest::new(
             code,
             state,
             balance.into(),
@@ -673,7 +839,7 @@
     }
     <span class="doccomment">/// Construct a new empty actor with the specified code.
     </span><span class="kw">pub fn </span>new_empty(code: Cid, delegated_address: <span class="prelude-ty">Option</span>&lt;Address&gt;) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(ActorStateV3::new_empty(
+        <span class="self">Self</span>(ActorState_latest::new_empty(
             code,
             delegated_address.map(Into::into),
         ))
@@ -681,7 +847,7 @@
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>ActorState {
-    <span class="kw">type </span>Target = ActorStateV3;
+    <span class="kw">type </span>Target = ActorState_latest;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
@@ -694,33 +860,9 @@
     </span>}
 }
 
-<span class="kw">impl </span>From&lt;ActorStateV3&gt; <span class="kw">for </span>ActorState {
-    <span class="kw">fn </span>from(value: ActorStateV3) -&gt; <span class="self">Self </span>{
-        ActorState(value)
-    }
-}
-
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>ActorStateV3&gt; <span class="kw">for </span>ActorState {
-    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>ActorStateV3) -&gt; <span class="self">Self </span>{
-        ActorState(value.clone())
-    }
-}
-
-<span class="kw">impl </span>From&lt;ActorStateV2&gt; <span class="kw">for </span>ActorState {
-    <span class="kw">fn </span>from(value: ActorStateV2) -&gt; <span class="self">Self </span>{
-        ActorState(ActorStateV3 {
-            code: value.code,
-            state: value.state,
-            sequence: value.sequence,
-            balance: TokenAmount::from(value.balance).into(),
-            delegated_address: <span class="prelude-val">None</span>,
-        })
-    }
-}
-
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>ActorStateV2&gt; <span class="kw">for </span>ActorState {
     <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>ActorStateV2) -&gt; <span class="self">Self </span>{
-        ActorState(ActorStateV3 {
+        <span class="self">Self</span>(ActorState_latest {
             code: value.code,
             state: value.state,
             sequence: value.sequence,
@@ -730,15 +872,47 @@
     }
 }
 
-<span class="kw">impl </span>From&lt;ActorState&gt; <span class="kw">for </span>ActorStateV3 {
-    <span class="kw">fn </span>from(other: ActorState) -&gt; <span class="self">Self </span>{
-        other.<span class="number">0
-    </span>}
+<span class="kw">impl </span>From&lt;ActorStateV2&gt; <span class="kw">for </span>ActorState {
+    <span class="kw">fn </span>from(value: ActorStateV2) -&gt; <span class="self">Self </span>{
+        (<span class="kw-2">&amp;</span>value).into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;ActorStateV3&gt; <span class="kw">for </span>ActorState {
+    <span class="kw">fn </span>from(value: ActorStateV3) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(ActorState_latest {
+            code: value.code,
+            state: value.state,
+            sequence: value.sequence,
+            balance: TokenAmount::from(value.balance).into(),
+            delegated_address: value
+                .delegated_address
+                .map(|addr| Address::from(addr).into()),
+        })
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>ActorStateV3&gt; <span class="kw">for </span>ActorState {
+    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>ActorStateV3) -&gt; <span class="self">Self </span>{
+        value.clone().into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;ActorStateV4&gt; <span class="kw">for </span>ActorState {
+    <span class="kw">fn </span>from(value: ActorStateV4) -&gt; <span class="self">Self </span>{
+        ActorState(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>ActorStateV4&gt; <span class="kw">for </span>ActorState {
+    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>ActorStateV4) -&gt; <span class="self">Self </span>{
+        value.clone().into()
+    }
 }
 
 <span class="kw">impl </span>From&lt;ActorState&gt; <span class="kw">for </span>ActorStateV2 {
     <span class="kw">fn </span>from(other: ActorState) -&gt; ActorStateV2 {
-        ActorStateV2 {
+        <span class="self">Self </span>{
             code: other.code,
             state: other.state,
             sequence: other.sequence,
@@ -749,13 +923,33 @@
 
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>ActorState&gt; <span class="kw">for </span>ActorStateV2 {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>ActorState) -&gt; ActorStateV2 {
-        ActorStateV2 {
+        <span class="self">Self </span>{
             code: other.code,
             state: other.state,
             sequence: other.sequence,
             balance: TokenAmount::from(<span class="kw-2">&amp;</span>other.balance).into(),
         }
     }
+}
+
+<span class="kw">impl </span>From&lt;ActorState&gt; <span class="kw">for </span>ActorStateV3 {
+    <span class="kw">fn </span>from(other: ActorState) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            code: other.code,
+            state: other.state,
+            sequence: other.sequence,
+            balance: TokenAmount::from(<span class="kw-2">&amp;</span>other.balance).into(),
+            delegated_address: other
+                .delegated_address
+                .map(|addr| Address::from(addr).into()),
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;ActorState&gt; <span class="kw">for </span>ActorStateV4 {
+    <span class="kw">fn </span>from(other: ActorState) -&gt; <span class="self">Self </span>{
+        other.<span class="number">0
+    </span>}
 }
 
 <span class="attr">#[cfg(test)]

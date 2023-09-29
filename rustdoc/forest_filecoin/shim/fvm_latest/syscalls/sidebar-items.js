@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["bind_syscalls","charge_for_exec","charge_for_init","record_init_time","update_gas_available"],"struct":["InvocationData"]};

@@ -264,14 +264,42 @@
 <a href="#264" id="264">264</a>
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::ops::{Add, AddAssign, Deref, DerefMut, Mul, MulAssign, Sub, SubAssign};
 
+<span class="kw">use </span><span class="kw">super</span>::fvm_shared_latest::econ::TokenAmount <span class="kw">as </span>TokenAmount_latest;
 <span class="kw">use </span>fvm_shared2::econ::TokenAmount <span class="kw">as </span>TokenAmount_v2;
 <span class="kw">use </span>fvm_shared3::econ::TokenAmount <span class="kw">as </span>TokenAmount_v3;
 <span class="kw">pub use </span>fvm_shared3::{BLOCK_GAS_LIMIT, TOTAL_FILECOIN_BASE};
+<span class="kw">use </span>fvm_shared4::econ::TokenAmount <span class="kw">as </span>TokenAmount_v4;
 <span class="kw">use </span>num_bigint::BigInt;
 <span class="kw">use </span>num_traits::Zero;
 <span class="kw">use </span>once_cell::sync::Lazy;
@@ -289,12 +317,12 @@
 // FIXME: Consider &#39;type TokenAmount = TokenAmount_v3&#39;
 </span><span class="attr">#[derive(Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Serialize, Deserialize, Debug, Default)]
 #[serde(transparent)]
-</span><span class="kw">pub struct </span>TokenAmount(TokenAmount_v3);
+</span><span class="kw">pub struct </span>TokenAmount(TokenAmount_latest);
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TokenAmount {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        <span class="kw">use </span>fvm_shared3::bigint::MAX_BIGINT_SIZE;
+        <span class="kw">use </span>fvm_shared4::bigint::MAX_BIGINT_SIZE;
         <span class="kw">use </span>num::BigUint;
         <span class="comment">// During serialization/deserialization, permissible length of the byte
         // representation (plus a leading positive sign byte for non-zero
@@ -312,7 +340,7 @@
 
 <span class="kw">impl </span>Zero <span class="kw">for </span>TokenAmount {
     <span class="kw">fn </span>zero() -&gt; <span class="self">Self </span>{
-        TokenAmount(TokenAmount_v3::zero())
+        TokenAmount(TokenAmount_latest::zero())
     }
     <span class="kw">fn </span>is_zero(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.<span class="number">0</span>.is_zero()
@@ -320,7 +348,7 @@
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>TokenAmount {
-    <span class="kw">type </span>Target = TokenAmount_v3;
+    <span class="kw">type </span>Target = TokenAmount_latest;
 
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
@@ -342,10 +370,10 @@
 
 <span class="kw">impl </span>TokenAmount {
     <span class="doccomment">/// The logical number of decimal places of a token unit.
-    </span><span class="kw">pub const </span>DECIMALS: usize = TokenAmount_v3::DECIMALS;
+    </span><span class="kw">pub const </span>DECIMALS: usize = TokenAmount_latest::DECIMALS;
 
     <span class="doccomment">/// The logical precision of a token unit.
-    </span><span class="kw">pub const </span>PRECISION: u64 = TokenAmount_v3::PRECISION;
+    </span><span class="kw">pub const </span>PRECISION: u64 = TokenAmount_latest::PRECISION;
 
     <span class="doccomment">/// Returns the quantity of indivisible units.
     </span><span class="kw">pub fn </span>atto(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>BigInt {
@@ -381,51 +409,75 @@
     }
 }
 
-<span class="kw">impl </span>From&lt;TokenAmount_v3&gt; <span class="kw">for </span>TokenAmount {
-    <span class="kw">fn </span>from(other: TokenAmount_v3) -&gt; <span class="self">Self </span>{
-        TokenAmount(other)
-    }
-}
-
 <span class="kw">impl </span>From&lt;TokenAmount_v2&gt; <span class="kw">for </span>TokenAmount {
     <span class="kw">fn </span>from(other: TokenAmount_v2) -&gt; <span class="self">Self </span>{
-        TokenAmount::from(TokenAmount_v3::from_atto(other.atto().clone()))
+        (<span class="kw-2">&amp;</span>other).into()
     }
 }
 
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount_v2&gt; <span class="kw">for </span>TokenAmount {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount_v2) -&gt; <span class="self">Self </span>{
-        TokenAmount::from(TokenAmount_v3::from_atto(other.atto().clone()))
+        <span class="self">Self</span>(TokenAmount_latest::from_atto(other.atto().clone()))
     }
 }
 
 <span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount_v3&gt; <span class="kw">for </span>TokenAmount {
     <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount_v3) -&gt; <span class="self">Self </span>{
-        TokenAmount(other.clone())
+        <span class="self">Self</span>(TokenAmount_latest::from_atto(other.atto().clone()))
+    }
+}
+
+<span class="kw">impl </span>From&lt;TokenAmount_v3&gt; <span class="kw">for </span>TokenAmount {
+    <span class="kw">fn </span>from(other: TokenAmount_v3) -&gt; <span class="self">Self </span>{
+        (<span class="kw-2">&amp;</span>other).into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;TokenAmount_v4&gt; <span class="kw">for </span>TokenAmount {
+    <span class="kw">fn </span>from(other: TokenAmount_v4) -&gt; <span class="self">Self </span>{
+        TokenAmount(other)
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount_v4&gt; <span class="kw">for </span>TokenAmount {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount_v4) -&gt; <span class="self">Self </span>{
+        other.clone().into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;TokenAmount&gt; <span class="kw">for </span>TokenAmount_v2 {
+    <span class="kw">fn </span>from(other: TokenAmount) -&gt; <span class="self">Self </span>{
+        (<span class="kw-2">&amp;</span>other).into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount&gt; <span class="kw">for </span>TokenAmount_v2 {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_atto(other.atto().clone())
     }
 }
 
 <span class="kw">impl </span>From&lt;TokenAmount&gt; <span class="kw">for </span>TokenAmount_v3 {
     <span class="kw">fn </span>from(other: TokenAmount) -&gt; <span class="self">Self </span>{
+        (<span class="kw-2">&amp;</span>other).into()
+    }
+}
+
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount&gt; <span class="kw">for </span>TokenAmount_v3 {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_atto(other.atto().clone())
+    }
+}
+
+<span class="kw">impl </span>From&lt;TokenAmount&gt; <span class="kw">for </span>TokenAmount_v4 {
+    <span class="kw">fn </span>from(other: TokenAmount) -&gt; <span class="self">Self </span>{
         other.<span class="number">0
     </span>}
 }
 
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount&gt; <span class="kw">for </span>TokenAmount_v3 {
-    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount) -&gt; TokenAmount_v3 {
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount&gt; <span class="kw">for </span>TokenAmount_v4 {
+    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount) -&gt; <span class="self">Self </span>{
         other.<span class="number">0</span>.clone()
-    }
-}
-
-<span class="kw">impl </span>From&lt;TokenAmount&gt; <span class="kw">for </span>TokenAmount_v2 {
-    <span class="kw">fn </span>from(other: TokenAmount) -&gt; TokenAmount_v2 {
-        TokenAmount_v2::from_atto(other.atto().clone())
-    }
-}
-
-<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>TokenAmount&gt; <span class="kw">for </span>TokenAmount_v2 {
-    <span class="kw">fn </span>from(other: <span class="kw-2">&amp;</span>TokenAmount) -&gt; TokenAmount_v2 {
-        TokenAmount_v2::from_atto(other.atto().clone())
     }
 }
 

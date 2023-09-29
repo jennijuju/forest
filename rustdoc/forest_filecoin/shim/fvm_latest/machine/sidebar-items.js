@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BURNT_FUNDS_ACTOR_ID","REWARD_ACTOR_ID"],"mod":["limiter"],"struct":["DefaultMachine","MachineContext","Manifest","NetworkConfig"],"trait":["Machine"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["out"],"struct":["EventEntry","SendFlags","TokenAmount"],"trait":["SyscallSafe"],"type":["BlockId","Codec"]};

@@ -25,17 +25,23 @@
 <a href="#25" id="25">25</a>
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>fvm2::machine::MultiEngine <span class="kw">as </span>MultiEngine_v2;
 <span class="kw">use </span>fvm3::engine::MultiEngine <span class="kw">as </span>MultiEngine_v3;
+<span class="kw">use </span>fvm4::engine::MultiEngine <span class="kw">as </span>MultiEngine_v4;
 <span class="kw">mod </span>manifest;
 <span class="kw">pub use </span>manifest::<span class="kw-2">*</span>;
 
 <span class="kw">pub struct </span>MultiEngine {
     <span class="kw">pub </span>v2: MultiEngine_v2,
     <span class="kw">pub </span>v3: MultiEngine_v3,
+    <span class="kw">pub </span>v4: MultiEngine_v4,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>MultiEngine {
@@ -46,10 +52,12 @@
 
 <span class="kw">impl </span>MultiEngine {
     <span class="kw">pub fn </span>new(concurrency: <span class="prelude-ty">Result</span>&lt;u32, std::io::Error&gt;) -&gt; MultiEngine {
+        <span class="kw">let </span>concurrency = concurrency.ok();
         MultiEngine {
-            v2: MultiEngine_v2::new(),
-            v3: MultiEngine_v3::new(concurrency.unwrap_or(<span class="number">1</span>)), <span class="comment">// `1` is default concurrency value in `fvm3`
-        </span>}
+            v2: Default::default(),
+            v3: concurrency.map_or_else(Default::default, MultiEngine_v3::new),
+            v4: concurrency.map_or_else(Default::default, MultiEngine_v4::new),
+        }
     }
 }
 </code></pre></div></section></main></body></html>

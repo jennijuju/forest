@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BLS_PUB_LEN","CHECKSUM_HASH_LEN","FIRST_NON_SINGLETON_ADDR","MAX_ADDRESS_LEN","MAX_SUBADDRESS_LEN","PAYLOAD_HASH_LEN","SECP_PUB_LEN"],"enum":["Error","Network","Payload","Protocol"],"fn":["current_network","set_current_network"],"struct":["Address","DelegatedAddress"]};

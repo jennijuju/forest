@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_BIGINT_SIZE"],"enum":["Sign"],"mod":["bigint_ser","biguint_ser","num_integer"],"struct":["BigInt","BigUint","ParseBigIntError","TryFromBigIntError","U32Digits","U64Digits"],"trait":["Integer","ToBigInt","ToBigUint","Zero"]};

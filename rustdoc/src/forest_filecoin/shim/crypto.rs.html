@@ -187,10 +187,14 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::borrow::Cow;
 
+<span class="kw">use </span><span class="kw">super</span>::fvm_shared_latest::{<span class="self">self</span>, commcid::Commitment};
+<span class="kw">pub use </span><span class="kw">super</span>::fvm_shared_latest::{IPLD_RAW, TICKET_RANDOMNESS_LOOKBACK};
 <span class="kw">use </span>bls_signatures::{verify_messages, PublicKey <span class="kw">as </span>BlsPubKey, Signature <span class="kw">as </span>BlsSignature};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_encoding::{
@@ -198,8 +202,6 @@
     repr::{Deserialize_repr, Serialize_repr},
     ser, strict_bytes,
 };
-<span class="kw">use </span>fvm_shared2::commcid::Commitment;
-<span class="kw">pub use </span>fvm_shared2::{IPLD_RAW, TICKET_RANDOMNESS_LOOKBACK};
 <span class="kw">use </span>num::FromPrimitive;
 <span class="kw">use </span>num_derive::FromPrimitive;
 
@@ -277,7 +279,9 @@
 
     <span class="doccomment">/// Checks if a signature is valid given data and address.
     </span><span class="kw">pub fn </span>verify(<span class="kw-2">&amp;</span><span class="self">self</span>, data: <span class="kw-2">&amp;</span>[u8], addr: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::address::Address) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
-        <span class="kw">use </span>fvm_shared3::crypto::signature::ops::{verify_bls_sig, verify_secp256k1_sig};
+        <span class="kw">use </span><span class="kw">super</span>::fvm_shared_latest::crypto::signature::ops::{
+            verify_bls_sig, verify_secp256k1_sig,
+        };
         <span class="kw">match </span><span class="self">self</span>.sig_type {
             SignatureType::Bls =&gt; verify_bls_sig(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes, data, addr),
             SignatureType::Secp256k1 =&gt; verify_secp256k1_sig(<span class="kw-2">&amp;</span><span class="self">self</span>.bytes, data, addr),
@@ -344,14 +348,14 @@
     data: <span class="kw-2">&amp;</span>[u8],
     addr: <span class="kw-2">&amp;</span><span class="kw">crate</span>::shim::address::Address,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;(), String&gt; {
-    fvm_shared3::crypto::signature::ops::verify_bls_sig(signature, data, <span class="kw-2">&amp;</span>addr.into())
+    fvm_shared_latest::crypto::signature::ops::verify_bls_sig(signature, data, <span class="kw-2">&amp;</span>addr.into())
 }
 
 <span class="doccomment">/// Extracts the raw replica commitment from a CID
 /// assuming that it has the correct hashing function and
 /// serialization types
 </span><span class="kw">pub fn </span>cid_to_replica_commitment_v1(c: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;Commitment, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; {
-    fvm_shared2::commcid::cid_to_replica_commitment_v1(c)
+    fvm_shared_latest::commcid::cid_to_replica_commitment_v1(c)
 }
 
 <span class="doccomment">/// Signature variants for Filecoin signatures.

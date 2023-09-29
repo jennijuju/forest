@@ -84,12 +84,32 @@
 <a href="#84" id="84">84</a>
 <a href="#85" id="85">85</a>
 <a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::ops::{Deref, DerefMut};
 
+<span class="kw">use </span><span class="kw">super</span>::fvm_shared_latest::version::NetworkVersion <span class="kw">as </span>NetworkVersion_latest;
 <span class="kw">pub use </span>fvm_shared2::version::NetworkVersion <span class="kw">as </span>NetworkVersion_v2;
 <span class="kw">use </span>fvm_shared3::version::NetworkVersion <span class="kw">as </span>NetworkVersion_v3;
+<span class="kw">use </span>fvm_shared4::version::NetworkVersion <span class="kw">as </span>NetworkVersion_v4;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="doccomment">/// Specifies the network version
@@ -99,8 +119,11 @@
 /// # use forest_filecoin::doctest_private::NetworkVersion;
 /// let v0 = NetworkVersion::V0;
 ///
-/// // dereference to convert to FVM3
-/// assert_eq!(fvm_shared3::version::NetworkVersion::V0, *v0);
+/// // dereference to convert to FVM4
+/// assert_eq!(fvm_shared4::version::NetworkVersion::V0, *v0);
+///
+/// // use `.into()` when FVM3 has to be specified.
+/// assert_eq!(fvm_shared3::version::NetworkVersion::V0, v0.into());
 ///
 /// // use `.into()` when FVM2 has to be specified.
 /// assert_eq!(fvm_shared2::version::NetworkVersion::V0, v0.into());
@@ -108,34 +131,35 @@
 </span><span class="attr">#[derive(Debug, Eq, PartialEq, Clone, Copy, Ord, PartialOrd, Serialize, Deserialize)]
 #[repr(transparent)]
 #[serde(transparent)]
-</span><span class="kw">pub struct </span>NetworkVersion(<span class="kw">pub </span>NetworkVersion_v3);
+</span><span class="kw">pub struct </span>NetworkVersion(<span class="kw">pub </span>NetworkVersion_latest);
 
 <span class="kw">impl </span>NetworkVersion {
-    <span class="kw">pub const </span>V0: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">0</span>));
-    <span class="kw">pub const </span>V1: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">1</span>));
-    <span class="kw">pub const </span>V2: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">2</span>));
-    <span class="kw">pub const </span>V3: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">3</span>));
-    <span class="kw">pub const </span>V4: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">4</span>));
-    <span class="kw">pub const </span>V5: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">5</span>));
-    <span class="kw">pub const </span>V6: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">6</span>));
-    <span class="kw">pub const </span>V7: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">7</span>));
-    <span class="kw">pub const </span>V8: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">8</span>));
-    <span class="kw">pub const </span>V9: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">9</span>));
-    <span class="kw">pub const </span>V10: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">10</span>));
-    <span class="kw">pub const </span>V11: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">11</span>));
-    <span class="kw">pub const </span>V12: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">12</span>));
-    <span class="kw">pub const </span>V13: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">13</span>));
-    <span class="kw">pub const </span>V14: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">14</span>));
-    <span class="kw">pub const </span>V15: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">15</span>));
-    <span class="kw">pub const </span>V16: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">16</span>));
-    <span class="kw">pub const </span>V17: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">17</span>));
-    <span class="kw">pub const </span>V18: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">18</span>));
-    <span class="kw">pub const </span>V19: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">19</span>));
-    <span class="kw">pub const </span>V20: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_v3::new(<span class="number">20</span>));
+    <span class="kw">pub const </span>V0: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">0</span>));
+    <span class="kw">pub const </span>V1: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">1</span>));
+    <span class="kw">pub const </span>V2: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">2</span>));
+    <span class="kw">pub const </span>V3: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">3</span>));
+    <span class="kw">pub const </span>V4: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">4</span>));
+    <span class="kw">pub const </span>V5: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">5</span>));
+    <span class="kw">pub const </span>V6: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">6</span>));
+    <span class="kw">pub const </span>V7: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">7</span>));
+    <span class="kw">pub const </span>V8: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">8</span>));
+    <span class="kw">pub const </span>V9: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">9</span>));
+    <span class="kw">pub const </span>V10: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">10</span>));
+    <span class="kw">pub const </span>V11: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">11</span>));
+    <span class="kw">pub const </span>V12: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">12</span>));
+    <span class="kw">pub const </span>V13: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">13</span>));
+    <span class="kw">pub const </span>V14: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">14</span>));
+    <span class="kw">pub const </span>V15: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">15</span>));
+    <span class="kw">pub const </span>V16: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">16</span>));
+    <span class="kw">pub const </span>V17: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">17</span>));
+    <span class="kw">pub const </span>V18: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">18</span>));
+    <span class="kw">pub const </span>V19: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">19</span>));
+    <span class="kw">pub const </span>V20: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">20</span>));
+    <span class="kw">pub const </span>V21: <span class="self">Self </span>= <span class="self">Self</span>(NetworkVersion_latest::new(<span class="number">21</span>));
 }
 
 <span class="kw">impl </span>Deref <span class="kw">for </span>NetworkVersion {
-    <span class="kw">type </span>Target = NetworkVersion_v3;
+    <span class="kw">type </span>Target = NetworkVersion_latest;
     <span class="kw">fn </span>deref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Target {
         <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0
     </span>}
@@ -149,25 +173,37 @@
 
 <span class="kw">impl </span>From&lt;NetworkVersion_v2&gt; <span class="kw">for </span>NetworkVersion {
     <span class="kw">fn </span>from(value: NetworkVersion_v2) -&gt; <span class="self">Self </span>{
-        NetworkVersion(NetworkVersion_v3::from(value <span class="kw">as </span>u32))
+        NetworkVersion((value <span class="kw">as </span>u32).into())
     }
 }
 
 <span class="kw">impl </span>From&lt;NetworkVersion_v3&gt; <span class="kw">for </span>NetworkVersion {
     <span class="kw">fn </span>from(value: NetworkVersion_v3) -&gt; <span class="self">Self </span>{
+        NetworkVersion(u32::from(value).into())
+    }
+}
+
+<span class="kw">impl </span>From&lt;NetworkVersion_v4&gt; <span class="kw">for </span>NetworkVersion {
+    <span class="kw">fn </span>from(value: NetworkVersion_v4) -&gt; <span class="self">Self </span>{
         NetworkVersion(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;NetworkVersion&gt; <span class="kw">for </span>NetworkVersion_v2 {
+    <span class="kw">fn </span>from(other: NetworkVersion) -&gt; NetworkVersion_v2 {
+        u32::from(other.<span class="number">0</span>).try_into().expect(<span class="string">&quot;Infallible&quot;</span>)
     }
 }
 
 <span class="kw">impl </span>From&lt;NetworkVersion&gt; <span class="kw">for </span>NetworkVersion_v3 {
     <span class="kw">fn </span>from(other: NetworkVersion) -&gt; <span class="self">Self </span>{
-        other.<span class="number">0
-    </span>}
+        u32::from(other.<span class="number">0</span>).into()
+    }
 }
 
-<span class="kw">impl </span>From&lt;NetworkVersion&gt; <span class="kw">for </span>NetworkVersion_v2 {
-    <span class="kw">fn </span>from(other: NetworkVersion) -&gt; NetworkVersion_v2 {
-        NetworkVersion_v2::try_from(u32::from(other.<span class="number">0</span>)).unwrap()
-    }
+<span class="kw">impl </span>From&lt;NetworkVersion&gt; <span class="kw">for </span>NetworkVersion_v4 {
+    <span class="kw">fn </span>from(other: NetworkVersion) -&gt; <span class="self">Self </span>{
+        other.<span class="number">0
+    </span>}
 }
 </code></pre></div></section></main></body></html>

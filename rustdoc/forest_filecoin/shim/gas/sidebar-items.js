@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["PriceList"],"fn":["price_list_by_network_version"],"struct":["Gas","GasCharge","GasChargeV3","GasTracker","GasV3"]};
+window.SIDEBAR_ITEMS = {"enum":["PriceList"],"fn":["price_list_by_network_version"],"struct":["Gas","GasCharge","GasChargeV3","GasChargeV4","GasCharge_latest","GasDurationV4","GasTracker","GasV4","Gas_latest","PriceListV3","PriceListV4"]};

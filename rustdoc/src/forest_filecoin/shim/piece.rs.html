@@ -78,36 +78,70 @@
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>cid::Cid;
+</span><span class="kw">use </span><span class="kw">super</span>::fvm_shared_latest::piece <span class="kw">as </span>piece_latest;
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_shared2::piece <span class="kw">as </span>piece_v2;
 <span class="kw">use </span>fvm_shared3::piece <span class="kw">as </span>piece_v3;
+<span class="kw">use </span>fvm_shared4::piece <span class="kw">as </span>piece_v4;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="doccomment">/// Piece information for part or a whole file.
 </span><span class="attr">#[derive(Serialize, Deserialize, PartialEq, Eq, Clone, Debug)]
 #[serde(transparent)]
-</span><span class="kw">pub struct </span>PieceInfo(piece_v3::PieceInfo);
+</span><span class="kw">pub struct </span>PieceInfo(piece_latest::PieceInfo);
 
 <span class="kw">impl </span>PieceInfo {
     <span class="kw">pub fn </span>new(cid: Cid, size: PaddedPieceSize) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(piece_v3::PieceInfo {
+        <span class="self">Self</span>(piece_latest::PieceInfo {
             cid,
             size: size.into(),
         })
     }
 }
 
-<span class="kw">impl </span>From&lt;PieceInfo&gt; <span class="kw">for </span>piece_v3::PieceInfo {
+<span class="kw">impl </span>From&lt;PieceInfo&gt; <span class="kw">for </span>piece_v4::PieceInfo {
     <span class="kw">fn </span>from(value: PieceInfo) -&gt; <span class="self">Self </span>{
         value.<span class="number">0
     </span>}
 }
 
-<span class="kw">impl </span>From&lt;piece_v3::PieceInfo&gt; <span class="kw">for </span>PieceInfo {
-    <span class="kw">fn </span>from(value: piece_v3::PieceInfo) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;piece_v4::PieceInfo&gt; <span class="kw">for </span>PieceInfo {
+    <span class="kw">fn </span>from(value: piece_v4::PieceInfo) -&gt; <span class="self">Self </span>{
         <span class="self">Self</span>(value)
     }
 }
@@ -123,7 +157,25 @@
 
 <span class="kw">impl </span>From&lt;piece_v2::PieceInfo&gt; <span class="kw">for </span>PieceInfo {
     <span class="kw">fn </span>from(value: piece_v2::PieceInfo) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(piece_v3::PieceInfo {
+        <span class="self">Self</span>(piece_latest::PieceInfo {
+            size: PaddedPieceSize::from(value.size).into(),
+            cid: value.cid,
+        })
+    }
+}
+
+<span class="kw">impl </span>From&lt;PieceInfo&gt; <span class="kw">for </span>piece_v3::PieceInfo {
+    <span class="kw">fn </span>from(value: PieceInfo) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            size: PaddedPieceSize::from(value.<span class="number">0</span>.size).into(),
+            cid: value.<span class="number">0</span>.cid,
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;piece_v3::PieceInfo&gt; <span class="kw">for </span>PieceInfo {
+    <span class="kw">fn </span>from(value: piece_v3::PieceInfo) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(piece_latest::PieceInfo {
             size: PaddedPieceSize::from(value.size).into(),
             cid: value.cid,
         })
@@ -133,17 +185,29 @@
 <span class="doccomment">/// Size of a piece in bytes with padding.
 </span><span class="attr">#[derive(PartialEq, Debug, Eq, Clone, Copy, Serialize, Deserialize)]
 #[serde(transparent)]
-</span><span class="kw">pub struct </span>PaddedPieceSize(piece_v3::PaddedPieceSize);
+</span><span class="kw">pub struct </span>PaddedPieceSize(piece_latest::PaddedPieceSize);
 
-<span class="kw">impl </span>From&lt;PaddedPieceSize&gt; <span class="kw">for </span>piece_v3::PaddedPieceSize {
+<span class="kw">impl </span>From&lt;PaddedPieceSize&gt; <span class="kw">for </span>piece_v4::PaddedPieceSize {
     <span class="kw">fn </span>from(value: PaddedPieceSize) -&gt; <span class="self">Self </span>{
         value.<span class="number">0
     </span>}
 }
 
+<span class="kw">impl </span>From&lt;piece_v4::PaddedPieceSize&gt; <span class="kw">for </span>PaddedPieceSize {
+    <span class="kw">fn </span>from(value: piece_v4::PaddedPieceSize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(value)
+    }
+}
+
+<span class="kw">impl </span>From&lt;PaddedPieceSize&gt; <span class="kw">for </span>piece_v3::PaddedPieceSize {
+    <span class="kw">fn </span>from(value: PaddedPieceSize) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>(value.<span class="number">0 </span>.<span class="number">0</span>)
+    }
+}
+
 <span class="kw">impl </span>From&lt;piece_v3::PaddedPieceSize&gt; <span class="kw">for </span>PaddedPieceSize {
     <span class="kw">fn </span>from(value: piece_v3::PaddedPieceSize) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(value)
+        <span class="self">Self</span>(piece_latest::PaddedPieceSize(value.<span class="number">0</span>))
     }
 }
 
@@ -155,7 +219,7 @@
 
 <span class="kw">impl </span>From&lt;piece_v2::PaddedPieceSize&gt; <span class="kw">for </span>PaddedPieceSize {
     <span class="kw">fn </span>from(value: piece_v2::PaddedPieceSize) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>(piece_v3::PaddedPieceSize(value.<span class="number">0</span>))
+        <span class="self">Self</span>(piece_latest::PaddedPieceSize(value.<span class="number">0</span>))
     }
 }
 </code></pre></div></section></main></body></html>

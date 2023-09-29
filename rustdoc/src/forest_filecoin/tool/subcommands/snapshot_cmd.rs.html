@@ -785,6 +785,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::CurrentNetwork;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
+<span class="kw">use </span><span class="kw">crate</span>::shim::fvm_shared_latest::address::Network;
 <span class="kw">use </span><span class="kw">crate</span>::shim::machine::MultiEngine;
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::apply_block_messages;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
@@ -795,7 +796,6 @@
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
 <span class="kw">use </span>futures::TryStreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_shared3::address::Network;
 <span class="kw">use </span>indicatif::{ProgressBar, ProgressStyle};
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::sync::Arc;

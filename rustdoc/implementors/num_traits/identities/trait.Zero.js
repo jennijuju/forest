@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"forest_filecoin":[["impl <a class=\"trait\" href=\"https://docs.rs/num-traits/0.2/num_traits/identities/trait.Zero.html\" title=\"trait num_traits::identities::Zero\">Zero</a> for <a class=\"struct\" href=\"forest_filecoin/shim/econ/struct.TokenAmount.html\" title=\"struct forest_filecoin::shim::econ::TokenAmount\">TokenAmount</a>"]]
+"forest_filecoin":[["impl <a class=\"trait\" href=\"forest_filecoin/shim/fvm_shared_latest/bigint/trait.Zero.html\" title=\"trait forest_filecoin::shim::fvm_shared_latest::bigint::Zero\">Zero</a> for <a class=\"struct\" href=\"forest_filecoin/shim/econ/struct.TokenAmount.html\" title=\"struct forest_filecoin::shim::econ::TokenAmount\">TokenAmount</a>"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

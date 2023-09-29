@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ApplyFailure","ApplyKind"],"struct":["ApplyRet","DefaultExecutor","ThreadedExecutor"],"trait":["Executor"]};

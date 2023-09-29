@@ -191,6 +191,29 @@
 <a href="#191" id="191">191</a>
 <a href="#192" id="192">192</a>
 <a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -199,16 +222,19 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm2::executor::ApplyRet <span class="kw">as </span>ApplyRet_v2;
 <span class="kw">use </span>fvm3::executor::ApplyRet <span class="kw">as </span>ApplyRet_v3;
+<span class="kw">use </span>fvm4::executor::ApplyRet <span class="kw">as </span>ApplyRet_v4;
 <span class="kw">use </span>fvm_ipld_encoding::RawBytes;
 <span class="kw">use </span>fvm_shared2::receipt::Receipt <span class="kw">as </span>Receipt_v2;
 <span class="kw">use </span>fvm_shared3::error::ExitCode;
 <span class="kw">pub use </span>fvm_shared3::receipt::Receipt <span class="kw">as </span>Receipt_v3;
+<span class="kw">use </span>fvm_shared4::receipt::Receipt <span class="kw">as </span>Receipt_v4;
 <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 <span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub enum </span>ApplyRet {
     V2(Box&lt;ApplyRet_v2&gt;),
     V3(Box&lt;ApplyRet_v3&gt;),
+    V4(Box&lt;ApplyRet_v4&gt;),
 }
 
 <span class="kw">impl </span>From&lt;ApplyRet_v2&gt; <span class="kw">for </span>ApplyRet {
@@ -223,11 +249,18 @@
     }
 }
 
+<span class="kw">impl </span>From&lt;ApplyRet_v4&gt; <span class="kw">for </span>ApplyRet {
+    <span class="kw">fn </span>from(other: ApplyRet_v4) -&gt; <span class="self">Self </span>{
+        ApplyRet::V4(Box::new(other))
+    }
+}
+
 <span class="kw">impl </span>ApplyRet {
     <span class="kw">pub fn </span>failure_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; v2.failure_info.as_ref().map(|failure| failure.to_string()),
             ApplyRet::V3(v3) =&gt; v3.failure_info.as_ref().map(|failure| failure.to_string()),
+            ApplyRet::V4(v4) =&gt; v4.failure_info.as_ref().map(|failure| failure.to_string()),
         }
     }
 
@@ -235,6 +268,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.miner_tip).into(),
             ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.miner_tip).into(),
+            ApplyRet::V4(v4) =&gt; (<span class="kw-2">&amp;</span>v4.miner_tip).into(),
         }
     }
 
@@ -242,6 +276,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.penalty).into(),
             ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.penalty).into(),
+            ApplyRet::V4(v4) =&gt; (<span class="kw-2">&amp;</span>v4.penalty).into(),
         }
     }
 
@@ -249,6 +284,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; Receipt::V2(v2.msg_receipt.clone()),
             ApplyRet::V3(v3) =&gt; Receipt::V3(v3.msg_receipt.clone()),
+            ApplyRet::V4(v4) =&gt; Receipt::V4(v4.msg_receipt.clone()),
         }
     }
 
@@ -256,6 +292,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.refund).into(),
             ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.refund).into(),
+            ApplyRet::V4(v4) =&gt; (<span class="kw-2">&amp;</span>v4.refund).into(),
         }
     }
 
@@ -263,6 +300,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.base_fee_burn).into(),
             ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.base_fee_burn).into(),
+            ApplyRet::V4(v4) =&gt; (<span class="kw-2">&amp;</span>v4.base_fee_burn).into(),
         }
     }
 
@@ -270,6 +308,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; (<span class="kw-2">&amp;</span>v2.over_estimation_burn).into(),
             ApplyRet::V3(v3) =&gt; (<span class="kw-2">&amp;</span>v3.over_estimation_burn).into(),
+            ApplyRet::V4(v4) =&gt; (<span class="kw-2">&amp;</span>v4.over_estimation_burn).into(),
         }
     }
 
@@ -277,6 +316,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             ApplyRet::V2(v2) =&gt; v2.exec_trace.iter().cloned().map(Into::into).collect(),
             ApplyRet::V3(v3) =&gt; v3.exec_trace.iter().cloned().map(Into::into).collect(),
+            ApplyRet::V4(v4) =&gt; v4.exec_trace.iter().cloned().map(Into::into).collect(),
         }
     }
 }
@@ -285,6 +325,7 @@
 </span><span class="kw">pub enum </span>Receipt {
     V2(Receipt_v2),
     V3(Receipt_v3),
+    V4(Receipt_v4),
 }
 
 <span class="kw">impl </span>Serialize <span class="kw">for </span>Receipt {
@@ -295,6 +336,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             Receipt::V2(v2) =&gt; v2.serialize(serializer),
             Receipt::V3(v3) =&gt; v3.serialize(serializer),
+            Receipt::V4(v4) =&gt; v4.serialize(serializer),
         }
     }
 }
@@ -313,6 +355,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             Receipt::V2(v2) =&gt; ExitCode::new(v2.exit_code.value()),
             Receipt::V3(v3) =&gt; v3.exit_code,
+            Receipt::V4(v4) =&gt; ExitCode::new(v4.exit_code.value()),
         }
     }
 
@@ -320,6 +363,7 @@
         <span class="kw">match </span><span class="self">self </span>{
             Receipt::V2(v2) =&gt; RawBytes::from(v2.return_data.to_vec()),
             Receipt::V3(v3) =&gt; v3.return_data.clone(),
+            Receipt::V4(v4) =&gt; RawBytes::from(v4.return_data.to_vec()),
         }
     }
 
@@ -327,12 +371,14 @@
         <span class="kw">match </span><span class="self">self </span>{
             Receipt::V2(v2) =&gt; v2.gas_used <span class="kw">as </span>u64,
             Receipt::V3(v3) =&gt; v3.gas_used,
+            Receipt::V4(v4) =&gt; v4.gas_used,
         }
     }
     <span class="kw">pub fn </span>events_root(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Cid&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Receipt::V2(<span class="kw">_</span>) =&gt; <span class="prelude-val">None</span>,
             Receipt::V3(v3) =&gt; v3.events_root,
+            Receipt::V4(v4) =&gt; v4.events_root,
         }
     }
 }

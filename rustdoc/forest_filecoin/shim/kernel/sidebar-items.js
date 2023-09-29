@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ErrorNumber"],"macro":["error_number"],"struct":["SyscallError","UnknownErrorNumber"]};
+window.SIDEBAR_ITEMS = {"enum":["ErrorNumber","UnknownErrorNumber"],"macro":["error_number"],"struct":["SyscallError"]};
