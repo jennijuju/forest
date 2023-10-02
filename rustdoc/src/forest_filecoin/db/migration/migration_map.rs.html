@@ -489,13 +489,13 @@
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>MIGRATIONS: Lazy&lt;MigrationsMap&gt; = Lazy::new(|| {
     MigrationsMap::from_iter(
         [
-            ($(
+            $((
             Version::from_str(<span class="macro-nonterminal">$from</span>).unwrap(),
             (
                 Version::from_str(<span class="macro-nonterminal">$to</span>).unwrap(),
                 Arc::new(<span class="macro-nonterminal">$migration</span>) <span class="kw">as _</span>,
-            )
-            )<span class="kw-2">*</span>)
+            )),
+            )*
         ]
         .iter()
         .cloned(),
