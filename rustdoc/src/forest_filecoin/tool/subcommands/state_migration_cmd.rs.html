@@ -100,6 +100,8 @@
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -179,11 +181,13 @@
         .forward(CarWriter::new_carv1(
             roots.into_iter().collect(),
             ZstdEncoder::with_quality(
-                File::create(output).<span class="kw">await</span><span class="question-mark">?</span>,
+                File::create(<span class="kw-2">&amp;</span>output).<span class="kw">await</span><span class="question-mark">?</span>,
                 async_compression::Level::Precise(<span class="number">17</span>),
             ),
         )<span class="question-mark">?</span>)
         .<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="macro">println!</span>(<span class="string">&quot;Wrote the actors bundle to {}&quot;</span>, output.display());
 
     <span class="prelude-val">Ok</span>(())
 }
