@@ -108,6 +108,20 @@
 <a href="#108" id="108">108</a>
 <a href="#109" id="109">109</a>
 <a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -132,6 +146,10 @@
 <span class="kw">impl </span>ReadAt <span class="kw">for </span>Mmap {
     <span class="kw">fn </span>read_at(<span class="kw-2">&amp;</span><span class="self">self</span>, pos: u64, buf: <span class="kw-2">&amp;mut </span>[u8]) -&gt; io::Result&lt;usize&gt; {
         <span class="kw">let </span>start = pos <span class="kw">as </span>usize;
+        <span class="kw">if </span>start &gt;= <span class="self">self</span>.<span class="number">0</span>.len() {
+            <span class="comment">// This matches the behaviour for seeking past the end of a file
+            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="number">0</span>);
+        }
         <span class="kw">let </span>end = start + buf.len();
         <span class="kw">if </span>end &lt;= <span class="self">self</span>.<span class="number">0</span>.len() {
             buf.copy_from_slice(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>[start..end]);
@@ -216,6 +234,16 @@
         }
 
         <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_out_of_band_mmap_read() {
+        <span class="kw">let </span>temp_file = tempfile::NamedTempFile::new_in(<span class="string">&quot;.&quot;</span>).unwrap();
+        <span class="kw">let </span>mmap = Mmap::map(<span class="kw-2">&amp;</span>fs::File::open(<span class="kw-2">&amp;</span>temp_file).unwrap()).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = [];
+        <span class="comment">// This matches the behaviour for seeking past the end of a file
+        </span><span class="macro">assert_eq!</span>(mmap.read_at(u64::MAX, <span class="kw-2">&amp;mut </span>buffer).unwrap(), <span class="number">0</span>);
     }
 }
 </code></pre></div></section></main></body></html>

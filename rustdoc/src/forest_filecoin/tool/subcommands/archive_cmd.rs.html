@@ -554,11 +554,11 @@
         </span><span class="attr">#[arg(short, long, default_value_t = <span class="number">2000</span>)]
         </span>depth: ChainEpochDelta,
         <span class="doccomment">/// Do not include any values reachable from this epoch.
-        </span><span class="attr">#[arg(short, long)]
+        </span><span class="attr">#[arg(long)]
         </span>diff: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
         <span class="doccomment">/// How many state-roots to include when computing the diff set. All
         /// state-roots are included if this flag is not set.
-        </span><span class="attr">#[arg(short, long)]
+        </span><span class="attr">#[arg(long)]
         </span>diff_depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
         <span class="doccomment">/// Overwrite output file without prompting.
         </span><span class="attr">#[arg(long, default_value_t = <span class="bool-val">false</span>)]
