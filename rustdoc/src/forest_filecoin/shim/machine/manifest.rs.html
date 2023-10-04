@@ -133,139 +133,189 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 // Copyright 2021-2023 Protocol Labs
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>ahash::HashMap;
-<span class="kw">use </span>anyhow::{anyhow, Context};
+</span><span class="kw">use </span>std::collections::BTreeMap;
+
+<span class="kw">use </span>anyhow::{ensure, Context <span class="kw">as _</span>};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::CborStore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore <span class="kw">as _</span>;
+<span class="kw">use </span>itertools::Itertools <span class="kw">as _</span>;
 
-<span class="comment">// For details on actor name and version, see &lt;https://github.com/filecoin-project/go-state-types/blob/1e6cf0d47cdda75383ef036fc2725d1cf51dbde8/manifest/manifest.go#L36&gt;
+<span class="doccomment">/// This should be the latest enumeration of all builtin actors
+</span><span class="kw">pub use </span>fil_actors_shared::v11::runtime::builtins::Type <span class="kw">as </span>BuiltinActor;
 
-</span><span class="macro">macro_rules! </span>name {
-    ($(<span class="macro-nonterminal">$ident</span>:ident = <span class="macro-nonterminal">$lit</span>:literal),* $(,)<span class="question-mark">?</span>) =&gt; {
-        $(
-            <span class="attr">#[allow(unused)] </span><span class="comment">// included for completeness
-            </span><span class="kw">pub const </span><span class="macro-nonterminal">$ident</span>: <span class="kw-2">&amp;</span>str = <span class="macro-nonterminal">$lit</span>;
-        )*
-    }
-}
-<span class="macro">name!</span>(
-    ACCOUNT_ACTOR_NAME = <span class="string">&quot;account&quot;</span>,
-    CRON_ACTOR_NAME = <span class="string">&quot;cron&quot;</span>,
-    INIT_ACTOR_NAME = <span class="string">&quot;init&quot;</span>,
-    MARKET_ACTOR_NAME = <span class="string">&quot;storagemarket&quot;</span>,
-    MINER_ACTOR_NAME = <span class="string">&quot;storageminer&quot;</span>,
-    MULTISIG_ACTOR_NAME = <span class="string">&quot;multisig&quot;</span>,
-    PAYCH_ACTOR_NAME = <span class="string">&quot;paymentchannel&quot;</span>,
-    POWER_ACTOR_NAME = <span class="string">&quot;storagepower&quot;</span>,
-    REWARD_ACTOR_NAME = <span class="string">&quot;reward&quot;</span>,
-    SYSTEM_ACTOR_NAME = <span class="string">&quot;system&quot;</span>,
-    VERIFREG_ACTOR_NAME = <span class="string">&quot;verifiedregistry&quot;</span>,
-    <span class="comment">// actor version &gt;= 9
-    </span>DATACAP_ACTOR_NAME = <span class="string">&quot;datacap&quot;</span>,
-    <span class="comment">// actor version &gt;= 10
-    </span>EVM_ACTOR_NAME = <span class="string">&quot;evm&quot;</span>,
-    EAM_ACTOR_NAME = <span class="string">&quot;eam&quot;</span>,
-    PLACEHOLDER_ACTOR_NAME = <span class="string">&quot;placeholder&quot;</span>,
-    ETH_ACCOUNT_ACTOR_NAME = <span class="string">&quot;ethaccount&quot;</span>,
-);
-
-<span class="doccomment">/// Manifest is serialized as a tuple of version and manifest actors CID
-</span><span class="kw">pub type </span>ManifestCbor = (u32, Cid);
-
-<span class="doccomment">/// Manifest data is serialized as a vector of name-to-actor-CID pair
-</span><span class="kw">pub type </span>ManifestActorsCbor = Vec&lt;(String, Cid)&gt;;
-
-<span class="doccomment">/// A mapping of builtin actor CIDs to their respective types.
-</span><span class="kw">pub struct </span>Manifest {
-    by_name: HashMap&lt;String, Cid&gt;,
-
-    actors_cid: Cid,
-
-    init_code: Cid,
-    system_code: Cid,
+<span class="doccomment">/// A list of [`BuiltinActor`]s to their CIDs
+</span><span class="comment">// Theoretically, this struct could just have fields for all the actors,
+// acting as a kind of perfect hash map, but performance will be fine as-is
+</span><span class="kw">pub struct </span>BuiltinActorManifest {
+    builtin2cid: BTreeMap&lt;BuiltinActor, Cid&gt;,
+    <span class="doccomment">/// The CID that this manifest was built from
+    </span>actor_list_cid: Cid,
 }
 
-<span class="kw">impl </span>Manifest {
-    <span class="doccomment">/// Load a manifest from the block store with manifest CID.
-    </span><span class="kw">pub fn </span>load&lt;B: Blockstore&gt;(bs: <span class="kw-2">&amp;</span>B, manifest_cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>(version, actors_cid): ManifestCbor = bs.get_cbor(manifest_cid)<span class="question-mark">?</span>.ok_or_else(|| {
-            <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Failed to retrieve manifest with manifest cid {manifest_cid}&quot;</span>)
-        })<span class="question-mark">?</span>;
+<span class="comment">// Manifest2.builtin2cid must be a BTreeMap
+</span><span class="macro">static_assertions::assert_not_impl_all!</span>(BuiltinActor: std::hash::Hash);
 
-        <span class="self">Self</span>::load_with_actors(bs, <span class="kw-2">&amp;</span>actors_cid, version)
+<span class="kw">impl </span>BuiltinActorManifest {
+    <span class="kw">const </span>MANDATORY_BUILTINS: <span class="kw-2">&amp;</span>[BuiltinActor] = <span class="kw-2">&amp;</span>[BuiltinActor::Init, BuiltinActor::System];
+    <span class="kw">pub fn </span>load_manifest(b: <span class="kw">impl </span>Blockstore, manifest_cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>(manifest_version, actor_list_cid) = b
+            .get_cbor::&lt;(u32, Cid)&gt;(manifest_cid)<span class="question-mark">?
+            </span>.context(<span class="string">&quot;failed to load manifest&quot;</span>)<span class="question-mark">?</span>;
+        <span class="macro">ensure!</span>(
+            manifest_version == <span class="number">1</span>,
+            <span class="string">&quot;unsupported manifest version {}&quot;</span>,
+            manifest_version
+        );
+        <span class="self">Self</span>::load_v1_actor_list(b, <span class="kw-2">&amp;</span>actor_list_cid)
     }
-
-    <span class="doccomment">/// Load a manifest from the block store with actors CID and version.
-    /// Note that only version 1 is supported.
-    </span><span class="kw">pub fn </span>load_with_actors&lt;B: Blockstore&gt;(
-        bs: <span class="kw-2">&amp;</span>B,
-        actors_cid: <span class="kw-2">&amp;</span>Cid,
-        version: u32,
-    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">if </span>version != <span class="number">1 </span>{
-            <span class="macro">anyhow::bail!</span>(<span class="string">&quot;unsupported manifest version {version}&quot;</span>);
+    <span class="kw">pub fn </span>load_v1_actor_list(b: <span class="kw">impl </span>Blockstore, actor_list_cid: <span class="kw-2">&amp;</span>Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>actor_list = b
+            .get_cbor::&lt;Vec&lt;(String, Cid)&gt;&gt;(actor_list_cid)<span class="question-mark">?
+            </span>.context(<span class="string">&quot;failed to load actor list&quot;</span>)<span class="question-mark">?</span>;
+        actor_list.sort();
+        <span class="macro">ensure!</span>(
+            actor_list.iter().map(|(name, _cid)| name).all_unique(),
+            <span class="string">&quot;duplicate actor name in actor list&quot;
+        </span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>name2cid = BTreeMap::from_iter(actor_list);
+        <span class="kw">let </span><span class="kw-2">mut </span>builtin2cid = BTreeMap::new();
+        <span class="kw">for </span>builtin <span class="kw">in </span>ALL_BUILTINS {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(cid) = name2cid.remove(builtin.name()) {
+                builtin2cid.insert(<span class="kw-2">*</span>builtin, cid);
+            }
         }
-
-        <span class="kw">let </span>actors: ManifestActorsCbor = bs.get_cbor(actors_cid)<span class="question-mark">?</span>.ok_or_else(|| {
-            <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Failed to retrieve manifest actors with actors cid {actors_cid}&quot;</span>)
-        })<span class="question-mark">?</span>;
-
-        <span class="self">Self</span>::new(actors, <span class="kw-2">*</span>actors_cid)
-    }
-
-    <span class="doccomment">/// Construct a new manifest from actor name/CID tuples.
-    </span><span class="kw">fn </span>new(iter: <span class="kw">impl </span>IntoIterator&lt;Item = (String, Cid)&gt;, actors_cid: Cid) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>by_name = HashMap::from_iter(iter);
-
-        <span class="kw">let </span>init_code = <span class="kw-2">*</span>by_name
-            .get(INIT_ACTOR_NAME)
-            .context(<span class="string">&quot;manifest missing init actor&quot;</span>)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>system_code = <span class="kw-2">*</span>by_name
-            .get(SYSTEM_ACTOR_NAME)
-            .context(<span class="string">&quot;manifest missing system actor&quot;</span>)<span class="question-mark">?</span>;
-
+        <span class="kw">for </span>mandatory_builtin <span class="kw">in </span><span class="self">Self</span>::MANDATORY_BUILTINS {
+            <span class="macro">ensure!</span>(
+                builtin2cid.contains_key(mandatory_builtin),
+                <span class="string">&quot;actor list does not contain mandatory actor {}&quot;</span>,
+                mandatory_builtin.name()
+            )
+        }
+        <span class="kw">if </span>!name2cid.is_empty() {
+            <span class="macro">tracing::warn!</span>(<span class="string">&quot;unknown actors in list: [{}]&quot;</span>, name2cid.keys().join(<span class="string">&quot;, &quot;</span>))
+        }
         <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
-            by_name,
-            actors_cid,
-            init_code,
-            system_code,
+            builtin2cid,
+            actor_list_cid: <span class="kw-2">*</span>actor_list_cid,
         })
     }
-
-    <span class="kw">pub fn </span>actors_cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cid {
-        <span class="self">self</span>.actors_cid
+    <span class="comment">// Return anyhow::Result instead of Option because we know our users are all at the root of an error chain
+    </span><span class="kw">pub fn </span>get(<span class="kw-2">&amp;</span><span class="self">self</span>, builtin: BuiltinActor) -&gt; anyhow::Result&lt;Cid&gt; {
+        <span class="self">self</span>.builtin2cid
+            .get(<span class="kw-2">&amp;</span>builtin)
+            .copied()
+            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;builtin actor {} is not in the manifest&quot;</span>, builtin.name()))
     }
-
-    <span class="doccomment">/// Returns the code CID for a builtin actor, given the actor&#39;s name.
-    </span><span class="kw">pub fn </span>code_by_name(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;<span class="kw-2">&amp;</span>Cid&gt; {
-        <span class="self">self</span>.by_name
-            .get(name)
-            .ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;Failed to retrieve actor code by name {name}&quot;</span>))
+    <span class="kw">pub fn </span>get_system(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cid {
+        <span class="macro">static_assert_contains_matching!</span>(
+            BuiltinActorManifest::MANDATORY_BUILTINS,
+            BuiltinActor::System
+        );
+        <span class="self">self</span>.get(BuiltinActor::System).unwrap()
     }
-
-    <span class="kw">pub fn </span>actors_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
-        <span class="self">self</span>.by_name.len()
+    <span class="kw">pub fn </span>get_init(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cid {
+        <span class="macro">static_assert_contains_matching!</span>(
+            BuiltinActorManifest::MANDATORY_BUILTINS,
+            BuiltinActor::Init
+        );
+        <span class="self">self</span>.get(BuiltinActor::Init).unwrap()
     }
-
-    <span class="kw">pub fn </span>builtin_actors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = (<span class="kw-2">&amp;</span>String, <span class="kw-2">&amp;</span>Cid)&gt; {
-        <span class="self">self</span>.by_name.iter()
+    <span class="doccomment">/// The CID that this manifest was built from, also known as the `actors CID`
+    </span><span class="attr">#[doc(alias = <span class="string">&quot;actors_cid&quot;</span>)]
+    </span><span class="kw">pub fn </span>source_cid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Cid {
+        <span class="self">self</span>.actor_list_cid
     }
+    <span class="kw">pub fn </span>builtin_actors(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">impl </span>ExactSizeIterator&lt;Item = (BuiltinActor, Cid)&gt; + <span class="lifetime">&#39;_ </span>{
+        <span class="self">self</span>.builtin2cid.iter().map(|(k, v)| (<span class="kw-2">*</span>k, <span class="kw-2">*</span>v)) <span class="comment">// std::iter::Copied doesn&#39;t play well with the tuple here
+    </span>}
+}
 
-    <span class="doccomment">/// Returns the code CID for the init actor.
-    </span><span class="kw">pub fn </span>init_code(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Cid {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.init_code
-    }
+<span class="comment">// https://github.com/ChainSafe/fil-actor-states/issues/171
+</span><span class="macro">macro_rules! </span>exhaustive {
+    (<span class="macro-nonterminal">$vis</span>:vis <span class="kw">const </span><span class="macro-nonterminal">$ident</span>:ident: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>:ty] = <span class="kw-2">&amp;</span>[$(<span class="macro-nonterminal">$variant</span>:path),* $(,)<span class="question-mark">?</span>];) =&gt; {
+        <span class="macro-nonterminal">$vis </span><span class="kw">const </span><span class="macro-nonterminal">$ident</span>: <span class="kw-2">&amp;</span>[<span class="macro-nonterminal">$ty</span>] = <span class="kw-2">&amp;</span>[$(<span class="macro-nonterminal">$variant</span>,)<span class="kw-2">*</span>];
+        <span class="kw">const _</span>: () = {
+            <span class="kw">fn </span>check_exhaustive(it: <span class="macro-nonterminal">$ty</span>) {
+                <span class="kw">match </span>it {
+                    $(
+                        <span class="macro-nonterminal">$variant </span>=&gt; {},
+                    )*
+                }
+            }
+        };
 
-    <span class="doccomment">/// Returns the code CID for the system actor.
-    </span><span class="kw">pub fn </span>system_code(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Cid {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.system_code
     }
 }
+
+<span class="macro">exhaustive! </span>{
+    <span class="kw">const </span>ALL_BUILTINS: <span class="kw-2">&amp;</span>[BuiltinActor] = <span class="kw-2">&amp;</span>[
+        BuiltinActor::System,
+        BuiltinActor::Init,
+        BuiltinActor::Cron,
+        BuiltinActor::Account,
+        BuiltinActor::Power,
+        BuiltinActor::Miner,
+        BuiltinActor::Market,
+        BuiltinActor::PaymentChannel,
+        BuiltinActor::Multisig,
+        BuiltinActor::Reward,
+        BuiltinActor::VerifiedRegistry,
+        BuiltinActor::DataCap,
+        BuiltinActor::Placeholder,
+        BuiltinActor::EVM,
+        BuiltinActor::EAM,
+        BuiltinActor::EthAccount,
+    ];
+}
+
+<span class="macro">macro_rules! </span>static_assert_contains_matching {
+    (<span class="macro-nonterminal">$slice</span>:expr, <span class="macro-nonterminal">$must_match</span>:pat) =&gt; {
+        <span class="kw">const _</span>: () = {
+            <span class="kw">let </span>slice = <span class="macro-nonterminal">$slice</span>;
+            <span class="kw">let </span><span class="kw-2">mut </span>cur_ix = slice.len();
+            <span class="lifetime">&#39;ok</span>: {
+                <span class="kw">while let </span><span class="prelude-val">Some</span>(new_ix) = cur_ix.checked_sub(<span class="number">1</span>) {
+                    cur_ix = new_ix;
+                    <span class="kw">match </span>slice[cur_ix] {
+                        <span class="macro-nonterminal">$must_match </span>=&gt; <span class="kw">break </span><span class="lifetime">&#39;ok</span>,
+                        <span class="kw">_ </span>=&gt; <span class="kw">continue</span>,
+                    }
+                }
+                <span class="macro">panic!</span>(<span class="string">&quot;slice did not contain a match&quot;</span>)
+            }
+        };
+    };
+}
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span>static_assert_contains_matching;
 </code></pre></div></section></main></body></html>

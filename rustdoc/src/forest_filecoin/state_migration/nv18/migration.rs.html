@@ -107,16 +107,16 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
+<span class="kw">use </span><span class="kw">crate</span>::shim::machine::BuiltinActorManifest;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
     clock::ChainEpoch,
-    machine::Manifest,
     state_tree::{StateTree, StateTreeVersion},
 };
 <span class="kw">use </span>anyhow::anyhow;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::CborStore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore <span class="kw">as _</span>;
 
 <span class="kw">use super</span>::{
     eam::EamPostMigrator, eth_account::EthAccountPostMigrator, init, system, verifier::Verifier,
@@ -139,22 +139,22 @@
             .get_cbor::&lt;SystemStateOld&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;system actor state not found&quot;</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>current_manifest =
-            Manifest::load_with_actors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors, <span class="number">1</span>)<span class="question-mark">?</span>;
+            BuiltinActorManifest::load_v1_actor_list(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>store, new_manifest)<span class="question-mark">?</span>;
+        <span class="kw">let </span>new_manifest = BuiltinActorManifest::load_manifest(<span class="kw-2">&amp;</span>store, new_manifest)<span class="question-mark">?</span>;
 
-        <span class="kw">for </span>(name, code) <span class="kw">in </span>current_manifest.builtin_actors() {
-            <span class="kw">let </span>new_code = new_manifest.code_by_name(name)<span class="question-mark">?</span>;
-            <span class="self">self</span>.add_migrator(<span class="kw-2">*</span>code, nil_migrator(<span class="kw-2">*</span>new_code));
+        <span class="kw">for </span>(actor, cid) <span class="kw">in </span>current_manifest.builtin_actors() {
+            <span class="kw">let </span>new_cid = new_manifest.get(actor)<span class="question-mark">?</span>;
+            <span class="self">self</span>.add_migrator(cid, nil_migrator(new_cid));
         }
 
         <span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>current_manifest.init_code(),
-            init::init_migrator(<span class="kw-2">*</span>new_manifest.init_code()),
+            current_manifest.get_init(),
+            init::init_migrator(new_manifest.get_init()),
         );
 
         <span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>current_manifest.system_code(),
+            current_manifest.get_system(),
             system::system_migrator(<span class="kw-2">&amp;</span>new_manifest),
         );
 

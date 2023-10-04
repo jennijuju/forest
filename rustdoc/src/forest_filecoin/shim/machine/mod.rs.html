@@ -35,8 +35,8 @@
 </span><span class="kw">use </span>fvm2::machine::MultiEngine <span class="kw">as </span>MultiEngine_v2;
 <span class="kw">use </span>fvm3::engine::MultiEngine <span class="kw">as </span>MultiEngine_v3;
 <span class="kw">use </span>fvm4::engine::MultiEngine <span class="kw">as </span>MultiEngine_v4;
+<span class="kw">pub use </span>manifest::{BuiltinActor, BuiltinActorManifest};
 <span class="kw">mod </span>manifest;
-<span class="kw">pub use </span>manifest::<span class="kw-2">*</span>;
 
 <span class="kw">pub struct </span>MultiEngine {
     <span class="kw">pub </span>v2: MultiEngine_v2,

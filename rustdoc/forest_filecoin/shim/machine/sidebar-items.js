@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["manifest"],"struct":["MultiEngine"]};
+window.SIDEBAR_ITEMS = {"enum":["BuiltinActor"],"mod":["manifest"],"struct":["MultiEngine"]};

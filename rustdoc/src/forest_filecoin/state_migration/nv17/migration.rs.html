@@ -177,23 +177,25 @@
 <a href="#177" id="177">177</a>
 <a href="#178" id="178">178</a>
 <a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
-<span class="kw">use </span><span class="kw">crate</span>::shim::machine::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
     clock::ChainEpoch,
-    machine::Manifest,
+    machine::{BuiltinActor, BuiltinActorManifest},
     state_tree::{StateTree, StateTreeVersion},
 };
-<span class="kw">use </span>anyhow::{anyhow, Context};
+<span class="kw">use </span>anyhow::{anyhow, Context <span class="kw">as _</span>};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::CborStore;
+<span class="kw">use </span>fvm_ipld_encoding::CborStore <span class="kw">as _</span>;
 
 <span class="kw">use </span><span class="kw">super</span>::<span class="kw">super</span>::common::{
     migrators::{nil_migrator, DeferredMigrator},
@@ -209,7 +211,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
         actors_in: <span class="kw-2">&amp;mut </span>StateTree&lt;BS&gt;,
-        new_manifest: <span class="kw-2">&amp;</span>Manifest,
+        new_manifest: <span class="kw-2">&amp;</span>BuiltinActorManifest,
         prior_epoch: ChainEpoch,
         chain_config: <span class="kw-2">&amp;</span>ChainConfig,
     ) -&gt; anyhow::Result&lt;()&gt; {
@@ -222,7 +224,8 @@
             </span>.ok_or_else(|| <span class="macro">anyhow!</span>(<span class="string">&quot;system actor state not found&quot;</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>current_manifest_data = system_actor_state.builtin_actors;
 
-        <span class="kw">let </span>current_manifest = Manifest::load_with_actors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>current_manifest_data, <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>current_manifest =
+            BuiltinActorManifest::load_v1_actor_list(store, <span class="kw-2">&amp;</span>current_manifest_data)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>verifreg_actor_v8 = actors_in
             .get_actor(<span class="kw-2">&amp;</span>fil_actors_shared::v8::VERIFIED_REGISTRY_ACTOR_ADDR.into())<span class="question-mark">?
@@ -247,28 +250,31 @@
         <span class="kw">let </span>(pending_verified_deals, pending_verified_deal_size) =
             get_pending_verified_deals_and_total_size(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>market_state_v8)<span class="question-mark">?</span>;
 
-        <span class="kw">for </span>(name, code) <span class="kw">in </span>current_manifest.builtin_actors() {
-            <span class="kw">if </span>name == MARKET_ACTOR_NAME || name == VERIFREG_ACTOR_NAME {
-                <span class="self">self</span>.add_migrator(<span class="kw-2">*</span>code, Arc::new(DeferredMigrator))
-            } <span class="kw">else </span>{
-                <span class="kw">let </span>new_code = new_manifest.code_by_name(name)<span class="question-mark">?</span>;
-                <span class="self">self</span>.add_migrator(<span class="kw-2">*</span>code, nil_migrator(<span class="kw-2">*</span>new_code));
+        <span class="kw">for </span>(actor, cid) <span class="kw">in </span>current_manifest.builtin_actors() {
+            <span class="kw">match </span>actor {
+                BuiltinActor::Market | BuiltinActor::VerifiedRegistry =&gt; {
+                    <span class="self">self</span>.add_migrator(cid, Arc::new(DeferredMigrator))
+                }
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">let </span>new_code = new_manifest.get(actor)<span class="question-mark">?</span>;
+                    <span class="self">self</span>.add_migrator(cid, nil_migrator(new_code))
+                }
             }
         }
 
         <span class="comment">// https://github.com/filecoin-project/go-state-types/blob/1e6cf0d47cdda75383ef036fc2725d1cf51dbde8/builtin/v9/migration/top.go#L178
         </span><span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>current_manifest.system_code(),
+            current_manifest.get_system(),
             system::system_migrator(new_manifest),
         );
 
-        <span class="kw">let </span>miner_v8_actor_code = current_manifest.code_by_name(MINER_ACTOR_NAME)<span class="question-mark">?</span>;
-        <span class="kw">let </span>miner_v9_actor_code = new_manifest.code_by_name(MINER_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>miner_v8_actor_code = current_manifest.get(BuiltinActor::Miner)<span class="question-mark">?</span>;
+        <span class="kw">let </span>miner_v9_actor_code = new_manifest.get(BuiltinActor::Miner)<span class="question-mark">?</span>;
 
         <span class="self">self</span>.add_migrator(
-            <span class="kw-2">*</span>miner_v8_actor_code,
+            miner_v8_actor_code,
             miner::miner_migrator(
-                <span class="kw-2">*</span>miner_v9_actor_code,
+                miner_v9_actor_code,
                 store,
                 market_state_v8.proposals,
                 chain_config,
@@ -279,8 +285,8 @@
         <span class="kw">let </span>verifreg_state_v8: fil_actor_verifreg_state::v8::State = store
             .get_cbor(<span class="kw-2">&amp;</span>verifreg_state_v8_cid)<span class="question-mark">?
             </span>.context(<span class="string">&quot;Failed to load verifreg state v8&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>verifreg_code = <span class="kw-2">*</span>new_manifest.code_by_name(VERIFREG_ACTOR_NAME)<span class="question-mark">?</span>;
-        <span class="kw">let </span>market_code = <span class="kw-2">*</span>new_manifest.code_by_name(MARKET_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>verifreg_code = new_manifest.get(BuiltinActor::VerifiedRegistry)<span class="question-mark">?</span>;
+        <span class="kw">let </span>market_code = new_manifest.get(BuiltinActor::Market)<span class="question-mark">?</span>;
 
         <span class="self">self</span>.add_post_migrator(Arc::new(VerifregMarketPostMigrator {
             prior_epoch,
@@ -298,7 +304,7 @@
         // by setting up an empty actor to migrate from with a migrator,
         // while forest uses a post migrator to simplify the logic.
         </span><span class="self">self</span>.add_post_migrator(Arc::new(datacap::DataCapPostMigrator {
-            new_code_cid: <span class="kw-2">*</span>new_manifest.code_by_name(DATACAP_ACTOR_NAME)<span class="question-mark">?</span>,
+            new_code_cid: new_manifest.get(BuiltinActor::DataCap)<span class="question-mark">?</span>,
             verifreg_state: store
                 .get_cbor(<span class="kw-2">&amp;</span>verifreg_state_v8_cid)<span class="question-mark">?
                 </span>.context(<span class="string">&quot;Failed to load verifreg state v8&quot;</span>)<span class="question-mark">?</span>,
@@ -334,7 +340,7 @@
         )
     })<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>new_manifest = Manifest::load(<span class="kw-2">&amp;</span>blockstore, new_manifest_cid)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_manifest = BuiltinActorManifest::load_manifest(blockstore, new_manifest_cid)<span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>actors_in = StateTree::new_from_root(blockstore.clone(), state)<span class="question-mark">?</span>;
 

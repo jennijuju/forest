@@ -64,7 +64,7 @@
             <span class="kw">use </span><span class="macro-nonterminal">$crate::cid_collections::CidHashMap</span>;
             <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
             <span class="kw">use </span>fvm_ipld_encoding::CborStore;
-            <span class="kw">use </span><span class="macro-nonterminal">$crate::shim</span>::{address::Address, machine::Manifest, state_tree::StateTree};
+            <span class="kw">use </span><span class="macro-nonterminal">$crate::shim</span>::{address::Address, machine::BuiltinActorManifest, state_tree::StateTree};
             <span class="kw">use </span><span class="macro-nonterminal">$crate::state_migration::common</span>::{verifier::ActorMigrationVerifier, Migrator};
 
             <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -87,8 +87,8 @@
                         .get_cbor::&lt;SystemStateOld&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
                         </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;system actor state not found&quot;</span>))<span class="question-mark">?</span>;
                     <span class="kw">let </span>manifest =
-                        Manifest::load_with_actors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors, <span class="number">1</span>)<span class="question-mark">?</span>;
-                    <span class="kw">let </span>manifest_actors_count = manifest.actors_count();
+                        BuiltinActorManifest::load_v1_actor_list(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>manifest_actors_count = manifest.builtin_actors().len();
                     <span class="kw">if </span>manifest_actors_count == migrations.len() {
                         <span class="macro">tracing::debug!</span>(<span class="string">&quot;Migration spec is correct.&quot;</span>);
                     } <span class="kw">else </span>{

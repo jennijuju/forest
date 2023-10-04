@@ -920,6 +920,7 @@
 <a href="#920" id="920">920</a>
 <a href="#921" id="921">921</a>
 <a href="#922" id="922">922</a>
+<a href="#923" id="923">923</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1286,13 +1287,9 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
     <span class="kw">use </span><span class="kw">crate</span>::shim::bigint::BigInt;
-    <span class="kw">use </span><span class="kw">crate</span>::shim::machine::{
-        ACCOUNT_ACTOR_NAME, CRON_ACTOR_NAME, MARKET_ACTOR_NAME, MINER_ACTOR_NAME, POWER_ACTOR_NAME,
-        REWARD_ACTOR_NAME, VERIFREG_ACTOR_NAME,
-    };
     <span class="kw">use </span><span class="kw">crate</span>::shim::{
         econ::TokenAmount,
-        machine::Manifest,
+        machine::{BuiltinActor, BuiltinActorManifest},
         state_tree::{ActorState, StateRoot, StateTree, StateTreeVersion},
     };
     <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
@@ -1319,7 +1316,7 @@
         <span class="kw">let </span>system_state_old: fil_actor_system_state::v9::State =
             store.get_cbor(<span class="kw-2">&amp;</span>system_actor_old.state)<span class="question-mark">?</span>.unwrap();
         <span class="kw">let </span>manifest_data_cid_old = system_state_old.builtin_actors;
-        <span class="macro">ensure!</span>(manifest_data_cid_old == manifest_old.actors_cid());
+        <span class="macro">ensure!</span>(manifest_data_cid_old == manifest_old.source_cid());
         <span class="macro">ensure!</span>(
             manifest_data_cid_old.to_string()
                 == <span class="string">&quot;bafy2bzaceb7wfqkjc5c3ccjyhaf7zuhkvbzpvhnb35feaettztoharc7zdndc&quot;
@@ -1404,7 +1401,7 @@
         )<span class="question-mark">?</span>;
 
         <span class="comment">// base stuff to create miners
-        </span><span class="kw">let </span>miner_cid_old = manifest_old.code_by_name(MINER_ACTOR_NAME)<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>miner_cid_old = manifest_old.get(BuiltinActor::Miner)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(miner_cid_old.to_string() == <span class="string">&quot;bafkqaetgnfwc6obpon2g64tbm5sw22lomvza&quot;</span>);
         <span class="kw">let </span>base_miner_state = make_base_miner_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>base_addr, <span class="kw-2">&amp;</span>base_worker_addr)<span class="question-mark">?</span>;
 
@@ -1436,7 +1433,7 @@
                 == <span class="string">&quot;bafy2bzaceaqtktd7f5b2gutreh3b2czp2mkqu4ilyuu7mjcpwrk75g5nl6w6k&quot;
         </span>);
 
-        <span class="kw">let </span>miner1 = ActorState::new(<span class="kw-2">*</span>miner_cid_old, miner1_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let </span>miner1 = ActorState::new(miner_cid_old, miner1_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="kw">let </span>addr1 = Address::new_id(base_addr_id + <span class="number">1</span>);
         state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr1, miner1)<span class="question-mark">?</span>;
 
@@ -1464,7 +1461,7 @@
                 == <span class="string">&quot;bafy2bzacedad6xkymehkuoij4rhg2inzqnfin3er52znw53lddn5364usp2bi&quot;
         </span>);
 
-        <span class="kw">let </span>miner2 = ActorState::new(<span class="kw-2">*</span>miner_cid_old, miner2_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let </span>miner2 = ActorState::new(miner_cid_old, miner2_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="kw">let </span>addr2 = Address::new_id(base_addr_id + <span class="number">2</span>);
         state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr2, miner2)<span class="question-mark">?</span>;
 
@@ -1502,7 +1499,7 @@
                 == <span class="string">&quot;bafy2bzaceb7ojujla7jb6iaxeuk4etg2kui4gtjujwqadqkc7lkp4ugoqrh2m&quot;
         </span>);
 
-        <span class="kw">let </span>miner3 = ActorState::new(<span class="kw-2">*</span>miner_cid_old, miner3_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let </span>miner3 = ActorState::new(miner_cid_old, miner3_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="kw">let </span>addr3 = Address::new_id(base_addr_id + <span class="number">3</span>);
         state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr3, miner3)<span class="question-mark">?</span>;
 
@@ -1532,14 +1529,14 @@
         <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
         <span class="kw">let </span>addr = Address::new_id(<span class="number">10000</span>);
         <span class="kw">let </span>worker_addr = Address::new_id(<span class="number">20000</span>);
-        <span class="kw">let </span>miner_cid_old = manifest_old.code_by_name(MINER_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>miner_cid_old = manifest_old.get(BuiltinActor::Miner)<span class="question-mark">?</span>;
         <span class="kw">let </span>miner_state = make_base_miner_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>addr, <span class="kw-2">&amp;</span>worker_addr)<span class="question-mark">?</span>;
         <span class="kw">let </span>miner_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner_state)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(
             miner_state_cid.to_string()
                 == <span class="string">&quot;bafy2bzaceacitm72b4zks7ivplygpmyqa6aas2pxkv4rkiknluxiko5mn4ng6&quot;
         </span>);
-        <span class="kw">let </span>miner_actor = ActorState::new(<span class="kw-2">*</span>miner_cid_old, miner_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
+        <span class="kw">let </span>miner_actor = ActorState::new(miner_cid_old, miner_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr, miner_actor)<span class="question-mark">?</span>;
         <span class="kw">let </span>state_tree_old_root = state_tree_old.flush()<span class="question-mark">?</span>;
         <span class="kw">let </span>(new_manifest_cid, _new_manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/9/&quot;</span>)<span class="question-mark">?</span>;
@@ -1558,18 +1555,20 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>make_input_tree&lt;BS: Blockstore&gt;(store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(StateTree&lt;BS&gt;, Manifest)&gt; {
+    <span class="kw">fn </span>make_input_tree&lt;BS: Blockstore&gt;(
+        store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(StateTree&lt;BS&gt;, BuiltinActorManifest)&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>tree = StateTree::new(store.clone(), StateTreeVersion::V4)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(_manifest_cid, manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/8/&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>account_cid = manifest.code_by_name(ACCOUNT_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>account_cid = manifest.get(BuiltinActor::Account)<span class="question-mark">?</span>;
         <span class="comment">// fmt.Printf(&quot;accountCid: %s\n&quot;, accountCid)
         </span><span class="macro">ensure!</span>(account_cid.to_string() == <span class="string">&quot;bafkqadlgnfwc6obpmfrwg33vnz2a&quot;</span>);
-        <span class="kw">let </span>system_cid = manifest.system_code();
+        <span class="kw">let </span>system_cid = manifest.get_system();
         <span class="comment">// fmt.Printf(&quot;systemCid: %s\n&quot;, systemCid)
         </span><span class="macro">ensure!</span>(system_cid.to_string() == <span class="string">&quot;bafkqaddgnfwc6obpon4xg5dfnu&quot;</span>);
         <span class="kw">let </span>system_state = fil_actor_system_state::v9::State {
-            builtin_actors: manifest.actors_cid(),
+            builtin_actors: manifest.source_cid(),
         };
         <span class="kw">let </span>system_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>system_state)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(
@@ -1579,12 +1578,12 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             system_state_cid,
-            <span class="kw-2">*</span>system_cid,
+            system_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::system::ADDRESS.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>init_cid = manifest.init_code();
+        <span class="kw">let </span>init_cid = manifest.get_init();
         <span class="comment">// fmt.Printf(&quot;initCid: %s\n&quot;, initCid)
         </span><span class="macro">ensure!</span>(init_cid.to_string() == <span class="string">&quot;bafkqactgnfwc6obpnfxgs5a&quot;</span>);
         <span class="kw">let </span>init_state = fil_actor_init_state::v8::State::new(<span class="kw-2">&amp;</span>store, <span class="string">&quot;migrationtest&quot;</span>.into())<span class="question-mark">?</span>;
@@ -1596,12 +1595,12 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             init_state_cid,
-            <span class="kw-2">*</span>init_cid,
+            init_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::init::ADDRESS.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>reward_cid = manifest.code_by_name(REWARD_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>reward_cid = manifest.get(BuiltinActor::Reward)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(reward_cid.to_string() == <span class="string">&quot;bafkqaddgnfwc6obpojsxoylsmq&quot;</span>);
         <span class="kw">let </span>reward_state = fil_actor_reward_state::v8::State::new(Default::default());
         <span class="kw">let </span>reward_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>reward_state)<span class="question-mark">?</span>;
@@ -1612,12 +1611,12 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             reward_state_cid,
-            <span class="kw-2">*</span>reward_cid,
+            reward_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::reward::ADDRESS.into(),
             TokenAmount::from_whole(<span class="number">1_100_000_000</span>),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>cron_cid = manifest.code_by_name(CRON_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>cron_cid = manifest.get(BuiltinActor::Cron)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(cron_cid.to_string() == <span class="string">&quot;bafkqactgnfwc6obpmnzg63q&quot;</span>);
         <span class="kw">let </span>cron_state = fil_actor_cron_state::v8::State {
             entries: <span class="macro">vec!</span>[
@@ -1639,12 +1638,12 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             cron_state_cid,
-            <span class="kw-2">*</span>cron_cid,
+            cron_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::cron::ADDRESS.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>power_cid = manifest.code_by_name(POWER_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>power_cid = manifest.get(BuiltinActor::Power)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(power_cid.to_string() == <span class="string">&quot;bafkqaetgnfwc6obpon2g64tbm5sxa33xmvza&quot;</span>);
         <span class="kw">let </span>power_state = fil_actor_power_state::v8::State::new(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
         <span class="kw">let </span>power_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>power_state)<span class="question-mark">?</span>;
@@ -1655,12 +1654,12 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             power_state_cid,
-            <span class="kw-2">*</span>power_cid,
+            power_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::power::ADDRESS.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>market_cid = manifest.code_by_name(MARKET_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>market_cid = manifest.get(BuiltinActor::Market)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(market_cid.to_string() == <span class="string">&quot;bafkqae3gnfwc6obpon2g64tbm5sw2ylsnnsxi&quot;</span>);
         <span class="kw">let </span>market_state = fil_actor_market_state::v8::State::new(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
         <span class="kw">let </span>market_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>market_state)<span class="question-mark">?</span>;
@@ -1671,7 +1670,7 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             market_state_cid,
-            <span class="kw-2">*</span>market_cid,
+            market_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::market::ADDRESS.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
@@ -1689,12 +1688,12 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             account_state_cid,
-            <span class="kw-2">*</span>account_cid,
+            account_cid,
             <span class="kw-2">&amp;</span>account_state.address.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>verifreg_cid = manifest.code_by_name(VERIFREG_ACTOR_NAME)<span class="question-mark">?</span>;
+        <span class="kw">let </span>verifreg_cid = manifest.get(BuiltinActor::VerifiedRegistry)<span class="question-mark">?</span>;
         <span class="macro">ensure!</span>(verifreg_cid.to_string() == <span class="string">&quot;bafkqaftgnfwc6obpozsxe2lgnfswi4tfm5uxg5dspe&quot;</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>verifreg_state =
             fil_actor_verifreg_state::v8::State::new(<span class="kw-2">&amp;</span>store, verifreg_root.into())<span class="question-mark">?</span>;
@@ -1731,7 +1730,7 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             verifreg_state_cid,
-            <span class="kw-2">*</span>verifreg_cid,
+            verifreg_cid,
             <span class="kw-2">&amp;</span>fil_actors_shared::v8::builtin::VERIFIED_REGISTRY_ACTOR_ADDR.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
@@ -1748,7 +1747,7 @@
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             account_state_cid,
-            <span class="kw-2">*</span>account_cid,
+            account_cid,
             <span class="kw-2">&amp;</span>account_state.address.into(),
             Zero::zero(),
         )<span class="question-mark">?</span>;
@@ -1771,7 +1770,10 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>make_test_manifest&lt;BS: Blockstore&gt;(store: <span class="kw-2">&amp;</span>BS, prefix: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;(Cid, Manifest)&gt; {
+    <span class="kw">fn </span>make_test_manifest&lt;BS: Blockstore&gt;(
+        store: <span class="kw-2">&amp;</span>BS,
+        prefix: <span class="kw-2">&amp;</span>str,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Cid, BuiltinActorManifest)&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>manifest_data = <span class="macro">vec!</span>[];
         <span class="kw">for </span>name <span class="kw">in </span>[
             <span class="string">&quot;account&quot;</span>,
@@ -1793,7 +1795,7 @@
         }
 
         <span class="kw">let </span>manifest_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>(<span class="number">1</span>, store.put_cbor_default(<span class="kw-2">&amp;</span>manifest_data)<span class="question-mark">?</span>))<span class="question-mark">?</span>;
-        <span class="kw">let </span>manifest = Manifest::load(store, <span class="kw-2">&amp;</span>manifest_cid)<span class="question-mark">?</span>;
+        <span class="kw">let </span>manifest = BuiltinActorManifest::load_manifest(store, <span class="kw-2">&amp;</span>manifest_cid)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>((manifest_cid, manifest))
     }
