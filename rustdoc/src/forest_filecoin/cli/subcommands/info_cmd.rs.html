@@ -497,7 +497,7 @@
 }
 
 <span class="kw">impl </span>InfoCommand {
-    <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, config: Config, _opts: <span class="kw-2">&amp;</span>CliOpts) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config, _opts: <span class="kw-2">&amp;</span>CliOpts) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>res = <span class="macro">tokio::try_join!</span>(
             node_status((), <span class="kw-2">&amp;</span>config.client.rpc_token),
             chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token),

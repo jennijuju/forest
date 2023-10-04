@@ -155,8 +155,6 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -199,11 +197,9 @@
 }
 
 <span class="kw">impl </span>SyncCommands {
-    <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Wait { watch } =&gt; {
-                <span class="kw">let </span>watch = <span class="kw-2">*</span>watch;
-
                 <span class="kw">let </span>ticker = Ticker::new(<span class="number">0</span>.., Duration::from_secs(<span class="number">1</span>));
                 <span class="kw">let </span><span class="kw-2">mut </span>stdout = stdout();
 

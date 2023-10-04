@@ -196,29 +196,29 @@
 }
 
 <span class="kw">impl </span>ChainCommands {
-    <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Block { cid } =&gt; print_rpc_res_pretty(
-                chain_get_block(((<span class="kw-2">*</span>cid).into(),), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>,
-            ),
+            <span class="self">Self</span>::Block { cid } =&gt; {
+                print_rpc_res_pretty(chain_get_block((cid.into(),), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>)
+            }
             <span class="self">Self</span>::Genesis =&gt; {
                 print_rpc_res_pretty(chain_get_genesis(<span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>)
             }
             <span class="self">Self</span>::Head =&gt; print_rpc_res_cids(chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>),
             <span class="self">Self</span>::Message { cid } =&gt; print_rpc_res_pretty(
-                chain_get_message(((<span class="kw-2">*</span>cid).into(),), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>,
+                chain_get_message((cid.into(),), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>,
             ),
             <span class="self">Self</span>::ReadObj { cid } =&gt; {
-                print_rpc_res(chain_read_obj(((<span class="kw-2">*</span>cid).into(),), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>)
+                print_rpc_res(chain_read_obj((cid.into(),), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await</span>)
             }
             <span class="self">Self</span>::SetHead {
                 cids,
                 epoch: <span class="prelude-val">Some</span>(epoch),
                 force: no_confirm,
             } =&gt; {
-                maybe_confirm(<span class="kw-2">*</span>no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
+                maybe_confirm(no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
                 <span class="macro">assert!</span>(cids.is_empty(), <span class="string">&quot;should be disallowed by clap&quot;</span>);
-                tipset_by_epoch_or_offset(<span class="kw-2">*</span>epoch, <span class="kw-2">&amp;</span>config.client.rpc_token)
+                tipset_by_epoch_or_offset(epoch, <span class="kw-2">&amp;</span>config.client.rpc_token)
                     .and_then(|tipset_json| {
                         chain_set_head(
                             (tipset_json.into_inner().key().clone(),),
@@ -233,7 +233,7 @@
                 epoch: <span class="prelude-val">None</span>,
                 force: no_confirm,
             } =&gt; {
-                maybe_confirm(<span class="kw-2">*</span>no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
+                maybe_confirm(no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
                 chain_set_head(
                     (TipsetKeys::from_iter(cids.clone()),),
                     <span class="kw-2">&amp;</span>config.client.rpc_token,

@@ -807,7 +807,7 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>context = Context::default();
         <span class="self">self</span>.setup_context(<span class="kw-2">&amp;mut </span>context, <span class="kw-2">&amp;</span>config.client.rpc_token);
 
