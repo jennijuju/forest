@@ -273,7 +273,7 @@
     econ::TokenAmount,
     state_tree::{ActorState, StateTree},
 };
-<span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::{market, power, reward};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -377,7 +377,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ActorState, anyhow::Error&gt; {
     state_tree
         .get_actor(addr)<span class="question-mark">?
-        </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Failed to get Actor for address {addr}&quot;</span>))
+        </span>.with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Failed to get Actor for address {addr}&quot;</span>))
 }
 
 <span class="kw">fn </span>get_fil_vested(genesis_info: <span class="kw-2">&amp;</span>GenesisInfo, height: ChainEpoch) -&gt; TokenAmount {

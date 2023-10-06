@@ -344,6 +344,8 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -354,7 +356,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::db::{parity_db_config::ParityDbConfig, DBStatistics};
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{BitswapStoreRead, BitswapStoreReadWrite};
 
-<span class="kw">use </span>anyhow::{anyhow, Context};
+<span class="kw">use </span>anyhow::{anyhow, Context <span class="kw">as _</span>};
 <span class="kw">use </span>cid::multihash::Code::Blake2b256;
 
 <span class="kw">use </span>cid::Cid;
@@ -612,7 +614,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>write_read_different_columns_test() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_read_different_columns_test() {
         <span class="kw">let </span>db = TempParityDB::new();
         <span class="kw">let </span>data = [
             <span class="string">b&quot;h&#39;nglui mglw&#39;nafh&quot;</span>.to_vec(),
@@ -632,13 +634,14 @@
         ];
 
         <span class="kw">for </span>(<span class="kw">_</span>, cid, data) <span class="kw">in </span>cases {
-            db.put_keyed(<span class="kw-2">&amp;</span>cid, data)<span class="question-mark">?</span>;
+            db.put_keyed(<span class="kw-2">&amp;</span>cid, data).unwrap();
         }
 
         <span class="kw">for </span>(column, cid, data) <span class="kw">in </span>cases {
             <span class="kw">let </span>actual = db
-                .read_from_column(cid.to_bytes(), column)<span class="question-mark">?
-                </span>.expect(<span class="string">&quot;data not found&quot;</span>);
+                .read_from_column(cid.to_bytes(), column)
+                .unwrap()
+                .expect(<span class="string">&quot;data not found&quot;</span>);
             <span class="macro">assert_eq!</span>(data, actual.as_bytes());
 
             <span class="comment">// assert that the data is NOT in the other column
@@ -647,23 +650,24 @@
                 DbColumn::GraphFull =&gt; DbColumn::GraphDagCborBlake2b256,
                 DbColumn::Settings =&gt; <span class="macro">panic!</span>(<span class="string">&quot;invalid column for IPLD data&quot;</span>),
             };
-            <span class="kw">let </span>actual = db.read_from_column(cid.to_bytes(), other_column)<span class="question-mark">?</span>;
+            <span class="kw">let </span>actual = db.read_from_column(cid.to_bytes(), other_column).unwrap();
             <span class="macro">assert!</span>(actual.is_none());
 
             <span class="comment">// Blockstore API usage should be transparent
-            </span><span class="kw">let </span>actual =
-                fvm_ipld_blockstore::Blockstore::get(db.as_ref(), <span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>.expect(<span class="string">&quot;data not found&quot;</span>);
+            </span><span class="kw">let </span>actual = fvm_ipld_blockstore::Blockstore::get(db.as_ref(), <span class="kw-2">&amp;</span>cid)
+                .unwrap()
+                .expect(<span class="string">&quot;data not found&quot;</span>);
             <span class="macro">assert_eq!</span>(data, actual.as_slice());
         }
 
         <span class="comment">// Check non-IPLD column as well
-        </span>db.write_to_column(<span class="string">b&quot;dagon&quot;</span>, <span class="string">b&quot;bloop&quot;</span>, DbColumn::Settings)<span class="question-mark">?</span>;
+        </span>db.write_to_column(<span class="string">b&quot;dagon&quot;</span>, <span class="string">b&quot;bloop&quot;</span>, DbColumn::Settings)
+            .unwrap();
         <span class="kw">let </span>actual = db
-            .read_from_column(<span class="string">b&quot;dagon&quot;</span>, DbColumn::Settings)<span class="question-mark">?
-            </span>.expect(<span class="string">&quot;data not found&quot;</span>);
+            .read_from_column(<span class="string">b&quot;dagon&quot;</span>, DbColumn::Settings)
+            .unwrap()
+            .expect(<span class="string">&quot;data not found&quot;</span>);
         <span class="macro">assert_eq!</span>(<span class="string">b&quot;bloop&quot;</span>, actual.as_bytes());
-
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[test]

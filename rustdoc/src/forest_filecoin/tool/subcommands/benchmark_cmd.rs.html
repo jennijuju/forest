@@ -302,7 +302,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarStream};
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
 <span class="kw">use </span><span class="kw">crate</span>::utils::stream::par_buffer;
-<span class="kw">use </span>anyhow::{Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>futures::{StreamExt, TryStreamExt};
@@ -371,7 +371,7 @@
 }
 
 <span class="kw">impl </span>BenchmarkCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::CarStreaming {
                 snapshot_files,
@@ -407,7 +407,7 @@
 
 <span class="comment">// Concatenate a set of CAR files and measure how quickly we can stream the
 // blocks.
-</span><span class="kw">async fn </span>benchmark_car_streaming(input: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">async fn </span>benchmark_car_streaming(input: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>sink = indicatif_sink(<span class="string">&quot;traversed&quot;</span>);
 
     <span class="kw">let </span><span class="kw-2">mut </span>s = Box::pin(
@@ -426,7 +426,7 @@
 <span class="comment">// Concatenate a set of CAR files and measure how quickly we can stream the
 // blocks, while inspecting them. This a benchmark we could use for setting
 // realistic expectations in terms of DFS graph travels, for example.
-</span><span class="kw">async fn </span>benchmark_car_streaming_inspect(input: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">async fn </span>benchmark_car_streaming_inspect(input: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>sink = indicatif_sink(<span class="string">&quot;traversed&quot;</span>);
     <span class="kw">let </span><span class="kw-2">mut </span>s = Box::pin(
         futures::stream::iter(input)
@@ -448,7 +448,7 @@
 
 <span class="comment">// Open a set of CAR files as a block store and do a DFS traversal of all
 // reachable nodes.
-</span><span class="kw">async fn </span>benchmark_graph_traversal(input: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">async fn </span>benchmark_graph_traversal(input: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>store = open_store(input)<span class="question-mark">?</span>;
     <span class="kw">let </span>heaviest = store.heaviest_tipset()<span class="question-mark">?</span>;
 
@@ -464,7 +464,7 @@
 
 <span class="comment">// Open a set of CAR files as a block store and do an unordered traversal of all
 // reachable nodes.
-</span><span class="kw">async fn </span>benchmark_unordered_graph_traversal(input: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">async fn </span>benchmark_unordered_graph_traversal(input: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>store = Arc::new(open_store(input)<span class="question-mark">?</span>);
     <span class="kw">let </span>heaviest = store.heaviest_tipset()<span class="question-mark">?</span>;
 
@@ -483,7 +483,7 @@
     input: PathBuf,
     compression_level: u16,
     frame_size: usize,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>file = tokio::io::BufReader::new(File::open(<span class="kw-2">&amp;</span>input).<span class="kw">await</span><span class="question-mark">?</span>);
 
     <span class="kw">let </span><span class="kw-2">mut </span>block_stream = CarStream::new(file).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -510,7 +510,7 @@
     frame_size: usize,
     epoch: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     depth: ChainEpochDelta,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>store = Arc::new(open_store(input)<span class="question-mark">?</span>);
     <span class="kw">let </span>heaviest = store.heaviest_tipset()<span class="question-mark">?</span>;
     <span class="kw">let </span>idx = ChainIndex::new(<span class="kw-2">&amp;</span>store);
@@ -565,7 +565,7 @@
 <span class="comment">// Opening a block store may take a long time (CAR files have to be indexed,
 // CAR.zst files have to be decompressed). Show a progress indicator and clear
 // it when done.
-</span><span class="kw">fn </span>open_store(input: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;ManyCar&gt; {
+</span><span class="kw">fn </span>open_store(input: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;ManyCar&gt; {
     <span class="kw">let </span>pb = indicatif::ProgressBar::new_spinner().with_style(
         indicatif::ProgressStyle::with_template(<span class="string">&quot;{spinner} opening block store&quot;</span>)
             .expect(<span class="string">&quot;indicatif template must be valid&quot;</span>),

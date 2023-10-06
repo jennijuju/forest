@@ -43,24 +43,22 @@
 <a href="#43" id="43">43</a>
 <a href="#44" id="44">44</a>
 <a href="#45" id="45">45</a>
-<a href="#46" id="46">46</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="doccomment">//! This module contains the migration logic for the `NV19` upgrade for the
 //! Miner actor.
 
-</span><span class="kw">use </span>std::sync::Arc;
-
+</span><span class="kw">use </span><span class="kw">crate</span>::state_migration::common::{
+    ActorMigration, ActorMigrationInput, ActorMigrationOutput, TypeMigration, TypeMigrator,
+};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_miner_state::{v10::State <span class="kw">as </span>MinerStateOld, v11::State <span class="kw">as </span>MinerStateNew};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>fvm_ipld_encoding::CborStore;
-
-<span class="kw">use </span><span class="kw">crate</span>::state_migration::common::{
-    ActorMigration, ActorMigrationInput, ActorMigrationOutput, TypeMigration, TypeMigrator,
-};
+<span class="kw">use </span>fvm_ipld_encoding::CborStore <span class="kw">as _</span>;
+<span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">pub struct </span>MinerMigrator(Cid);
 
@@ -78,7 +76,7 @@
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt; {
         <span class="kw">let </span>in_state: MinerStateOld = store
             .get_cbor(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Miner actor: could not read v10 state&quot;</span>))<span class="question-mark">?</span>;
+            </span>.context(<span class="string">&quot;Miner actor: could not read v10 state&quot;</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>out_state: MinerStateNew = TypeMigrator::migrate_type(in_state, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
 

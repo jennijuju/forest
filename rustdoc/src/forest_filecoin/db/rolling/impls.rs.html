@@ -640,7 +640,6 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::{thread::sleep, time::Duration};
 
-    <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
     <span class="kw">use </span>cid::{multihash::MultihashDigest, Cid};
     <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
     <span class="kw">use </span>pretty_assertions::assert_eq;
@@ -652,7 +651,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::BitswapStoreRead;
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>ensure_settings_are_transferred(keys: Vec&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>ensure_settings_are_transferred(keys: Vec&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>db_root = TempDir::new()<span class="question-mark">?</span>;
         <span class="kw">let </span>rolling_db = RollingDB::load_or_create(db_root.path().into(), Default::default())<span class="question-mark">?</span>;
         <span class="comment">// Write settings
@@ -674,9 +673,10 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>rolling_db_behaviour_tests() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>db_root = TempDir::new()<span class="question-mark">?</span>;
-        <span class="kw">let </span>rolling_db = RollingDB::load_or_create(db_root.path().into(), Default::default())<span class="question-mark">?</span>;
+    </span><span class="kw">fn </span>rolling_db_behaviour_tests() {
+        <span class="kw">let </span>db_root = TempDir::new().unwrap();
+        <span class="kw">let </span>rolling_db =
+            RollingDB::load_or_create(db_root.path().into(), Default::default()).unwrap();
         <span class="macro">println!</span>(<span class="string">&quot;Generating random blocks&quot;</span>);
         <span class="kw">let </span>pairs: Vec&lt;<span class="kw">_</span>&gt; = (<span class="number">0</span>..<span class="number">1000</span>)
             .map(|<span class="kw">_</span>| {
@@ -694,42 +694,42 @@
             <span class="kw">if </span>i == split_index {
                 sleep(Duration::from_millis(<span class="number">1</span>));
                 <span class="macro">println!</span>(<span class="string">&quot;Creating a new current db&quot;</span>);
-                rolling_db.next_current(<span class="number">0</span>)<span class="question-mark">?</span>;
+                rolling_db.next_current(<span class="number">0</span>).unwrap();
                 <span class="macro">println!</span>(<span class="string">&quot;Created a new current db&quot;</span>);
             }
-            rolling_db.put_keyed(k, block)<span class="question-mark">?</span>;
+            rolling_db.put_keyed(k, block).unwrap();
         }
 
         <span class="kw">for </span>(i, (k, block)) <span class="kw">in </span>pairs.iter().enumerate() {
-            <span class="macro">ensure!</span>(rolling_db.contains(k)<span class="question-mark">?</span>, <span class="string">&quot;{i}&quot;</span>);
-            <span class="macro">ensure!</span>(
-                Blockstore::get(<span class="kw-2">&amp;</span>rolling_db, k)<span class="question-mark">?</span>.unwrap().as_slice() == block,
+            <span class="macro">assert!</span>(rolling_db.contains(k).unwrap(), <span class="string">&quot;{i}&quot;</span>);
+            <span class="macro">assert_eq!</span>(
+                Blockstore::get(<span class="kw-2">&amp;</span>rolling_db, k).unwrap().unwrap().as_slice(),
+                block,
                 <span class="string">&quot;{i}&quot;
             </span>);
         }
 
-        rolling_db.next_current(<span class="number">0</span>)<span class="question-mark">?</span>;
+        rolling_db.next_current(<span class="number">0</span>).unwrap();
 
         <span class="kw">for </span>(i, (k, <span class="kw">_</span>)) <span class="kw">in </span>pairs.iter().enumerate() {
             <span class="kw">if </span>i &lt; split_index {
-                <span class="macro">ensure!</span>(!rolling_db.contains(k)<span class="question-mark">?</span>, <span class="string">&quot;{i}&quot;</span>);
+                <span class="macro">assert!</span>(!rolling_db.contains(k).unwrap(), <span class="string">&quot;{i}&quot;</span>);
             } <span class="kw">else </span>{
-                <span class="macro">ensure!</span>(rolling_db.contains(k)<span class="question-mark">?</span>, <span class="string">&quot;{i}&quot;</span>);
+                <span class="macro">assert!</span>(rolling_db.contains(k).unwrap(), <span class="string">&quot;{i}&quot;</span>);
             }
         }
 
         drop(rolling_db);
 
-        <span class="kw">let </span>rolling_db = RollingDB::load_or_create(db_root.path().into(), Default::default())<span class="question-mark">?</span>;
+        <span class="kw">let </span>rolling_db =
+            RollingDB::load_or_create(db_root.path().into(), Default::default()).unwrap();
         <span class="kw">for </span>(i, (k, <span class="kw">_</span>)) <span class="kw">in </span>pairs.iter().enumerate() {
             <span class="kw">if </span>i &lt; split_index {
-                <span class="macro">ensure!</span>(!rolling_db.contains(k)<span class="question-mark">?</span>);
+                <span class="macro">assert!</span>(!rolling_db.contains(k).unwrap());
             } <span class="kw">else </span>{
-                <span class="macro">ensure!</span>(rolling_db.contains(k)<span class="question-mark">?</span>);
+                <span class="macro">assert!</span>(rolling_db.contains(k).unwrap());
             }
         }
-
-        <span class="prelude-val">Ok</span>(())
     }
 }
 </code></pre></div></section></main></body></html>

@@ -126,8 +126,6 @@
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -202,60 +200,58 @@
     <span class="kw">use </span>tempfile::tempdir;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_get_or_create_keypair() -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>dir = tempdir()<span class="question-mark">?</span>;
+    </span><span class="kw">fn </span>test_get_or_create_keypair() {
+        <span class="kw">let </span>dir = tempdir().unwrap();
         <span class="kw">let </span>path_to_file = dir.path().join(KEYPAIR_FILE);
 
         <span class="comment">// Test that a keypair is generated and saved to disk
-        </span><span class="kw">let </span>keypair = get_or_create_keypair(dir.path())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>keypair = get_or_create_keypair(dir.path()).unwrap();
         <span class="macro">assert!</span>(path_to_file.exists());
 
         <span class="comment">// Test that the same keypair is returned if it already exists
-        </span><span class="kw">let </span>keypair2 = get_or_create_keypair(dir.path())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>keypair2 = get_or_create_keypair(dir.path()).unwrap();
         <span class="macro">assert_eq!</span>(keypair.public(), keypair2.public());
         <span class="macro">assert_eq!</span>(
-            keypair.clone().try_into_ed25519()<span class="question-mark">?</span>.to_bytes(),
-            keypair2.try_into_ed25519()<span class="question-mark">?</span>.to_bytes()
+            keypair.clone().try_into_ed25519().unwrap().to_bytes(),
+            keypair2.try_into_ed25519().unwrap().to_bytes()
         );
 
         <span class="comment">// Test that a new keypair is generated if the file is deleted
-        </span>remove_file(<span class="kw-2">&amp;</span>path_to_file)<span class="question-mark">?</span>;
-        <span class="kw">let </span>keypair3 = get_or_create_keypair(dir.path())<span class="question-mark">?</span>;
+        </span>remove_file(<span class="kw-2">&amp;</span>path_to_file).unwrap();
+        <span class="kw">let </span>keypair3 = get_or_create_keypair(dir.path()).unwrap();
         <span class="macro">assert_ne!</span>(keypair.public(), keypair3.public());
         <span class="macro">assert_ne!</span>(
-            keypair.try_into_ed25519()<span class="question-mark">?</span>.to_bytes(),
-            keypair3.try_into_ed25519()<span class="question-mark">?</span>.to_bytes()
+            keypair.try_into_ed25519().unwrap().to_bytes(),
+            keypair3.try_into_ed25519().unwrap().to_bytes()
         );
-
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_backup_keypair() -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>dir = tempdir()<span class="question-mark">?</span>;
+    </span><span class="kw">fn </span>test_backup_keypair() {
+        <span class="kw">let </span>dir = tempdir().unwrap();
         <span class="kw">let </span>path_to_file = dir.path().join(KEYPAIR_FILE);
 
         <span class="comment">// Test that a keypair is generated and saved to disk
-        </span><span class="kw">let </span>keypair = create_and_save_keypair(dir.path())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>keypair = create_and_save_keypair(dir.path()).unwrap();
         <span class="macro">assert!</span>(path_to_file.exists());
 
         <span class="comment">// corrupt the existing keypair file
         </span>fs::write(
             <span class="kw-2">&amp;</span>path_to_file,
             <span class="string">b&quot;Ph&#39;nglui mglw&#39;nafh Cthulhu R&#39;lyeh wgah&#39;nagl fhtagn&quot;</span>,
-        )<span class="question-mark">?</span>;
+        )
+        .unwrap();
 
         <span class="comment">// Test that a new keypair is generated if the file is corrupted
         // and the old file is backed up
-        </span><span class="kw">let </span>keypair2 = get_or_create_keypair(dir.path())<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>keypair2 = get_or_create_keypair(dir.path()).unwrap();
         <span class="macro">assert_ne!</span>(keypair.public(), keypair2.public());
         <span class="macro">assert_ne!</span>(
-            keypair.try_into_ed25519()<span class="question-mark">?</span>.to_bytes(),
-            keypair2.try_into_ed25519()<span class="question-mark">?</span>.to_bytes()
+            keypair.try_into_ed25519().unwrap().to_bytes(),
+            keypair2.try_into_ed25519().unwrap().to_bytes()
         );
         <span class="macro">assert!</span>(path_to_file.exists());
         <span class="macro">assert!</span>(dir.path().join(<span class="macro">format!</span>(<span class="string">&quot;{}.bak&quot;</span>, KEYPAIR_FILE)).exists());
-        <span class="prelude-val">Ok</span>(())
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1036,7 +1036,7 @@
                     <span class="kw">if </span>known_block_cid == <span class="kw-2">&amp;</span>tipset.min_ticket_block().cid().to_string() {
                         <span class="kw">return </span>store
                             .get_cbor(<span class="kw-2">&amp;</span>genesis_cid)<span class="question-mark">?
-                            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Genesis block missing from database&quot;</span>));
+                            </span>.context(<span class="string">&quot;Genesis block missing from database&quot;</span>);
                     }
                 }
             }

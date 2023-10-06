@@ -215,7 +215,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::externs::Rand;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::blake2b_256;
-<span class="kw">use </span>anyhow::{bail, Context};
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>blake2b_simd::Params;
 <span class="kw">use </span>byteorder::{BigEndian, WriteBytesExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;

@@ -76,6 +76,7 @@
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::BlockHeader;
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::StateManager;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_util::load_car;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>tokio::{fs::File, io::AsyncBufRead, io::BufReader};
 <span class="kw">use </span>tracing::{debug, info};
@@ -101,8 +102,7 @@
         </span>}
         <span class="prelude-val">None </span>=&gt; {
             <span class="macro">debug!</span>(<span class="string">&quot;No specified genesis in config. Using default genesis.&quot;</span>);
-            <span class="kw">let </span>genesis_bytes =
-                genesis_bytes.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;No default genesis.&quot;</span>))<span class="question-mark">?</span>;
+            <span class="kw">let </span>genesis_bytes = genesis_bytes.context(<span class="string">&quot;No default genesis.&quot;</span>)<span class="question-mark">?</span>;
             process_car(genesis_bytes, db).<span class="kw">await</span><span class="question-mark">?
         </span>}
     };

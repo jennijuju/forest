@@ -35,9 +35,6 @@
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
 <a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
-<a href="#40" id="40">40</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -61,21 +58,18 @@
     <span class="kw">use </span>std::path::Path;
 
     <span class="kw">use </span><span class="kw">crate</span>::utils::db::file_backed_obj::FileBacked;
-    <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>tipset_keys_round_trip() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>tipset_keys_round_trip() {
         <span class="kw">let </span>path = Path::new(<span class="string">&quot;src/blocks/tests/calibnet/HEAD&quot;</span>);
         <span class="kw">let </span>obj1: FileBacked&lt;TipsetKeys&gt; =
-            FileBacked::load_from_file_or_create(path.into(), Default::default)<span class="question-mark">?</span>;
-        <span class="kw">let </span>serialized = obj1.inner().serialize()<span class="question-mark">?</span>;
-        <span class="kw">let </span>deserialized = TipsetKeys::deserialize(<span class="kw-2">&amp;</span>serialized)<span class="question-mark">?</span>;
+            FileBacked::load_from_file_or_create(path.into(), Default::default).unwrap();
+        <span class="kw">let </span>serialized = obj1.inner().serialize().unwrap();
+        <span class="kw">let </span>deserialized = TipsetKeys::deserialize(<span class="kw-2">&amp;</span>serialized).unwrap();
 
-        <span class="macro">ensure!</span>(obj1.inner() == <span class="kw-2">&amp;</span>deserialized);
-
-        <span class="prelude-val">Ok</span>(())
+        <span class="macro">assert_eq!</span>(obj1.inner(), <span class="kw-2">&amp;</span>deserialized);
     }
 }
 </code></pre></div></section></main></body></html>

@@ -239,9 +239,6 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -349,7 +346,6 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>anyhow::{ensure, <span class="prelude-ty">Result</span>};
     <span class="kw">use </span>itertools::Itertools;
     <span class="kw">use </span>libipld::Ipld;
     <span class="kw">use </span>rand::Rng;
@@ -385,17 +381,15 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>cannot_serialize_byte_array_overflow() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>cannot_serialize_byte_array_overflow() {
         <span class="kw">let </span>bytes = ByteArray {
             inner: <span class="macro">vec!</span>[<span class="number">0</span>; BYTE_ARRAY_MAX_LEN + <span class="number">1</span>],
         };
 
-        <span class="macro">ensure!</span>(
+        <span class="macro">assert!</span>(
             <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, serde_ipld_dagcbor::to_vec(<span class="kw-2">&amp;</span>bytes).err().unwrap())
                 .contains(<span class="string">&quot;Array exceed max length&quot;</span>)
         );
-
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[test]
@@ -414,7 +408,7 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>cannot_deserialize_byte_array_overflow() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>cannot_deserialize_byte_array_overflow() {
         <span class="kw">let </span>max_length_bytes = ByteArray {
             inner: <span class="macro">vec!</span>[<span class="number">0</span>; BYTE_ARRAY_MAX_LEN],
         };
@@ -425,18 +419,17 @@
         overflow_encoding[encoding_len - BYTE_ARRAY_MAX_LEN - <span class="number">1</span>] = <span class="number">1</span>;
         overflow_encoding.push(<span class="number">0</span>);
 
-        <span class="macro">ensure!</span>(<span class="macro">format!</span>(
+        <span class="macro">assert!</span>(<span class="macro">format!</span>(
             <span class="string">&quot;{}&quot;</span>,
             from_slice_with_fallback::&lt;ByteArray&gt;(<span class="kw-2">&amp;</span>overflow_encoding)
                 .err()
                 .unwrap()
         )
         .contains(<span class="string">&quot;Array exceed max length&quot;</span>));
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>parity_tests() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>parity_tests() {
         <span class="kw">use </span>cs_serde_bytes;
 
         <span class="attr">#[derive(Deserialize, Serialize)]
@@ -451,9 +444,10 @@
         <span class="kw">let </span>a = A(array.to_vec());
         <span class="kw">let </span>b = B(array.to_vec());
 
-        <span class="macro">ensure!</span>(serde_json::to_string_pretty(<span class="kw-2">&amp;</span>a)<span class="question-mark">? </span>== serde_json::to_string_pretty(<span class="kw-2">&amp;</span>b)<span class="question-mark">?</span>);
-
-        <span class="prelude-val">Ok</span>(())
+        <span class="macro">assert_eq!</span>(
+            serde_json::to_string_pretty(<span class="kw-2">&amp;</span>a).unwrap(),
+            serde_json::to_string_pretty(<span class="kw-2">&amp;</span>b).unwrap()
+        );
     }
 
     <span class="attr">#[test]

@@ -78,11 +78,13 @@
 <a href="#78" id="78">78</a>
 <a href="#79" id="79">79</a>
 <a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::sector::convert_window_post_proof_v1_to_v1p1;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>fil_actor_miner_state::{
     v10::{MinerInfo <span class="kw">as </span>MinerInfoV10, State <span class="kw">as </span>MinerStateV10},
     v11::{MinerInfo <span class="kw">as </span>MinerInfoV11, State <span class="kw">as </span>MinerStateV11},
@@ -96,7 +98,7 @@
     <span class="kw">fn </span>migrate_type(from: MinerStateV10, store: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;MinerStateV11&gt; {
         <span class="kw">let </span>in_info: MinerInfoV10 = store
             .get_cbor(<span class="kw-2">&amp;</span>from.info)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Miner info: could not read v10 state&quot;</span>))<span class="question-mark">?</span>;
+            </span>.context(<span class="string">&quot;Miner info: could not read v10 state&quot;</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>out_proof_type = convert_window_post_proof_v1_to_v1p1(in_info.window_post_proof_type)
             .map_err(|e| <span class="macro">anyhow::anyhow!</span>(e))<span class="question-mark">?</span>;

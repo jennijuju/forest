@@ -35,7 +35,7 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::utils::db::{car_stream::CarHeader, car_util::load_car};
-<span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
 <span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;CarHeader&gt; {

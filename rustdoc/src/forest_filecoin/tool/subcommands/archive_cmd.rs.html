@@ -501,6 +501,9 @@
 <a href="#501" id="501">501</a>
 <a href="#502" id="502">502</a>
 <a href="#503" id="503">503</a>
+<a href="#504" id="504">504</a>
+<a href="#505" id="505">505</a>
+<a href="#506" id="506">506</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -516,7 +519,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ipld::{stream_graph, unordered_stream_graph};
 <span class="kw">use </span><span class="kw">crate</span>::networks::{calibnet, mainnet, ChainConfig, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::{ChainEpoch, EPOCHS_IN_DAY, EPOCH_DURATION_SECONDS};
-<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDateTime;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
@@ -587,7 +590,7 @@
 }
 
 <span class="kw">impl </span>ArchiveCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Info { snapshot } =&gt; {
                 <span class="macro">println!</span>(
@@ -654,14 +657,17 @@
 <span class="kw">impl </span>ArchiveInfo {
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is rendered to stdout.
-    </span><span class="kw">fn </span>from_store(store: AnyCar&lt;<span class="kw">impl </span>RandomAccessFileReader&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>from_store(store: AnyCar&lt;<span class="kw">impl </span>RandomAccessFileReader&gt;) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="self">Self</span>::from_store_with(store, <span class="bool-val">true</span>)
     }
 
     <span class="comment">// Scan a CAR archive to identify which network it belongs to and how many
     // tipsets/messages are available. Progress is optionally rendered to
     // stdout.
-    </span><span class="kw">fn </span>from_store_with(store: AnyCar&lt;<span class="kw">impl </span>RandomAccessFileReader&gt;, progress: bool) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>from_store_with(
+        store: AnyCar&lt;<span class="kw">impl </span>RandomAccessFileReader&gt;,
+        progress: bool,
+    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>root = store.heaviest_tipset()<span class="question-mark">?</span>;
         <span class="kw">let </span>root_epoch = root.epoch();
 
@@ -736,7 +742,7 @@
 
 <span class="comment">// Print a mapping of epochs to block headers in yaml format. This mapping can
 // be used by Forest to quickly identify tipsets.
-</span><span class="kw">fn </span>print_checkpoints(snapshot_files: Vec&lt;PathBuf&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+</span><span class="kw">fn </span>print_checkpoints(snapshot_files: Vec&lt;PathBuf&gt;) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>store = ManyCar::try_from(snapshot_files).context(<span class="string">&quot;couldn&#39;t read input CAR file&quot;</span>)<span class="question-mark">?</span>;
     <span class="kw">let </span>root = store.heaviest_tipset()<span class="question-mark">?</span>;
 
@@ -802,7 +808,7 @@
     diff: <span class="prelude-ty">Option</span>&lt;ChainEpoch&gt;,
     diff_depth: <span class="prelude-ty">Option</span>&lt;ChainEpochDelta&gt;,
     force: bool,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span>ts = Arc::new(root);
     <span class="kw">let </span>store = Arc::new(store);
 
@@ -896,7 +902,7 @@
     snapshot_files: Vec&lt;PathBuf&gt;,
     output_path: PathBuf,
     force: bool,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">use </span><span class="kw">crate</span>::db::car::forest;
 
     <span class="kw">let </span>store = ManyCar::try_from(snapshot_files)<span class="question-mark">?</span>;

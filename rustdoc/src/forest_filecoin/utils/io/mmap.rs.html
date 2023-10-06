@@ -121,7 +121,6 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
-<a href="#124" id="124">124</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -216,11 +215,10 @@
     <span class="kw">use </span>std::fs;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>anyhow::Result;
     <span class="kw">use </span>quickcheck_macros::quickcheck;
 
     <span class="attr">#[quickcheck]
-    </span><span class="kw">fn </span>test_mmap_read_at_and_size(bytes: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>test_mmap_read_at_and_size(bytes: Vec&lt;u8&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>tmp = tempfile::Builder::new().tempfile()<span class="question-mark">?</span>.into_temp_path();
         fs::write(<span class="kw-2">&amp;</span>tmp, <span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
         <span class="kw">let </span>mmap = Mmap::map(<span class="kw-2">&amp;</span>fs::File::open(<span class="kw-2">&amp;</span>tmp)<span class="question-mark">?</span>)<span class="question-mark">?</span>;

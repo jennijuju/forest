@@ -473,7 +473,6 @@
 <a href="#473" id="473">473</a>
 <a href="#474" id="474">474</a>
 <a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -807,7 +806,7 @@
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>import_export() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>import_export() {
         <span class="kw">let </span>key_vec = construct_priv_keys();
         <span class="kw">let </span>key = key_vec[<span class="number">0</span>].clone();
         <span class="kw">let </span>keystore = KeyStore::new(KeyStoreConfig::Memory).unwrap();
@@ -833,7 +832,6 @@
         <span class="comment">// make sure that error is thrown when attempted to re-import a duplicate
         // key_info
         </span><span class="macro">assert!</span>(<span class="macro">matches!</span>(duplicate_error, Error::KeyExists));
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[test]

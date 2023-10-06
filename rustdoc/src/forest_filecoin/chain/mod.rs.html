@@ -69,7 +69,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::ipld::stream_chain;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::{AsyncWriterWithChecksum, Checksum};
 <span class="kw">use </span><span class="kw">crate</span>::utils::stream::par_buffer;
-<span class="kw">use </span>anyhow::{Context, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>digest::Digest;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>std::sync::Arc;
@@ -84,7 +84,7 @@
     writer: <span class="kw">impl </span>AsyncWrite + Unpin,
     seen: CidHashSet,
     skip_checksum: bool,
-) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;digest::Output&lt;D&gt;&gt;, Error&gt; {
+) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;digest::Output&lt;D&gt;&gt;, Error&gt; {
     <span class="kw">let </span>db = Arc::new(db);
     <span class="kw">let </span>stateroot_lookup_limit = tipset.epoch() - lookup_depth;
     <span class="kw">let </span>roots = tipset.key().cids.clone().into_iter().collect();

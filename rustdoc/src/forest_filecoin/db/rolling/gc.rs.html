@@ -362,19 +362,19 @@
 //! 2023-03-16T22:27:38.793717Z  INFO crate::db::rolling::impls: Deleted database under /root/.local/share/forest/mainnet/paritydb/14d0f80992374fb8b20e3b1bd70d5d7b, size: 139.01GB
 //! ```
 
-</span><span class="kw">use </span>std::{
-    sync::atomic::{<span class="self">self</span>, AtomicU64, AtomicUsize},
-    time::Duration,
-};
-
-<span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
+</span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">use </span><span class="kw">crate</span>::db::setting_keys::ESTIMATED_RECORDS_KEY;
 <span class="kw">use </span><span class="kw">crate</span>::db::SettingsStoreExt;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::util::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::{BlockstoreBufferedWriteExt, DB_KEY_BYTES};
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>human_repr::HumanCount;
+<span class="kw">use </span>std::{
+    sync::atomic::{<span class="self">self</span>, AtomicU64, AtomicUsize},
+    time::Duration,
+};
 <span class="kw">use </span>tokio::sync::Mutex;
 
 <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -534,7 +534,7 @@
                 <span class="kw">async move </span>{
                     <span class="kw">let </span>block = db
                         .get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?
-                        </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Cid {cid} not found in blockstore&quot;</span>))<span class="question-mark">?</span>;
+                        </span>.with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Cid {cid} not found in blockstore&quot;</span>))<span class="question-mark">?</span>;
 
                     <span class="kw">let </span>pair = (cid, block.clone());
                     <span class="kw">if </span>db.writer().has(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{

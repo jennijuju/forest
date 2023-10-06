@@ -40,10 +40,12 @@
 <a href="#40" id="40">40</a>
 <a href="#41" id="41">41</a>
 <a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>fil_actor_miner_state::{
     v8::{MinerInfo <span class="kw">as </span>MinerInfoV8, State <span class="kw">as </span>MinerStateV8},
     v9::{MinerInfo <span class="kw">as </span>MinerInfoV9, State <span class="kw">as </span>MinerStateV9},
@@ -57,7 +59,7 @@
     <span class="kw">fn </span>migrate_type(from: MinerStateV8, store: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;MinerStateV9&gt; {
         <span class="kw">let </span>in_info: MinerInfoV8 = store
             .get_cbor(<span class="kw-2">&amp;</span>from.info)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Miner info: could not read v8 state&quot;</span>))<span class="question-mark">?</span>;
+            </span>.context(<span class="string">&quot;Miner info: could not read v8 state&quot;</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>out_info: MinerInfoV9 = TypeMigrator::migrate_type(in_info, store)<span class="question-mark">?</span>;
 

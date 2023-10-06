@@ -566,7 +566,6 @@
 <a href="#566" id="566">566</a>
 <a href="#567" id="567">567</a>
 <a href="#568" id="568">568</a>
-<a href="#569" id="569">569</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -586,7 +585,6 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::{BlockstoreExt, CborStoreExt};
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
-<span class="kw">use </span>anyhow::Result;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actors_shared::fvm_ipld_amt::Amtv0 <span class="kw">as </span>Amt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -676,7 +674,7 @@
         settings: Arc&lt;<span class="kw">dyn </span>SettingsStore + Sync + Send&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
         genesis_block_header: BlockHeader,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
+    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
         <span class="kw">let </span>(publisher, <span class="kw">_</span>) = broadcast::channel(SINK_CAP);
         <span class="kw">let </span>chain_index = Arc::new(ChainIndex::new(Arc::clone(<span class="kw-2">&amp;</span>db)));
 

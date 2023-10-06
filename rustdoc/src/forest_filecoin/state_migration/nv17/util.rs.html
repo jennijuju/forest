@@ -212,6 +212,7 @@
 <a href="#212" id="212">212</a>
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -281,7 +282,6 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
     <span class="kw">use </span>cid::multihash::{Multihash, MultihashDigest};
     <span class="kw">use </span>fvm_shared2::{
         bigint::Zero,
@@ -354,9 +354,9 @@
     // }
     // ```
     </span><span class="attr">#[test]
-    </span><span class="kw">fn </span>test_get_pending_verified_deals_and_total_size() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>test_get_pending_verified_deals_and_total_size() {
         <span class="kw">let </span>store = <span class="kw">crate</span>::db::MemoryDB::default();
-        <span class="kw">let </span><span class="kw-2">mut </span>market_state = fil_actor_market_state::v8::State::new(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>market_state = fil_actor_market_state::v8::State::new(<span class="kw-2">&amp;</span>store).unwrap();
 
         <span class="kw">let </span><span class="kw-2">mut </span>pending_proposals = fil_actors_shared::v8::Set::new(<span class="kw-2">&amp;</span>store);
         market_state.proposals = {
@@ -379,51 +379,53 @@
             };
             <span class="kw">let </span>deal0 = {
                 <span class="kw">let </span><span class="kw-2">mut </span>deal = base_deal.clone();
-                deal.piece_cid = make_piece_cid(<span class="string">&quot;0&quot;</span>.as_bytes())<span class="question-mark">?</span>;
+                deal.piece_cid = make_piece_cid(<span class="string">&quot;0&quot;</span>.as_bytes());
                 deal
             };
             <span class="kw">let </span>deal1 = {
                 <span class="kw">let </span><span class="kw-2">mut </span>deal = base_deal.clone();
-                deal.piece_cid = make_piece_cid(<span class="string">&quot;1&quot;</span>.as_bytes())<span class="question-mark">?</span>;
+                deal.piece_cid = make_piece_cid(<span class="string">&quot;1&quot;</span>.as_bytes());
                 deal
             };
             <span class="kw">let </span>deal2 = {
                 <span class="kw">let </span><span class="kw-2">mut </span>deal = base_deal;
-                deal.piece_cid = make_piece_cid(<span class="string">&quot;2&quot;</span>.as_bytes())<span class="question-mark">?</span>;
+                deal.piece_cid = make_piece_cid(<span class="string">&quot;2&quot;</span>.as_bytes());
                 deal
             };
 
-            proposals.set(<span class="number">100</span>, deal0)<span class="question-mark">?</span>;
-            pending_proposals.put(BytesKey(deal1.cid()<span class="question-mark">?</span>.to_bytes()))<span class="question-mark">?</span>;
-            proposals.set(<span class="number">101</span>, deal1)<span class="question-mark">?</span>;
-            pending_proposals.put(BytesKey(deal2.cid()<span class="question-mark">?</span>.to_bytes()))<span class="question-mark">?</span>;
-            proposals.set(<span class="number">102</span>, deal2)<span class="question-mark">?</span>;
+            proposals.set(<span class="number">100</span>, deal0).unwrap();
+            pending_proposals
+                .put(BytesKey(deal1.cid().unwrap().to_bytes()))
+                .unwrap();
+            proposals.set(<span class="number">101</span>, deal1).unwrap();
+            pending_proposals
+                .put(BytesKey(deal2.cid().unwrap().to_bytes()))
+                .unwrap();
+            proposals.set(<span class="number">102</span>, deal2).unwrap();
 
-            proposals.flush()<span class="question-mark">?
-        </span>};
-        market_state.pending_proposals = pending_proposals.root()<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            market_state.pending_proposals.to_string()
-                == <span class="string">&quot;bafy2bzaceaznfegva7wvkm3yd66r5ej7t7726pr6lwhnosxbslmmkuoymtvtw&quot;
+            proposals.flush().unwrap()
+        };
+        market_state.pending_proposals = pending_proposals.root().unwrap();
+        <span class="macro">assert_eq!</span>(
+            market_state.pending_proposals.to_string(),
+            <span class="string">&quot;bafy2bzaceaznfegva7wvkm3yd66r5ej7t7726pr6lwhnosxbslmmkuoymtvtw&quot;
         </span>);
-        <span class="macro">ensure!</span>(
-            market_state.proposals.to_string()
-                == <span class="string">&quot;bafy2bzaceck7at6aj7iy4s4gkndk5njvcba4yoveucxcdpfuwdeczaw3fcly2&quot;
+        <span class="macro">assert_eq!</span>(
+            market_state.proposals.to_string(),
+            <span class="string">&quot;bafy2bzaceck7at6aj7iy4s4gkndk5njvcba4yoveucxcdpfuwdeczaw3fcly2&quot;
         </span>);
 
         <span class="kw">let </span>(pending_verified_deals, pending_verified_deal_size) =
-            get_pending_verified_deals_and_total_size(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>market_state)<span class="question-mark">?</span>;
+            get_pending_verified_deals_and_total_size(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>market_state).unwrap();
 
-        <span class="macro">ensure!</span>(pending_verified_deal_size == <span class="number">1024</span>);
-        <span class="macro">ensure!</span>(pending_verified_deals == <span class="macro">vec!</span>[<span class="number">101</span>, <span class="number">102</span>]);
-
-        <span class="prelude-val">Ok</span>(())
+        <span class="macro">assert_eq!</span>(pending_verified_deal_size, <span class="number">1024</span>);
+        <span class="macro">assert_eq!</span>(pending_verified_deals, <span class="macro">vec!</span>[<span class="number">101</span>, <span class="number">102</span>]);
     }
 
-    <span class="kw">fn </span>make_piece_cid(data: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Cid&gt; {
+    <span class="kw">fn </span>make_piece_cid(data: <span class="kw-2">&amp;</span>[u8]) -&gt; Cid {
         <span class="kw">let </span>hash = cid::multihash::Code::Sha2_256.digest(data);
-        <span class="kw">let </span>hash = Multihash::wrap(SHA2_256_TRUNC254_PADDED, hash.digest())<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(Cid::new_v1(FIL_COMMITMENT_UNSEALED, hash))
+        <span class="kw">let </span>hash = Multihash::wrap(SHA2_256_TRUNC254_PADDED, hash.digest()).unwrap();
+        Cid::new_v1(FIL_COMMITMENT_UNSEALED, hash)
     }
 }
 </code></pre></div></section></main></body></html>

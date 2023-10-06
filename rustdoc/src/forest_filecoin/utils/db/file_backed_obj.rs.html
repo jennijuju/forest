@@ -136,10 +136,6 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -255,31 +251,27 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-    <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>cid::multihash::{<span class="self">self</span>, MultihashDigest};
     <span class="kw">use </span>rand::Rng;
     <span class="kw">use </span>tempfile::TempDir;
 
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>cid_round_trip() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>cid_round_trip() {
         <span class="kw">let </span><span class="kw-2">mut </span>bytes = [<span class="number">0</span>; <span class="number">1024</span>];
         rand::rngs::OsRng.fill(<span class="kw-2">&amp;mut </span>bytes);
-        <span class="kw">let </span>cid = Cid::new_v0(multihash::Code::Sha2_256.digest(bytes.as_slice()))<span class="question-mark">?</span>;
-        <span class="kw">let </span>serialized = cid.serialize()<span class="question-mark">?</span>;
-        <span class="kw">let </span>deserialized = Cid::deserialize(<span class="kw-2">&amp;</span>serialized)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(cid == deserialized);
+        <span class="kw">let </span>cid = Cid::new_v0(multihash::Code::Sha2_256.digest(bytes.as_slice())).unwrap();
+        <span class="kw">let </span>serialized = cid.serialize().unwrap();
+        <span class="kw">let </span>deserialized = Cid::deserialize(<span class="kw-2">&amp;</span>serialized).unwrap();
+        <span class="macro">assert_eq!</span>(cid, deserialized);
 
-        <span class="kw">let </span>dir = TempDir::new()<span class="question-mark">?</span>;
+        <span class="kw">let </span>dir = TempDir::new().unwrap();
         <span class="kw">let </span>file_path = dir.path().join(<span class="string">&quot;CID&quot;</span>);
         <span class="kw">let </span>obj1: FileBacked&lt;Cid&gt; =
-            FileBacked::load_from_file_or_create(file_path.clone(), || cid)<span class="question-mark">?</span>;
+            FileBacked::load_from_file_or_create(file_path.clone(), || cid).unwrap();
         <span class="kw">let </span>obj2: FileBacked&lt;Cid&gt; =
-            FileBacked::load_from_file_or_create(file_path, Default::default)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(obj1.inner() == obj2.inner());
-
-        <span class="prelude-val">Ok</span>(())
+            FileBacked::load_from_file_or_create(file_path, Default::default).unwrap();
+        <span class="macro">assert_eq!</span>(obj1.inner(), obj2.inner());
     }
 }
 </code></pre></div></section></main></body></html>

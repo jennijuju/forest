@@ -51,6 +51,7 @@
 <a href="#51" id="51">51</a>
 <a href="#52" id="52">52</a>
 <a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -62,10 +63,11 @@
     () =&gt; {
         <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">mod </span>verifier {
             <span class="kw">use </span><span class="macro-nonterminal">$crate::cid_collections::CidHashMap</span>;
-            <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-            <span class="kw">use </span>fvm_ipld_encoding::CborStore;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::shim</span>::{address::Address, machine::BuiltinActorManifest, state_tree::StateTree};
+            <span class="kw">use </span>::fvm_ipld_blockstore::Blockstore;
+            <span class="kw">use </span>::fvm_ipld_encoding::CborStore <span class="kw">as _</span>;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::state_migration::common</span>::{verifier::ActorMigrationVerifier, Migrator};
+            <span class="kw">use </span>::anyhow::Context <span class="kw">as _</span>;
 
             <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
@@ -81,11 +83,11 @@
                 ) -&gt; anyhow::Result&lt;()&gt; {
                     <span class="kw">let </span>system_actor = actors_in
                         .get_actor(<span class="kw-2">&amp;</span>Address::SYSTEM_ACTOR)<span class="question-mark">?
-                        </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;system actor not found&quot;</span>))<span class="question-mark">?</span>;
+                        </span>.context(<span class="string">&quot;system actor not found&quot;</span>)<span class="question-mark">?</span>;
 
                     <span class="kw">let </span>system_actor_state = store
                         .get_cbor::&lt;SystemStateOld&gt;(<span class="kw-2">&amp;</span>system_actor.state)<span class="question-mark">?
-                        </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;system actor state not found&quot;</span>))<span class="question-mark">?</span>;
+                        </span>.context(<span class="string">&quot;system actor state not found&quot;</span>)<span class="question-mark">?</span>;
                     <span class="kw">let </span>manifest =
                         BuiltinActorManifest::load_v1_actor_list(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>system_actor_state.builtin_actors)<span class="question-mark">?</span>;
                     <span class="kw">let </span>manifest_actors_count = manifest.builtin_actors().len();

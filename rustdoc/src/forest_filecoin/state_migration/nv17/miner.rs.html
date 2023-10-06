@@ -921,6 +921,40 @@
 <a href="#921" id="921">921</a>
 <a href="#922" id="922">922</a>
 <a href="#923" id="923">923</a>
+<a href="#924" id="924">924</a>
+<a href="#925" id="925">925</a>
+<a href="#926" id="926">926</a>
+<a href="#927" id="927">927</a>
+<a href="#928" id="928">928</a>
+<a href="#929" id="929">929</a>
+<a href="#930" id="930">930</a>
+<a href="#931" id="931">931</a>
+<a href="#932" id="932">932</a>
+<a href="#933" id="933">933</a>
+<a href="#934" id="934">934</a>
+<a href="#935" id="935">935</a>
+<a href="#936" id="936">936</a>
+<a href="#937" id="937">937</a>
+<a href="#938" id="938">938</a>
+<a href="#939" id="939">939</a>
+<a href="#940" id="940">940</a>
+<a href="#941" id="941">941</a>
+<a href="#942" id="942">942</a>
+<a href="#943" id="943">943</a>
+<a href="#944" id="944">944</a>
+<a href="#945" id="945">945</a>
+<a href="#946" id="946">946</a>
+<a href="#947" id="947">947</a>
+<a href="#948" id="948">948</a>
+<a href="#949" id="949">949</a>
+<a href="#950" id="950">950</a>
+<a href="#951" id="951">951</a>
+<a href="#952" id="952">952</a>
+<a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -933,7 +967,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, piece::PieceInfo};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
 <span class="kw">use </span>ahash::HashMap;
-<span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::{multibase::Base, Cid};
 <span class="kw">use </span>fil_actor_miner_state::{
     v8::State <span class="kw">as </span>MinerStateOld,
@@ -1016,7 +1050,7 @@
 
         <span class="kw">let </span>in_state: MinerStateOld = store
             .get_cbor(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Init actor: could not read v9 state&quot;</span>))<span class="question-mark">?</span>;
+            </span>.context(<span class="string">&quot;Init actor: could not read v9 state&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span>new_pre_committed_sectors =
             <span class="self">self</span>.migrate_pre_committed_sectors(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>in_state.pre_committed_sectors)<span class="question-mark">?</span>;
         <span class="kw">let </span>new_sectors =
@@ -1292,7 +1326,6 @@
         machine::{BuiltinActor, BuiltinActorManifest},
         state_tree::{ActorState, StateRoot, StateTree, StateTreeVersion},
     };
-    <span class="kw">use </span>anyhow::<span class="kw-2">*</span>;
     <span class="kw">use </span>cid::multihash::{Multihash, MultihashDigest};
     <span class="kw">use </span>fil_actor_interface::BURNT_FUNDS_ACTOR_ADDR;
     <span class="kw">use </span>fil_actors_shared::fvm_ipld_hamt::BytesKey;
@@ -1307,19 +1340,20 @@
     };
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_nv17_miner_migration() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>test_nv17_miner_migration() {
         <span class="kw">let </span>store = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
-        <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store);
         <span class="kw">let </span>system_actor_old = state_tree_old
-            .get_actor(<span class="kw-2">&amp;</span>fil_actor_interface::system::ADDRESS.into())<span class="question-mark">?
-            </span>.unwrap();
+            .get_actor(<span class="kw-2">&amp;</span>fil_actor_interface::system::ADDRESS.into())
+            .unwrap()
+            .unwrap();
         <span class="kw">let </span>system_state_old: fil_actor_system_state::v9::State =
-            store.get_cbor(<span class="kw-2">&amp;</span>system_actor_old.state)<span class="question-mark">?</span>.unwrap();
+            store.get_cbor(<span class="kw-2">&amp;</span>system_actor_old.state).unwrap().unwrap();
         <span class="kw">let </span>manifest_data_cid_old = system_state_old.builtin_actors;
-        <span class="macro">ensure!</span>(manifest_data_cid_old == manifest_old.source_cid());
-        <span class="macro">ensure!</span>(
-            manifest_data_cid_old.to_string()
-                == <span class="string">&quot;bafy2bzaceb7wfqkjc5c3ccjyhaf7zuhkvbzpvhnb35feaettztoharc7zdndc&quot;
+        <span class="macro">assert_eq!</span>(manifest_data_cid_old, manifest_old.source_cid());
+        <span class="macro">assert_eq!</span>(
+            manifest_data_cid_old.to_string(),
+            <span class="string">&quot;bafy2bzaceb7wfqkjc5c3ccjyhaf7zuhkvbzpvhnb35feaettztoharc7zdndc&quot;
         </span>);
 
         <span class="kw">let </span>base_addr_id = <span class="number">10000</span>;
@@ -1328,14 +1362,16 @@
 
         <span class="comment">// create 3 deal proposals
         </span><span class="kw">let </span><span class="kw-2">mut </span>market_actor_old = state_tree_old
-            .get_actor(<span class="kw-2">&amp;</span>fil_actor_interface::market::ADDRESS.into())<span class="question-mark">?
-            </span>.unwrap();
+            .get_actor(<span class="kw-2">&amp;</span>fil_actor_interface::market::ADDRESS.into())
+            .unwrap()
+            .unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>market_state_old: fil_actor_market_state::v8::State =
-            store.get_cbor(<span class="kw-2">&amp;</span>market_actor_old.state)<span class="question-mark">?</span>.unwrap();
+            store.get_cbor(<span class="kw-2">&amp;</span>market_actor_old.state).unwrap().unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>proposals = fil_actors_shared::v8::Array::&lt;
             fil_actor_market_state::v8::DealProposal,
             <span class="kw">_</span>,
-        &gt;::load(<span class="kw-2">&amp;</span>market_state_old.proposals, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        &gt;::load(<span class="kw-2">&amp;</span>market_state_old.proposals, <span class="kw-2">&amp;</span>store)
+        .unwrap();
         <span class="kw">let </span>base_deal = fil_actor_market_state::v8::DealProposal {
             piece_cid: Default::default(),
             piece_size: PaddedPieceSize(<span class="number">512</span>),
@@ -1351,59 +1387,69 @@
         };
         <span class="kw">let </span>deal0 = {
             <span class="kw">let </span><span class="kw-2">mut </span>deal = base_deal.clone();
-            deal.piece_cid = make_piece_cid(<span class="string">&quot;0&quot;</span>.as_bytes())<span class="question-mark">?</span>;
-            <span class="macro">ensure!</span>(
-                deal.piece_cid.to_string()
-                    == <span class="string">&quot;baga6ea4seaqf73hlm374q3zy3fjhq3dnnfwhtqw3yi452turwrtstvz2e75vp2i&quot;
+            deal.piece_cid = make_piece_cid(<span class="string">&quot;0&quot;</span>.as_bytes());
+            <span class="macro">assert_eq!</span>(
+                deal.piece_cid.to_string(),
+                <span class="string">&quot;baga6ea4seaqf73hlm374q3zy3fjhq3dnnfwhtqw3yi452turwrtstvz2e75vp2i&quot;
             </span>);
             deal
         };
         <span class="kw">let </span>deal1 = {
             <span class="kw">let </span><span class="kw-2">mut </span>deal = base_deal.clone();
-            deal.piece_cid = make_piece_cid(<span class="string">&quot;1&quot;</span>.as_bytes())<span class="question-mark">?</span>;
-            <span class="macro">ensure!</span>(
-                deal.piece_cid.to_string()
-                    == <span class="string">&quot;baga6ea4seaqgxbvsop7tj7hbtvvyatx7li7vor5nutvkely5jhab4uw5w6dvwsy&quot;
+            deal.piece_cid = make_piece_cid(<span class="string">&quot;1&quot;</span>.as_bytes());
+            <span class="macro">assert_eq!</span>(
+                deal.piece_cid.to_string(),
+                <span class="string">&quot;baga6ea4seaqgxbvsop7tj7hbtvvyatx7li7vor5nutvkely5jhab4uw5w6dvwsy&quot;
             </span>);
             deal
         };
         <span class="kw">let </span>deal2 = {
             <span class="kw">let </span><span class="kw-2">mut </span>deal = base_deal;
-            deal.piece_cid = make_piece_cid(<span class="string">&quot;2&quot;</span>.as_bytes())<span class="question-mark">?</span>;
-            <span class="macro">ensure!</span>(
-                deal.piece_cid.to_string()
-                    == <span class="string">&quot;baga6ea4seaqni426hitf4fxo4a7vs4mltnoqgam4a7mlnri7sdnduzto5qj2wni&quot;
+            deal.piece_cid = make_piece_cid(<span class="string">&quot;2&quot;</span>.as_bytes());
+            <span class="macro">assert_eq!</span>(
+                deal.piece_cid.to_string(),
+                <span class="string">&quot;baga6ea4seaqni426hitf4fxo4a7vs4mltnoqgam4a7mlnri7sdnduzto5qj2wni&quot;
             </span>);
             deal
         };
 
         <span class="kw">let </span><span class="kw-2">mut </span>pending_proposals =
-            fil_actors_shared::v8::Set::from_root(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>market_state_old.pending_proposals)<span class="question-mark">?</span>;
+            fil_actors_shared::v8::Set::from_root(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>market_state_old.pending_proposals)
+                .unwrap();
 
-        proposals.set(<span class="number">0</span>, deal0)<span class="question-mark">?</span>;
-        pending_proposals.put(BytesKey(deal1.cid()<span class="question-mark">?</span>.to_bytes()))<span class="question-mark">?</span>;
-        proposals.set(<span class="number">1</span>, deal1)<span class="question-mark">?</span>;
-        pending_proposals.put(BytesKey(deal2.cid()<span class="question-mark">?</span>.to_bytes()))<span class="question-mark">?</span>;
-        proposals.set(<span class="number">2</span>, deal2)<span class="question-mark">?</span>;
+        proposals.set(<span class="number">0</span>, deal0).unwrap();
+        pending_proposals
+            .put(BytesKey(deal1.cid().unwrap().to_bytes()))
+            .unwrap();
+        proposals.set(<span class="number">1</span>, deal1).unwrap();
+        pending_proposals
+            .put(BytesKey(deal2.cid().unwrap().to_bytes()))
+            .unwrap();
+        proposals.set(<span class="number">2</span>, deal2).unwrap();
 
-        market_state_old.proposals = proposals.flush()<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            market_state_old.proposals.to_string()
-                == <span class="string">&quot;bafy2bzacecskt5brcfawiowjlv5lwnskkks2xzsmsnhkmjixndqlxuyb3abxs&quot;
+        market_state_old.proposals = proposals.flush().unwrap();
+        <span class="macro">assert_eq!</span>(
+            market_state_old.proposals.to_string(),
+            <span class="string">&quot;bafy2bzacecskt5brcfawiowjlv5lwnskkks2xzsmsnhkmjixndqlxuyb3abxs&quot;
         </span>);
-        market_state_old.pending_proposals = pending_proposals.root()<span class="question-mark">?</span>;
+        market_state_old.pending_proposals = pending_proposals.root().unwrap();
 
-        <span class="kw">let </span>market_state_cid_old = store.put_cbor_default(<span class="kw-2">&amp;</span>market_state_old)<span class="question-mark">?</span>;
+        <span class="kw">let </span>market_state_cid_old = store.put_cbor_default(<span class="kw-2">&amp;</span>market_state_old).unwrap();
         market_actor_old.state = market_state_cid_old;
-        state_tree_old.set_actor(
-            <span class="kw-2">&amp;</span>fil_actor_interface::market::ADDRESS.into(),
-            market_actor_old,
-        )<span class="question-mark">?</span>;
+        state_tree_old
+            .set_actor(
+                <span class="kw-2">&amp;</span>fil_actor_interface::market::ADDRESS.into(),
+                market_actor_old,
+            )
+            .unwrap();
 
         <span class="comment">// base stuff to create miners
-        </span><span class="kw">let </span>miner_cid_old = manifest_old.get(BuiltinActor::Miner)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(miner_cid_old.to_string() == <span class="string">&quot;bafkqaetgnfwc6obpon2g64tbm5sw22lomvza&quot;</span>);
-        <span class="kw">let </span>base_miner_state = make_base_miner_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>base_addr, <span class="kw-2">&amp;</span>base_worker_addr)<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>miner_cid_old = manifest_old.get(BuiltinActor::Miner).unwrap();
+        <span class="macro">assert_eq!</span>(
+            miner_cid_old.to_string(),
+            <span class="string">&quot;bafkqaetgnfwc6obpon2g64tbm5sw22lomvza&quot;
+        </span>);
+        <span class="kw">let </span>base_miner_state = make_base_miner_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>base_addr, <span class="kw-2">&amp;</span>base_worker_addr);
 
         <span class="kw">let </span>base_precommit = fil_actor_miner_state::v8::SectorPreCommitOnChainInfo {
             pre_commit_deposit: Zero::zero(),
@@ -1412,13 +1458,13 @@
             verified_deal_weight: Zero::zero(),
             info: fil_actor_miner_state::v8::SectorPreCommitInfo {
                 seal_proof: fvm_shared2::sector::RegisteredSealProof::StackedDRG32GiBV1P1,
-                sealed_cid: make_sealed_cid(<span class="string">&quot;100&quot;</span>.as_bytes())<span class="question-mark">?</span>,
+                sealed_cid: make_sealed_cid(<span class="string">&quot;100&quot;</span>.as_bytes()),
                 ..Default::default()
             },
         };
-        <span class="macro">ensure!</span>(
-            base_precommit.info.sealed_cid.to_string()
-                == <span class="string">&quot;bagboea4b5abcblkxgzugketokvsj5szdvyourcdvislw57venjeowxmfu3xljuyg&quot;
+        <span class="macro">assert_eq!</span>(
+            base_precommit.info.sealed_cid.to_string(),
+            <span class="string">&quot;bagboea4b5abcblkxgzugketokvsj5szdvyourcdvislw57venjeowxmfu3xljuyg&quot;
         </span>);
 
         <span class="comment">// make 3 miners
@@ -1427,49 +1473,59 @@
         // miner3 has 3 precommits, with deals [0], [1,2], and []
 
         // miner1 has no precommits at all
-        </span><span class="kw">let </span>miner1_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>base_miner_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            miner1_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzaceaqtktd7f5b2gutreh3b2czp2mkqu4ilyuu7mjcpwrk75g5nl6w6k&quot;
+        </span><span class="kw">let </span>miner1_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>base_miner_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            miner1_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzaceaqtktd7f5b2gutreh3b2czp2mkqu4ilyuu7mjcpwrk75g5nl6w6k&quot;
         </span>);
 
         <span class="kw">let </span>miner1 = ActorState::new(miner_cid_old, miner1_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="kw">let </span>addr1 = Address::new_id(base_addr_id + <span class="number">1</span>);
-        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr1, miner1)<span class="question-mark">?</span>;
+        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr1, miner1).unwrap();
 
         <span class="comment">// miner2 has precommits, but they have no deals
         </span><span class="kw">let </span><span class="kw-2">mut </span>precommits2 = fil_actors_shared::v8::make_map_with_root::&lt;
             <span class="kw">_</span>,
             fil_actor_miner_state::v8::SectorPreCommitOnChainInfo,
-        &gt;(<span class="kw-2">&amp;</span>base_miner_state.pre_committed_sectors, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-        precommits2.set(sector_key(<span class="number">0</span>)<span class="question-mark">?</span>, base_precommit.clone())<span class="question-mark">?</span>;
-        precommits2.set(sector_key(<span class="number">1</span>)<span class="question-mark">?</span>, base_precommit.clone())<span class="question-mark">?</span>;
-        precommits2.set(sector_key(<span class="number">2</span>)<span class="question-mark">?</span>, base_precommit.clone())<span class="question-mark">?</span>;
-        precommits2.set(sector_key(<span class="number">3</span>)<span class="question-mark">?</span>, base_precommit.clone())<span class="question-mark">?</span>;
+        &gt;(<span class="kw-2">&amp;</span>base_miner_state.pre_committed_sectors, <span class="kw-2">&amp;</span>store)
+        .unwrap();
+        precommits2
+            .set(sector_key(<span class="number">0</span>).unwrap(), base_precommit.clone())
+            .unwrap();
+        precommits2
+            .set(sector_key(<span class="number">1</span>).unwrap(), base_precommit.clone())
+            .unwrap();
+        precommits2
+            .set(sector_key(<span class="number">2</span>).unwrap(), base_precommit.clone())
+            .unwrap();
+        precommits2
+            .set(sector_key(<span class="number">3</span>).unwrap(), base_precommit.clone())
+            .unwrap();
 
-        <span class="kw">let </span>precommit2_cid = precommits2.flush()<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            precommit2_cid.to_string()
-                == <span class="string">&quot;bafy2bzacedogkdulyeaujgdsiqzo323s5dpz44efwihxsuekkkpo4znpl3g2s&quot;
+        <span class="kw">let </span>precommit2_cid = precommits2.flush().unwrap();
+        <span class="macro">assert_eq!</span>(
+            precommit2_cid.to_string(),
+            <span class="string">&quot;bafy2bzacedogkdulyeaujgdsiqzo323s5dpz44efwihxsuekkkpo4znpl3g2s&quot;
         </span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>miner2_state = base_miner_state.clone();
         miner2_state.pre_committed_sectors = precommit2_cid;
-        <span class="kw">let </span>miner2_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner2_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            miner2_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacedad6xkymehkuoij4rhg2inzqnfin3er52znw53lddn5364usp2bi&quot;
+        <span class="kw">let </span>miner2_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner2_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            miner2_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacedad6xkymehkuoij4rhg2inzqnfin3er52znw53lddn5364usp2bi&quot;
         </span>);
 
         <span class="kw">let </span>miner2 = ActorState::new(miner_cid_old, miner2_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="kw">let </span>addr2 = Address::new_id(base_addr_id + <span class="number">2</span>);
-        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr2, miner2)<span class="question-mark">?</span>;
+        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr2, miner2).unwrap();
 
         <span class="comment">// miner 3 has precommits, some of which have deals
         </span><span class="kw">let </span><span class="kw-2">mut </span>precommits3 = fil_actors_shared::v8::make_map_with_root::&lt;
             <span class="kw">_</span>,
             fil_actor_miner_state::v8::SectorPreCommitOnChainInfo,
-        &gt;(<span class="kw-2">&amp;</span>base_miner_state.pre_committed_sectors, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
+        &gt;(<span class="kw-2">&amp;</span>base_miner_state.pre_committed_sectors, <span class="kw-2">&amp;</span>store)
+        .unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>precommits3dot0 = base_precommit.clone();
         precommits3dot0.info.deal_ids = <span class="macro">vec!</span>[<span class="number">0</span>];
         precommits3dot0.info.sector_number = <span class="number">0</span>;
@@ -1481,99 +1537,101 @@
         <span class="kw">let </span><span class="kw-2">mut </span>precommits3dot2 = base_precommit;
         precommits3dot2.info.sector_number = <span class="number">2</span>;
 
-        precommits3.set(sector_key(<span class="number">0</span>)<span class="question-mark">?</span>, precommits3dot0)<span class="question-mark">?</span>;
-        precommits3.set(sector_key(<span class="number">1</span>)<span class="question-mark">?</span>, precommits3dot1)<span class="question-mark">?</span>;
-        precommits3.set(sector_key(<span class="number">2</span>)<span class="question-mark">?</span>, precommits3dot2)<span class="question-mark">?</span>;
+        precommits3
+            .set(sector_key(<span class="number">0</span>).unwrap(), precommits3dot0)
+            .unwrap();
+        precommits3
+            .set(sector_key(<span class="number">1</span>).unwrap(), precommits3dot1)
+            .unwrap();
+        precommits3
+            .set(sector_key(<span class="number">2</span>).unwrap(), precommits3dot2)
+            .unwrap();
 
-        <span class="kw">let </span>precommits3_cid = precommits3.flush()<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            precommits3_cid.to_string()
-                == <span class="string">&quot;bafy2bzacecdpddgu5sxniq5iez3xapyxvi3dg7pc5oxthywuclvxyj4h2vweo&quot;
+        <span class="kw">let </span>precommits3_cid = precommits3.flush().unwrap();
+        <span class="macro">assert_eq!</span>(
+            precommits3_cid.to_string(),
+            <span class="string">&quot;bafy2bzacecdpddgu5sxniq5iez3xapyxvi3dg7pc5oxthywuclvxyj4h2vweo&quot;
         </span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>miner3_state = base_miner_state.clone();
         miner3_state.pre_committed_sectors = precommits3_cid;
-        <span class="kw">let </span>miner3_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner3_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            miner3_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzaceb7ojujla7jb6iaxeuk4etg2kui4gtjujwqadqkc7lkp4ugoqrh2m&quot;
+        <span class="kw">let </span>miner3_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner3_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            miner3_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzaceb7ojujla7jb6iaxeuk4etg2kui4gtjujwqadqkc7lkp4ugoqrh2m&quot;
         </span>);
 
         <span class="kw">let </span>miner3 = ActorState::new(miner_cid_old, miner3_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
         <span class="kw">let </span>addr3 = Address::new_id(base_addr_id + <span class="number">3</span>);
-        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr3, miner3)<span class="question-mark">?</span>;
+        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr3, miner3).unwrap();
 
-        <span class="kw">let </span>tree_root = state_tree_old.flush()<span class="question-mark">?</span>;
+        <span class="kw">let </span>tree_root = state_tree_old.flush().unwrap();
 
-        <span class="kw">let </span>(new_manifest_cid, _new_manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/9/&quot;</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>(new_manifest_cid, _new_manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/9/&quot;</span>);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>chain_config = ChainConfig::calibnet();
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(bundle) = <span class="kw-2">&amp;mut </span>chain_config.height_infos[Height::Shark <span class="kw">as </span>usize].bundle {
-            <span class="kw-2">*</span>bundle = new_manifest_cid;
-        }
-        <span class="kw">let </span>new_state_cid = <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>tree_root, <span class="number">200</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>actors_out_state_root: StateRoot = store.get_cbor(<span class="kw-2">&amp;</span>new_state_cid)<span class="question-mark">?</span>.unwrap();
-        <span class="macro">ensure!</span>(
-            actors_out_state_root.actors.to_string()
-                == <span class="string">&quot;bafy2bzacedgtk3lnnyfxnzc32etqaj3zvi7ar7nxq2jtxd2qr36ftbsjoycqu&quot;
-        </span>);
-        <span class="kw">let </span>new_state_cid2 = <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>tree_root, <span class="number">200</span>)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(new_state_cid == new_state_cid2);
-
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_fip0029_miner_migration() -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>store = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
-        <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-        <span class="kw">let </span>addr = Address::new_id(<span class="number">10000</span>);
-        <span class="kw">let </span>worker_addr = Address::new_id(<span class="number">20000</span>);
-        <span class="kw">let </span>miner_cid_old = manifest_old.get(BuiltinActor::Miner)<span class="question-mark">?</span>;
-        <span class="kw">let </span>miner_state = make_base_miner_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>addr, <span class="kw-2">&amp;</span>worker_addr)<span class="question-mark">?</span>;
-        <span class="kw">let </span>miner_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            miner_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzaceacitm72b4zks7ivplygpmyqa6aas2pxkv4rkiknluxiko5mn4ng6&quot;
-        </span>);
-        <span class="kw">let </span>miner_actor = ActorState::new(miner_cid_old, miner_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
-        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr, miner_actor)<span class="question-mark">?</span>;
-        <span class="kw">let </span>state_tree_old_root = state_tree_old.flush()<span class="question-mark">?</span>;
-        <span class="kw">let </span>(new_manifest_cid, _new_manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/9/&quot;</span>)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>chain_config = ChainConfig::calibnet();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(bundle) = <span class="kw-2">&amp;mut </span>chain_config.height_infos[Height::Shark <span class="kw">as </span>usize].bundle {
             <span class="kw-2">*</span>bundle = new_manifest_cid;
         }
         <span class="kw">let </span>new_state_cid =
-            <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>state_tree_old_root, <span class="number">200</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>actors_out_state_root: StateRoot = store.get_cbor(<span class="kw-2">&amp;</span>new_state_cid)<span class="question-mark">?</span>.unwrap();
-        <span class="macro">ensure!</span>(
-            actors_out_state_root.actors.to_string()
-                == <span class="string">&quot;bafy2bzacebdpnjjyspbyj7al7d6234kdhkmdygkfdkp6zyao5o3egsfmribty&quot;
+            <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>tree_root, <span class="number">200</span>).unwrap();
+        <span class="kw">let </span>actors_out_state_root: StateRoot = store.get_cbor(<span class="kw-2">&amp;</span>new_state_cid).unwrap().unwrap();
+        <span class="macro">assert_eq!</span>(
+            actors_out_state_root.actors.to_string(),
+            <span class="string">&quot;bafy2bzacedgtk3lnnyfxnzc32etqaj3zvi7ar7nxq2jtxd2qr36ftbsjoycqu&quot;
         </span>);
-
-        <span class="prelude-val">Ok</span>(())
+        <span class="kw">let </span>new_state_cid2 =
+            <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>tree_root, <span class="number">200</span>).unwrap();
+        <span class="macro">assert_eq!</span>(new_state_cid, new_state_cid2);
     }
 
-    <span class="kw">fn </span>make_input_tree&lt;BS: Blockstore&gt;(
-        store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(StateTree&lt;BS&gt;, BuiltinActorManifest)&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>tree = StateTree::new(store.clone(), StateTreeVersion::V4)<span class="question-mark">?</span>;
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_fip0029_miner_migration() {
+        <span class="kw">let </span>store = Arc::new(<span class="kw">crate</span>::db::MemoryDB::default());
+        <span class="kw">let </span>(<span class="kw-2">mut </span>state_tree_old, manifest_old) = make_input_tree(<span class="kw-2">&amp;</span>store);
+        <span class="kw">let </span>addr = Address::new_id(<span class="number">10000</span>);
+        <span class="kw">let </span>worker_addr = Address::new_id(<span class="number">20000</span>);
+        <span class="kw">let </span>miner_cid_old = manifest_old.get(BuiltinActor::Miner).unwrap();
+        <span class="kw">let </span>miner_state = make_base_miner_state(<span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>addr, <span class="kw-2">&amp;</span>worker_addr);
+        <span class="kw">let </span>miner_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>miner_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            miner_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzaceacitm72b4zks7ivplygpmyqa6aas2pxkv4rkiknluxiko5mn4ng6&quot;
+        </span>);
+        <span class="kw">let </span>miner_actor = ActorState::new(miner_cid_old, miner_state_cid, Zero::zero(), <span class="number">0</span>, <span class="prelude-val">None</span>);
+        state_tree_old.set_actor(<span class="kw-2">&amp;</span>addr, miner_actor).unwrap();
+        <span class="kw">let </span>state_tree_old_root = state_tree_old.flush().unwrap();
+        <span class="kw">let </span>(new_manifest_cid, _new_manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/9/&quot;</span>);
+        <span class="kw">let </span><span class="kw-2">mut </span>chain_config = ChainConfig::calibnet();
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(bundle) = <span class="kw-2">&amp;mut </span>chain_config.height_infos[Height::Shark <span class="kw">as </span>usize].bundle {
+            <span class="kw-2">*</span>bundle = new_manifest_cid;
+        }
+        <span class="kw">let </span>new_state_cid =
+            <span class="kw">super</span>::<span class="kw">super</span>::run_migration(<span class="kw-2">&amp;</span>chain_config, <span class="kw-2">&amp;</span>store, <span class="kw-2">&amp;</span>state_tree_old_root, <span class="number">200</span>).unwrap();
+        <span class="kw">let </span>actors_out_state_root: StateRoot = store.get_cbor(<span class="kw-2">&amp;</span>new_state_cid).unwrap().unwrap();
+        <span class="macro">assert_eq!</span>(
+            actors_out_state_root.actors.to_string(),
+            <span class="string">&quot;bafy2bzacebdpnjjyspbyj7al7d6234kdhkmdygkfdkp6zyao5o3egsfmribty&quot;
+        </span>);
+    }
 
-        <span class="kw">let </span>(_manifest_cid, manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/8/&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>account_cid = manifest.get(BuiltinActor::Account)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>make_input_tree&lt;BS: Blockstore&gt;(store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;) -&gt; (StateTree&lt;BS&gt;, BuiltinActorManifest) {
+        <span class="kw">let </span><span class="kw-2">mut </span>tree = StateTree::new(store.clone(), StateTreeVersion::V4).unwrap();
+
+        <span class="kw">let </span>(_manifest_cid, manifest) = make_test_manifest(<span class="kw-2">&amp;</span>store, <span class="string">&quot;fil/8/&quot;</span>);
+        <span class="kw">let </span>account_cid = manifest.get(BuiltinActor::Account).unwrap();
         <span class="comment">// fmt.Printf(&quot;accountCid: %s\n&quot;, accountCid)
-        </span><span class="macro">ensure!</span>(account_cid.to_string() == <span class="string">&quot;bafkqadlgnfwc6obpmfrwg33vnz2a&quot;</span>);
+        </span><span class="macro">assert_eq!</span>(account_cid.to_string(), <span class="string">&quot;bafkqadlgnfwc6obpmfrwg33vnz2a&quot;</span>);
         <span class="kw">let </span>system_cid = manifest.get_system();
         <span class="comment">// fmt.Printf(&quot;systemCid: %s\n&quot;, systemCid)
-        </span><span class="macro">ensure!</span>(system_cid.to_string() == <span class="string">&quot;bafkqaddgnfwc6obpon4xg5dfnu&quot;</span>);
+        </span><span class="macro">assert_eq!</span>(system_cid.to_string(), <span class="string">&quot;bafkqaddgnfwc6obpon4xg5dfnu&quot;</span>);
         <span class="kw">let </span>system_state = fil_actor_system_state::v9::State {
             builtin_actors: manifest.source_cid(),
         };
-        <span class="kw">let </span>system_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>system_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            system_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacebrujchvrqxwiml3aaud4ts7kgj74kkf7qewwmrsj5tvhneeamtlq&quot;
+        <span class="kw">let </span>system_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>system_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            system_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacebrujchvrqxwiml3aaud4ts7kgj74kkf7qewwmrsj5tvhneeamtlq&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1581,16 +1639,17 @@
             system_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::system::ADDRESS.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
         <span class="kw">let </span>init_cid = manifest.get_init();
         <span class="comment">// fmt.Printf(&quot;initCid: %s\n&quot;, initCid)
-        </span><span class="macro">ensure!</span>(init_cid.to_string() == <span class="string">&quot;bafkqactgnfwc6obpnfxgs5a&quot;</span>);
-        <span class="kw">let </span>init_state = fil_actor_init_state::v8::State::new(<span class="kw-2">&amp;</span>store, <span class="string">&quot;migrationtest&quot;</span>.into())<span class="question-mark">?</span>;
-        <span class="kw">let </span>init_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>init_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            init_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacednf3o3eyjwkm2isixe5lezt6klncgz5axriewegbkw34r6pqszbe&quot;
+        </span><span class="macro">assert_eq!</span>(init_cid.to_string(), <span class="string">&quot;bafkqactgnfwc6obpnfxgs5a&quot;</span>);
+        <span class="kw">let </span>init_state =
+            fil_actor_init_state::v8::State::new(<span class="kw-2">&amp;</span>store, <span class="string">&quot;migrationtest&quot;</span>.into()).unwrap();
+        <span class="kw">let </span>init_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>init_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            init_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacednf3o3eyjwkm2isixe5lezt6klncgz5axriewegbkw34r6pqszbe&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1598,15 +1657,15 @@
             init_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::init::ADDRESS.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
-        <span class="kw">let </span>reward_cid = manifest.get(BuiltinActor::Reward)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(reward_cid.to_string() == <span class="string">&quot;bafkqaddgnfwc6obpojsxoylsmq&quot;</span>);
+        <span class="kw">let </span>reward_cid = manifest.get(BuiltinActor::Reward).unwrap();
+        <span class="macro">assert_eq!</span>(reward_cid.to_string(), <span class="string">&quot;bafkqaddgnfwc6obpojsxoylsmq&quot;</span>);
         <span class="kw">let </span>reward_state = fil_actor_reward_state::v8::State::new(Default::default());
-        <span class="kw">let </span>reward_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>reward_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            reward_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzaceaslbmsgmgmfi6pn2osvqcfuqinauuyt67zifnefurhpk4zxd2fos&quot;
+        <span class="kw">let </span>reward_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>reward_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            reward_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzaceaslbmsgmgmfi6pn2osvqcfuqinauuyt67zifnefurhpk4zxd2fos&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1614,10 +1673,10 @@
             reward_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::reward::ADDRESS.into(),
             TokenAmount::from_whole(<span class="number">1_100_000_000</span>),
-        )<span class="question-mark">?</span>;
+        );
 
-        <span class="kw">let </span>cron_cid = manifest.get(BuiltinActor::Cron)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(cron_cid.to_string() == <span class="string">&quot;bafkqactgnfwc6obpmnzg63q&quot;</span>);
+        <span class="kw">let </span>cron_cid = manifest.get(BuiltinActor::Cron).unwrap();
+        <span class="macro">assert_eq!</span>(cron_cid.to_string(), <span class="string">&quot;bafkqactgnfwc6obpmnzg63q&quot;</span>);
         <span class="kw">let </span>cron_state = fil_actor_cron_state::v8::State {
             entries: <span class="macro">vec!</span>[
                 fil_actor_cron_state::v8::Entry {
@@ -1630,10 +1689,10 @@
                 },
             ],
         };
-        <span class="kw">let </span>cron_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>cron_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            cron_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacebs5dwwxmsjmzvoqcamx3qtl2x5qpqgpqxgnzl7scccmbvd37ulvs&quot;
+        <span class="kw">let </span>cron_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>cron_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            cron_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacebs5dwwxmsjmzvoqcamx3qtl2x5qpqgpqxgnzl7scccmbvd37ulvs&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1641,15 +1700,18 @@
             cron_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::cron::ADDRESS.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
-        <span class="kw">let </span>power_cid = manifest.get(BuiltinActor::Power)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(power_cid.to_string() == <span class="string">&quot;bafkqaetgnfwc6obpon2g64tbm5sxa33xmvza&quot;</span>);
-        <span class="kw">let </span>power_state = fil_actor_power_state::v8::State::new(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-        <span class="kw">let </span>power_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>power_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            power_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacebx3h3ib435qrzwb7zj7enrgepqeiyyeqpq6zwygasoag4m3mhy3w&quot;
+        <span class="kw">let </span>power_cid = manifest.get(BuiltinActor::Power).unwrap();
+        <span class="macro">assert_eq!</span>(
+            power_cid.to_string(),
+            <span class="string">&quot;bafkqaetgnfwc6obpon2g64tbm5sxa33xmvza&quot;
+        </span>);
+        <span class="kw">let </span>power_state = fil_actor_power_state::v8::State::new(<span class="kw-2">&amp;</span>store).unwrap();
+        <span class="kw">let </span>power_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>power_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            power_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacebx3h3ib435qrzwb7zj7enrgepqeiyyeqpq6zwygasoag4m3mhy3w&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1657,15 +1719,18 @@
             power_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::power::ADDRESS.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
-        <span class="kw">let </span>market_cid = manifest.get(BuiltinActor::Market)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(market_cid.to_string() == <span class="string">&quot;bafkqae3gnfwc6obpon2g64tbm5sw2ylsnnsxi&quot;</span>);
-        <span class="kw">let </span>market_state = fil_actor_market_state::v8::State::new(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
-        <span class="kw">let </span>market_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>market_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            market_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacea5udmevoj4io3yqy7ku7aitblugdvirbirg7wstzstb5xub5empc&quot;
+        <span class="kw">let </span>market_cid = manifest.get(BuiltinActor::Market).unwrap();
+        <span class="macro">assert_eq!</span>(
+            market_cid.to_string(),
+            <span class="string">&quot;bafkqae3gnfwc6obpon2g64tbm5sw2ylsnnsxi&quot;
+        </span>);
+        <span class="kw">let </span>market_state = fil_actor_market_state::v8::State::new(<span class="kw-2">&amp;</span>store).unwrap();
+        <span class="kw">let </span>market_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>market_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            market_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacea5udmevoj4io3yqy7ku7aitblugdvirbirg7wstzstb5xub5empc&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1673,17 +1738,17 @@
             market_cid,
             <span class="kw-2">&amp;</span>fil_actor_interface::market::ADDRESS.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
         <span class="comment">// this will need to be replaced with the address of a multisig actor for the verified registry to be tested accurately
         </span><span class="kw">let </span>verifreg_root = Address::new_id(<span class="number">80</span>);
         <span class="kw">let </span>account_state = fil_actor_account_state::v8::State {
             address: verifreg_root.into(),
         };
-        <span class="kw">let </span>account_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>account_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            account_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzaceajm42pledpxusdh4owdrdfvv463dthqg24npeeaz4jlbgzdcgkve&quot;
+        <span class="kw">let </span>account_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>account_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            account_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzaceajm42pledpxusdh4owdrdfvv463dthqg24npeeaz4jlbgzdcgkve&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1691,12 +1756,15 @@
             account_cid,
             <span class="kw-2">&amp;</span>account_state.address.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
-        <span class="kw">let </span>verifreg_cid = manifest.get(BuiltinActor::VerifiedRegistry)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(verifreg_cid.to_string() == <span class="string">&quot;bafkqaftgnfwc6obpozsxe2lgnfswi4tfm5uxg5dspe&quot;</span>);
+        <span class="kw">let </span>verifreg_cid = manifest.get(BuiltinActor::VerifiedRegistry).unwrap();
+        <span class="macro">assert_eq!</span>(
+            verifreg_cid.to_string(),
+            <span class="string">&quot;bafkqaftgnfwc6obpozsxe2lgnfswi4tfm5uxg5dspe&quot;
+        </span>);
         <span class="kw">let </span><span class="kw-2">mut </span>verifreg_state =
-            fil_actor_verifreg_state::v8::State::new(<span class="kw-2">&amp;</span>store, verifreg_root.into())<span class="question-mark">?</span>;
+            fil_actor_verifreg_state::v8::State::new(<span class="kw-2">&amp;</span>store, verifreg_root.into()).unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>verified_clients = fil_actors_shared::v8::make_empty_map::&lt;BS, BigInt&gt;(
             store,
             fil_actors_shared::v8::builtin::HAMT_BIT_WIDTH,
@@ -1716,33 +1784,37 @@
         // vrState.VerifiedClients = verifiedClientsCID
         // ```
         </span>{
-            verified_clients.set(
-                BytesKey(Address::new_id(<span class="number">1001</span>).to_bytes()),
-                num_bigint::BigInt::from(<span class="number">1</span>).into(),
-            )<span class="question-mark">?</span>;
-            verified_clients.set(
-                BytesKey(Address::new_id(<span class="number">1002</span>).to_bytes()),
-                num_bigint::BigInt::from(<span class="number">2</span>).into(),
-            )<span class="question-mark">?</span>;
-            verifreg_state.verified_clients = verified_clients.flush()<span class="question-mark">?</span>;
+            verified_clients
+                .set(
+                    BytesKey(Address::new_id(<span class="number">1001</span>).to_bytes()),
+                    num_bigint::BigInt::from(<span class="number">1</span>).into(),
+                )
+                .unwrap();
+            verified_clients
+                .set(
+                    BytesKey(Address::new_id(<span class="number">1002</span>).to_bytes()),
+                    num_bigint::BigInt::from(<span class="number">2</span>).into(),
+                )
+                .unwrap();
+            verifreg_state.verified_clients = verified_clients.flush().unwrap();
         }
-        <span class="kw">let </span>verifreg_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>verifreg_state)<span class="question-mark">?</span>;
+        <span class="kw">let </span>verifreg_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>verifreg_state).unwrap();
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
             verifreg_state_cid,
             verifreg_cid,
             <span class="kw-2">&amp;</span>fil_actors_shared::v8::builtin::VERIFIED_REGISTRY_ACTOR_ADDR.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
         <span class="comment">// burnt funds
         </span><span class="kw">let </span>account_state = fil_actor_account_state::v8::State {
             address: BURNT_FUNDS_ACTOR_ADDR,
         };
-        <span class="kw">let </span>account_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>account_state)<span class="question-mark">?</span>;
-        <span class="macro">ensure!</span>(
-            account_state_cid.to_string()
-                == <span class="string">&quot;bafy2bzacedpuk5ggwoq3s2wixsyjjnexpsjstdlyntio76vs2lt2jvy3o6mau&quot;
+        <span class="kw">let </span>account_state_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>account_state).unwrap();
+        <span class="macro">assert_eq!</span>(
+            account_state_cid.to_string(),
+            <span class="string">&quot;bafy2bzacedpuk5ggwoq3s2wixsyjjnexpsjstdlyntio76vs2lt2jvy3o6mau&quot;
         </span>);
         init_actor(
             <span class="kw-2">&amp;mut </span>tree,
@@ -1750,11 +1822,11 @@
             account_cid,
             <span class="kw-2">&amp;</span>account_state.address.into(),
             Zero::zero(),
-        )<span class="question-mark">?</span>;
+        );
 
-        tree.flush()<span class="question-mark">?</span>;
+        tree.flush().unwrap();
 
-        <span class="prelude-val">Ok</span>((tree, manifest))
+        (tree, manifest)
     }
 
     <span class="kw">fn </span>init_actor&lt;BS: Blockstore&gt;(
@@ -1763,17 +1835,12 @@
         code: Cid,
         addr: <span class="kw-2">&amp;</span>Address,
         balance: TokenAmount,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    ) {
         <span class="kw">let </span>actor = ActorState::new(code, state, balance, <span class="number">0</span>, <span class="prelude-val">None</span>);
-        tree.set_actor(addr, actor)<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(())
+        tree.set_actor(addr, actor).unwrap();
     }
 
-    <span class="kw">fn </span>make_test_manifest&lt;BS: Blockstore&gt;(
-        store: <span class="kw-2">&amp;</span>BS,
-        prefix: <span class="kw-2">&amp;</span>str,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(Cid, BuiltinActorManifest)&gt; {
+    <span class="kw">fn </span>make_test_manifest&lt;BS: Blockstore&gt;(store: <span class="kw-2">&amp;</span>BS, prefix: <span class="kw-2">&amp;</span>str) -&gt; (Cid, BuiltinActorManifest) {
         <span class="kw">let </span><span class="kw-2">mut </span>manifest_data = <span class="macro">vec!</span>[];
         <span class="kw">for </span>name <span class="kw">in </span>[
             <span class="string">&quot;account&quot;</span>,
@@ -1794,17 +1861,19 @@
             manifest_data.push((name, code_cid));
         }
 
-        <span class="kw">let </span>manifest_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>(<span class="number">1</span>, store.put_cbor_default(<span class="kw-2">&amp;</span>manifest_data)<span class="question-mark">?</span>))<span class="question-mark">?</span>;
-        <span class="kw">let </span>manifest = BuiltinActorManifest::load_manifest(store, <span class="kw-2">&amp;</span>manifest_cid)<span class="question-mark">?</span>;
+        <span class="kw">let </span>manifest_cid = store
+            .put_cbor_default(<span class="kw-2">&amp;</span>(<span class="number">1</span>, store.put_cbor_default(<span class="kw-2">&amp;</span>manifest_data).unwrap()))
+            .unwrap();
+        <span class="kw">let </span>manifest = BuiltinActorManifest::load_manifest(store, <span class="kw-2">&amp;</span>manifest_cid).unwrap();
 
-        <span class="prelude-val">Ok</span>((manifest_cid, manifest))
+        (manifest_cid, manifest)
     }
 
     <span class="kw">fn </span>make_base_miner_state&lt;BS: Blockstore&gt;(
         store: <span class="kw-2">&amp;</span>BS,
         base_addr: <span class="kw-2">&amp;</span>Address,
         base_worker_addr: <span class="kw-2">&amp;</span>Address,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;fil_actor_miner_state::v8::State&gt; {
+    ) -&gt; fil_actor_miner_state::v8::State {
         <span class="kw">let </span>empty_miner_info = fil_actor_miner_state::v8::MinerInfo {
             owner: base_addr.into(),
             worker: base_worker_addr.into(),
@@ -1819,29 +1888,28 @@
             pending_owner_address: <span class="prelude-val">None</span>,
         };
 
-        <span class="kw">let </span>empty_miner_info_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>empty_miner_info)<span class="question-mark">?</span>;
+        <span class="kw">let </span>empty_miner_info_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>empty_miner_info).unwrap();
 
-        <span class="kw">let </span>empty_miner_state = fil_actor_miner_state::v8::State::new(
+        fil_actor_miner_state::v8::State::new(
             <span class="kw-2">&amp;</span>fil_actors_shared::v8::runtime::Policy::calibnet(),
             store,
             empty_miner_info_cid,
             <span class="number">0</span>,
             <span class="number">0</span>,
-        )<span class="question-mark">?</span>;
-
-        <span class="prelude-val">Ok</span>(empty_miner_state)
+        )
+        .unwrap()
     }
 
-    <span class="kw">fn </span>make_piece_cid(data: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Cid&gt; {
+    <span class="kw">fn </span>make_piece_cid(data: <span class="kw-2">&amp;</span>[u8]) -&gt; Cid {
         <span class="kw">let </span>hash = cid::multihash::Code::Sha2_256.digest(data);
-        <span class="kw">let </span>hash = Multihash::wrap(SHA2_256_TRUNC254_PADDED, hash.digest())<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(Cid::new_v1(FIL_COMMITMENT_UNSEALED, hash))
+        <span class="kw">let </span>hash = Multihash::wrap(SHA2_256_TRUNC254_PADDED, hash.digest()).unwrap();
+        Cid::new_v1(FIL_COMMITMENT_UNSEALED, hash)
     }
 
-    <span class="kw">fn </span>make_sealed_cid(data: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;Cid&gt; {
+    <span class="kw">fn </span>make_sealed_cid(data: <span class="kw-2">&amp;</span>[u8]) -&gt; Cid {
         <span class="kw">let </span>hash = cid::multihash::Code::Sha2_256.digest(data);
-        <span class="kw">let </span>hash = Multihash::wrap(POSEIDON_BLS12_381_A1_FC1, hash.digest())<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(Cid::new_v1(FIL_COMMITMENT_SEALED, hash))
+        <span class="kw">let </span>hash = Multihash::wrap(POSEIDON_BLS12_381_A1_FC1, hash.digest()).unwrap();
+        Cid::new_v1(FIL_COMMITMENT_SEALED, hash)
     }
 }
 </code></pre></div></section></main></body></html>

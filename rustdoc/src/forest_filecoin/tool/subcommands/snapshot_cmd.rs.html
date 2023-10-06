@@ -790,7 +790,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::apply_block_messages;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarStream;
 <span class="kw">use </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::ensure_params_downloaded;
-<span class="kw">use </span>anyhow::{bail, Context, <span class="prelude-ty">Result</span>};
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
@@ -882,7 +882,7 @@
 }
 
 <span class="kw">impl </span>SnapshotCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Fetch {
                 directory,
@@ -1004,7 +1004,7 @@
     check_links: u32,
     check_network: <span class="prelude-ty">Option</span>&lt;NetworkChain&gt;,
     check_stateroots: u32,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>BlockstoreT: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
@@ -1039,7 +1039,7 @@
 // required to sync to the network and snapshot files usually disgard data after
 // 2000 epochs. Validity can be verified by ensuring there are no bad IPLD or
 // broken links in the N most recent epochs.
-</span><span class="kw">async fn </span>validate_ipld_links&lt;DB&gt;(ts: Tipset, db: <span class="kw-2">&amp;</span>DB, epochs: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+</span><span class="kw">async fn </span>validate_ipld_links&lt;DB&gt;(ts: Tipset, db: <span class="kw-2">&amp;</span>DB, epochs: u32) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync,
 {
@@ -1059,7 +1059,7 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>assert_cid_exists = |cid: Cid| <span class="kw">async move </span>{
             <span class="kw">let </span>data = db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?</span>;
-            data.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Broken IPLD link at epoch: {height}&quot;</span>))
+            data.with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Broken IPLD link at epoch: {height}&quot;</span>))
         };
 
         <span class="kw">for </span>h <span class="kw">in </span>tipset.blocks() {
@@ -1077,12 +1077,12 @@
 // Forest keeps a list of known tipsets for each network. Finding a known tipset
 // short-circuits the search for the genesis block. If no genesis block can be
 // found or if the genesis block is unrecognizable, an error is returned.
-</span><span class="kw">fn </span>query_network(ts: <span class="kw-2">&amp;</span>Tipset, db: <span class="kw">impl </span>Blockstore) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt; {
+</span><span class="kw">fn </span>query_network(ts: <span class="kw-2">&amp;</span>Tipset, db: <span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;NetworkChain&gt; {
     <span class="kw">let </span>pb = validation_spinner(<span class="string">&quot;Identifying genesis block:&quot;</span>).with_finish(
         indicatif::ProgressFinish::AbandonWithMessage(<span class="string">&quot;✅ found!&quot;</span>.into()),
     );
 
-    <span class="kw">fn </span>match_genesis_block(block_cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;NetworkChain&gt; {
+    <span class="kw">fn </span>match_genesis_block(block_cid: Cid) -&gt; anyhow::Result&lt;NetworkChain&gt; {
         <span class="kw">if </span>block_cid == <span class="kw-2">*</span>calibnet::GENESIS_CID {
             <span class="prelude-val">Ok</span>(NetworkChain::Calibnet)
         } <span class="kw">else if </span>block_cid == <span class="kw-2">*</span>mainnet::GENESIS_CID {
@@ -1112,7 +1112,7 @@
     db: <span class="kw-2">&amp;</span>Arc&lt;DB&gt;,
     network: NetworkChain,
     epochs: u32,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
+) -&gt; anyhow::Result&lt;()&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {

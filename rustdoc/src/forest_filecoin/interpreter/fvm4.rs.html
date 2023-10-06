@@ -375,10 +375,6 @@
 <a href="#375" id="375">375</a>
 <a href="#376" id="376">376</a>
 <a href="#377" id="377">377</a>
-<a href="#378" id="378">378</a>
-<a href="#379" id="379">379</a>
-<a href="#380" id="380">380</a>
-<a href="#381" id="381">381</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -693,44 +689,39 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::{cell::RefCell, iter::repeat};
 
-    <span class="kw">use </span>anyhow::ensure;
-
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_1_read() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_1_read() {
         test_cal_gas_used_from_stats_inner(<span class="number">1</span>, <span class="kw-2">&amp;</span>[])
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_1_write() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_1_write() {
         test_cal_gas_used_from_stats_inner(<span class="number">0</span>, <span class="kw-2">&amp;</span>[<span class="number">100</span>])
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_multi_read() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_multi_read() {
         test_cal_gas_used_from_stats_inner(<span class="number">10</span>, <span class="kw-2">&amp;</span>[])
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_multi_write() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_multi_write() {
         test_cal_gas_used_from_stats_inner(<span class="number">0</span>, <span class="kw-2">&amp;</span>[<span class="number">100</span>, <span class="number">101</span>, <span class="number">102</span>, <span class="number">103</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">106</span>, <span class="number">107</span>, <span class="number">108</span>, <span class="number">109</span>])
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_1_read_1_write() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_1_read_1_write() {
         test_cal_gas_used_from_stats_inner(<span class="number">1</span>, <span class="kw-2">&amp;</span>[<span class="number">100</span>])
     }
 
     <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_multi_read_multi_write() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>test_cal_gas_used_from_stats_multi_read_multi_write() {
         test_cal_gas_used_from_stats_inner(<span class="number">10</span>, <span class="kw-2">&amp;</span>[<span class="number">100</span>, <span class="number">101</span>, <span class="number">102</span>, <span class="number">103</span>, <span class="number">104</span>, <span class="number">105</span>, <span class="number">106</span>, <span class="number">107</span>, <span class="number">108</span>, <span class="number">109</span>])
     }
 
-    <span class="kw">fn </span>test_cal_gas_used_from_stats_inner(
-        read_count: usize,
-        write_bytes: <span class="kw-2">&amp;</span>[usize],
-    ) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">fn </span>test_cal_gas_used_from_stats_inner(read_count: usize, write_bytes: <span class="kw-2">&amp;</span>[usize]) {
         <span class="kw">let </span>network_version = NetworkVersion::V18;
         <span class="kw">let </span>stats = BSStats {
             r: read_count,
@@ -738,7 +729,8 @@
             br: <span class="number">0</span>, <span class="comment">// Not used in current logic
             </span>bw: write_bytes.iter().sum(),
         };
-        <span class="kw">let </span>result = cal_gas_used_from_stats(RefCell::new(stats).borrow(), network_version)<span class="question-mark">?</span>;
+        <span class="kw">let </span>result =
+            cal_gas_used_from_stats(RefCell::new(stats).borrow(), network_version).unwrap();
 
         <span class="comment">// Simulates logic in old GasBlockStore
         </span><span class="kw">let </span>price_list = price_list_by_network_version(network_version);
@@ -751,13 +743,13 @@
         });
         <span class="kw">for </span><span class="kw-2">&amp;</span>bytes <span class="kw">in </span>write_bytes {
             tracker
-                .apply_charge(price_list.on_block_link(bytes).into())<span class="question-mark">?
-                </span>.stop()
+                .apply_charge(price_list.on_block_link(bytes).into())
+                .unwrap()
+                .stop()
         }
         <span class="kw">let </span>expected = tracker.gas_used();
 
-        <span class="macro">ensure!</span>(result == expected);
-        <span class="prelude-val">Ok</span>(())
+        <span class="macro">assert_eq!</span>(result, expected);
     }
 }
 </code></pre></div></section></main></body></html>

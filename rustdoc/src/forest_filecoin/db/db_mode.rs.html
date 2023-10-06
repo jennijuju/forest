@@ -172,6 +172,7 @@
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -180,6 +181,7 @@
     path::{Path, PathBuf},
 };
 
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>semver::Version;
 
 <span class="kw">use </span><span class="kw">crate</span>::utils::version::FOREST_VERSION;
@@ -233,7 +235,7 @@
                 <span class="kw">let </span>latest = versions
                     .iter()
                     .max()
-                    .ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Failed to find latest versioned database&quot;</span>))<span class="question-mark">?</span>; <span class="comment">// This should never happen
+                    .context(<span class="string">&quot;Failed to find latest versioned database&quot;</span>)<span class="question-mark">?</span>; <span class="comment">// This should never happen
                 </span>chain_data_path.join(latest.to_string())
             }
         }

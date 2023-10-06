@@ -741,7 +741,7 @@
     monitoring::MemStatsTracker, proofs_api::paramfetch::ensure_params_downloaded,
     version::FOREST_VERSION_STRING,
 };
-<span class="kw">use </span>anyhow::{bail, Context};
+<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>bundle::load_actor_bundles;
 <span class="kw">use </span>dialoguer::console::Term;
 <span class="kw">use </span>dialoguer::theme::ColorfulTheme;

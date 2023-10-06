@@ -143,7 +143,7 @@
 <span class="kw">pub use </span>memory::MemoryDB;
 <span class="kw">mod </span>db_mode;
 <span class="kw">pub mod </span>migration;
-
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>std::sync::Arc;
@@ -218,7 +218,7 @@
 
     <span class="kw">fn </span>require_obj&lt;V: DeserializeOwned&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, key: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;V&gt; {
         <span class="self">self</span>.read_bin(key)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Key {key} not found&quot;</span>))
+            </span>.with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Key {key} not found&quot;</span>))
             .and_then(|bytes| serde_json::from_slice(<span class="kw-2">&amp;</span>bytes).map_err(Into::into))
     }
 }

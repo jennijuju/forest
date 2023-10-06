@@ -363,7 +363,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::InvocResult;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarBlock, CarWriter};
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
-<span class="kw">use </span>anyhow::Context;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>fil_actor_interface::market;
 <span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
@@ -655,7 +655,7 @@
 
                         <span class="kw">let </span>new_ipld = db
                             .get_cbor::&lt;Ipld&gt;(<span class="kw-2">&amp;</span>cid)<span class="question-mark">?
-                            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Request failed: {cid}&quot;</span>))<span class="question-mark">?</span>;
+                            </span>.with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Request failed: {cid}&quot;</span>))<span class="question-mark">?</span>;
                         dfs_vec.lock().push(new_ipld);
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(car_tx) = <span class="kw-2">&amp;</span>car_tx {
                             car_tx.send(CarBlock {

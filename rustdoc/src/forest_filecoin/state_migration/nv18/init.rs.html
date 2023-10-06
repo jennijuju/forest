@@ -52,15 +52,15 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 
+<span class="kw">use </span><span class="kw">crate</span>::state_migration::common::{
+    ActorMigration, ActorMigrationInput, ActorMigrationOutput, TypeMigration, TypeMigrator,
+};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_init_state::{v10::State <span class="kw">as </span>InitStateNew, v9::State <span class="kw">as </span>InitStateOld};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
-
-<span class="kw">use </span><span class="kw">crate</span>::state_migration::common::{
-    ActorMigration, ActorMigrationInput, ActorMigrationOutput, TypeMigration, TypeMigrator,
-};
 
 <span class="kw">pub struct </span>InitMigrator(Cid);
 
@@ -78,7 +78,7 @@
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;ActorMigrationOutput&gt;&gt; {
         <span class="kw">let </span>in_state: InitStateOld = store
             .get_cbor(<span class="kw-2">&amp;</span>input.head)<span class="question-mark">?
-            </span>.ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Init actor: could not read v9 state&quot;</span>))<span class="question-mark">?</span>;
+            </span>.context(<span class="string">&quot;Init actor: could not read v9 state&quot;</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>out_state: InitStateNew = TypeMigrator::migrate_type(in_state, <span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>;
 
