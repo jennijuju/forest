@@ -1626,11 +1626,12 @@
 <span class="kw">use </span>ahash::{HashMap, HashMapExt, HashSet};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::stream::TryStreamExt <span class="kw">as _</span>;
-<span class="kw">use </span>futures::{stream, stream::FuturesUnordered, Stream, StreamExt, TryFutureExt};
+<span class="kw">use </span>futures::{stream, stream::FuturesUnordered, StreamExt, TryFutureExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::to_vec;
 <span class="kw">use </span>nonempty::{nonempty, NonEmpty};
 <span class="kw">use </span>thiserror::Error;
+<span class="kw">use </span>tokio::task::JoinSet;
 <span class="kw">use </span>tracing::{debug, error, info, trace, warn};
 
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{
@@ -2172,14 +2173,11 @@
     Forgiving,
 }
 
-<span class="kw">type </span>TipsetRangeSyncerFuture =
-    Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&gt;&gt; + Send&gt;&gt;;
-
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain_sync) <span class="kw">struct </span>TipsetRangeSyncer&lt;DB&gt; {
     <span class="kw">pub </span>proposed_head: Arc&lt;Tipset&gt;,
     <span class="kw">pub </span>current_head: Arc&lt;Tipset&gt;,
     tipsets_included: HashSet&lt;TipsetKeys&gt;,
-    tipset_tasks: Pin&lt;Box&lt;FuturesUnordered&lt;TipsetRangeSyncerFuture&gt;&gt;&gt;,
+    tipset_tasks: JoinSet&lt;<span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&gt;&gt;,
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
     network: SyncNetworkContext&lt;DB&gt;,
     chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
@@ -2202,7 +2200,7 @@
         bad_block_cache: Arc&lt;BadBlockCache&gt;,
         genesis: Arc&lt;Tipset&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, TipsetRangeSyncerError&gt; {
-        <span class="kw">let </span>tipset_tasks = Box::pin(FuturesUnordered::new());
+        <span class="kw">let </span><span class="kw-2">mut </span>tipset_tasks = JoinSet::new();
         <span class="kw">let </span>tipset_range_length = proposed_head.epoch() - current_head.epoch();
 
         <span class="comment">// Ensure the difference in epochs between the proposed and current head is &gt;= 0
@@ -2210,7 +2208,7 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(TipsetRangeSyncerError::InvalidTipsetRangeLength);
         }
 
-        tipset_tasks.push(sync_tipset_range(
+        tipset_tasks.spawn(sync_tipset_range(
             proposed_head.clone(),
             current_head.clone(),
             tracker,
@@ -2264,7 +2262,7 @@
         <span class="comment">// Keep track of tipsets included
         </span><span class="self">self</span>.tipsets_included.insert(new_key);
 
-        <span class="self">self</span>.tipset_tasks.push(sync_tipset(
+        <span class="self">self</span>.tipset_tasks.spawn(sync_tipset(
             additional_head,
             <span class="self">self</span>.state_manager.clone(),
             <span class="self">self</span>.chain_store.clone(),
@@ -2292,11 +2290,17 @@
 
     <span class="kw">fn </span>poll(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
         <span class="kw">loop </span>{
-            <span class="kw">match </span><span class="self">self</span>.as_mut().tipset_tasks.as_mut().poll_next(cx) {
-                Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="kw">_</span>))) =&gt; <span class="kw">continue</span>,
-                Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e))) =&gt; <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Err</span>(e)),
-                Poll::Ready(<span class="prelude-val">None</span>) =&gt; <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Ok</span>(())),
-                Poll::Pending =&gt; <span class="kw">return </span>Poll::Pending,
+            <span class="kw">match </span><span class="macro">std::task::ready!</span>(<span class="self">self</span>.as_mut().tipset_tasks.poll_join_next(cx)) {
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="kw">_</span>))) =&gt; <span class="kw">continue</span>,
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(e))) =&gt; <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Err</span>(e)),
+                <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(e)) =&gt; {
+                    <span class="kw">if let </span><span class="prelude-val">Ok</span>(p) = e.try_into_panic() {
+                        std::panic::resume_unwind(p);
+                    } <span class="kw">else </span>{
+                        <span class="macro">panic!</span>(<span class="string">&quot;Internal error: Tipset range syncer task unexpectedly canceled&quot;</span>);
+                    }
+                }
+                <span class="prelude-val">None </span>=&gt; <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Ok</span>(())),
             }
         }
     }
@@ -2307,7 +2311,7 @@
 /// messages going forward on the chain and validate each extension. Finally set
 /// the proposed head as the heaviest tipset.
 </span><span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">fn </span>sync_tipset_range&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
+</span><span class="kw">async fn </span>sync_tipset_range&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
     proposed_head: Arc&lt;Tipset&gt;,
     current_head: Arc&lt;Tipset&gt;,
     tracker: <span class="kw">crate</span>::chain_sync::chain_muxer::WorkerState,
@@ -2317,77 +2321,75 @@
     network: SyncNetworkContext&lt;DB&gt;,
     bad_block_cache: Arc&lt;BadBlockCache&gt;,
     genesis: Arc&lt;Tipset&gt;,
-) -&gt; TipsetRangeSyncerFuture {
-    Box::pin(<span class="kw">async move </span>{
-        tracker
-            .write()
-            .init(current_head.clone(), proposed_head.clone());
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&gt; {
+    tracker
+        .write()
+        .init(current_head.clone(), proposed_head.clone());
 
-        <span class="kw">let </span>parent_tipsets = <span class="kw">match </span>sync_headers_in_reverse(
-            tracker.clone(),
-            tipset_range_length,
-            proposed_head.clone(),
-            <span class="kw-2">&amp;</span>current_head,
-            <span class="kw-2">&amp;</span>bad_block_cache,
-            <span class="kw-2">&amp;</span>chain_store,
-            network.clone(),
-        )
-        .<span class="kw">await
-        </span>{
-            <span class="prelude-val">Ok</span>(parent_tipsets) =&gt; parent_tipsets,
-            <span class="prelude-val">Err</span>(why) =&gt; {
-                tracker.write().error(why.to_string());
-                <span class="kw">return </span><span class="prelude-val">Err</span>(why);
-            }
-        };
-
-        <span class="comment">// Persist the blocks from the synced Tipsets into the store
-        </span>tracker.write().set_stage(SyncStage::Headers);
-        <span class="kw">let </span>headers: Vec&lt;<span class="kw-2">&amp;</span>BlockHeader&gt; = parent_tipsets.iter().flat_map(|t| t.blocks()).collect();
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = persist_objects(chain_store.blockstore(), <span class="kw-2">&amp;</span>headers) {
-            tracker.write().error(why.to_string());
-            <span class="kw">return </span><span class="prelude-val">Err</span>(why.into());
-        };
-
-        <span class="comment">//  Sync and validate messages from the tipsets
-        </span>tracker.write().set_stage(SyncStage::Messages);
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = sync_messages_check_state(
-            tracker.clone(),
-            state_manager,
-            network,
-            chain_store.clone(),
-            <span class="kw-2">&amp;</span>bad_block_cache,
-            parent_tipsets,
-            <span class="kw-2">&amp;</span>genesis,
-            InvalidBlockStrategy::Strict,
-        )
-        .<span class="kw">await
-        </span>{
-            <span class="macro">error!</span>(<span class="string">&quot;Sync messages check state failed for tipset range&quot;</span>);
+    <span class="kw">let </span>parent_tipsets = <span class="kw">match </span>sync_headers_in_reverse(
+        tracker.clone(),
+        tipset_range_length,
+        proposed_head.clone(),
+        <span class="kw-2">&amp;</span>current_head,
+        <span class="kw-2">&amp;</span>bad_block_cache,
+        <span class="kw-2">&amp;</span>chain_store,
+        network.clone(),
+    )
+    .<span class="kw">await
+    </span>{
+        <span class="prelude-val">Ok</span>(parent_tipsets) =&gt; parent_tipsets,
+        <span class="prelude-val">Err</span>(why) =&gt; {
             tracker.write().error(why.to_string());
             <span class="kw">return </span><span class="prelude-val">Err</span>(why);
-        };
-        tracker.write().set_stage(SyncStage::Complete);
+        }
+    };
 
-        <span class="comment">// At this point the head is synced and it can be set in the store as the
-        // heaviest
-        </span><span class="macro">debug!</span>(
-            <span class="string">&quot;Tipset range successfully verified: EPOCH = [{}, {}], HEAD_KEY = {:?}&quot;</span>,
+    <span class="comment">// Persist the blocks from the synced Tipsets into the store
+    </span>tracker.write().set_stage(SyncStage::Headers);
+    <span class="kw">let </span>headers: Vec&lt;<span class="kw-2">&amp;</span>BlockHeader&gt; = parent_tipsets.iter().flat_map(|t| t.blocks()).collect();
+    <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = persist_objects(chain_store.blockstore(), <span class="kw-2">&amp;</span>headers) {
+        tracker.write().error(why.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(why.into());
+    };
+
+    <span class="comment">//  Sync and validate messages from the tipsets
+    </span>tracker.write().set_stage(SyncStage::Messages);
+    <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = sync_messages_check_state(
+        tracker.clone(),
+        state_manager,
+        network,
+        chain_store.clone(),
+        <span class="kw-2">&amp;</span>bad_block_cache,
+        parent_tipsets,
+        <span class="kw-2">&amp;</span>genesis,
+        InvalidBlockStrategy::Strict,
+    )
+    .<span class="kw">await
+    </span>{
+        <span class="macro">error!</span>(<span class="string">&quot;Sync messages check state failed for tipset range&quot;</span>);
+        tracker.write().error(why.to_string());
+        <span class="kw">return </span><span class="prelude-val">Err</span>(why);
+    };
+    tracker.write().set_stage(SyncStage::Complete);
+
+    <span class="comment">// At this point the head is synced and it can be set in the store as the
+    // heaviest
+    </span><span class="macro">debug!</span>(
+        <span class="string">&quot;Tipset range successfully verified: EPOCH = [{}, {}], HEAD_KEY = {:?}&quot;</span>,
+        proposed_head.epoch(),
+        current_head.epoch(),
+        proposed_head.key()
+    );
+    <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = chain_store.put_tipset(<span class="kw-2">&amp;</span>proposed_head) {
+        <span class="macro">error!</span>(
+            <span class="string">&quot;Putting tipset range head [EPOCH = {}, KEYS = {:?}] in the store failed: {}&quot;</span>,
             proposed_head.epoch(),
-            current_head.epoch(),
-            proposed_head.key()
+            proposed_head.key(),
+            why
         );
-        <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = chain_store.put_tipset(<span class="kw-2">&amp;</span>proposed_head) {
-            <span class="macro">error!</span>(
-                <span class="string">&quot;Putting tipset range head [EPOCH = {}, KEYS = {:?}] in the store failed: {}&quot;</span>,
-                proposed_head.epoch(),
-                proposed_head.key(),
-                why
-            );
-            <span class="kw">return </span><span class="prelude-val">Err</span>(why.into());
-        };
-        <span class="prelude-val">Ok</span>(())
-    })
+        <span class="kw">return </span><span class="prelude-val">Err</span>(why.into());
+    };
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Download headers between the proposed head and the current one available
@@ -2510,51 +2512,49 @@
 }
 
 <span class="attr">#[allow(clippy::too_many_arguments)]
-</span><span class="kw">fn </span>sync_tipset&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
+</span><span class="kw">async fn </span>sync_tipset&lt;DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>&gt;(
     proposed_head: Arc&lt;Tipset&gt;,
     state_manager: Arc&lt;StateManager&lt;DB&gt;&gt;,
     chain_store: Arc&lt;ChainStore&lt;DB&gt;&gt;,
     network: SyncNetworkContext&lt;DB&gt;,
     bad_block_cache: Arc&lt;BadBlockCache&gt;,
     genesis: Arc&lt;Tipset&gt;,
-) -&gt; TipsetRangeSyncerFuture {
-    Box::pin(<span class="kw">async move </span>{
-        <span class="comment">// Persist the blocks from the proposed tipsets into the store
-        </span><span class="kw">let </span>headers: Vec&lt;<span class="kw-2">&amp;</span>BlockHeader&gt; = proposed_head.blocks().iter().collect();
-        persist_objects(chain_store.blockstore(), <span class="kw-2">&amp;</span>headers)<span class="question-mark">?</span>;
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&gt; {
+    <span class="comment">// Persist the blocks from the proposed tipsets into the store
+    </span><span class="kw">let </span>headers: Vec&lt;<span class="kw-2">&amp;</span>BlockHeader&gt; = proposed_head.blocks().iter().collect();
+    persist_objects(chain_store.blockstore(), <span class="kw-2">&amp;</span>headers)<span class="question-mark">?</span>;
 
-        <span class="comment">// Sync and validate messages from the tipsets
-        </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) = sync_messages_check_state(
-            <span class="comment">// Include a dummy WorkerState
-            </span><span class="kw">crate</span>::chain_sync::chain_muxer::WorkerState::default(),
-            state_manager,
-            network,
-            chain_store.clone(),
-            <span class="kw-2">&amp;</span>bad_block_cache,
-            <span class="macro">vec!</span>[proposed_head.clone()],
-            <span class="kw-2">&amp;</span>genesis,
-            InvalidBlockStrategy::Forgiving,
-        )
-        .<span class="kw">await
-        </span>{
-            <span class="macro">warn!</span>(<span class="string">&quot;Sync messages check state failed for single tipset&quot;</span>);
-            <span class="kw">return </span><span class="prelude-val">Err</span>(e);
-        }
+    <span class="comment">// Sync and validate messages from the tipsets
+    </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) = sync_messages_check_state(
+        <span class="comment">// Include a dummy WorkerState
+        </span><span class="kw">crate</span>::chain_sync::chain_muxer::WorkerState::default(),
+        state_manager,
+        network,
+        chain_store.clone(),
+        <span class="kw-2">&amp;</span>bad_block_cache,
+        <span class="macro">vec!</span>[proposed_head.clone()],
+        <span class="kw-2">&amp;</span>genesis,
+        InvalidBlockStrategy::Forgiving,
+    )
+    .<span class="kw">await
+    </span>{
+        <span class="macro">warn!</span>(<span class="string">&quot;Sync messages check state failed for single tipset&quot;</span>);
+        <span class="kw">return </span><span class="prelude-val">Err</span>(e);
+    }
 
-        <span class="comment">// Add the tipset to the store. The tipset will be expanded with other blocks
-        // with the same [epoch, parents] before updating the heaviest Tipset in
-        // the store.
-        </span><span class="kw">if let </span><span class="prelude-val">Err</span>(why) = chain_store.put_tipset(<span class="kw-2">&amp;</span>proposed_head) {
-            <span class="macro">error!</span>(
-                <span class="string">&quot;Putting tipset [EPOCH = {}, KEYS = {:?}] in the store failed: {}&quot;</span>,
-                proposed_head.epoch(),
-                proposed_head.key(),
-                why
-            );
-            <span class="kw">return </span><span class="prelude-val">Err</span>(why.into());
-        };
-        <span class="prelude-val">Ok</span>(())
-    })
+    <span class="comment">// Add the tipset to the store. The tipset will be expanded with other blocks
+    // with the same [epoch, parents] before updating the heaviest Tipset in
+    // the store.
+    </span><span class="kw">if let </span><span class="prelude-val">Err</span>(why) = chain_store.put_tipset(<span class="kw-2">&amp;</span>proposed_head) {
+        <span class="macro">error!</span>(
+            <span class="string">&quot;Putting tipset [EPOCH = {}, KEYS = {:?}] in the store failed: {}&quot;</span>,
+            proposed_head.epoch(),
+            proposed_head.key(),
+            why
+        );
+        <span class="kw">return </span><span class="prelude-val">Err</span>(why.into());
+    };
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Ask peers for the [`Message`]s that these [`Tipset`]s should contain.
