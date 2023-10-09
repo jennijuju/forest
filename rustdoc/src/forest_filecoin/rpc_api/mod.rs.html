@@ -536,7 +536,6 @@
 <a href="#536" id="536">536</a>
 <a href="#537" id="537">537</a>
 <a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -889,8 +888,7 @@
     <span class="kw">pub type </span>StateReplayResult = InvocResult;
 
     <span class="kw">pub const </span>STATE_NETWORK_NAME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateNetworkName&quot;</span>;
-    <span class="attr">#[allow(unused)] </span><span class="comment">// https://github.com/ChainSafe/forest/issues/3029
-    </span><span class="kw">pub type </span>StateNetworkNameParams = ();
+    <span class="kw">pub type </span>StateNetworkNameParams = ();
     <span class="kw">pub type </span>StateNetworkNameResult = String;
 
     <span class="kw">pub const </span>STATE_NETWORK_VERSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateNetworkVersion&quot;</span>;

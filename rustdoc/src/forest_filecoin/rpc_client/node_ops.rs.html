@@ -21,9 +21,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
 
 <span class="kw">pub async fn </span>node_status(
-    params: NodeStatusParams,
+    (): NodeStatusParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NodeStatusResult, Error&gt; {
-    call(NODE_STATUS, params, auth_token).<span class="kw">await
+    call(NODE_STATUS, (), auth_token).<span class="kw">await
 </span>}
 </code></pre></div></section></main></body></html>

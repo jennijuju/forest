@@ -17,7 +17,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
 
-<span class="kw">pub async fn </span>db_gc(params: DBGCParams, auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;DBGCResult, Error&gt; {
-    call(DB_GC, params, auth_token).<span class="kw">await
+<span class="kw">pub async fn </span>db_gc((): DBGCParams, auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;DBGCResult, Error&gt; {
+    call(DB_GC, (), auth_token).<span class="kw">await
 </span>}
 </code></pre></div></section></main></body></html>

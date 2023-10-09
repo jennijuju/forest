@@ -32,17 +32,17 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
 
 <span class="kw">pub async fn </span>version(
-    params: VersionParams,
+    (): VersionParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;VersionResult, Error&gt; {
-    call(VERSION, params, auth_token).<span class="kw">await
+    call(VERSION, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>shutdown(
-    params: ShutdownParams,
+    (): ShutdownParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;ShutdownResult, Error&gt; {
-    call(SHUTDOWN, params, auth_token).<span class="kw">await
+    call(SHUTDOWN, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>start_time(auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;StartTimeResult, Error&gt; {

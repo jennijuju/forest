@@ -98,10 +98,10 @@
 </span>}
 
 <span class="kw">pub async fn </span>wallet_default_address(
-    params: WalletDefaultAddressParams,
+    (): WalletDefaultAddressParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletDefaultAddressResult, Error&gt; {
-    call(WALLET_DEFAULT_ADDRESS, params, auth_token).<span class="kw">await
+    call(WALLET_DEFAULT_ADDRESS, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>wallet_balance(
@@ -126,10 +126,10 @@
 </span>}
 
 <span class="kw">pub async fn </span>wallet_list(
-    params: WalletListParams,
+    (): WalletListParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;WalletListResult, Error&gt; {
-    call(WALLET_LIST, params, auth_token).<span class="kw">await
+    call(WALLET_LIST, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>wallet_has(

@@ -49,9 +49,9 @@
 </span>}
 
 <span class="kw">pub async fn </span>state_network_name(
-    params: StateNetworkNameParams,
+    (): StateNetworkNameParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateNetworkNameResult, Error&gt; {
-    call(STATE_NETWORK_NAME, params, auth_token).<span class="kw">await
+    call(STATE_NETWORK_NAME, (), auth_token).<span class="kw">await
 </span>}
 </code></pre></div></section></main></body></html>

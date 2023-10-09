@@ -49,24 +49,24 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
 
 <span class="kw">pub async fn </span>net_addrs_listen(
-    params: NetAddrsListenParams,
+    (): NetAddrsListenParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetAddrsListenResult, Error&gt; {
-    call(NET_ADDRS_LISTEN, params, auth_token).<span class="kw">await
+    call(NET_ADDRS_LISTEN, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>net_peers(
-    params: NetPeersParams,
+    (): NetPeersParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetPeersResult, Error&gt; {
-    call(NET_PEERS, params, auth_token).<span class="kw">await
+    call(NET_PEERS, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>net_info(
-    params: NetInfoParams,
+    (): NetInfoParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;NetInfoResult, Error&gt; {
-    call(NET_INFO, params, auth_token).<span class="kw">await
+    call(NET_INFO, (), auth_token).<span class="kw">await
 </span>}
 
 <span class="kw">pub async fn </span>net_connect(

@@ -49,9 +49,9 @@
 </span>}
 
 <span class="kw">pub async fn </span>sync_status(
-    params: SyncStateParams,
+    (): SyncStateParams,
     auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;SyncStateResult, JsonRpcError&gt; {
-    call(SYNC_STATE, params, auth_token).<span class="kw">await
+    call(SYNC_STATE, (), auth_token).<span class="kw">await
 </span>}
 </code></pre></div></section></main></body></html>
