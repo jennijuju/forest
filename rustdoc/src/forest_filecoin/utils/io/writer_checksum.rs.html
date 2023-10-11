@@ -187,12 +187,6 @@
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use </span>std::{pin::Pin, task::Poll};
@@ -306,7 +300,6 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>test {
-    <span class="kw">use </span>anyhow::ensure;
     <span class="kw">use </span>rand::{rngs::OsRng, RngCore};
     <span class="kw">use </span>sha2::{Sha256, Sha512};
     <span class="kw">use </span>tokio::io::{AsyncWriteExt, BufWriter};
@@ -314,37 +307,36 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>file_writer_fs_buf_writer() -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>temp_file_path = tempfile::Builder::new().tempfile()<span class="question-mark">?</span>;
-        <span class="kw">let </span>temp_file = tokio::fs::File::create(temp_file_path.path()).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span><span class="kw">async fn </span>file_writer_fs_buf_writer() {
+        <span class="kw">let </span>temp_file_path = tempfile::Builder::new().tempfile().unwrap();
+        <span class="kw">let </span>temp_file = tokio::fs::File::create(temp_file_path.path())
+            .<span class="kw">await
+            </span>.unwrap();
         <span class="kw">let </span><span class="kw-2">mut </span>temp_file_writer =
             AsyncWriterWithChecksum::&lt;Sha256, <span class="kw">_</span>&gt;::new(BufWriter::new(temp_file), <span class="bool-val">true</span>);
         <span class="kw">for _ in </span><span class="number">0</span>..<span class="number">1024 </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>bytes = [<span class="number">0</span>; <span class="number">1024</span>];
             OsRng.fill_bytes(<span class="kw-2">&amp;mut </span>bytes);
-            temp_file_writer.write_all(<span class="kw-2">&amp;</span>bytes).<span class="kw">await</span><span class="question-mark">?</span>;
+            temp_file_writer.write_all(<span class="kw-2">&amp;</span>bytes).<span class="kw">await</span>.unwrap();
         }
 
-        temp_file_writer.flush().<span class="kw">await</span><span class="question-mark">?</span>;
-        temp_file_writer.shutdown().<span class="kw">await</span><span class="question-mark">?</span>;
+        temp_file_writer.flush().<span class="kw">await</span>.unwrap();
+        temp_file_writer.shutdown().<span class="kw">await</span>.unwrap();
 
-        <span class="kw">let </span>checksum = temp_file_writer.finalize()<span class="question-mark">?</span>;
+        <span class="kw">let </span>checksum = temp_file_writer.finalize().unwrap();
 
         <span class="kw">let </span>file_hash = {
             <span class="kw">let </span><span class="kw-2">mut </span>hasher = Sha256::default();
-            <span class="kw">let </span>bytes = std::fs::read(temp_file_path.path())<span class="question-mark">?</span>;
+            <span class="kw">let </span>bytes = std::fs::read(temp_file_path.path()).unwrap();
             hasher.update(<span class="kw-2">&amp;</span>bytes);
             <span class="prelude-val">Some</span>(hasher.finalize())
         };
 
-        <span class="macro">ensure!</span>(checksum == file_hash);
-
-        <span class="prelude-val">Ok</span>(())
+        <span class="macro">assert_eq!</span>(checksum, file_hash);
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>given_buffered_writer_and_sha256_digest_should_return_correct_checksum(
-    ) -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">async fn </span>given_buffered_writer_and_sha256_digest_should_return_correct_checksum() {
         <span class="kw">let </span>buffer = Vec::new();
         <span class="kw">let </span>writer = BufWriter::new(buffer);
 
@@ -355,37 +347,33 @@
         <span class="comment">// Repeat to make sure the inner hasher can be properly reset
         </span><span class="kw">for _ in </span><span class="number">0</span>..<span class="number">2 </span>{
             <span class="kw">for </span>old_god <span class="kw">in </span><span class="kw-2">&amp;</span>data {
-                writer.write_all(old_god.as_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
+                writer.write_all(old_god.as_bytes()).<span class="kw">await</span>.unwrap();
             }
 
             <span class="macro">assert_eq!</span>(
                 <span class="string">&quot;3386191dc5c285074c3827452f4e3b685e3253f5b9ca7c4c2bb3f44d1263aef1&quot;</span>,
-                <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize()<span class="question-mark">?</span>.unwrap())
+                <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize().unwrap().unwrap())
             );
         }
-
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>digest_of_nothing() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">async fn </span>digest_of_nothing() {
         <span class="kw">let </span>buffer = Vec::new();
         <span class="kw">let </span>writer = BufWriter::new(buffer);
         <span class="kw">let </span><span class="kw-2">mut </span>writer = AsyncWriterWithChecksum::&lt;Sha512, <span class="kw">_</span>&gt;::new(writer, <span class="bool-val">true</span>);
         <span class="macro">assert_eq!</span>(
             <span class="string">&quot;cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e&quot;</span>,
-            <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize()<span class="question-mark">?</span>.unwrap())
+            <span class="macro">format!</span>(<span class="string">&quot;{:x}&quot;</span>, writer.finalize().unwrap().unwrap())
         );
-        <span class="prelude-val">Ok</span>(())
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>no_checksum_of_nothing() -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">async fn </span>no_checksum_of_nothing() {
         <span class="kw">let </span>buffer = Vec::new();
         <span class="kw">let </span>writer = BufWriter::new(buffer);
         <span class="kw">let </span><span class="kw-2">mut </span>writer = AsyncWriterWithChecksum::&lt;Sha512, <span class="kw">_</span>&gt;::new(writer, <span class="bool-val">false</span>);
-        <span class="macro">ensure!</span>(writer.finalize()<span class="question-mark">?</span>.is_none());
-        <span class="prelude-val">Ok</span>(())
+        <span class="macro">assert!</span>(writer.finalize().unwrap().is_none());
     }
 }
 </code></pre></div></section></main></body></html>
