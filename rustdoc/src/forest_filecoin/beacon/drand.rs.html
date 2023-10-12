@@ -322,6 +322,7 @@
 <a href="#322" id="322">322</a>
 <a href="#323" id="323">323</a>
 <a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -415,8 +416,9 @@
             // return no beacon entries for this epoch.
             </span><span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="macro">vec!</span>[]);
         }
-        <span class="comment">// TODO: this is a sketchy way to handle the genesis block not having a beacon
-        // entry
+        <span class="comment">// TODO(forest): https://github.com/ChainSafe/forest/issues/3572
+        //               this is a sketchy way to handle the genesis block not
+        //               having a entry
         </span><span class="kw">let </span>prev_round = <span class="kw">if </span>prev.round() == <span class="number">0 </span>{
             max_round - <span class="number">1
         </span>} <span class="kw">else </span>{
@@ -582,7 +584,7 @@
 <span class="attr">#[async_trait]
 </span><span class="kw">impl </span>Beacon <span class="kw">for </span>DrandBeacon {
     <span class="kw">fn </span>verify_entry(<span class="kw-2">&amp;</span><span class="self">self</span>, curr: <span class="kw-2">&amp;</span>BeaconEntry, prev: <span class="kw-2">&amp;</span>BeaconEntry) -&gt; <span class="prelude-ty">Result</span>&lt;bool, anyhow::Error&gt; {
-        <span class="comment">// TODO: Handle Genesis better
+        <span class="comment">// TODO(forest): https://github.com/ChainSafe/forest/issues/3572
         </span><span class="kw">if </span>prev.round() == <span class="number">0 </span>{
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">true</span>);
         }

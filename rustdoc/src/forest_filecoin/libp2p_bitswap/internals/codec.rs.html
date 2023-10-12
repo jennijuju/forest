@@ -117,8 +117,6 @@
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
 <a href="#119" id="119">119</a>
-<a href="#120" id="120">120</a>
-<a href="#121" id="121">121</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -211,12 +209,10 @@
     <span class="kw">where
         </span>T: AsyncWrite + Send + Unpin,
     {
-        <span class="comment">// TODO: Low priority, batch sending is not supported in `libp2p-bitswap` either
-        // panic here means bug in public API of this crate::libp2p_bitswap
-        </span><span class="macro">assert_eq!</span>(
+        <span class="macro">assert_eq!</span>(
             messages.len(),
             <span class="number">1</span>,
-            <span class="string">&quot;It&#39;s only supported to send a single message&quot;
+            <span class="string">&quot;It&#39;s only supported to send a single message&quot; </span><span class="comment">// libp2p-bitswap doesn&#39;t support batch sending
         </span>);
 
         <span class="kw">let </span>bytes = messages[<span class="number">0</span>].to_bytes()<span class="question-mark">?</span>;

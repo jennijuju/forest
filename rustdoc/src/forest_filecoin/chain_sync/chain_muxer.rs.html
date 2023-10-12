@@ -914,9 +914,6 @@
 <a href="#914" id="914">914</a>
 <a href="#915" id="915">915</a>
 <a href="#916" id="916">916</a>
-<a href="#917" id="917">917</a>
-<a href="#918" id="918">918</a>
-<a href="#919" id="919">919</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1420,7 +1417,6 @@
         }
 
         <span class="comment">// Update the peer head
-        // TODO: Determine if this can be executed concurrently
         </span>network
             .peer_manager()
             .update_peer_head(source, Arc::new(tipset.clone().into_tipset()))
@@ -1791,8 +1787,7 @@
                         }
                     },
                     Poll::Ready(<span class="prelude-val">Err</span>(why)) =&gt; {
-                        <span class="comment">// TODO: Should we exponentially backoff before retrying?
-                        </span><span class="macro">error!</span>(
+                        <span class="macro">error!</span>(
                             <span class="string">&quot;Evaluating the network head failed, retrying. Error = {:?}&quot;</span>,
                             why
                         );
@@ -1811,8 +1806,7 @@
                             <span class="self">self</span>.state = ChainMuxerState::Idle;
                         }
                         Poll::Ready(<span class="prelude-val">Err</span>(why)) =&gt; {
-                            <span class="comment">// TODO: Should we exponentially back off before retrying?
-                            </span><span class="macro">error!</span>(<span class="string">&quot;Bootstrapping failed, re-evaluating the network head to retry the bootstrap. Error = {:?}&quot;</span>, why);
+                            <span class="macro">error!</span>(<span class="string">&quot;Bootstrapping failed, re-evaluating the network head to retry the bootstrap. Error = {:?}&quot;</span>, why);
                             metrics::BOOTSTRAP_ERRORS.inc();
                             <span class="self">self</span>.state = ChainMuxerState::Idle;
                         }

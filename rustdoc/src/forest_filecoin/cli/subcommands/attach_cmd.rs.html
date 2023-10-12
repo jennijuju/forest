@@ -450,6 +450,9 @@
 <a href="#450" id="450">450</a>
 <a href="#451" id="451">451</a>
 <a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -617,7 +620,8 @@
 {
     <span class="kw">match </span>result {
         <span class="prelude-val">Ok</span>(v) =&gt; {
-            <span class="comment">// TODO: check if unwrap is safe here
+            <span class="comment">// TODO(elmattic): https://github.com/ChainSafe/forest/issues/3575
+            //                 Check if unwrap is safe here
             </span><span class="kw">let </span>value: JsonValue = serde_json::to_value(v).unwrap();
             JsValue::from_json(<span class="kw-2">&amp;</span>value, context)
         }
@@ -652,7 +656,8 @@
                             <span class="kw">let </span>obj: JsObject = arr.into();
                             JsValue::from(obj)
                         };
-                        <span class="comment">// TODO: check if unwrap is safe here
+                        <span class="comment">// TODO(elmattic): https://github.com/ChainSafe/forest/issues/3575
+                        //                 Check if unwrap is safe here
                         </span><span class="kw">let </span>args = serde_json::from_value(value.to_json(context).unwrap())<span class="question-mark">?</span>;
                         handle.block_on(<span class="macro-nonterminal">$func</span>(args, token))
                     });
@@ -765,7 +770,8 @@
         <span class="macro">bind_func!</span>(context, token, sync_status);
 
         <span class="comment">// Wallet API
-        // TODO: bind wallet_sign, wallet_verify
+        // TODO(elmattic): https://github.com/ChainSafe/forest/issues/3575
+        //                 bind wallet_sign, wallet_verify
         </span><span class="macro">bind_func!</span>(context, token, wallet_new);
         <span class="macro">bind_func!</span>(context, token, wallet_default_address);
         <span class="macro">bind_func!</span>(context, token, wallet_balance);

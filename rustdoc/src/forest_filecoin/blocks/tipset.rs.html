@@ -718,6 +718,7 @@
 <a href="#718" id="718">718</a>
 <a href="#719" id="719">719</a>
 <a href="#720" id="720">720</a>
+<a href="#721" id="721">721</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -819,7 +820,8 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>Tipset {
     <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        <span class="comment">// XXX: Support random generation of tipsets with multiple blocks.
+        <span class="comment">// TODO(forest): https://github.com/ChainSafe/forest/issues/3570
+        //               Support random generation of tipsets with multiple blocks.
         </span>Tipset::from(BlockHeader::arbitrary(g))
     }
 }

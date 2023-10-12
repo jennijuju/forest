@@ -297,7 +297,7 @@
         <span class="kw">let </span>tipset_epoch = tipset.epoch();
 
         <span class="kw">if </span>request.include_blocks() {
-            <span class="comment">// TODO Cloning blocks isn&#39;t ideal, this can maybe be switched to serialize this
+            <span class="comment">// Cloning blocks isn&#39;t ideal, this can maybe be switched to serialize this
             // data in the function. This may not be possible without overriding rpc in
             // libp2p
             </span>tipset_bundle.blocks = tipset.blocks().to_vec();

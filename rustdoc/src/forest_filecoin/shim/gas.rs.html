@@ -397,7 +397,7 @@
             name: value.<span class="number">0</span>.name,
             compute_gas: GasV3::from_milligas(value.<span class="number">0</span>.compute_gas.as_milligas() <span class="kw">as _</span>),
             other_gas: GasV3::from_milligas(value.<span class="number">0</span>.other_gas.as_milligas() <span class="kw">as _</span>),
-            <span class="comment">// FIXME: https://github.com/ChainSafe/forest/issues/3524
+            <span class="comment">// TODO(hanabi1224): https://github.com/ChainSafe/forest/issues/3524
             </span>elapsed: Default::default(),
         }
     }

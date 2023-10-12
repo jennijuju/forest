@@ -472,10 +472,10 @@
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 <span class="kw">use </span>std::sync::atomic::{AtomicU8, Ordering};
 
-<span class="comment">// XXX: Copied from ref-fvm due to a bug in their definition.
-</span><span class="doccomment">/// Zero address used to avoid allowing it to be used for verification.
+<span class="doccomment">/// Zero address used to avoid allowing it to be used for verification.
 /// This is intentionally disallowed because it is an edge case with Filecoin&#39;s BLS
 /// signature verification.
+</span><span class="comment">// Copied from ref-fvm due to a bug in their definition.
 </span><span class="kw">pub static </span>ZERO_ADDRESS: Lazy&lt;Address&gt; = Lazy::new(|| {
     Network::Mainnet
         .parse_address(

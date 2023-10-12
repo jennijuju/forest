@@ -391,6 +391,7 @@
 <a href="#391" id="391">391</a>
 <a href="#392" id="392">392</a>
 <a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -731,7 +732,8 @@
     }
 }
 
-<span class="comment">// XXX: Dummy default. Will be overwritten later. Wish we could get rid of this.
+<span class="doccomment">/// Dummy default. Will be overwritten later.
+</span><span class="comment">// Wish we could get rid of this
 </span><span class="kw">fn </span>default_policy() -&gt; Policy {
     Policy::mainnet()
 }

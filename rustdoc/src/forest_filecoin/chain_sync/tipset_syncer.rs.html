@@ -1593,8 +1593,6 @@
 <a href="#1593" id="1593">1593</a>
 <a href="#1594" id="1594">1594</a>
 <a href="#1595" id="1595">1595</a>
-<a href="#1596" id="1596">1596</a>
-<a href="#1597" id="1597">1597</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1923,9 +1921,9 @@
     <span class="kw">fn </span>poll(<span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
         <span class="macro">trace!</span>(<span class="string">&quot;Polling TipsetProcessor&quot;</span>);
 
-        <span class="comment">// TODO: Determine if polling the tipset stream before the state machine
-        //       introduces a DOS attack vector where peers send duplicate, valid
-        // tipsets over       GossipSub to divert resources away from syncing
+        <span class="comment">// There may be a DoS attack vector here - polling the tipset stream
+        // before the state machine could create a window where peers send
+        // duplicate, valid tipsets over GossipSub to divert resources away from syncing
         // tipset ranges. First, gather the tipsets off of the channel. Reading
         // off the receiver will return immediately. Ensure that the task will
         // wake up when the stream has a new item by registering it for wakeup.
@@ -2434,8 +2432,7 @@
             <span class="kw">continue</span>;
         }
 
-        <span class="comment">// TODO: Tweak request window when socket frame is tested
-        </span><span class="kw">let </span>epoch_diff = oldest_parent.epoch() - current_head.epoch();
+        <span class="kw">let </span>epoch_diff = oldest_parent.epoch() - current_head.epoch();
         <span class="kw">let </span>window = min(epoch_diff, MAX_TIPSETS_TO_REQUEST <span class="kw">as </span>i64);
         <span class="kw">let </span>network_tipsets = network
             .chain_exchange_headers(<span class="prelude-val">None</span>, oldest_parent.parents(), window <span class="kw">as </span>u64)
@@ -3098,8 +3095,7 @@
 
 <span class="doccomment">/// Check the clock drift.
 </span><span class="kw">fn </span>block_timestamp_checks(header: <span class="kw-2">&amp;</span>BlockHeader) -&gt; <span class="prelude-ty">Result</span>&lt;(), TipsetRangeSyncerError&gt; {
-    <span class="comment">// TODO: Time should come from a component we control, for testing.
-    </span><span class="kw">let </span>time_now = SystemTime::now()
+    <span class="kw">let </span>time_now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect(<span class="string">&quot;Retrieved system time before UNIX epoch&quot;</span>)
         .as_secs();

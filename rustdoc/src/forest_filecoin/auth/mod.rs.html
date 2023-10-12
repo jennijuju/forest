@@ -134,7 +134,7 @@
 
 <span class="kw">pub fn </span>generate_priv_key() -&gt; KeyInfo {
     <span class="kw">let </span>priv_key = rand::thread_rng().gen::&lt;[u8; <span class="number">32</span>]&gt;();
-    <span class="comment">// TODO temp use of bls key as placeholder, need to update keyinfo to use string
+    <span class="comment">// This is temporary use of bls key as placeholder, need to update keyinfo to use string
     // instead of keyinfo for key type
     </span>KeyInfo::new(SignatureType::Bls, priv_key.to_vec())
 }

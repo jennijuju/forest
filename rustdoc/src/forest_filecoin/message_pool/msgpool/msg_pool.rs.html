@@ -680,8 +680,6 @@
 <a href="#680" id="680">680</a>
 <a href="#681" id="681">681</a>
 <a href="#682" id="682">682</a>
-<a href="#683" id="683">683</a>
-<a href="#684" id="684">684</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -862,8 +860,7 @@
     <span class="doccomment">/// The minimum gas price needed for executing the transaction based on
     /// number of included blocks
     </span><span class="kw">pub </span>min_gas_price: BigInt,
-    <span class="comment">// TODO
-    </span><span class="kw">pub </span>network_name: String,
+    <span class="kw">pub </span>network_name: String,
     <span class="doccomment">/// Sender half to send messages to other components
     </span><span class="kw">pub </span>network_sender: flume::Sender&lt;NetworkMessage&gt;,
     <span class="doccomment">/// A cache for BLS signature keyed by Cid
@@ -875,8 +872,7 @@
     <span class="doccomment">/// Acts as a signal to republish messages from the republished set of
     /// messages
     </span><span class="kw">pub </span>repub_trigger: flume::Sender&lt;()&gt;,
-    <span class="comment">// TODO look into adding a cap to `local_msgs`
-    </span>local_msgs: Arc&lt;SyncRwLock&lt;HashSet&lt;SignedMessage&gt;&gt;&gt;,
+    local_msgs: Arc&lt;SyncRwLock&lt;HashSet&lt;SignedMessage&gt;&gt;&gt;,
     <span class="doccomment">/// Configurable parameters of the message pool
     </span><span class="kw">pub </span>config: MpoolConfig,
     <span class="doccomment">/// Chain configuration

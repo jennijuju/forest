@@ -290,10 +290,20 @@
 <a href="#290" id="290">290</a>
 <a href="#291" id="291">291</a>
 <a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::ops::{Add, AddAssign, Deref, DerefMut, Mul, MulAssign, Sub, SubAssign};
+</span><span class="kw">use </span>std::{
+    fmt,
+    ops::{Add, AddAssign, Deref, DerefMut, Mul, MulAssign, Sub, SubAssign},
+};
 
 <span class="kw">use </span><span class="kw">super</span>::fvm_shared_latest::econ::TokenAmount <span class="kw">as </span>TokenAmount_latest;
 <span class="kw">use </span>fvm_shared2::econ::TokenAmount <span class="kw">as </span>TokenAmount_v2;
@@ -313,11 +323,15 @@
 </span><span class="kw">pub static </span>TOTAL_FILECOIN: Lazy&lt;TokenAmount&gt; =
     Lazy::new(|| TokenAmount::from_whole(TOTAL_FILECOIN_BASE));
 
-<span class="comment">// FIXME: Transparent Debug trait impl
-// FIXME: Consider &#39;type TokenAmount = TokenAmount_v3&#39;
-</span><span class="attr">#[derive(Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Serialize, Deserialize, Debug, Default)]
+<span class="attr">#[derive(Clone, PartialEq, Eq, Ord, PartialOrd, Hash, Serialize, Deserialize, Default)]
 #[serde(transparent)]
 </span><span class="kw">pub struct </span>TokenAmount(TokenAmount_latest);
+
+<span class="kw">impl </span>fmt::Debug <span class="kw">for </span>TokenAmount {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        fmt::Debug::fmt(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="number">0</span>, f)
+    }
+}
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>TokenAmount {

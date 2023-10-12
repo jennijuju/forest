@@ -702,8 +702,6 @@
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
 <a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1053,8 +1051,7 @@
         <span class="kw">let </span>gc_event_tx = db_garbage_collector.get_tx();
         services.spawn(<span class="kw">async move </span>{
             <span class="macro">info!</span>(<span class="string">&quot;JSON-RPC endpoint started at {}&quot;</span>, config.client.rpc_address);
-            <span class="comment">// XXX: The JSON error message are a nightmare to print.
-            </span><span class="kw">let </span>beacon = Arc::new(
+            <span class="kw">let </span>beacon = Arc::new(
                 rpc_state_manager
                     .chain_config()
                     .get_beacon_schedule(chain_store.genesis().timestamp()),
@@ -1069,8 +1066,7 @@
                     network_send,
                     network_name,
                     start_time,
-                    <span class="comment">// TODO: the RPCState can fetch this itself from the StateManager
-                    </span>beacon,
+                    beacon,
                     chain_store: rpc_chain_store,
                     gc_event_tx,
                 }),

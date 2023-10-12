@@ -241,6 +241,7 @@
 <a href="#241" id="241">241</a>
 <a href="#242" id="242">242</a>
 <a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -370,7 +371,8 @@
     <span class="comment">// After nv18, we also support other kinds of senders.
     </span><span class="kw">if </span>is_account_actor(<span class="kw-2">&amp;</span>actor.code)
         || is_eth_account_actor(<span class="kw-2">&amp;</span>actor.code)
-        <span class="comment">// XXX: Remove this once &#39;is_eth_account_actor&#39; is fixed
+        <span class="comment">// TODO(elmattic): https://github.com/ChainSafe/forest/issues/3573
+        //                 Remove this once &#39;is_eth_account_actor&#39; is fixed
         </span>|| fil_actor_interface::ethaccount::is_v11_ethaccount_cid(<span class="kw-2">&amp;</span>actor.code)
     {
         <span class="kw">return </span><span class="bool-val">true</span>;

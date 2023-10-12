@@ -93,10 +93,12 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="attr">#![recursion_limit = <span class="string">&quot;1024&quot;</span>]
+#![cfg_attr(not(test), deny(clippy::todo, clippy::dbg_macro))]
 
 </span><span class="macro">cfg_if::cfg_if! </span>{
     <span class="kw">if </span><span class="attr">#[cfg(feature = <span class="string">&quot;rustalloc&quot;</span>)] </span>{

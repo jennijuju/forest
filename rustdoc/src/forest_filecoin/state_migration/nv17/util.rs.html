@@ -213,6 +213,7 @@
 <a href="#213" id="213">213</a>
 <a href="#214" id="214">214</a>
 <a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -272,8 +273,9 @@
     <span class="prelude-val">Ok</span>((pending_verified_deals, pending_size))
 }
 
-<span class="comment">// TODO: Switch to `fil_actors_shared::v9::util::hamt_addr_key_to_key` once
-// it&#39;s released. See &lt;https://github.com/ChainSafe/fil-actor-states/pull/122&gt;
+<span class="comment">// TODO(hanabi1224): https://github.com/ChainSafe/forest/issues/3576
+//                   Switch to `fil_actors_shared::v9::util::hamt_addr_key_to_key`
+//                   once it&#39;s released: https://github.com/ChainSafe/fil-actor-states/pull/122
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>hamt_addr_key_to_key(addr_key: <span class="kw-2">&amp;</span>BytesKey) -&gt; anyhow::Result&lt;BytesKey&gt; {
     <span class="kw">let </span>addr = Address::from_bytes(addr_key)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(addr.payload_bytes().into())

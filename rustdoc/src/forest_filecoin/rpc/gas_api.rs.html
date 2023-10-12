@@ -248,6 +248,8 @@
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -365,8 +367,7 @@
     }
 
     prices.sort_by(|a, b| b.price.cmp(<span class="kw-2">&amp;</span>a.price));
-    <span class="comment">// TODO: From lotus, account for how full blocks are
-    </span><span class="kw">let </span><span class="kw-2">mut </span>at = BLOCK_GAS_TARGET * blocks <span class="kw">as </span>u64 / <span class="number">2</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>at = BLOCK_GAS_TARGET * blocks <span class="kw">as </span>u64 / <span class="number">2</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>prev = TokenAmount::zero();
     <span class="kw">let </span><span class="kw-2">mut </span>premium = TokenAmount::zero();
 
@@ -451,8 +452,9 @@
             <span class="kw">if </span>rct.exit_code().value() != <span class="number">0 </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(-<span class="number">1</span>);
             }
-            <span class="comment">// TODO: Figure out why we always under estimate the gas calculation so we dont
-            // need to add 200000 https://github.com/ChainSafe/forest/issues/901
+            <span class="comment">// TODO(forest): https://github.com/ChainSafe/forest/issues/901
+            //               Figure out why we always under estimate the gas
+            //               calculation so we dont need to add 200000
             </span><span class="prelude-val">Ok</span>(rct.gas_used() <span class="kw">as </span>i64 + <span class="number">200000</span>)
         }
         <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(-<span class="number">1</span>),
@@ -495,7 +497,9 @@
         <span class="kw">let </span>gfp = estimate_fee_cap(data, msg.clone(), <span class="number">20</span>, tsk)<span class="question-mark">?</span>;
         msg.set_gas_fee_cap(gfp);
     }
-    <span class="comment">// TODO: Cap Gas Fee https://github.com/ChainSafe/forest/issues/901
+    <span class="comment">// TODO(forest): https://github.com/ChainSafe/forest/issues/901
+    //               Figure out why we always under estimate the gas
+    //               calculation so we dont need to add 200000
     </span><span class="prelude-val">Ok</span>(msg)
 }
 </code></pre></div></section></main></body></html>

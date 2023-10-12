@@ -561,11 +561,6 @@
 <a href="#561" id="561">561</a>
 <a href="#562" id="562">562</a>
 <a href="#563" id="563">563</a>
-<a href="#564" id="564">564</a>
-<a href="#565" id="565">565</a>
-<a href="#566" id="566">566</a>
-<a href="#567" id="567">567</a>
-<a href="#568" id="568">568</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -720,10 +715,7 @@
     <span class="doccomment">/// Writes tipset block headers to data store and updates heaviest tipset
     /// with other compatible tracked headers.
     </span><span class="kw">pub fn </span>put_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;(), Error&gt; {
-        <span class="comment">// TODO: we could add the blocks of `ts` to the tipset tracker from here,
-        // making `add_to_tipset_tracker` redundant and decreasing the number of
-        // `blockstore` reads
-        </span>persist_objects(<span class="self">self</span>.blockstore(), ts.blocks())<span class="question-mark">?</span>;
+        persist_objects(<span class="self">self</span>.blockstore(), ts.blocks())<span class="question-mark">?</span>;
 
         <span class="comment">// Expand tipset to include other compatible blocks at the epoch.
         </span><span class="kw">let </span>expanded = <span class="self">self</span>.expand_tipset(ts.min_ticket_block().clone())<span class="question-mark">?</span>;
@@ -782,8 +774,7 @@
         <span class="kw">let </span>curr_weight = heaviest_weight;
 
         <span class="kw">if </span>new_weight &gt; curr_weight {
-            <span class="comment">// TODO potentially need to deal with re-orgs here
-            </span><span class="macro">info!</span>(<span class="string">&quot;New heaviest tipset! {} (EPOCH = {})&quot;</span>, ts.key(), ts.epoch());
+            <span class="macro">info!</span>(<span class="string">&quot;New heaviest tipset! {} (EPOCH = {})&quot;</span>, ts.key(), ts.epoch());
             <span class="self">self</span>.set_heaviest_tipset(ts)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
@@ -921,7 +912,6 @@
 }
 
 <span class="doccomment">/// Returns a tuple of CIDs for both unsigned and signed messages
-</span><span class="comment">// TODO cache these recent meta roots
 </span><span class="kw">pub fn </span>read_msg_cids&lt;DB&gt;(db: <span class="kw-2">&amp;</span>DB, msg_cid: <span class="kw-2">&amp;</span>Cid) -&gt; <span class="prelude-ty">Result</span>&lt;(Vec&lt;Cid&gt;, Vec&lt;Cid&gt;), Error&gt;
 <span class="kw">where
     </span>DB: Blockstore,

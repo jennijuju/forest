@@ -537,7 +537,7 @@
 <span class="kw">use </span>tracing::{debug, trace, warn};
 
 <span class="doccomment">/// Timeout for response from an RPC request
-</span><span class="comment">// TODO this value can be tweaked, this is just set pretty low to avoid peers
+</span><span class="comment">// This value could be tweaked, this is just set pretty low to avoid peers
 // timing out requests from slowing the node down. If increase, should create a
 // countermeasure for this.
 </span><span class="kw">const </span>CHAIN_EXCHANGE_TIMEOUT: Duration = Duration::from_secs(<span class="number">5</span>);
