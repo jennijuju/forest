@@ -143,10 +143,12 @@
 <a href="#143" id="143">143</a>
 <a href="#144" id="144">144</a>
 <a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="kw">use super</span>::{FrameOffset, Hash, IndexHeader, KeyValuePair, Slot};
 <span class="kw">use </span>tokio::io::{AsyncWrite, AsyncWriteExt <span class="kw">as _</span>};
+<span class="kw">use </span>zerocopy::AsBytes <span class="kw">as _</span>;
 
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>CarIndexBuilder {
@@ -242,16 +244,16 @@
 
     <span class="kw">fn </span>header(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IndexHeader {
         IndexHeader {
-            magic_number: IndexHeader::MAGIC_NUMBER,
-            longest_distance: <span class="self">self</span>.longest_distance,
-            collisions: <span class="self">self</span>.collisions,
-            buckets: <span class="self">self</span>.size(),
+            magic_number: IndexHeader::MAGIC_NUMBER.into(),
+            longest_distance: <span class="self">self</span>.longest_distance.into(),
+            collisions: <span class="self">self</span>.collisions.into(),
+            buckets: <span class="self">self</span>.size().into(),
         }
     }
 
     <span class="attr">#[cfg(any(test, feature = <span class="string">&quot;benchmark-private&quot;</span>))]
     </span><span class="kw">pub fn </span>write(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>writer: <span class="kw">impl </span>std::io::Write) -&gt; std::io::Result&lt;()&gt; {
-        writer.write_all(<span class="kw-2">&amp;</span><span class="self">self</span>.header().to_le_bytes())<span class="question-mark">?</span>;
+        writer.write_all(<span class="self">self</span>.header().as_bytes())<span class="question-mark">?</span>;
         <span class="kw">for </span>slot <span class="kw">in </span><span class="self">self</span>.table.iter() {
             writer.write_all(<span class="kw-2">&amp;</span>slot.to_le_bytes())<span class="question-mark">?</span>;
         }
@@ -263,7 +265,7 @@
     }
 
     <span class="kw">pub async fn </span>write_async(<span class="kw-2">&amp;</span><span class="self">self</span>, writer: <span class="kw-2">&amp;mut </span>(<span class="kw">impl </span>AsyncWrite + Unpin)) -&gt; std::io::Result&lt;()&gt; {
-        writer.write_all(<span class="kw-2">&amp;</span><span class="self">self</span>.header().to_le_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
+        writer.write_all(<span class="self">self</span>.header().as_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">for </span>entry <span class="kw">in </span><span class="self">self</span>.table.iter() {
             writer.write_all(<span class="kw-2">&amp;</span>entry.to_le_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
         }

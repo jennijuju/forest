@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"forest_filecoin":[["impl FromZeroes for <a class=\"struct\" href=\"forest_filecoin/utils/db/car_index/index_header/struct.IndexHeader.html\" title=\"struct forest_filecoin::utils::db::car_index::index_header::IndexHeader\">IndexHeader</a><span class=\"where fmt-newline\">where\n    U64: FromZeroes,</span>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -486,7 +486,6 @@
 <a href="#486" id="486">486</a>
 <a href="#487" id="487">487</a>
 <a href="#488" id="488">488</a>
-<a href="#489" id="489">489</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -605,9 +604,8 @@
         <span class="kw">let </span><span class="kw-2">mut </span>footer_buffer = [<span class="number">0</span>; ForestCarFooter::SIZE];
         cursor.read_exact(<span class="kw-2">&amp;mut </span>footer_buffer)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>footer = ForestCarFooter::try_from_le_bytes(footer_buffer).ok_or(io::Error::new(
-            io::ErrorKind::InvalidData,
-            <span class="string">&quot;Data not recognized as ForestCAR.zst&quot;</span>,
+        <span class="kw">let </span>footer = ForestCarFooter::try_from_le_bytes(footer_buffer).ok_or(invalid_data(
+            <span class="macro">format!</span>(<span class="string">&quot;not recognizable as a `{}` file&quot;</span>, FOREST_CAR_FILE_EXTENSION),
         ))<span class="question-mark">?</span>;
 
         <span class="kw">let </span>cursor = Cursor::new_pos(<span class="kw-2">&amp;</span>reader, <span class="number">0</span>);
@@ -848,8 +846,8 @@
     }
 }
 
-<span class="kw">fn </span>invalid_data(msg: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str) -&gt; io::Error {
-    io::Error::new(io::ErrorKind::InvalidData, msg)
+<span class="kw">fn </span>invalid_data(inner: <span class="kw">impl </span>Into&lt;Box&lt;<span class="kw">dyn </span>std::error::Error + Send + Sync&gt;&gt;) -&gt; io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, inner)
 }
 
 <span class="kw">fn </span>compressed_len(encoder: <span class="kw-2">&amp;</span>zstd::Encoder&lt;<span class="lifetime">&#39;static</span>, Writer&lt;BytesMut&gt;&gt;) -&gt; usize {
