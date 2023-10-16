@@ -432,6 +432,44 @@
 <a href="#432" id="432">432</a>
 <a href="#433" id="433">433</a>
 <a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
+<a href="#449" id="449">449</a>
+<a href="#450" id="450">450</a>
+<a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
+<a href="#456" id="456">456</a>
+<a href="#457" id="457">457</a>
+<a href="#458" id="458">458</a>
+<a href="#459" id="459">459</a>
+<a href="#460" id="460">460</a>
+<a href="#461" id="461">461</a>
+<a href="#462" id="462">462</a>
+<a href="#463" id="463">463</a>
+<a href="#464" id="464">464</a>
+<a href="#465" id="465">465</a>
+<a href="#466" id="466">466</a>
+<a href="#467" id="467">467</a>
+<a href="#468" id="468">468</a>
+<a href="#469" id="469">469</a>
+<a href="#470" id="470">470</a>
+<a href="#471" id="471">471</a>
+<a href="#472" id="472">472</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -450,10 +488,14 @@
 <span class="kw">use </span>tracing::info;
 
 <span class="kw">use </span><span class="kw">super</span>::v0_12_1::Migration0_12_1_0_13_0;
+<span class="kw">use </span><span class="kw">super</span>::void_migration::MigrationVoid;
 
 <span class="doccomment">/// Migration trait. It is expected that the [`MigrationOperation::migrate`] method will pick up the relevant database
 /// existing under `chain_data_path` and create a new migration database in the same directory.
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">trait </span>MigrationOperation {
+    <span class="kw">fn </span>new(from: Version, to: Version) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span><span class="self">Self</span>: Sized;
     <span class="doccomment">/// Performs pre-migration checks. This is the place to check if the database is in a valid
     /// state and if the migration can be performed. Note that some of the higher-level checks
     /// (like checking if the database exists) are performed by the [`Migration`].
@@ -466,6 +508,8 @@
     <span class="doccomment">/// Performs post-migration checks. This is the place to check if the migration database is
     /// ready to be used by Forest and renamed into a versioned database.
     </span><span class="kw">fn </span>post_checks(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;()&gt;;
+    <span class="doccomment">/// Returns the name of the temporary database that will be created during the migration.
+    </span><span class="kw">fn </span>temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
 }
 
 <span class="doccomment">/// Migrations map. The key is the starting version and the value is the tuple of the target version
@@ -482,7 +526,7 @@
 /// The usage is:
 /// `&lt;FROM version&gt; -&gt; &lt;TO version&gt; @ &lt;Migrator object&gt;`
 </span><span class="macro">macro_rules! </span>create_migrations {
-    ($(<span class="macro-nonterminal">$from</span>:literal -&gt; <span class="macro-nonterminal">$to</span>:literal @ <span class="macro-nonterminal">$migration</span>:path),* $(,)<span class="question-mark">?</span>) =&gt; {
+    ($(<span class="macro-nonterminal">$from</span>:literal -&gt; <span class="macro-nonterminal">$to</span>:literal @ <span class="macro-nonterminal">$migration</span>:tt),* $(,)<span class="question-mark">?</span>) =&gt; {
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">static </span>MIGRATIONS: Lazy&lt;MigrationsMap&gt; = Lazy::new(|| {
     MigrationsMap::from_iter(
         [
@@ -490,7 +534,10 @@
             Version::from_str(<span class="macro-nonterminal">$from</span>).unwrap(),
             (
                 Version::from_str(<span class="macro-nonterminal">$to</span>).unwrap(),
-                Arc::new(<span class="macro-nonterminal">$migration</span>) <span class="kw">as _</span>,
+                Arc::new(<span class="macro-nonterminal">$migration::new</span>(
+                        <span class="macro-nonterminal">$from</span>.parse().expect(<span class="string">&quot;invalid &lt;from&gt; version&quot;</span>),
+                        <span class="macro-nonterminal">$to</span>.parse().expect(<span class="string">&quot;invalid &lt;to&gt; version&quot;</span>)))
+                <span class="kw">as _</span>,
             )),
             )*
         ]
@@ -502,6 +549,7 @@
 
 <span class="macro">create_migrations!</span>(
     <span class="string">&quot;0.12.1&quot; </span>-&gt; <span class="string">&quot;0.13.0&quot; </span>@ Migration0_12_1_0_13_0,
+    <span class="string">&quot;0.13.0&quot; </span>-&gt; <span class="string">&quot;0.14.0&quot; </span>@ MigrationVoid,
 );
 
 <span class="kw">pub struct </span>Migration {
@@ -693,6 +741,17 @@
         <span class="kw">fn </span>post_checks(<span class="kw-2">&amp;</span><span class="self">self</span>, _chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;()&gt; {
             <span class="prelude-val">Ok</span>(())
         }
+
+        <span class="kw">fn </span>new(_from: Version, _to: Version) -&gt; <span class="self">Self
+        </span><span class="kw">where
+            </span><span class="self">Self</span>: Sized,
+        {
+            <span class="self">Self </span>{}
+        }
+
+        <span class="kw">fn </span>temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+            <span class="string">&quot;&quot;</span>.into()
+        }
     }
 
     <span class="attr">#[test]
@@ -819,37 +878,54 @@
         }
     }
 
-    <span class="kw">struct </span>SimpleMigration0_1_0_0_2_0;
+    <span class="kw">struct </span>SimpleMigration0_1_0_0_2_0 {
+        from: Version,
+        to: Version,
+    }
 
     <span class="kw">impl </span>MigrationOperation <span class="kw">for </span>SimpleMigration0_1_0_0_2_0 {
         <span class="kw">fn </span>pre_checks(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;()&gt; {
-            <span class="kw">let </span>path = chain_data_path.join(<span class="string">&quot;0.1.0&quot;</span>);
+            <span class="kw">let </span>path = chain_data_path.join(<span class="self">self</span>.from.to_string());
             <span class="kw">if </span>!path.exists() {
-                <span class="macro">anyhow::bail!</span>(<span class="string">&quot;0.1.0 does not exist&quot;</span>);
+                <span class="macro">anyhow::bail!</span>(<span class="string">&quot;{} does not exist&quot;</span>, <span class="self">self</span>.from);
             }
             <span class="prelude-val">Ok</span>(())
         }
 
         <span class="kw">fn </span>migrate(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;PathBuf&gt; {
-            fs::create_dir(chain_data_path.join(<span class="string">&quot;migration_0_1_0_0_2_0&quot;</span>)).unwrap();
-            <span class="prelude-val">Ok</span>(chain_data_path.join(<span class="string">&quot;migration_0_1_0_0_2_0&quot;</span>))
+            <span class="kw">let </span>temp_db_path = chain_data_path.join(<span class="self">self</span>.temporary_db_name());
+            fs::create_dir(<span class="kw-2">&amp;</span>temp_db_path).unwrap();
+            <span class="prelude-val">Ok</span>(temp_db_path)
         }
 
         <span class="kw">fn </span>post_checks(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;()&gt; {
-            <span class="kw">let </span>path = chain_data_path.join(<span class="string">&quot;migration_0_1_0_0_2_0&quot;</span>);
+            <span class="kw">let </span>path = chain_data_path.join(<span class="self">self</span>.temporary_db_name());
             <span class="kw">if </span>!path.exists() {
-                <span class="macro">anyhow::bail!</span>(<span class="string">&quot;migration_0_1_0_0_2_0 does not exist&quot;</span>);
+                <span class="macro">anyhow::bail!</span>(<span class="string">&quot;{} does not exist&quot;</span>, path.display());
             }
             <span class="prelude-val">Ok</span>(())
+        }
+
+        <span class="kw">fn </span>new(from: Version, to: Version) -&gt; <span class="self">Self
+        </span><span class="kw">where
+            </span><span class="self">Self</span>: Sized,
+        {
+            <span class="self">Self </span>{ from, to }
+        }
+
+        <span class="kw">fn </span>temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+            <span class="macro">format!</span>(<span class="string">&quot;migration_{}_{}&quot;</span>, <span class="self">self</span>.from, <span class="self">self</span>.to).replace(<span class="string">&#39;.&#39;</span>, <span class="string">&quot;_&quot;</span>)
         }
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_migration_map_migration() {
+        <span class="kw">let </span>from = Version::new(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>);
+        <span class="kw">let </span>to = Version::new(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>);
         <span class="kw">let </span>migration = Migration {
-            from: Version::new(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>),
-            to: Version::new(<span class="number">0</span>, <span class="number">2</span>, <span class="number">0</span>),
-            migrator: Arc::new(SimpleMigration0_1_0_0_2_0),
+            from: from.clone(),
+            to: to.clone(),
+            migrator: Arc::new(SimpleMigration0_1_0_0_2_0::new(from, to)),
         };
 
         <span class="kw">let </span>temp_dir = TempDir::new().unwrap();
