@@ -138,6 +138,9 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -145,6 +148,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashMap;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{clock::ChainEpoch, state_tree::StateTree};
+<span class="kw">use </span><span class="kw">crate</span>::state_migration::common::MigrationCache;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
@@ -206,6 +210,7 @@
         <span class="comment">// we need at least 3 threads for the migration to work
         </span><span class="kw">let </span>threads = num_cpus::get().max(<span class="number">3</span>);
         <span class="kw">let </span>chan_size = threads / <span class="number">2</span>;
+        <span class="kw">let </span>cache = MigrationCache::default();
 
         <span class="macro">tracing::info!</span>(<span class="string">&quot;Using {threads} threads for migration and channel size of {chan_size}&quot;</span>,);
 
@@ -233,6 +238,7 @@
                 <span class="kw">while let </span><span class="prelude-val">Ok</span>((address, state)) = state_rx.recv() {
                     <span class="kw">let </span>job_tx = job_tx.clone();
                     <span class="kw">let </span>migrator = <span class="self">self</span>.migrations.get(<span class="kw-2">&amp;</span>state.code).cloned().unwrap_or_else(|| <span class="macro">panic!</span>(<span class="string">&quot;migration failed with state code: {}&quot;</span>, state.code));
+                    <span class="kw">let </span>cache_clone = cache.clone();
                     scope.spawn(<span class="kw">move </span>|<span class="kw">_</span>| {
                         <span class="kw">let </span>job = MigrationJob {
                             address,
@@ -240,7 +246,7 @@
                             actor_migration: migrator,
                         };
 
-                        <span class="kw">let </span>job_output = job.run(store, prior_epoch).unwrap_or_else(|e| {
+                        <span class="kw">let </span>job_output = job.run(store, prior_epoch, cache_clone).unwrap_or_else(|e| {
                             <span class="macro">panic!</span>(
                                 <span class="string">&quot;failed executing job for address: {address}, Reason: {e}&quot;
                             </span>)

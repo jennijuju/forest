@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["info_v8_to_v9","power_pair_v8_to_v9","sector_onchain_info_v8_to_v9","sector_precommit_info_v8_to_v9","sector_precommit_onchain_info_v8_to_v9","state_v10_to_v11","state_v8_to_v9"]};
+window.SIDEBAR_ITEMS = {"mod":["info_v8_to_v9","power_pair_v11_to_v12","power_pair_v8_to_v9","sector_onchain_info_v11_to_v12","sector_onchain_info_v8_to_v9","sector_precommit_info_v8_to_v9","sector_precommit_onchain_info_v8_to_v9","state_v10_to_v11","state_v8_to_v9"]};

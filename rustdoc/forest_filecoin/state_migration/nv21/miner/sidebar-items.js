@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["miner_migrator","miner_prev_sectors_in_key","miner_prev_sectors_out_key","sectors_amt_key"],"struct":["MinerMigrator"]};

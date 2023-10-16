@@ -701,7 +701,6 @@
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -885,6 +884,7 @@
     )<span class="question-mark">?</span>)));
     <span class="kw">let </span>forest_car_db_dir = db_root_dir.join(<span class="string">&quot;car_db&quot;</span>);
     load_all_forest_cars(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>forest_car_db_dir)<span class="question-mark">?</span>;
+    load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();
 
@@ -988,8 +988,6 @@
     }
 
     <span class="kw">let </span>epoch = chain_store.heaviest_tipset().epoch();
-
-    load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>peer_manager = Arc::new(PeerManager::default());
     services.spawn(peer_manager.clone().peer_operation_event_loop_task());

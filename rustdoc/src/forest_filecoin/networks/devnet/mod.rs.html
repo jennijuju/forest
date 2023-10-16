@@ -133,6 +133,14 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -145,7 +153,7 @@
 </span><span class="kw">pub const </span>ETH_CHAIN_ID: u64 = <span class="number">31415926</span>;
 
 <span class="doccomment">/// Height epochs.
-</span><span class="kw">pub static </span>HEIGHT_INFOS: Lazy&lt;[HeightInfo; <span class="number">21</span>]&gt; = Lazy::new(|| {
+</span><span class="kw">pub static </span>HEIGHT_INFOS: Lazy&lt;[HeightInfo; <span class="number">22</span>]&gt; = Lazy::new(|| {
     [
         HeightInfo {
             height: Height::Breeze,
@@ -242,7 +250,7 @@
         },
         HeightInfo {
             height: Height::Hygge,
-            epoch: -<span class="number">1</span>,
+            epoch: -<span class="number">21</span>,
             bundle: <span class="prelude-val">Some</span>(
                 Cid::try_from(<span class="string">&quot;bafy2bzacebzz376j5kizfck56366kdz5aut6ktqrvqbi3efa2d4l2o2m653ts&quot;</span>)
                     .unwrap(),
@@ -250,7 +258,7 @@
         },
         HeightInfo {
             height: Height::Lightning,
-            epoch: <span class="number">30</span>,
+            epoch: -<span class="number">22</span>,
             bundle: <span class="prelude-val">Some</span>(
                 Cid::try_from(<span class="string">&quot;bafy2bzaceay35go4xbjb45km6o46e5bib3bi46panhovcbedrynzwmm3drr4i&quot;</span>)
                     .unwrap(),
@@ -258,8 +266,16 @@
         },
         HeightInfo {
             height: Height::Thunder,
-            epoch: <span class="number">1000</span>,
+            epoch: -<span class="number">1</span>,
             bundle: <span class="prelude-val">None</span>,
+        },
+        HeightInfo {
+            height: Height::Watermelon,
+            epoch: <span class="number">5</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzacebk6yiirh4ennphzyka7b6g6jzn3lt4lr5ht7rjwulnrcthjihapo&quot;</span>)
+                    .unwrap(),
+            ),
         },
     ]
 });

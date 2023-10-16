@@ -63,6 +63,8 @@
 <a href="#63" id="63">63</a>
 <a href="#64" id="64">64</a>
 <a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -71,7 +73,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, clock::ChainEpoch, state_tree::ActorState};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
-<span class="kw">use super</span>::{ActorMigration, ActorMigrationInput};
+<span class="kw">use super</span>::{ActorMigration, ActorMigrationInput, MigrationCache};
 
 <span class="doccomment">/// Defines migration result for a single actor migration.
 </span><span class="attr">#[derive(Debug)]
@@ -92,6 +94,7 @@
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
         prior_epoch: ChainEpoch,
+        cache: MigrationCache,
     ) -&gt; anyhow::Result&lt;<span class="prelude-ty">Option</span>&lt;MigrationJobOutput&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(result) = <span class="self">self
             </span>.actor_migration
@@ -102,6 +105,7 @@
                     balance: <span class="self">self</span>.actor_state.balance.clone().into(),
                     head: <span class="self">self</span>.actor_state.state,
                     prior_epoch,
+                    cache,
                 },
             )
             .map_err(|e| {

@@ -317,6 +317,21 @@
 <a href="#317" id="317">317</a>
 <a href="#318" id="318">318</a>
 <a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -332,6 +347,7 @@
 <span class="kw">pub use </span>fvm_shared3::sector::{
     RegisteredPoStProof <span class="kw">as </span>RegisteredPoStProofV3, RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV3,
 };
+<span class="kw">pub use </span>fvm_shared4::sector::RegisteredSealProof <span class="kw">as </span>RegisteredSealProofV4;
 <span class="kw">use </span>num_derive::FromPrimitive;
 <span class="kw">use </span>std::ops::Deref;
 
@@ -395,6 +411,20 @@
     <span class="kw">fn </span>from(value: RegisteredSealProof) -&gt; RegisteredSealProofV2 {
         <span class="kw">let </span>num_id: i64 = value.<span class="number">0</span>.into();
         RegisteredSealProofV2::from(num_id)
+    }
+}
+
+<span class="kw">impl </span>From&lt;RegisteredSealProofV4&gt; <span class="kw">for </span>RegisteredSealProof {
+    <span class="kw">fn </span>from(value: RegisteredSealProofV4) -&gt; RegisteredSealProof {
+        <span class="kw">let </span>num_id: i64 = value.into();
+        RegisteredSealProof(RegisteredSealProofV3::from(num_id))
+    }
+}
+
+<span class="kw">impl </span>From&lt;RegisteredSealProof&gt; <span class="kw">for </span>RegisteredSealProofV4 {
+    <span class="kw">fn </span>from(value: RegisteredSealProof) -&gt; RegisteredSealProofV4 {
+        <span class="kw">let </span>num_id: i64 = value.<span class="number">0</span>.into();
+        RegisteredSealProofV4::from(num_id)
     }
 }
 
