@@ -91,10 +91,13 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::utils::io::WithProgress;
+<span class="kw">use </span><span class="kw">crate</span>::utils::reqwest_resume;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::{AsyncWriteExt, TryStreamExt};
 <span class="kw">use </span>std::{io::ErrorKind, path::Path};
@@ -161,9 +164,10 @@
     </span><span class="kw">let </span>(stream, content_length) = <span class="kw">match </span>Url::parse(location) {
         <span class="prelude-val">Ok</span>(url) =&gt; {
             <span class="macro">info!</span>(<span class="string">&quot;Downloading file: {}&quot;</span>, url);
-            <span class="kw">let </span>resp = reqwest::get(url).<span class="kw">await</span><span class="question-mark">?</span>.error_for_status()<span class="question-mark">?</span>;
+            <span class="kw">let </span>resume_resp = reqwest_resume::get(url).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="kw">let </span>resp = resume_resp.response().error_for_status_ref()<span class="question-mark">?</span>;
             <span class="kw">let </span>content_length = resp.content_length().unwrap_or_default();
-            <span class="kw">let </span>stream = resp
+            <span class="kw">let </span>stream = resume_resp
                 .bytes_stream()
                 .map_err(|reqwest_error| std::io::Error::new(ErrorKind::Other, reqwest_error))
                 .pipe(tokio_util::io::StreamReader::new);
