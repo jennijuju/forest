@@ -280,6 +280,7 @@
 <a href="#280" id="280">280</a>
 <a href="#281" id="281">281</a>
 <a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -307,7 +308,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::Config;
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::{CliOpts, HELP_MESSAGE};
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::HELP_MESSAGE;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::utils::version::FOREST_VERSION_STRING;
 <span class="kw">use </span>cid::Cid;
@@ -331,8 +332,9 @@
 #[command(name = <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_NAME&quot;</span>), author = <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_AUTHORS&quot;</span>), version = FOREST_VERSION_STRING.as_str(), about = <span class="macro">env!</span>(<span class="string">&quot;CARGO_PKG_DESCRIPTION&quot;</span>))]
 #[command(help_template(HELP_MESSAGE))]
 </span><span class="kw">pub struct </span>Cli {
-    <span class="attr">#[command(flatten)]
-    </span><span class="kw">pub </span>opts: CliOpts,
+    <span class="doccomment">/// Client JWT token to use for JSON-RPC authentication
+    </span><span class="attr">#[arg(short, long)]
+    </span><span class="kw">pub </span>token: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="attr">#[command(subcommand)]
     </span><span class="kw">pub </span>cmd: Subcommand,
 }

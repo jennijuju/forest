@@ -333,12 +333,10 @@
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
-<a href="#336" id="336">336</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::CliOpts;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{
     chain_head, node_ops::node_status, start_time, state_network_name, wallet_balance,
@@ -497,7 +495,7 @@
 }
 
 <span class="kw">impl </span>InfoCommand {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config, _opts: <span class="kw-2">&amp;</span>CliOpts) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>res = <span class="macro">tokio::try_join!</span>(
             node_status((), <span class="kw-2">&amp;</span>config.client.rpc_token),
             chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token),
