@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["CarCommands"]};
+window.SIDEBAR_ITEMS = {"enum":["CarCommands"],"fn":["validate"]};
