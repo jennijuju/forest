@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DATACAP_MAP_CONFIG","REMOVE_DATACAP_PROPOSALS_CONFIG"],"fn":["get_allocation","get_claim"],"struct":["Allocation","Claim","State"],"type":["DataCapMap","RemoveDataCapProposalMap"]};

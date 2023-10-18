@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["gc_delay","maxbytes","maxkeys","persistent_keyring_expiry","root_maxbytes","root_maxkeys","set_maxbytes","set_maxkeys","set_root_maxbytes","set_root_maxkeys"]};

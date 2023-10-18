@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["connect_info","path","rejection","ws"],"struct":["BodyStream","ConnectInfo","DefaultBodyLimit","Host","MatchedPath","OriginalUri","Path","Query","RawBody","RawForm","RawPathParams","RawQuery","State","WebSocketUpgrade"],"trait":["FromRef","FromRequest","FromRequestParts"]};

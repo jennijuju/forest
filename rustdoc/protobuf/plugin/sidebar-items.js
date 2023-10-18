@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["file_descriptor"],"mod":["code_generator_response"],"struct":["CodeGeneratorRequest","CodeGeneratorResponse","Version"]};

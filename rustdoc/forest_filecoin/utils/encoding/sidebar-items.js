@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["blake2b_256","from_slice_with_fallback","prover_id_from_u64"],"mod":["cid_de_cbor","de","fallback_de_ipld_dagcbor","ser","serde_byte_array"],"trait":["Deserializer","Serializer"]};
+window.SIDEBAR_ITEMS = {"fn":["blake2b_256","from_slice_with_fallback","prover_id_from_u64"],"mod":["cid_de_cbor","fallback_de_ipld_dagcbor","serde_byte_array"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["GAS_ON_SUBMIT_VERIFY_SEAL"]};

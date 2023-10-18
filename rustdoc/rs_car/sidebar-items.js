@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["CarDecodeError"],"fn":["car_read_all"],"struct":["CarHeader","CarReader"],"type":["Cid"]};

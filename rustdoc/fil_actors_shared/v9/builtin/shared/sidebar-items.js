@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CALLER_TYPES_SIGNABLE","HAMT_BIT_WIDTH"]};

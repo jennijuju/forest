@@ -1,0 +1,6 @@
+(function() {var implementors = {
+"libipld":[["impl <a class=\"trait\" href=\"libipld/codec/trait.References.html\" title=\"trait libipld::codec::References\">References</a>&lt;<a class=\"enum\" href=\"libipld/codec_impl/enum.IpldCodec.html\" title=\"enum libipld::codec_impl::IpldCodec\">IpldCodec</a>&gt; for <a class=\"enum\" href=\"libipld/enum.Ipld.html\" title=\"enum libipld::Ipld\">Ipld</a>"]],
+"libipld_cbor":[["impl <a class=\"trait\" href=\"libipld_core/codec/trait.References.html\" title=\"trait libipld_core::codec::References\">References</a>&lt;<a class=\"struct\" href=\"libipld_cbor/struct.DagCborCodec.html\" title=\"struct libipld_cbor::DagCborCodec\">DagCborCodec</a>&gt; for <a class=\"enum\" href=\"libipld_core/ipld/enum.Ipld.html\" title=\"enum libipld_core::ipld::Ipld\">Ipld</a>"]],
+"libipld_core":[],
+"libipld_json":[["impl <a class=\"trait\" href=\"libipld_core/codec/trait.References.html\" title=\"trait libipld_core::codec::References\">References</a>&lt;<a class=\"struct\" href=\"libipld_json/struct.DagJsonCodec.html\" title=\"struct libipld_json::DagJsonCodec\">DagJsonCodec</a>&gt; for <a class=\"enum\" href=\"libipld_core/ipld/enum.Ipld.html\" title=\"enum libipld_core::ipld::Ipld\">Ipld</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

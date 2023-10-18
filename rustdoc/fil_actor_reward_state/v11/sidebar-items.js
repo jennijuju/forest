@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["PENALTY_MULTIPLIER"],"enum":["Method","VestingFunction"],"struct":["AwardBlockRewardParams","BASELINE_EXPONENT","BASELINE_INITIAL_VALUE","ConstructorParams","INIT_BASELINE_POWER","Reward","State","ThisEpochRewardReturn","UpdateNetworkKPIParams"]};

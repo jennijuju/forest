@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["SIGNERS_MAX"],"enum":["Method"],"struct":["AddSignerParams","ApproveReturn","ChangeNumApprovalsThresholdParams","ConstructorParams","LockBalanceParams","ProposalHashData","ProposeParams","ProposeReturn","RemoveSignerParams","State","SwapSignerParams","Transaction","TxnID","TxnIDParams"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error"],"fn":["aggregate","hash","verify","verify_messages"],"struct":["PrivateKey","PublicKey","Signature"],"trait":["Serialize"]};

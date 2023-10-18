@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BASE_DEGREE","PARALLEL_MERKLE"],"fn":["derive_drg_seed","graph_height"],"struct":["BucketGraph"],"trait":["Graph"]};

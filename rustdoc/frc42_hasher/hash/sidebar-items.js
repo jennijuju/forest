@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["IllegalNameErr","MethodNameErr"],"struct":["MethodResolver"],"trait":["Hasher"]};

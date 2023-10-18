@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["compute_comm_d","get_aligned_source","get_piece_alignment","get_piece_start_byte","piece_hash","sum_piece_bytes_with_alignment","verify_pieces","zero_padding"],"struct":["EmptySource","PieceAlignment"]};

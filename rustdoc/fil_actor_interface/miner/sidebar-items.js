@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Deadline","Partition","State"],"fn":["is_v10_miner_cid","is_v11_miner_cid","is_v12_miner_cid","is_v8_miner_cid","is_v9_miner_cid"],"struct":["MinerInfo","MinerPower","SectorOnChainInfo"],"type":["Method"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["FEISTEL_ROUNDS"],"fn":["invert_permute","permute","precompute"],"type":["FeistelPrecomputed","Index"]};

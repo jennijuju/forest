@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CID_SERDE_PRIVATE_IDENTIFIER"],"struct":["BytesToCidVisitor"]};

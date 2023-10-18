@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["public_params","setup_params","window_post_public_params","window_post_setup_params","winning_post_public_params","winning_post_setup_params"],"type":["WindowPostPublicParams","WinningPostPublicParams"]};

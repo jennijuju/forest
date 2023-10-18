@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["DEAL_MAX_LABEL_SIZE"]};

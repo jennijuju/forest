@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Value"],"mod":["dec","enc","major","types","utils"]};

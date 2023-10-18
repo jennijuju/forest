@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","Reference"],"fn":["if_major","is_break"],"struct":["ArrayStart","IgnoredAny","MapStart","TagStart"],"trait":["Decode","Read"]};

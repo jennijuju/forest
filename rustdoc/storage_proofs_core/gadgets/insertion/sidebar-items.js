@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["insert","insert_2","insert_4","insert_8","pick","select"]};

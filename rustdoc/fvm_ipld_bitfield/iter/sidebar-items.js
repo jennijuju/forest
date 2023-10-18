@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Ranges","Skip","Take"],"trait":["RangeIterator"]};

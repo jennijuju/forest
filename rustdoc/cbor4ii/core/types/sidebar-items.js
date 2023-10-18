@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["BadStr","Bytes","F16","Map","Negative","Null","Simple","Tag","Undefined"]};

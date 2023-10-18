@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["MAX_INDEX"],"enum":["ChangeType","Error"],"fn":["diff"],"struct":["Change","ValueMut"],"type":["Amt","Amtv0"]};

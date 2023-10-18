@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["DataProof","PoR","PrivateInputs","PublicInputs","PublicParams","SetupParams"]};

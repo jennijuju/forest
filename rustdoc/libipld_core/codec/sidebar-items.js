@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["assert_roundtrip"],"trait":["Codec","Decode","Encode","References"]};

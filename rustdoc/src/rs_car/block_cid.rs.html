@@ -1,0 +1,447 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/rs-car-0.4.1/src/block_cid.rs`."><title>block_cid.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="rs_car" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../rs_car/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<a href="#2" id="2">2</a>
+<a href="#3" id="3">3</a>
+<a href="#4" id="4">4</a>
+<a href="#5" id="5">5</a>
+<a href="#6" id="6">6</a>
+<a href="#7" id="7">7</a>
+<a href="#8" id="8">8</a>
+<a href="#9" id="9">9</a>
+<a href="#10" id="10">10</a>
+<a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
+<a href="#46" id="46">46</a>
+<a href="#47" id="47">47</a>
+<a href="#48" id="48">48</a>
+<a href="#49" id="49">49</a>
+<a href="#50" id="50">50</a>
+<a href="#51" id="51">51</a>
+<a href="#52" id="52">52</a>
+<a href="#53" id="53">53</a>
+<a href="#54" id="54">54</a>
+<a href="#55" id="55">55</a>
+<a href="#56" id="56">56</a>
+<a href="#57" id="57">57</a>
+<a href="#58" id="58">58</a>
+<a href="#59" id="59">59</a>
+<a href="#60" id="60">60</a>
+<a href="#61" id="61">61</a>
+<a href="#62" id="62">62</a>
+<a href="#63" id="63">63</a>
+<a href="#64" id="64">64</a>
+<a href="#65" id="65">65</a>
+<a href="#66" id="66">66</a>
+<a href="#67" id="67">67</a>
+<a href="#68" id="68">68</a>
+<a href="#69" id="69">69</a>
+<a href="#70" id="70">70</a>
+<a href="#71" id="71">71</a>
+<a href="#72" id="72">72</a>
+<a href="#73" id="73">73</a>
+<a href="#74" id="74">74</a>
+<a href="#75" id="75">75</a>
+<a href="#76" id="76">76</a>
+<a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
+<a href="#117" id="117">117</a>
+<a href="#118" id="118">118</a>
+<a href="#119" id="119">119</a>
+<a href="#120" id="120">120</a>
+<a href="#121" id="121">121</a>
+<a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>blake2b_simd::Params;
+<span class="kw">use </span>futures::{AsyncRead, AsyncReadExt};
+<span class="kw">use </span>libipld::{cid, multihash::MultihashGeneric};
+<span class="kw">use </span>sha2::{Digest, Sha256};
+
+<span class="kw">use crate</span>::{
+    error::{CarDecodeError, HashCode},
+    varint::read_varint_u64,
+    Cid,
+};
+
+<span class="kw">const </span>CODE_IDENTITY: u64 = <span class="number">0x00</span>;
+<span class="kw">const </span>CODE_SHA2_256: u64 = <span class="number">0x12</span>;
+<span class="kw">const </span>CODE_BLAKE2B_256: u64 = <span class="number">0xb220</span>;
+<span class="kw">const </span>DIGEST_SIZE: usize = <span class="number">64</span>;
+<span class="kw">const </span>CID_V0_MH_SIZE: usize = <span class="number">32</span>;
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>read_block_cid&lt;R: AsyncRead + Unpin&gt;(
+    src: <span class="kw-2">&amp;mut </span>R,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(Cid, usize), CarDecodeError&gt; {
+    <span class="kw">let </span>(version, version_len) = read_varint_u64(src)
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.ok_or(cid::Error::InvalidCidVersion)<span class="question-mark">?</span>;
+    <span class="kw">let </span>(codec, codec_len) = read_varint_u64(src)
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.ok_or(cid::Error::InvalidCidV0Codec)<span class="question-mark">?</span>;
+
+    <span class="comment">// A CIDv0 is indicated by a first byte of 0x12 followed by 0x20 which specifies a 32-byte (0x20) length SHA2-256 (0x12) digest.
+    </span><span class="kw">if </span>[version, codec] == [CODE_SHA2_256, <span class="number">0x20</span>] {
+        <span class="kw">let </span><span class="kw-2">mut </span>digest = [<span class="number">0u8</span>; CID_V0_MH_SIZE];
+        src.read_exact(<span class="kw-2">&amp;mut </span>digest).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>mh = MultihashGeneric::wrap(version, <span class="kw-2">&amp;</span>digest).expect(<span class="string">&quot;Digest is always 32 bytes.&quot;</span>);
+        <span class="kw">return </span><span class="prelude-val">Ok</span>((Cid::new_v0(mh)<span class="question-mark">?</span>, version_len + codec_len + CID_V0_MH_SIZE));
+    }
+
+    <span class="comment">// CIDv1 components:
+    // 1. Version as an unsigned varint (should be 1)
+    // 2. Codec as an unsigned varint (valid according to the multicodec table)
+    // 3. The raw bytes of a multihash
+    </span><span class="kw">let </span>version = cid::Version::try_from(version).unwrap();
+    <span class="kw">match </span>version {
+        cid::Version::V0 =&gt; <span class="prelude-val">Err</span>(cid::Error::InvalidExplicitCidV0)<span class="question-mark">?</span>,
+        cid::Version::V1 =&gt; {
+            <span class="kw">let </span>(mh, mh_len) = read_multihash(src).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="prelude-val">Ok</span>((
+                Cid::new(version, codec, mh)<span class="question-mark">?</span>,
+                version_len + codec_len + mh_len,
+            ))
+        }
+    }
+}
+
+<span class="kw">async fn </span>read_multihash&lt;R: AsyncRead + Unpin&gt;(
+    r: <span class="kw-2">&amp;mut </span>R,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(MultihashGeneric&lt;DIGEST_SIZE&gt;, usize), CarDecodeError&gt; {
+    <span class="kw">let </span>(code, code_len) = read_varint_u64(r)
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.ok_or(CarDecodeError::InvalidMultihash(
+            <span class="string">&quot;invalid code varint&quot;</span>.to_string(),
+        ))<span class="question-mark">?</span>;
+    <span class="kw">let </span>(size, size_len) = read_varint_u64(r)
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.ok_or(CarDecodeError::InvalidMultihash(
+            <span class="string">&quot;invalid size varint&quot;</span>.to_string(),
+        ))<span class="question-mark">?</span>;
+
+    <span class="kw">if </span>size &gt; u8::MAX <span class="kw">as </span>u64 {
+        <span class="macro">panic!</span>(<span class="string">&quot;digest size {} &gt; max {}&quot;</span>, size, DIGEST_SIZE)
+    }
+
+    <span class="kw">let </span><span class="kw-2">mut </span>digest = [<span class="number">0</span>; DIGEST_SIZE];
+    r.read_exact(<span class="kw-2">&amp;mut </span>digest[..size <span class="kw">as </span>usize]).<span class="kw">await</span><span class="question-mark">?</span>;
+
+    <span class="comment">// TODO: Sad, copies the digest (again)..
+    // Multihash does not expose a way to construct Self without some decoding or copying
+    // unwrap: multihash must be valid since it&#39;s constructed manually
+    </span><span class="kw">let </span>mh = MultihashGeneric::wrap(code, <span class="kw-2">&amp;</span>digest[..size <span class="kw">as </span>usize]).unwrap();
+
+    <span class="prelude-val">Ok</span>((mh, code_len + size_len + size <span class="kw">as </span>usize))
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>assert_block_cid(cid: <span class="kw-2">&amp;</span>Cid, block: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="prelude-ty">Result</span>&lt;(), CarDecodeError&gt; {
+    <span class="kw">let </span>(hash_fn_name, block_digest) = <span class="kw">match </span>cid.hash().code() {
+        <span class="comment">// TODO: Remove need to copy on .to_vec()
+        </span>CODE_IDENTITY =&gt; (<span class="string">&quot;identity&quot;</span>, block.to_vec()),
+        CODE_SHA2_256 =&gt; (<span class="string">&quot;sha2-256&quot;</span>, hash_sha2_256(block).to_vec()),
+        CODE_BLAKE2B_256 =&gt; (<span class="string">&quot;blake2b-256&quot;</span>, hash_blake2b_256(block).to_vec()),
+        code =&gt; {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(CarDecodeError::UnsupportedHashCode((
+                HashCode::Code(code),
+                <span class="kw-2">*</span>cid,
+            )));
+        }
+    };
+
+    <span class="kw">let </span>cid_digest = cid.hash().digest();
+
+    <span class="kw">fn </span>to_hex_lower(s: <span class="kw">impl </span>AsRef&lt;[u8]&gt;) -&gt; String {
+        s.as_ref()
+            .iter()
+            .map(|i| <span class="macro">format!</span>(<span class="string">&quot;{i:02x}&quot;</span>))
+            .collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+            .as_slice()
+            .join(<span class="string">&quot;&quot;</span>)
+    }
+
+    <span class="kw">if </span>cid_digest != block_digest {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(CarDecodeError::BlockDigestMismatch(<span class="macro">format!</span>(
+            <span class="string">&quot;{} digest mismatch cid {:?} cid digest {} block digest {}&quot;</span>,
+            hash_fn_name,
+            cid,
+            to_hex_lower(cid_digest),
+            to_hex_lower(block_digest),
+        )));
+    }
+
+    <span class="prelude-val">Ok</span>(())
+}
+
+<span class="kw">fn </span>hash_sha2_256(data: <span class="kw-2">&amp;</span>[u8]) -&gt; [u8; <span class="number">32</span>] {
+    <span class="kw">let </span><span class="kw-2">mut </span>hasher = Sha256::new();
+    hasher.update(data);
+    hasher.finalize().into()
+}
+
+<span class="kw">fn </span>hash_blake2b_256(data: <span class="kw-2">&amp;</span>[u8]) -&gt; [u8; <span class="number">32</span>] {
+    Params::new()
+        .hash_length(<span class="number">32</span>)
+        .to_state()
+        .update(data)
+        .finalize()
+        .as_bytes()
+        .try_into()
+        .unwrap()
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>std::io;
+
+    <span class="kw">use </span>futures::{executor, io::Cursor};
+    <span class="kw">use </span>libipld::cid::{
+        multihash::{Multihash, MultihashGeneric},
+        Cid,
+    };
+
+    <span class="kw">use super</span>::{assert_block_cid, read_block_cid, read_multihash};
+    <span class="kw">use crate</span>::{block_cid::CODE_SHA2_256, error::CarDecodeError};
+
+    <span class="kw">const </span>CID_V0_STR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;QmUU2HcUBVSXkfWPUc3WUSeCMrWWeEJTuAgR9uyWBhh9Nf&quot;</span>;
+    <span class="kw">const </span>CID_V0_HEX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;12205b0995ced69229d26009c53c185a62ea805a339383521edbed1028c496615448&quot;</span>;
+    <span class="kw">const </span>CID_DIGEST: <span class="kw-2">&amp;</span>str = <span class="string">&quot;5b0995ced69229d26009c53c185a62ea805a339383521edbed1028c496615448&quot;</span>;
+
+    <span class="kw">const </span>CID_V1_STR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;bafyreihyrpefhacm6kkp4ql6j6udakdit7g3dmkzfriqfykhjw6cad5lrm&quot;</span>;
+    <span class="kw">const </span>CID_V1_HEX: <span class="kw-2">&amp;</span>str =
+        <span class="string">&quot;01711220f88bc853804cf294fe417e4fa83028689fcdb1b1592c5102e1474dbc200fab8b&quot;</span>;
+
+    <span class="comment">// Cursor = easy way to get AsyncRead from an AsRef&lt;[u8]&gt;
+    </span><span class="kw">fn </span>from_hex(input: <span class="kw-2">&amp;</span>str) -&gt; Cursor&lt;Vec&lt;u8&gt;&gt; {
+        Cursor::new(hex::decode(input).unwrap())
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>read_block_cid_from_v0() {
+        <span class="kw">let </span>cid_expected = Cid::try_from(CID_V0_STR).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>input_stream = from_hex(CID_V0_HEX);
+        <span class="kw">let </span>(cid, cid_len) = executor::block_on(read_block_cid(<span class="kw-2">&amp;mut </span>input_stream)).unwrap();
+
+        <span class="macro">assert_eq!</span>(cid, cid_expected);
+        <span class="macro">assert_eq!</span>(cid_len, cid_expected.to_bytes().len());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>read_multihash_from_v0() {
+        <span class="kw">let </span>digest = hex::decode(CID_DIGEST).unwrap();
+        <span class="kw">let </span>mh_expected = MultihashGeneric::&lt;<span class="number">64</span>&gt;::wrap(CODE_SHA2_256, <span class="kw-2">&amp;</span>digest).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>input_stream = from_hex(CID_V0_HEX);
+        <span class="kw">let </span>(mh, mh_len) = executor::block_on(read_multihash(<span class="kw-2">&amp;mut </span>input_stream)).unwrap();
+
+        <span class="macro">assert_eq!</span>(mh, mh_expected);
+        <span class="macro">assert_eq!</span>(mh_len, mh_expected.to_bytes().len());
+
+        <span class="comment">// Sanity check, same result as sync version. Sync API can dynamically shrink size to 32 bytes
+        </span><span class="kw">let </span>mh_sync = Multihash::read(<span class="kw-2">&amp;mut </span>mh_expected.to_bytes().as_slice()).unwrap();
+        <span class="macro">assert_eq!</span>(mh_sync, mh_expected);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>read_block_cid_from_v1() {
+        <span class="kw">let </span>cid_expected = Cid::try_from(CID_V1_STR).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>input_stream = from_hex(CID_V1_HEX);
+        <span class="kw">let </span>(cid, cid_len) = executor::block_on(read_block_cid(<span class="kw-2">&amp;mut </span>input_stream)).unwrap();
+
+        <span class="comment">// Double check multihash before full CID
+        </span><span class="macro">assert_eq!</span>(cid.hash(), cid_expected.hash());
+
+        <span class="macro">assert_eq!</span>(cid, cid_expected);
+        <span class="macro">assert_eq!</span>(cid_len, cid_expected.to_bytes().len());
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>read_multihash_error_varint_unexpected_eof() {
+        <span class="kw">let </span><span class="kw-2">mut </span>input_stream = from_hex(<span class="string">&quot;ffff&quot;</span>);
+
+        <span class="kw">match </span>executor::block_on(read_multihash(<span class="kw-2">&amp;mut </span>input_stream)) {
+            <span class="prelude-val">Err</span>(CarDecodeError::IoError(err)) =&gt; {
+                <span class="macro">assert_eq!</span>(err.kind(), io::ErrorKind::UnexpectedEof)
+            }
+            x =&gt; <span class="macro">panic!</span>(<span class="string">&quot;other result {:?}&quot;</span>, x),
+        }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>assert_block_cid_v0_helloworld() {
+        <span class="comment">// simple dag-pb of string &quot;helloworld&quot;
+        </span><span class="kw">let </span>cid = Cid::try_from(<span class="string">&quot;QmUU2HcUBVSXkfWPUc3WUSeCMrWWeEJTuAgR9uyWBhh9Nf&quot;</span>).unwrap();
+        <span class="kw">let </span>block = hex::decode(<span class="string">&quot;0a110802120b68656c6c6f776f726c640a180b&quot;</span>).unwrap();
+        assert_block_cid(<span class="kw-2">&amp;</span>cid, <span class="kw-2">&amp;</span>block).unwrap();
+    }
+}
+</code></pre></div></section></main></body></html>

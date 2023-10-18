@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["deserialize","serialize"],"struct":["ByteBuf"],"trait":["Deserialize","Deserializer","Serialize","Serializer"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Method"],"struct":["BalanceParams","BalanceReturn","ConstructorParams","DecreaseAllowanceReturn","DestroyParams","GetAllowanceReturn","GranularityReturn","IncreaseAllowanceReturn","MintParams","NameReturn","RevokeAllowanceReturn","State","SymbolReturn","TotalSupplyReturn"]};

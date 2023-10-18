@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["EventState"],"struct":["BusyEvent","Event"],"trait":["EventImpl","EventInit"]};

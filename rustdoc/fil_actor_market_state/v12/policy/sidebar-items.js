@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["deal_provider_collateral_bounds"],"mod":["detail"]};

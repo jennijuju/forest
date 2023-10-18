@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Execute"><title>execute - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="execute" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../execute/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../execute/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate execute</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.2.12</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#reexports">Re-exports</a></li><li><a href="#macros">Macros</a></li><li><a href="#traits">Traits</a></li><li><a href="#functions">Functions</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">execute</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/execute/lib.rs.html#1-808">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="execute"><a href="#execute">Execute</a></h2>
+<p>This library is used for extending <code>Command</code> in order to execute programs more easily.</p>
+<h3 id="usage"><a href="#usage">Usage</a></h3>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::Command;
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="comment">// ...</span></code></pre></div>
+<h4 id="verify-the-program"><a href="#verify-the-program">Verify the Program</a></h4>
+<p>Since <code>Command</code> is used for spawning a process of a command and the executed progrom is external which may not exist or may not be the program that we expected, we usually need to verify the external program at runtime.</p>
+<p>The <code>execute_check_exit_status_code</code> method can be used to execute a command and check its exit status. For example,</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::Command;
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">const </span>FFMPEG_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/path/to/ffmpeg&quot;</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>first_command = Command::new(FFMPEG_PATH);
+
+first_command.arg(<span class="string">&quot;-version&quot;</span>);
+
+<span class="kw">if </span>first_command.execute_check_exit_status_code(<span class="number">0</span>).is_err() {
+    <span class="macro">eprintln!</span>(<span class="string">&quot;The path `{}` is not a correct FFmpeg executable binary file.&quot;</span>, FFMPEG_PATH);
+}</code></pre></div>
+<h4 id="execute-and-get-the-exit-status"><a href="#execute-and-get-the-exit-status">Execute and Get the Exit Status</a></h4>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::Command;
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">const </span>FFMPEG_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/path/to/ffmpeg&quot;</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = Command::new(FFMPEG_PATH);
+
+command.arg(<span class="string">&quot;-i&quot;</span>);
+command.arg(<span class="string">&quot;/path/to/media-file&quot;</span>);
+command.arg(<span class="string">&quot;/path/to/output-file&quot;</span>);
+
+<span class="kw">if let </span><span class="prelude-val">Some</span>(exit_code) = command.execute().unwrap() {
+    <span class="kw">if </span>exit_code == <span class="number">0 </span>{
+        <span class="macro">println!</span>(<span class="string">&quot;Ok.&quot;</span>);
+    } <span class="kw">else </span>{
+        <span class="macro">eprintln!</span>(<span class="string">&quot;Failed.&quot;</span>);
+    }
+} <span class="kw">else </span>{
+    <span class="macro">eprintln!</span>(<span class="string">&quot;Interrupted!&quot;</span>);
+}</code></pre></div>
+<h4 id="execute-and-get-the-output"><a href="#execute-and-get-the-output">Execute and Get the Output</a></h4><h5 id="output-to-the-screen"><a href="#output-to-the-screen">Output to the Screen</a></h5>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::Command;
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">const </span>FFMPEG_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/path/to/ffmpeg&quot;</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = Command::new(FFMPEG_PATH);
+
+command.arg(<span class="string">&quot;-i&quot;</span>);
+command.arg(<span class="string">&quot;/path/to/media-file&quot;</span>);
+command.arg(<span class="string">&quot;/path/to/output-file&quot;</span>);
+
+<span class="kw">let </span>output = command.execute_output().unwrap();
+
+<span class="kw">if let </span><span class="prelude-val">Some</span>(exit_code) = output.status.code() {
+    <span class="kw">if </span>exit_code == <span class="number">0 </span>{
+        <span class="macro">println!</span>(<span class="string">&quot;Ok.&quot;</span>);
+    } <span class="kw">else </span>{
+        <span class="macro">eprintln!</span>(<span class="string">&quot;Failed.&quot;</span>);
+    }
+} <span class="kw">else </span>{
+    <span class="macro">eprintln!</span>(<span class="string">&quot;Interrupted!&quot;</span>);
+}</code></pre></div>
+<h5 id="output-to-memory-captured"><a href="#output-to-memory-captured">Output to Memory (Captured)</a></h5>
+<div class="example-wrap ignore"><a href="#" class="tooltip" title="This example is not tested">ⓘ</a><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">const </span>FFMPEG_PATH: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/path/to/ffmpeg&quot;</span>;
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = Command::new(FFMPEG_PATH);
+
+command.arg(<span class="string">&quot;-i&quot;</span>);
+command.arg(<span class="string">&quot;/path/to/media-file&quot;</span>);
+command.arg(<span class="string">&quot;/path/to/output-file&quot;</span>);
+
+command.stdout(Stdio::piped());
+command.stderr(Stdio::piped());
+
+<span class="kw">let </span>output = command.execute_output().unwrap();
+
+<span class="kw">if let </span><span class="prelude-val">Some</span>(exit_code) = output.status.code() {
+    <span class="kw">if </span>exit_code == <span class="number">0 </span>{
+        <span class="macro">println!</span>(<span class="string">&quot;Ok.&quot;</span>);
+    } <span class="kw">else </span>{
+        <span class="macro">eprintln!</span>(<span class="string">&quot;Failed.&quot;</span>);
+    }
+} <span class="kw">else </span>{
+    <span class="macro">eprintln!</span>(<span class="string">&quot;Interrupted!&quot;</span>);
+}
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stderr).unwrap());</code></pre></div>
+<h4 id="execute-and-input-data"><a href="#execute-and-input-data">Execute and Input Data</a></h4><h5 id="input-in-memory-data"><a href="#input-in-memory-data">Input In-memory Data</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">let </span><span class="kw-2">mut </span>bc_command = Command::new(<span class="string">&quot;bc&quot;</span>);
+
+bc_command.stdout(Stdio::piped());
+
+<span class="kw">let </span>output = bc_command.execute_input_output(<span class="string">&quot;2^99\n&quot;</span>).unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;Answer: {}&quot;</span>, String::from_utf8(output.stdout).unwrap().trim_end());</code></pre></div>
+<h5 id="input-from-a-reader"><a href="#input-from-a-reader">Input from a Reader</a></h5>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+<span class="kw">use </span>std::fs::File;
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">let </span><span class="kw-2">mut </span>cat_command = Command::new(<span class="string">&quot;cat&quot;</span>);
+
+cat_command.stdout(Stdio::piped());
+
+<span class="kw">let </span><span class="kw-2">mut </span>file = File::open(<span class="string">&quot;Cargo.toml&quot;</span>).unwrap();
+
+<span class="kw">let </span>output = cat_command.execute_input_reader_output(<span class="kw-2">&amp;mut </span>file).unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());</code></pre></div>
+<p>By default, the buffer size is 256 bytes. If you want to change that, you can use the <code>_reader_output2</code> or <code>_reader2</code> methods and define a length explicitly.</p>
+<p>For example, to change the buffer size to 4096 bytes,</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+<span class="kw">use </span>std::fs::File;
+
+<span class="kw">use </span>execute::generic_array::typenum::U4096;
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">let </span><span class="kw-2">mut </span>cat_command = Command::new(<span class="string">&quot;cat&quot;</span>);
+
+cat_command.stdout(Stdio::piped());
+
+<span class="kw">let </span><span class="kw-2">mut </span>file = File::open(<span class="string">&quot;Cargo.toml&quot;</span>).unwrap();
+
+<span class="kw">let </span>output = cat_command.execute_input_reader_output2::&lt;U4096&gt;(<span class="kw-2">&amp;mut </span>file).unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());</code></pre></div>
+<h4 id="execute-multiple-commands-and-pipe-them-together"><a href="#execute-multiple-commands-and-pipe-them-together">Execute Multiple Commands and Pipe Them Together</a></h4>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">let </span><span class="kw-2">mut </span>command1 = Command::new(<span class="string">&quot;echo&quot;</span>);
+command1.arg(<span class="string">&quot;HELLO WORLD&quot;</span>);
+
+<span class="kw">let </span><span class="kw-2">mut </span>command2 = Command::new(<span class="string">&quot;cut&quot;</span>);
+command2.arg(<span class="string">&quot;-d&quot;</span>).arg(<span class="string">&quot; &quot;</span>).arg(<span class="string">&quot;-f&quot;</span>).arg(<span class="string">&quot;1&quot;</span>);
+
+<span class="kw">let </span><span class="kw-2">mut </span>command3 = Command::new(<span class="string">&quot;tr&quot;</span>);
+command3.arg(<span class="string">&quot;A-Z&quot;</span>).arg(<span class="string">&quot;a-z&quot;</span>);
+
+command3.stdout(Stdio::piped());
+
+<span class="kw">let </span>output = command1.execute_multiple_output(<span class="kw-2">&amp;mut </span>[<span class="kw-2">&amp;mut </span>command2, <span class="kw-2">&amp;mut </span>command3]).unwrap();
+
+<span class="macro">assert_eq!</span>(<span class="string">b&quot;hello\n&quot;</span>, output.stdout.as_slice());</code></pre></div>
+<h4 id="run-a-command-string-in-the-current-shell"><a href="#run-a-command-string-in-the-current-shell">Run a Command String in the Current Shell</a></h4>
+<p>The <code>shell</code> function can be used to create a <code>Command</code> instance with a single command string instead of a program name and scattered arguments.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::{Execute, shell};
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = shell(<span class="string">&quot;cat /proc/meminfo&quot;</span>);
+
+command.stdout(Stdio::piped());
+
+<span class="kw">let </span>output = command.execute_output().unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());</code></pre></div>
+<h4 id="parse-a-command-string-at-runtime"><a href="#parse-a-command-string-at-runtime">Parse a Command String at Runtime</a></h4>
+<p>The <code>command</code> function can be used to create a <code>Command</code> instance with a single command string instead of a program name and scattered arguments. The difference between the <code>shell</code> function and the <code>command</code> function is that the former is interpreted by the current shell while the latter is parsed by this crate.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::{Execute, command};
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = command(<span class="string">&quot;cat &#39;/proc/meminfo&#39;&quot;</span>);
+
+command.stdout(Stdio::piped());
+
+<span class="kw">let </span>output = command.execute_output().unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());</code></pre></div>
+<h4 id="parse-a-command-string-at-compile-time"><a href="#parse-a-command-string-at-compile-time">Parse a Command String at Compile Time</a></h4>
+<p>The <code>command!</code> macro can be used to create a <code>Command</code> instance with a single command string literal instead of a program name and scattered arguments.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = <span class="macro">execute::command!</span>(<span class="string">&quot;cat &#39;/proc/meminfo&#39;&quot;</span>);
+
+command.stdout(Stdio::piped());
+
+<span class="kw">let </span>output = command.execute_output().unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());</code></pre></div>
+<h4 id="create-a-command-instance-by-providing-arguments-separately"><a href="#create-a-command-instance-by-providing-arguments-separately">Create a <code>Command</code> Instance by Providing Arguments Separately</a></h4>
+<p>The <code>command_args!</code> macro can be used to create a <code>Command</code> instance with a program name and arguments separately. The program name and arguments can be non-literal.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>std::process::{Command, Stdio};
+
+<span class="kw">use </span>execute::Execute;
+
+<span class="kw">let </span><span class="kw-2">mut </span>command = <span class="macro">execute::command_args!</span>(<span class="string">&quot;cat&quot;</span>, <span class="string">&quot;/proc/meminfo&quot;</span>);
+
+command.stdout(Stdio::piped());
+
+<span class="kw">let </span>output = command.execute_output().unwrap();
+
+<span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(output.stdout).unwrap());</code></pre></div>
+</div></details><h2 id="reexports" class="small-section-header"><a href="#reexports">Re-exports</a></h2><ul class="item-table"><li><div class="item-name"><code>pub extern crate <a class="mod" href="../generic_array/index.html" title="mod generic_array">generic_array</a>;</code></div></li></ul><h2 id="macros" class="small-section-header"><a href="#macros">Macros</a></h2><ul class="item-table"><li><div class="item-name"><a class="macro" href="macro.command.html" title="macro execute::command">command</a></div></li><li><div class="item-name"><a class="macro" href="macro.command_args.html" title="macro execute::command_args">command_args</a></div><div class="desc docblock-short">Create a <code>Command</code> instance by inputting args separately.</div></li></ul><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.Execute.html" title="trait execute::Execute">Execute</a></div></li></ul><h2 id="functions" class="small-section-header"><a href="#functions">Functions</a></h2><ul class="item-table"><li><div class="item-name"><a class="fn" href="fn.command.html" title="fn execute::command">command</a></div><div class="desc docblock-short">Create a <code>Command</code> instance by parsing a command string.</div></li><li><div class="item-name"><a class="fn" href="fn.shell.html" title="fn execute::shell">shell</a></div><div class="desc docblock-short">Create a <code>Command</code> instance which can be executed by the current command language interpreter (shell).</div></li></ul></section></div></main></body></html>

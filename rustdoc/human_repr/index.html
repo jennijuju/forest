@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="human-repr"><title>human_repr - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="human_repr" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../human_repr/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../human_repr/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate human_repr</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 1.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#structs">Structs</a></li><li><a href="#traits">Traits</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">human_repr</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/human_repr/lib.rs.html#1-189">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="human-repr"><a href="#human-repr">human-repr</a></h2>
+<p><a href="https://crates.io/crates/human-repr"><img src="https://img.shields.io/crates/v/human_repr.svg" alt="Crates.io" /></a>
+<a href="https://docs.rs/human-repr"><img src="https://docs.rs/human-repr/badge.svg" alt="Docs" /></a>
+<a href="https://deps.rs/repo/github/rsalmei/human-repr"><img src="https://deps.rs/repo/github/rsalmei/human-repr/status.svg" alt="dependency status" /></a>
+<img src="https://img.shields.io/crates/d/human-repr" alt="Crates.io" />
+<img src="https://img.shields.io/github/sponsors/rsalmei" alt="GitHub Sponsors" /></p>
+<p>Generate beautiful human-readable representations of bytes, durations and even throughputs!</p>
+<h3 id="introduction"><a href="#introduction">Introduction</a></h3>
+<p>This crate provides a whole suite of:</p>
+<ul>
+<li>counts, supporting SI prefixes by default: <code>k</code>, <code>M</code>, <code>G</code>, <code>T</code>, <code>P</code>, <code>E</code>, <code>Z</code>, and <code>Y</code>, including optional IEC prefixes and “mixed” ones (see Rust features).</li>
+<li>durations, supporting SI prefixes <code>ns</code>, <code>µs</code>, and <code>ms</code> for sub-second values, in addition to some custom formats like <code>M:SS.s</code> (minutes:seconds with 1 decimal) and <code>H:MM:SS</code> (hours:minutes:seconds) for values higher than 60 seconds.</li>
+<li>throughputs, supporting SI accepted <code>/d</code>, <code>/h</code>, <code>/min</code>, and <code>/s</code>, and it even gets SI prefixes when on per second, the fastest one.</li>
+</ul>
+<p>Also, this crate doesn’t have any dependencies, is well-tested, and is blazing fast, taking less than 50ns to generate a representation! Checked with criterion benchmarks.</p>
+<p>They work with any Rust primitive numbers and also <a href="https://doc.rust-lang.org/1.73.0/core/time/struct.Duration.html" title="struct core::time::Duration"><code>Duration</code></a>s!</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="comment">// counts (bytes, bare, or any custom unit).
+</span><span class="kw">use </span>human_repr::HumanCount;
+<span class="macro">assert_eq!</span>(<span class="string">&quot;43.21GB&quot;</span>, <span class="number">43214321123_u64</span>.human_count_bytes());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;74.9M&quot;</span>, <span class="number">74893200</span>.human_count_bare());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;540.5kPackets&quot;</span>, <span class="number">540464_u32</span>.human_count(<span class="string">&quot;Packets&quot;</span>));
+<span class="macro">assert_eq!</span>(<span class="string">&quot;48.1°C&quot;</span>, <span class="number">48.132323432</span>.human_count(<span class="string">&quot;°C&quot;</span>));
+<span class="macro">assert_eq!</span>(<span class="string">&quot;123k🦀&quot;</span>, <span class="number">123e3</span>.human_count(<span class="string">&quot;🦀&quot;</span>));
+
+<span class="comment">// durations with primitives.
+</span><span class="kw">use </span>human_repr::HumanDuration;
+<span class="macro">assert_eq!</span>(<span class="string">&quot;1.8ns&quot;</span>, <span class="number">0.0000000018</span>.human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;15.6µs&quot;</span>, <span class="number">0.0000156</span>.human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;10ms&quot;</span>, <span class="number">0.01</span>.human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;3.44s&quot;</span>, <span class="number">3.435999</span>.human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;19:20.4&quot;</span>, <span class="number">1160.36</span>.human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;1:14:48&quot;</span>, <span class="number">4488u16</span>.human_duration());
+
+<span class="comment">// durations with std&#39;s Duration.
+</span><span class="kw">use </span>std::time::Duration;
+<span class="macro">assert_eq!</span>(<span class="string">&quot;15.6µs&quot;</span>, Duration::from_nanos(<span class="number">15_600</span>).human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;10ms&quot;</span>, Duration::from_secs_f64(<span class="number">0.01</span>).human_duration());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;1:14:48&quot;</span>, Duration::new(<span class="number">4488</span>, <span class="number">395_000_000</span>).human_duration());
+
+<span class="comment">// throughputs (bytes, bare, or any custom unit).
+</span><span class="kw">use </span>human_repr::HumanThroughput;
+<span class="macro">assert_eq!</span>(<span class="string">&quot;1.2MB/s&quot;</span>, <span class="number">1248632</span>.human_throughput_bytes());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;9/d&quot;</span>, <span class="number">0.000104166666667</span>.human_throughput_bare());
+<span class="macro">assert_eq!</span>(<span class="string">&quot;6.1tests/min&quot;</span>, <span class="number">0.101265</span>.human_throughput(<span class="string">&quot;tests&quot;</span>));
+<span class="macro">assert_eq!</span>(<span class="string">&quot;54°C/h&quot;</span>, <span class="number">0.015</span>.human_throughput(<span class="string">&quot;°C&quot;</span>));
+<span class="macro">assert_eq!</span>(<span class="string">&quot;123M⭐/s&quot;</span>, <span class="number">123e6</span>.human_throughput(<span class="string">&quot;⭐&quot;</span>));</code></pre></div>
+<h3 id="-new-in-11-series"><a href="#-new-in-11-series">📌 NEW in 1.1 series</a></h3>
+<p>This version mainly:</p>
+<ul>
+<li>includes an optional feature for <code>serde</code>;</li>
+<li>uses <a href="https://doc.rust-lang.org/1.73.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow"><code>Cow</code></a> instead of generics for units (possibly more optimized binary);</li>
+<li>changes minute’s symbol in throughputs from <code>m</code> to <code>min</code> (it seems this is the actual SI accepted symbol).
+<br>As well as polishing everything up.</li>
+</ul>
+<details>
+<summary>New in 1.0 series</summary>
+<p>This crate gets to 1.0! 🎉 Lots of improvements to get here…</p>
+<p>Since 1.0, the <code>HumanRepr</code> trait was removed. Now there are separate traits for each concept.
+<br>I’ve realized that separate traits were more flexible, so I could implement them only where practicable, as well as evolve them independently.
+<br>The trait names also got simpler: HumanCount, HumanDuration, and HumanThroughput.</p>
+</details>
+<details>
+<summary>New in 0.11 series</summary>
+<p>Since version 0.11, the <a href="https://doc.rust-lang.org/1.73.0/core/cmp/trait.PartialEq.html" title="trait core::cmp::PartialEq"><code>PartialEq</code></a> impls for <code>&amp;str</code> do not allocate any Strings too!
+<br>I’ve developed a particularly interesting <a href="https://doc.rust-lang.org/1.73.0/core/fmt/trait.Write.html" title="trait core::fmt::Write"><code>Write</code></a> impl, which compares partial sequences with what the <a href="https://doc.rust-lang.org/1.73.0/core/fmt/trait.Display.html" title="trait core::fmt::Display"><code>Display</code></a> impl would be generating!</p>
+</details>
+<details>
+<summary>New in 0.10 series</summary>
+<p>Since version 0.10, the <a href="https://doc.rust-lang.org/1.73.0/core/fmt/trait.Debug.html" title="trait core::fmt::Debug"><code>Debug</code></a> impl will show both the raw value and the final representation! Very, very cool:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="macro">assert_eq!</span>(<span class="string">&quot;HumanDuration { val: 1.56e-5 } -&gt; 15.6µs&quot;</span>, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="number">0.0000156</span>.human_duration()));
+<span class="macro">assert_eq!</span>(<span class="string">r#&quot;HumanThroughput { val: 0.015, unit: &quot;°C&quot; } -&gt; 54°C/h&quot;#</span>, <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="number">0.015</span>.human_throughput(<span class="string">&quot;°C&quot;</span>)));</code></pre></div>
+</details>
+<details>
+<summary>New in 0.4 series</summary>
+<p>Since version 0.4, I do not allocate any Strings to generate the output! I’ve returned structs that implement <a href="https://doc.rust-lang.org/1.73.0/core/fmt/trait.Display.html" title="trait core::fmt::Display"><code>Display</code></a>, so you can print them with no heap allocations at all! And if you do need the String, a simple <code>.to_string()</code> will do.</p>
+</details>
+<h3 id="how-to-use-it"><a href="#how-to-use-it">How to use it</a></h3>
+<p>Add this dependency to your Cargo.toml file:</p>
+<div class="example-wrap"><pre class="language-toml"><code>human-repr = &quot;1&quot;
+</code></pre></div>
+<p>Then just <code>use</code> the needed traits!</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>human_repr::{HumanCount, HumanDuration, HumanThroughput};
+
+<span class="number">3000_u16</span>.human_count(<span class="string">&quot;bytes&quot;</span>);
+(-<span class="number">5i8</span>).human_count_bytes();
+
+<span class="number">4244.32_f32</span>.human_duration();
+<span class="number">0.000000000004432_f64</span>.human_duration();
+Duration::from_secs_f64(<span class="number">0.00432</span>).human_duration();
+
+<span class="number">8987_isize</span>.human_throughput(<span class="string">&quot;transactions&quot;</span>);
+<span class="number">93321_usize</span>.human_throughput_bytes();</code></pre></div>
+<p>They work on all Rust primitive number types: <code>u8</code>, <code>u16</code>, <code>u32</code>, <code>u64</code>, <code>u128</code>, <code>usize</code>, <code>f32</code>,
+<code>f64</code>, <code>i8</code>, <code>i16</code>, <code>i32</code>, <code>i64</code>, <code>i128</code>, <code>isize</code>, as well as <a href="https://doc.rust-lang.org/1.73.0/core/time/struct.Duration.html" title="struct core::time::Duration"><code>Duration</code></a> types.</p>
+<blockquote>
+<p>Note that <code>std</code>’s <code>Duration</code> does provide a <a href="https://doc.rust-lang.org/1.73.0/core/fmt/trait.Debug.html" title="trait core::fmt::Debug"><code>Debug</code></a> impl that does something similar, but it is not very <em>human</em>:</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>default = <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, Duration::new(<span class="number">0</span>, <span class="number">14184293</span>));
+<span class="macro">assert_eq!</span>(<span class="string">&quot;14.184293ms&quot;</span>, default); <span class="comment">// 😫👎
+</span><span class="macro">assert_eq!</span>(<span class="string">&quot;14.2ms&quot;</span>, Duration::new(<span class="number">0</span>, <span class="number">14184293</span>).human_duration()); <span class="comment">// 😃👍</span></code></pre></div>
+<p>And of course, I have the minutes and hours views which it doesn’t…</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">let </span>default = <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, Duration::new(<span class="number">10000</span>, <span class="number">1</span>));
+<span class="macro">assert_eq!</span>(<span class="string">&quot;10000.000000001s&quot;</span>, default); <span class="comment">// 😫👎
+</span><span class="macro">assert_eq!</span>(<span class="string">&quot;2:46:40&quot;</span>, Duration::new(<span class="number">10000</span>, <span class="number">1</span>).human_duration()); <span class="comment">// 😃👍</span></code></pre></div>
+</blockquote>
+<p>The <code>unit</code> parameter some methods make available means the entity you’re dealing with, like “bytes”, “Tasks”, “it”, “°C”, “🍎”, whatever you’d like!
+<br>Bytes (as “B”) and bare units have dedicated methods for your convenience.</p>
+<h3 id="rust-features"><a href="#rust-features">Rust features:</a></h3>
+<p>According to the SI standard, there are 1000 bytes in a <code>kilobyte</code>.
+<br>There is another standard called IEC that has 1024 bytes in a <code>kibibyte</code>, but this is only useful when measuring things that are naturally a power of two, e.g. a stick of RAM. Even file sizes in a filesystem are being changed to use the 1000 divisor in major OSs.</p>
+<blockquote>
+<p>Be careful not to render IEC quantities with SI prefixes, which would be incorrect.
+<br>But I still support it, if you’d really want to ;)</p>
+</blockquote>
+<p>By default, <code>human-repr</code> uses SI prefixes, <code>1000</code> divisor, and no space between prefixes/units.</p>
+<p>This crate supports these optional features:</p>
+<ul>
+<li><code>space</code> =&gt; include a space between values and prefixes/units: <code>48 B</code> instead of <code>48B</code>, <code>15.6 µs</code> instead of <code>15.6µs</code>, and <code>12.4 kB/s</code> instead of <code>12.4kB/s</code>;</li>
+<li><code>iec</code> =&gt; use IEC instead of SI prefixes: <code>Ki</code>, <code>Mi</code>, <code>Gi</code>, <code>Ti</code>, <code>Pi</code>, <code>Ei</code>, <code>Zi</code>, <code>Yi</code> (implies <code>1024</code>);</li>
+<li><code>1024</code> =&gt; use <code>1024</code> divisor, regardless of <code>iec</code> — if <code>iec</code> is not enabled (thus in SI mode), the lowercase <code>k</code> turns into an upper <code>'K'</code>;</li>
+<li><code>serde</code> =&gt; enables serialize and deserialize support.</li>
+</ul>
+<h3 id="the-human-duration-magic"><a href="#the-human-duration-magic">The human duration magic</a></h3>
+<p>I’ve used just one key concept in designing the human duration behavior: clearness.</p>
+<blockquote>
+<p><code>3.44s</code> is more meaningful than <code>3.43584783784s</code>, and <code>14.1µs</code> is much, much nicer than <code>.0000141233333s</code>.</p>
+</blockquote>
+<p>So, what I do is: I round values to at most two decimal places (larger values have more decimals), and find the best prefix to represent them, minimizing output values smaller than <code>1</code>. The search for the best prefix considers even the rounding been applied!</p>
+<blockquote>
+<p><code>0.000999999</code> does not end up as <code>999.9µs</code> (truncate) nor <code>1000µs</code> (bad prefix), it is auto-upgraded to the next one <code>1ms</code>!</p>
+</blockquote>
+<p>The human duration prefix changes seamlessly from nanoseconds to hours!</p>
+<ul>
+<li>values smaller than 60 seconds get rendered as <code>SS[.ss]prefix</code>, with up to two decimals;</li>
+<li>from 1 minute onward it changes to <code>M:SS[.s]</code>;</li>
+<li>from 1 hour onward it changes to <code>H:MM:SS</code>;</li>
+<li><code>.0</code> and <code>.00</code> are efficiently not generated instead of removed from the output -&gt; this is handled directly in the algorithm.</li>
+</ul>
+<h3 id="the-human-throughput-magic"><a href="#the-human-throughput-magic">The human throughput magic</a></h3>
+<p>I’ve made the human throughput with a similar logic. It is funny how much trickier “throughput” is to the human brain!
+<br>If something took <code>1165263</code> seconds to handle <code>123</code> items, how fast did it go? It’s not obvious…</p>
+<p>It doesn’t help much even if we divide the duration by the number of items: 9473 seconds/item still does not seem that good. How fast was that? We can’t say for sure.</p>
+<blockquote>
+<p>Hmm, how many items did we do per time?
+<br>Oh, we just need to invert it, so 0.000105555569858 items/second, there it is! 😂</p>
+</blockquote>
+<p>To make some sense of it we now need to multiply that by 3600 (seconds in an hour) to get 0.38 per hour, which is much better, and again by 24 (hours in a day) to finally get 9.12 per day!! Now we know how fast that process was! \o/</p>
+<blockquote>
+<p>As you see, it’s not easy at all for our brains to estimate that…</p>
+</blockquote>
+<p>The human throughput prefix changes seamlessly from per second to per day!</p>
+<ul>
+<li><code>.0</code> and <code>.00</code> are efficiently not generated too, much like the duration magic;</li>
+<li>it also automatically inserts SI prefixes when in the fastest prefix (per second), so we get <code>2.4MB/s</code> or <code>6.42Gitems/s</code> 👍</li>
+</ul>
+<h3 id="the-human-count-magic"><a href="#the-human-count-magic">The human count magic</a></h3>
+<p>This is the simplest of them all, I just continually divide by the current divisor (1000 or 1024) until the value gets smaller than that. No funny business like logs or exponential at all.</p>
+<p>Rounding is also handled so there’s no truncation or bad prefixes, the number of decimals also increase the larger the prefix gets, and <code>.0</code> and <code>.00</code> are also never generated.</p>
+<h3 id="changelog-highlights"><a href="#changelog-highlights">Changelog highlights</a></h3>
+<ul>
+<li>1.1.x Apr 19, 2023: new optional feature for serde, use Cow instead of generics for units, change minute’s symbol in throughputs from <code>m</code> to <code>min</code>, overall polish up</li>
+<li>1.0.x Jul 26, 2022: <code>HumanRepr</code> trait was removed, now there are separate traits for each concept: <code>HumanCount</code>, <code>HumanDuration</code>, and <code>HumanThroughput</code></li>
+<li>0.11.x Jul 22, 2022: new PartialEq impls for <code>&amp;str</code>, which is even faster and does not allocate any Strings</li>
+<li>0.10.x Jul 17, 2022: new Debug impl with raw and rendered values, new “bare unit” method variations, remove <code>space</code> from default features</li>
+<li>0.9.x Jun 22, 2022: do not use captured identifiers in format strings, to support much broader Rust versions instead of only &gt;= 1.58</li>
+<li>0.8.x Jun 12, 2022: change <code>nospace</code> feature to <code>space</code>, to avoid the negative logic (it is now default, to maintain behavior)</li>
+<li>0.7.x Jun 04, 2022: support for std::time::Duration via a new trait <code>HumanReprDuration</code>, include one decimal in the minutes representation</li>
+<li>0.6.x Jun 04, 2022: improve signed support with new <code>ops::Neg</code> impl</li>
+<li>0.5.x Jun 03, 2022: new minutes representation M:SS, between seconds and complete H:MM:SS</li>
+<li>0.4.x Jun 03, 2022: new render engine via Display, which is even faster and does not allocate any Strings</li>
+<li>0.3.x Jun 01, 2022: support for a new group of prefixes for <code>1024</code> only (without <code>iec</code>)</li>
+<li>0.2.x Jun 01, 2022: more flexible API (<code>impl AsRef&lt;str&gt;</code>), greatly improved documentation</li>
+<li>0.1.x Jun 01, 2022: first release, include readme, method and module docs, describe features already implemented</li>
+</ul>
+<h3 id="license"><a href="#license">License</a></h3>
+<p>This software is licensed under the MIT License. See the LICENSE file in the top distribution directory for the full license text.</p>
+<hr />
+<p>Maintaining an open source project is hard and time-consuming, and I’ve put much ❤️ and effort into this.</p>
+<p>If you’ve appreciated my work, you can back me up with a donation! Thank you 😊</p>
+<p><a href="https://www.buymeacoffee.com/rsalmei"><img align="right" src="https://cdn.buymeacoffee.com/buttons/default-orange.png" width="217px" height="51x"></a>
+<a href="https://www.paypal.com/donate?business=6SWSHEB5ZNS5N&amp;no_recurring=0&amp;item_name=I%27m+the+author+of+alive-progress%2C+clearly+and+about-time.+Thank+you+for+appreciating+my+work%21&amp;currency_code=USD"><img align="right" alt="Donate with PayPal button" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
+<hr />
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.HumanCountData.html" title="struct human_repr::HumanCountData">HumanCountData</a></div><div class="desc docblock-short">Human Count data, ready to generate Debug and Display representations.</div></li><li><div class="item-name"><a class="struct" href="struct.HumanDurationData.html" title="struct human_repr::HumanDurationData">HumanDurationData</a></div><div class="desc docblock-short">Human Duration data, ready to generate Debug and Display representations.</div></li><li><div class="item-name"><a class="struct" href="struct.HumanThroughputData.html" title="struct human_repr::HumanThroughputData">HumanThroughputData</a></div><div class="desc docblock-short">Human Throughput data, ready to generate Debug and Display representations.</div></li></ul><h2 id="traits" class="small-section-header"><a href="#traits">Traits</a></h2><ul class="item-table"><li><div class="item-name"><a class="trait" href="trait.HumanCount.html" title="trait human_repr::HumanCount">HumanCount</a></div><div class="desc docblock-short">Human Count trait, supporting all Rust primitive number types.</div></li><li><div class="item-name"><a class="trait" href="trait.HumanDuration.html" title="trait human_repr::HumanDuration">HumanDuration</a></div><div class="desc docblock-short">Human Duration trait, supporting all Rust primitive number types and Duration.</div></li><li><div class="item-name"><a class="trait" href="trait.HumanThroughput.html" title="trait human_repr::HumanThroughput">HumanThroughput</a></div><div class="desc docblock-short">Human Throughput trait, supporting all Rust primitive number types.</div></li></ul></section></div></main></body></html>

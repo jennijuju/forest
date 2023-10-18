@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["dentry_state","file_max","file_nr","set_file_max"],"mod":["binfmt_misc","epoll"],"struct":["DEntryState","FileState"]};

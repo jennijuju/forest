@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Chunk","Ingester","Querier","Result","Store","Summary"]};

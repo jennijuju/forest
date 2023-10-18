@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["TypeErrorType"],"struct":["BlockNotFound","BlockTooLarge","Error","InvalidMultihash","SerdeError","TypeError","UnsupportedCodec","UnsupportedMultihash"],"type":["Result"]};

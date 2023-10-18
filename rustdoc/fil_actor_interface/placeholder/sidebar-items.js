@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["is_v10_placeholder_cid","is_v11_placeholder_cid","is_v12_placeholder_cid"]};

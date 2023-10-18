@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["THREADS_MAX","THREADS_MIN"],"enum":["SysRq"],"fn":["pid_max","set_shmmax","set_sysrq","set_threads_max","shmall","shmmax","shmmni","sysrq","threads_max"],"mod":["keys","random"],"struct":["AllowedFunctions","BuildInfo","SemaphoreLimits","Type","Version"]};

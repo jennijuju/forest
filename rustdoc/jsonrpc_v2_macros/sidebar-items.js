@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["jsonrpc_v2_method"]};

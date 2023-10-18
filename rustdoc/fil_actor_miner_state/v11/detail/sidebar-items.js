@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["expected_reward_for_power_clamped_at_atto_fil"],"struct":["BATCH_BALANCER"]};

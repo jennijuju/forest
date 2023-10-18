@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["State"],"fn":["is_v10_multisig_cid","is_v11_multisig_cid","is_v12_multisig_cid","is_v8_multisig_cid","is_v9_multisig_cid"],"type":["Method"]};

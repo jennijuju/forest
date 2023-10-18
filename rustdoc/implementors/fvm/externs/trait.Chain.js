@@ -1,3 +1,3 @@
 (function() {var implementors = {
-"forest_filecoin":[["impl&lt;DB: Blockstore&gt; Chain for <a class=\"struct\" href=\"forest_filecoin/interpreter/fvm3/struct.ForestExterns.html\" title=\"struct forest_filecoin::interpreter::fvm3::ForestExterns\">ForestExterns</a>&lt;DB&gt;"]]
+"forest_filecoin":[["impl&lt;DB: <a class=\"trait\" href=\"fvm_ipld_blockstore/trait.Blockstore.html\" title=\"trait fvm_ipld_blockstore::Blockstore\">Blockstore</a>&gt; <a class=\"trait\" href=\"fvm/externs/trait.Chain.html\" title=\"trait fvm::externs::Chain\">Chain</a> for <a class=\"struct\" href=\"forest_filecoin/interpreter/fvm3/struct.ForestExterns.html\" title=\"struct forest_filecoin::interpreter::fvm3::ForestExterns\">ForestExterns</a>&lt;DB&gt;"]]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

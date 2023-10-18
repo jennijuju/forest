@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["DropCache"],"fn":["admin_reserve_kbytes","compact_memory","drop_caches","max_map_count","set_admin_reserve_kbytes","set_max_map_count"]};

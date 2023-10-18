@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["State"],"fn":["is_v10_datacap_cid","is_v11_datacap_cid","is_v12_datacap_cid","is_v9_datacap_cid"],"type":["Method"]};

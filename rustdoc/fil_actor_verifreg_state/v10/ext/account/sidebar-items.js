@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["AUTHENTICATE_MESSAGE_METHOD"],"struct":["AuthenticateMessageParams"]};

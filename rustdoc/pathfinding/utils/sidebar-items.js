@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["in_direction","move_in_direction","uint_sqrt"]};

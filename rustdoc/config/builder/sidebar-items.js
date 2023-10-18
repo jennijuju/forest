@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["AsyncConfigBuilder","AsyncState","ConfigBuilder","DefaultState"],"trait":["BuilderState"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["add_extension","filename_to_parameter_id","get_digest_for_file_within_cache","get_full_path_for_file_within_cache","has_extension","parameter_id_to_metadata_map"]};

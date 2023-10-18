@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["BUILD_DATA_BLOCK_SIZE"],"fn":["get_merkle_proof_lemma_len","get_merkle_tree_cache_size","get_merkle_tree_leafs","get_merkle_tree_len","get_merkle_tree_len_generic","get_merkle_tree_row_count","is_merkle_tree_size_valid","log2_pow2","next_pow2","populate_data"],"struct":["MerkleTree"],"trait":["Element","FromIndexedParallelIterator"]};

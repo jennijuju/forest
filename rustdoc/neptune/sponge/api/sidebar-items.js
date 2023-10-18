@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Error","SpongeOp"],"struct":["IOPattern"],"trait":["InnerSpongeAPI","SpongeAPI"]};

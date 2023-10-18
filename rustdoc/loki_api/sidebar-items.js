@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"externcrate":["prost","prost_types"],"mod":["logproto","stats"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["ProcessCollector"],"type":["pid_t"]};

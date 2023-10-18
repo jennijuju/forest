@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["Eof","Ignore","Pos","ShortRead"],"trait":["ReadMany"]};

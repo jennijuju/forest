@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ADDRESS"],"enum":["BalanceTable","DealProposals","DealStates","State"],"fn":["is_v10_market_cid","is_v11_market_cid","is_v12_market_cid","is_v8_market_cid","is_v9_market_cid"],"struct":["DealProposal","DealState"],"type":["Method"]};

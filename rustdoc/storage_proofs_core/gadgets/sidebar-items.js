@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["constraint","encode","insertion","por","uint64","variables","xor"]};

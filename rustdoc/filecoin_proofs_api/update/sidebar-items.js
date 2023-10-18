@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["empty_sector_update_decode_from","empty_sector_update_decode_from_range","empty_sector_update_encode_into","empty_sector_update_remove_encoded_data","generate_empty_sector_update_proof","generate_empty_sector_update_proof_with_vanilla","generate_partition_proofs","verify_empty_sector_update_proof","verify_partition_proofs"]};

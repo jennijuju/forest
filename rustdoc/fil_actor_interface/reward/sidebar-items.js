@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ADDRESS"],"enum":["State"],"fn":["is_v10_reward_cid","is_v11_reward_cid","is_v12_reward_cid","is_v8_reward_cid","is_v9_reward_cid"],"type":["Method"]};

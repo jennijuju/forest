@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["cbor","decode","encode","error"],"struct":["DagCborCodec","UnsupportedCodec"],"trait":["DagCbor"],"type":["Result"]};

@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="light Merkle Tree implementation."><title>merkletree - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../" data-static-root-path="../static.files/" data-current-crate="merkletree" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../crates.js"></script><script defer src="../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../merkletree/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../merkletree/index.html"><img class="rust-logo" src="../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Crate merkletree</a></h2><div class="sidebar-elems"><ul class="block"><li class="version">Version 0.23.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul><section><ul class="block"><li><a href="#modules">Modules</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Crate <a class="mod" href="#">merkletree</a><button id="copy-path" title="Copy item path to clipboard"><img src="../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../src/merkletree/lib.rs.html#1-105">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>light <em>Merkle Tree</em> implementation.</p>
+<p>Merkle tree (MT) implemented as a full (power of 2) arity tree allocated as a vec
+of statically sized hashes to give hashes more locality (although disk based backings
+are supported, as a partial tree disk based backings).  MT is specialized
+to the extent of arity, hashing algorithm and hash item. [<code>Hashable</code>] trait is
+compatible to the <code>std::hash::Hasher</code> and supports custom hash algorithms.
+Implementation does not depend on any external crypto libraries, and tries
+to be as performant as possible (CPU support only; GPU hashing currently unsupported).</p>
+<p>This tree implementation uses encoding scheme as in <em>Certificate Transparency</em>
+by default. Encoding scheme for leafs and nodes can be overridden though.
+<a href="https://tools.ietf.org/html/rfc6962">RFC 6962</a>:</p>
+<div class="example-wrap"><pre class="language-text"><code>MTH({d(0)}) = ALG(0x00 || d(0)).
+For n &gt; 1, let k be the largest power of two smaller than n (i.e.,
+k &lt; n &lt;= 2k).  The Merkle tree Hash of an n-element list D[n] is then
+defined recursively as
+MTH(D[n]) = ALG(0x01 || MTH(D[0:k]) || MTH(D[k:n])),
+</code></pre></div>
+<p>Link: <a href="https://en.wikipedia.org/wiki/Merkle_tree"></a></p>
+<h2 id="implementation-choices"><a href="#implementation-choices">Implementation choices</a></h2>
+<p>Main idea is the whole code must obtain specialization at compile time with
+minimum allocations calls, hashes must be of fixed size arrays known at
+compile time, hash algorithm must be a trait and must not depend on any
+external cryptographic libraries and the lib itself must somehow mimic std Rust api.</p>
+<p>Standard way in Rust is to hash objects with a <code>std::hash::Hasher</code>, and mainly
+that is the reason behind the choice of the abstractions:</p>
+<p><code>Object : Hashable&lt;H&gt; -&gt; Hasher + Algorithm &lt;- Merkle Tree</code></p>
+<p>Custom [<code>merkle::hash::Hashable</code>] trait allows implementations differ
+from [<code>std::collection</code>] related hashes, different implementations for
+different hashing algorithms / schemas and conforms object-safety trait rules.</p>
+<p>[<code>Algorithm</code>] complements [<code>Hasher</code>] to be reusable and follows the idea
+that the result hash is a mapping of the data stream.</p>
+<p>[<code>Algorithm.hash</code>] had to change its signature to be <code>&amp;mut self</code> (<code>&amp;self</code>) because
+most of the cryptographic digest algorithms breaks current state on finalization
+into unusable. <code>ring</code> libra tho contains interfaces incompatible to
+<code>start-update-finish-reset</code> lifecycle. It requires either <code>cloning()</code> its state
+on finalization, or <code>Cell</code>-ing via unsafe.</p>
+<p>Turning back to having [<code>Algorithm.write(&amp;mut self, &amp;[u8])</code>] instead of
+<code>write(T)</code> allows to relax [<code>Algorithm</code>] trait [<code>Hasher</code>] constraint, even tho
+works together well still.</p>
+<h2 id="interface"><a href="#interface">Interface</a></h2><div class="example-wrap"><pre class="language-text"><code>- build_tree (items) -&gt; tree
+- get_root -&gt; hash
+- gen_proof -&gt; proof
+- validate_proof (proof, leaf, root) -&gt; bool
+</code></pre></div><h2 id="examples"><a href="#examples">Examples</a></h2>
+<p>[<code>test_common.rs</code>]: custom hash example xor128, misc shared utils
+[<code>test_xor128.rs</code>]: most comprehensive tests for library features
+[<code>proof.rs</code>]: contains impl and tests for proofs across pow2 arity trees</p>
+</div></details><h2 id="modules" class="small-section-header"><a href="#modules">Modules</a></h2><ul class="item-table"><li><div class="item-name"><a class="mod" href="hash/index.html" title="mod merkletree::hash">hash</a></div><div class="desc docblock-short">Hash infrastructure for items in Merkle tree.
+Hash infrastructure for items in Merkle Tree.</div></li><li><div class="item-name"><a class="mod" href="merkle/index.html" title="mod merkletree::merkle">merkle</a></div><div class="desc docblock-short">Merkle tree abstractions, implementation and algorithms.</div></li><li><div class="item-name"><a class="mod" href="proof/index.html" title="mod merkletree::proof">proof</a></div><div class="desc docblock-short">Merkle tree inclusion proof.</div></li><li><div class="item-name"><a class="mod" href="store/index.html" title="mod merkletree::store">store</a></div><div class="desc docblock-short">Store implementations.</div></li></ul></section></div></main></body></html>

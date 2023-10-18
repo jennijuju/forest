@@ -1,3 +1,4 @@
 (function() {var implementors = {
-"forest_filecoin":[["impl FromBytes for <a class=\"struct\" href=\"forest_filecoin/utils/db/car_index/index_header/struct.IndexHeader.html\" title=\"struct forest_filecoin::utils::db::car_index::index_header::IndexHeader\">IndexHeader</a><span class=\"where fmt-newline\">where\n    U64: FromBytes,</span>"]]
+"forest_filecoin":[["impl <a class=\"trait\" href=\"zerocopy/trait.FromBytes.html\" title=\"trait zerocopy::FromBytes\">FromBytes</a> for <a class=\"struct\" href=\"forest_filecoin/utils/db/car_index/index_header/struct.IndexHeader.html\" title=\"struct forest_filecoin::utils::db::car_index::index_header::IndexHeader\">IndexHeader</a><span class=\"where fmt-newline\">where\n    <a class=\"type\" href=\"zerocopy/byteorder/little_endian/type.U64.html\" title=\"type zerocopy::byteorder::little_endian::U64\">U64</a>: <a class=\"trait\" href=\"zerocopy/trait.FromBytes.html\" title=\"trait zerocopy::FromBytes\">FromBytes</a>,</span>"]],
+"zerocopy":[]
 };if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

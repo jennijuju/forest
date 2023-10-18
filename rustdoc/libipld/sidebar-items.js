@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"derive":["DagCbor","Multihash"],"enum":["Ipld"],"macro":["ipld"],"mod":["block","cid","codec","codec_impl","convert","error","ipld","link","path","prelude","raw","raw_value","serde","store"],"struct":["Link"],"type":["Cid","Multihash","Result"]};

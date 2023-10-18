@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["single_file"],"type":["Cid"]};

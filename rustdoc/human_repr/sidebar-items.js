@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":["HumanCountData","HumanDurationData","HumanThroughputData"],"trait":["HumanCount","HumanDuration","HumanThroughput"]};

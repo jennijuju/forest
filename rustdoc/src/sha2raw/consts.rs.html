@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/sha2raw-11.0.0/src/consts.rs`."><title>consts.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sha2raw" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../sha2raw/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<a href="#2" id="2">2</a>
+<a href="#3" id="3">3</a>
+<a href="#4" id="4">4</a>
+<a href="#5" id="5">5</a>
+<a href="#6" id="6">6</a>
+<a href="#7" id="7">7</a>
+<a href="#8" id="8">8</a>
+<a href="#9" id="9">9</a>
+<a href="#10" id="10">10</a>
+<a href="#11" id="11">11</a>
+<a href="#12" id="12">12</a>
+<a href="#13" id="13">13</a>
+<a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
+<a href="#20" id="20">20</a>
+<a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>fake_simd::u32x4;
+
+<span class="kw">pub const </span>STATE_LEN: usize = <span class="number">8</span>;
+<span class="kw">pub const </span>BLOCK_LEN: usize = <span class="number">16</span>;
+
+<span class="doccomment">/// Constants necessary for SHA-256 family of digests.
+</span><span class="kw">pub const </span>K32: [u32; <span class="number">64</span>] = [
+    <span class="number">0x428a2f98</span>, <span class="number">0x71374491</span>, <span class="number">0xb5c0fbcf</span>, <span class="number">0xe9b5dba5</span>, <span class="number">0x3956c25b</span>, <span class="number">0x59f111f1</span>, <span class="number">0x923f82a4</span>, <span class="number">0xab1c5ed5</span>,
+    <span class="number">0xd807aa98</span>, <span class="number">0x12835b01</span>, <span class="number">0x243185be</span>, <span class="number">0x550c7dc3</span>, <span class="number">0x72be5d74</span>, <span class="number">0x80deb1fe</span>, <span class="number">0x9bdc06a7</span>, <span class="number">0xc19bf174</span>,
+    <span class="number">0xe49b69c1</span>, <span class="number">0xefbe4786</span>, <span class="number">0x0fc19dc6</span>, <span class="number">0x240ca1cc</span>, <span class="number">0x2de92c6f</span>, <span class="number">0x4a7484aa</span>, <span class="number">0x5cb0a9dc</span>, <span class="number">0x76f988da</span>,
+    <span class="number">0x983e5152</span>, <span class="number">0xa831c66d</span>, <span class="number">0xb00327c8</span>, <span class="number">0xbf597fc7</span>, <span class="number">0xc6e00bf3</span>, <span class="number">0xd5a79147</span>, <span class="number">0x06ca6351</span>, <span class="number">0x14292967</span>,
+    <span class="number">0x27b70a85</span>, <span class="number">0x2e1b2138</span>, <span class="number">0x4d2c6dfc</span>, <span class="number">0x53380d13</span>, <span class="number">0x650a7354</span>, <span class="number">0x766a0abb</span>, <span class="number">0x81c2c92e</span>, <span class="number">0x92722c85</span>,
+    <span class="number">0xa2bfe8a1</span>, <span class="number">0xa81a664b</span>, <span class="number">0xc24b8b70</span>, <span class="number">0xc76c51a3</span>, <span class="number">0xd192e819</span>, <span class="number">0xd6990624</span>, <span class="number">0xf40e3585</span>, <span class="number">0x106aa070</span>,
+    <span class="number">0x19a4c116</span>, <span class="number">0x1e376c08</span>, <span class="number">0x2748774c</span>, <span class="number">0x34b0bcb5</span>, <span class="number">0x391c0cb3</span>, <span class="number">0x4ed8aa4a</span>, <span class="number">0x5b9cca4f</span>, <span class="number">0x682e6ff3</span>,
+    <span class="number">0x748f82ee</span>, <span class="number">0x78a5636f</span>, <span class="number">0x84c87814</span>, <span class="number">0x8cc70208</span>, <span class="number">0x90befffa</span>, <span class="number">0xa4506ceb</span>, <span class="number">0xbef9a3f7</span>, <span class="number">0xc67178f2</span>,
+];
+
+<span class="doccomment">/// Constants necessary for SHA-256 family of digests.
+</span><span class="kw">pub const </span>K32X4: [u32x4; <span class="number">16</span>] = [
+    u32x4(K32[<span class="number">3</span>], K32[<span class="number">2</span>], K32[<span class="number">1</span>], K32[<span class="number">0</span>]),
+    u32x4(K32[<span class="number">7</span>], K32[<span class="number">6</span>], K32[<span class="number">5</span>], K32[<span class="number">4</span>]),
+    u32x4(K32[<span class="number">11</span>], K32[<span class="number">10</span>], K32[<span class="number">9</span>], K32[<span class="number">8</span>]),
+    u32x4(K32[<span class="number">15</span>], K32[<span class="number">14</span>], K32[<span class="number">13</span>], K32[<span class="number">12</span>]),
+    u32x4(K32[<span class="number">19</span>], K32[<span class="number">18</span>], K32[<span class="number">17</span>], K32[<span class="number">16</span>]),
+    u32x4(K32[<span class="number">23</span>], K32[<span class="number">22</span>], K32[<span class="number">21</span>], K32[<span class="number">20</span>]),
+    u32x4(K32[<span class="number">27</span>], K32[<span class="number">26</span>], K32[<span class="number">25</span>], K32[<span class="number">24</span>]),
+    u32x4(K32[<span class="number">31</span>], K32[<span class="number">30</span>], K32[<span class="number">29</span>], K32[<span class="number">28</span>]),
+    u32x4(K32[<span class="number">35</span>], K32[<span class="number">34</span>], K32[<span class="number">33</span>], K32[<span class="number">32</span>]),
+    u32x4(K32[<span class="number">39</span>], K32[<span class="number">38</span>], K32[<span class="number">37</span>], K32[<span class="number">36</span>]),
+    u32x4(K32[<span class="number">43</span>], K32[<span class="number">42</span>], K32[<span class="number">41</span>], K32[<span class="number">40</span>]),
+    u32x4(K32[<span class="number">47</span>], K32[<span class="number">46</span>], K32[<span class="number">45</span>], K32[<span class="number">44</span>]),
+    u32x4(K32[<span class="number">51</span>], K32[<span class="number">50</span>], K32[<span class="number">49</span>], K32[<span class="number">48</span>]),
+    u32x4(K32[<span class="number">55</span>], K32[<span class="number">54</span>], K32[<span class="number">53</span>], K32[<span class="number">52</span>]),
+    u32x4(K32[<span class="number">59</span>], K32[<span class="number">58</span>], K32[<span class="number">57</span>], K32[<span class="number">56</span>]),
+    u32x4(K32[<span class="number">63</span>], K32[<span class="number">62</span>], K32[<span class="number">61</span>], K32[<span class="number">60</span>]),
+];
+
+<span class="kw">pub static </span>H256: [u32; STATE_LEN] = [
+    <span class="number">0x6a09e667</span>, <span class="number">0xbb67ae85</span>, <span class="number">0x3c6ef372</span>, <span class="number">0xa54ff53a</span>, <span class="number">0x510e527f</span>, <span class="number">0x9b05688c</span>, <span class="number">0x1f83d9ab</span>, <span class="number">0x5be0cd19</span>,
+];
+</code></pre></div></section></main></body></html>

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Elt"],"fn":["mul_pre_sum","mul_sum","poseidon_hash_allocated","poseidon_hash_num","square_sum"],"struct":["PoseidonCircuit2"]};

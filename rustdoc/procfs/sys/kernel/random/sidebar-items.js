@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["boot_id","entropy_avail","poolsize","read_wakeup_threshold","uuid","write_wakeup_threshold"]};

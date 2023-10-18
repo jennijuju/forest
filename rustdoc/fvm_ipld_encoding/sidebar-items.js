@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["CBOR","DAG_CBOR","IPLD_RAW"],"enum":["CodecProtocol"],"fn":["bytes_32","from_reader","from_slice","to_vec","to_writer"],"mod":["de","go_vec_visitor","ipld_block","repr","ser","serde_bytes","strict_bytes","tuple"],"struct":["BytesDe","BytesSer","Error","GoVecVisitor","RawBytes"],"trait":["Cbor","CborStore"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ShmemError"],"struct":["Shmem","ShmemConf"]};
