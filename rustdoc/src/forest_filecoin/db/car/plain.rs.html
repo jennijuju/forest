@@ -748,8 +748,8 @@
 /// ```
 </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, skip_all, ret)]
 </span><span class="kw">fn </span>read_header(<span class="kw-2">mut </span>reader: <span class="kw">impl </span>Read) -&gt; io::Result&lt;CarHeader&gt; {
-    <span class="kw">let </span>header_len =
-        read_varint_body_length_or_eof(<span class="kw-2">&amp;mut </span>reader)<span class="question-mark">?</span>.ok_or(io::Error::from(UnexpectedEof))<span class="question-mark">?</span>;
+    <span class="kw">let </span>header_len = read_varint_body_length_or_eof(<span class="kw-2">&amp;mut </span>reader)<span class="question-mark">?
+        </span>.ok_or_else(|| io::Error::from(UnexpectedEof))<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>buffer = <span class="macro">vec!</span>[<span class="number">0</span>; usize::try_from(header_len).unwrap()];
     reader.read_exact(<span class="kw-2">&amp;mut </span>buffer)<span class="question-mark">?</span>;
     from_slice_with_fallback(<span class="kw-2">&amp;</span>buffer).map_err(|e| io::Error::new(InvalidData, e))

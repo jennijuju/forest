@@ -520,6 +520,9 @@
 <a href="#520" id="520">520</a>
 <a href="#521" id="521">521</a>
 <a href="#522" id="522">522</a>
+<a href="#523" id="523">523</a>
+<a href="#524" id="524">524</a>
+<a href="#525" id="525">525</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -638,15 +641,18 @@
         <span class="kw">let </span><span class="kw-2">mut </span>footer_buffer = [<span class="number">0</span>; ForestCarFooter::SIZE];
         cursor.read_exact(<span class="kw-2">&amp;mut </span>footer_buffer)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>footer = ForestCarFooter::try_from_le_bytes(footer_buffer).ok_or(invalid_data(
-            <span class="macro">format!</span>(<span class="string">&quot;not recognizable as a `{}` file&quot;</span>, FOREST_CAR_FILE_EXTENSION),
-        ))<span class="question-mark">?</span>;
+        <span class="kw">let </span>footer = ForestCarFooter::try_from_le_bytes(footer_buffer).ok_or_else(|| {
+            invalid_data(<span class="macro">format!</span>(
+                <span class="string">&quot;not recognizable as a `{}` file&quot;</span>,
+                FOREST_CAR_FILE_EXTENSION
+            ))
+        })<span class="question-mark">?</span>;
 
         <span class="kw">let </span>cursor = Cursor::new_pos(<span class="kw-2">&amp;</span>reader, <span class="number">0</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>header_zstd_frame = decode_zstd_single_frame(cursor)<span class="question-mark">?</span>;
         <span class="kw">let </span>block_frame = UviBytes::&lt;Bytes&gt;::default()
             .decode(<span class="kw-2">&amp;mut </span>header_zstd_frame)<span class="question-mark">?
-            </span>.ok_or(invalid_data(<span class="string">&quot;malformed uvibytes&quot;</span>))<span class="question-mark">?</span>;
+            </span>.ok_or_else(|| invalid_data(<span class="string">&quot;malformed uvibytes&quot;</span>))<span class="question-mark">?</span>;
         <span class="kw">let </span>header = from_slice_with_fallback::&lt;CarHeader&gt;(<span class="kw-2">&amp;</span>block_frame)
             .map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))<span class="question-mark">?</span>;
 
