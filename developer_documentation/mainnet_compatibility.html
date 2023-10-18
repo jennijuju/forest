@@ -216,8 +216,19 @@ already synced to the network when the stateroot mismatch happens. By default,
 snapshots only contain stateroot data for the previous 2000 epochs. So, if you
 have a statediff at epoch X, download a snapshot for epoch X+100 and tell Forest
 to re-validate the snapshot from epoch X.</p>
-<p>For more detailed instructions, follow
-<a href="https://www.notion.so/chainsafe/Interop-debugging-6adabf9222d7449bbfeaacb1ec997cf8">this document</a></p>
+<p>Steps to print a state-diff:</p>
+<ol>
+<li>Note the epoch of the state-root mismatch. State-roots can only be checked
+for the parents of a tipset so the failing epoch may be 1 higher than you
+think.</li>
+<li>Download a recent snapshot dated <em>before</em> the failing epoch.</li>
+<li>Import the snapshot into Lotus and sync to HEAD.</li>
+<li>Export a new snapshot 100 epochs <em>after</em> the failing epoch.</li>
+<li>Convert the <code>.car.zst</code> file to <code>.forest.car.zst</code> with:
+<code>forest-tool snapshot compress {snapshot.car.zst}</code></li>
+<li>Use the <code>forest-tool</code> binary to print the state-diff:
+<code>forest-tool archive diff {snapshot.forest.car.zst} --epoch {failing_epoch}</code></li>
+</ol>
 <h2 id="fvm-traces"><a class="header" href="#fvm-traces">FVM Traces</a></h2>
 <p>Within FVM, we can enable tracing to produce execution traces. Given an
 offending epoch, we can produce them both for Forest and for Lotus to find
@@ -225,6 +236,9 @@ mismatches.</p>
 <p>To confirm: the execution traces format is not uniform across implementations,
 so it takes a certain amount of elbow grease to find the differences. Lotus is
 capable of spitting this out in JSON for nice UX</p>
+<h2 id="dated-resources"><a class="header" href="#dated-resources">Dated resources</a></h2>
+<p>For more (but dated) information, see
+<a href="https://www.notion.so/chainsafe/Interop-debugging-6adabf9222d7449bbfeaacb1ec997cf8">this document.</a></p>
 
                     </main>
 

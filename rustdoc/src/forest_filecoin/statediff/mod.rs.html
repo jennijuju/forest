@@ -300,6 +300,11 @@
 <a href="#300" id="300">300</a>
 <a href="#301" id="301">301</a>
 <a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -393,8 +398,14 @@
             <span class="kw">if </span><span class="kw-2">&amp;</span>other != actor {
                 <span class="kw">let </span>comma = <span class="string">&quot;,&quot;</span>;
                 <span class="kw">let </span>expected_pp = pp_actor_state(bs, <span class="kw-2">&amp;</span>other, depth)<span class="question-mark">?</span>;
-                <span class="kw">let </span>expected = expected_pp.split(comma).collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;();
-                <span class="kw">let </span>calculated = calc_pp.split(comma).collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;();
+                <span class="kw">let </span>expected = expected_pp
+                    .split(comma)
+                    .map(|s| s.trim_start_matches(<span class="string">&#39;\n&#39;</span>))
+                    .collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;();
+                <span class="kw">let </span>calculated = calc_pp
+                    .split(comma)
+                    .map(|s| s.trim_start_matches(<span class="string">&#39;\n&#39;</span>))
+                    .collect::&lt;Vec&lt;<span class="kw-2">&amp;</span>str&gt;&gt;();
                 <span class="kw">let </span>diffs = TextDiff::from_slices(<span class="kw-2">&amp;</span>expected, <span class="kw-2">&amp;</span>calculated);
                 <span class="kw">let </span>stdout = stdout();
                 <span class="kw">let </span><span class="kw-2">mut </span>handle = stdout.lock();
@@ -501,7 +512,6 @@
 <span class="kw">where
     </span>BS: Blockstore,
 {
-    <span class="macro">eprintln!</span>(<span class="string">&quot;StateDiff:\n  Expected: {expected_root}\n  Root: {root}&quot;</span>);
     <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = try_print_actor_states(bs, root, expected_root, depth) {
         <span class="macro">println!</span>(<span class="string">&quot;Could not resolve actor states: {e}\nUsing default resolution:&quot;</span>);
         <span class="kw">let </span>expected = resolve_cids_recursive(bs, expected_root, depth)<span class="question-mark">?</span>;
