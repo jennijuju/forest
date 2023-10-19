@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This is a ground-up introduction to the different kinds of snapshot files, covering:"><title>forest_filecoin::documentation::snapshots - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="forest_filecoin" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../forest_filecoin/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../forest_filecoin/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module snapshots</a></h2><div class="sidebar-elems"></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">forest_filecoin</a>::<wbr><a href="../index.html">documentation</a>::<wbr><a class="mod" href="#">snapshots</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../../src/forest_filecoin/documentation.rs.html#232">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This is a ground-up introduction to the different kinds of snapshot files,
+covering:</p>
+<ol>
+<li><a href="#actors">Actors in Filecoin</a>.</li>
+<li><a href="#the-filecoin-blockchain">The Filecoin Blockchain</a></li>
+<li><a href="#the-filecoin-state-tree">The Filecoin State Tree</a></li>
+<li>(Finally) <a href="#snapshots">snapshots</a></li>
+</ol>
+<h2 id="actors"><a href="#actors">Actors</a></h2>
+<p>The Filecoin Virtual Machine (FVM) hosts a number of <em>actors</em>.
+These are objects that maintain and mutate internal state, and communicate
+by passing messages.</p>
+<p>An example of an actor is the <a href="../../shim/machine/enum.BuiltinActor.html#variant.Cron" title="variant forest_filecoin::shim::machine::BuiltinActor::Cron"><code>cron</code></a>
+actor.
+Its <a href="../../../fil_actor_cron_state/v11/state/struct.State.html" title="struct fil_actor_cron_state::v11::state::State">internal state</a> is a to-do list of
+other actors to invoke every epoch.</p>
+<p>See <a href="https://docs.filecoin.io/basics/the-blockchain/actors">the Filecoin docs</a>
+for more information about actors.</p>
+<h2 id="the-filecoin-blockchain"><a href="#the-filecoin-blockchain">The Filecoin blockchain</a></h2>
+<p>Filecoin consists of a blockchain of <code>messages</code>.
+Listed below are the core objects for the blockchain.
+Each one can be addressed by a <a href="../../../cid/type.Cid.html" title="type cid::Cid"><code>Cid</code></a>.</p>
+<ul>
+<li><a href="../../shim/message/struct.Message.html" title="struct forest_filecoin::shim::message::Message"><code>Message</code></a>s are statements of messages between
+the actors.
+They describe and (equivalently) represent a change in <em>the state tree</em> (see below).
+See <a href="../../state_manager/fn.apply_block_messages.html" title="fn forest_filecoin::state_manager::apply_block_messages"><code>apply_block_messages</code></a> to learn
+more.
+Messages may be <a href="../../message/signed_message/struct.SignedMessage.html" title="struct forest_filecoin::message::signed_message::SignedMessage">signed</a>.</li>
+<li><code>Message</code>s are grouped into <a href="../../blocks/block/struct.Block.html" title="struct forest_filecoin::blocks::block::Block"><code>Block</code></a>s, with a single
+<a href="../../blocks/header/struct.BlockHeader.html" title="struct forest_filecoin::blocks::header::BlockHeader"><code>BlockHeader</code></a>.
+These are what are mined by miners to get <code>FIL</code> (money).
+They define an <a href="../../blocks/header/struct.BlockHeader.html#method.epoch" title="method forest_filecoin::blocks::header::BlockHeader::epoch"><em>epoch</em></a> and a
+<a href="../../blocks/header/struct.BlockHeader.html#method.parents" title="method forest_filecoin::blocks::header::BlockHeader::parents"><em>parent tipset</em></a>.
+The <em>epoch</em> is a monotonically increasing number from <code>0</code> (genesis).</li>
+<li><code>Block</code>s are grouped into <a href="../../blocks/tipset/struct.Tipset.html" title="struct forest_filecoin::blocks::tipset::Tipset"><code>Tipset</code></a>s.
+All blocks in a tipset share the same <code>epoch</code>.</li>
+</ul>
+<div class="example-wrap"><pre class="language-text"><code>     ┌───────────────────────────────┐
+     │ BlockHeader { epoch:  0, .. } │ //  The genesis block/tipset
+  ┌● └───────────────────────────────┘
+  ~
+  └──┬───────────────────────────────┐
+     │ BlockHeader { epoch: 10, .. } │ // The epoch 10 tipset - one block with two messages
+  ┌● └┬──────────────────────────────┘
+  │   │
+  │   │ &quot;I contain the following messages...&quot;
+  │   │
+  │   ├──────────────────┐
+  │   │ ┌──────────────┐ │ ┌───────────────────┐
+  │   └►│ Message:     │ └►│ Message:          │
+  │     │  Afri -&gt; Bob │   │  Charlie -&gt; David │
+  │     └──────────────┘   └───────────────────┘
+  │
+  │ &quot;my parent is...&quot;
+  │
+  └──┬───────────────────────────────┐
+     │ BlockHeader { epoch: 11, .. } │ // The epoch 11 tipset - one block with one message
+  ┌● └┬──────────────────────────────┘
+  │   │ ┌────────────────┐
+  │   └►│ Message:       │
+  │     │  Eric -&gt; Frank │
+  │     └────────────────┘
+  │
+  │ // the epoch 12 tipset - two blocks, with a total of 3 messages
+  │
+  ├────────────────────────────────────┐
+  └──┬───────────────────────────────┐ └─┬───────────────────────────────┐
+     │ BlockHeader { epoch: 12, .. } │   │ BlockHeader { epoch: 12, .. } │
+  ┌● └┬──────────────────────────────┘   └┬─────────────────────┬────────┘
+  ~   │ ┌───────────────────────┐         │ ┌─────────────────┐ │ ┌──────────────┐
+      └►│ Message:              │         └►│ Message:        │ └►│ Message:     │
+        │  Guillaume -&gt; Hailong │           │  Hubert -&gt; Ivan │   │  Josh -&gt; Kai │
+        └───────────────────────┘           └─────────────────┘   └──────────────┘
+</code></pre></div>
+<p>The <a href="../../chain_sync/chain_muxer/struct.ChainMuxer.html" title="struct forest_filecoin::chain_sync::chain_muxer::ChainMuxer"><code>ChainMuxer</code></a> receives two kinds of <a href="../../libp2p/service/enum.PubsubMessage.html" title="enum forest_filecoin::libp2p::service::PubsubMessage">messages</a>
+from peers:</p>
+<ul>
+<li><a href="../../blocks/gossip_block/struct.GossipBlock.html" title="struct forest_filecoin::blocks::gossip_block::GossipBlock"><code>GossipBlock</code></a>s are descriptions of a single block, with the <code>BlockHeader</code> and <code>Message</code> CIDs.</li>
+<li><a href="../../message/signed_message/struct.SignedMessage.html" title="struct forest_filecoin::message::signed_message::SignedMessage"><code>SignedMessage</code></a>s</li>
+</ul>
+<p>It assembles these messages into a chain to genesis.</p>
+<p>Filecoin implementations store all the above in the <code>ChainStore</code>, per
+<a href="https://github.com/filecoin-project/specs/blob/936f07f9a444036fe86442c919940ea0e4fb0a0b/content/systems/filecoin_nodes/repository/ipldstore/_index.md?plain=1#L43-L50">the spec</a>.</p>
+<h2 id="the-filecoin-state-tree"><a href="#the-filecoin-state-tree">The Filecoin state tree</a></h2>
+<p><code>Message</code>s describe/represent mutations in the <a href="../../shim/state_tree/enum.StateTree.html" title="enum forest_filecoin::shim::state_tree::StateTree"><code>StateTree</code></a>,
+which is a representation of all Filecoin state at a point in time.
+For each actor, the <code>StateTree</code> holds the CID for its state: <a href="../../shim/fvm_latest/state_tree/struct.ActorState.html#structfield.state" title="field forest_filecoin::shim::fvm_latest::state_tree::ActorState::state"><code>ActorState.state</code></a>.</p>
+<p>Actor state is serialized and stored as  <a href="../../ipld/enum.Ipld.html" title="enum forest_filecoin::ipld::Ipld"><code>Ipld</code></a>.
+Think of this as “JSON with links (<a href="../../../cid/type.Cid.html" title="type cid::Cid"><code>Cid</code></a>s)”.
+So the <code>cron</code> actor’s state mentioned above will be ultimately serialized into <code>Ipld</code>
+and stored in the <code>StateStore</code>, per
+<a href="https://github.com/filecoin-project/specs/blob/936f07f9a444036fe86442c919940ea0e4fb0a0b/content/systems/filecoin_nodes/repository/ipldstore/_index.md?plain=1#L43-L50">the spec</a>.</p>
+<p>It isn’t feasible to create a new copy of actor states whenever they change.
+That is, in a fictional <sup id="fnref1"><a href="#fn1">1</a></sup> example of a <code>cron</code> actor, starting with a <a href="https://man7.org/linux/man-pages/man5/crontab.5.html"><code>crontab</code></a>
+with 10 items, mutation of the state should <em>not</em> simply duplicate the state:</p>
+<div class="example-wrap"><pre class="language-text"><code>Previous state             Current state
+┌───────────────────────┐  ┌───────────────────────┐
+│Crontab                │  │Crontab                │
+│1. Get out of bed      │  │1. Get out of bed      │
+│2. Shower              │  │2. Shower              │
+│...                    │  │...                    │
+│10. Take over the world│  │10. Take over the world│
+└───────────────────────┘  │11. Throw a party      │
+                           └───────────────────────┘
+</code></pre></div>
+<p>But should instead be able to refer to the previous state:</p>
+<div class="example-wrap"><pre class="language-text"><code>Previous state             Current state
+┌───────────────────────┐  ┌─────────────────┐
+│Crontab                │◄─┤(See CID...)     │
+│1. Get out of bed      │  ├─────────────────┤
+│2. Shower              │  │11. Throw a party│
+│...                    │  └─────────────────┘
+│10. Take over the world│
+└───────────────────────┘
+</code></pre></div>
+<p>And removal of e.g the latest entry works similarly, <em>orphaning</em> the removed
+item.</p>
+<div class="example-wrap"><pre class="language-text"><code>Previous state             Orphaned item        Current state
+┌───────────────────────┐                       ┌────────────┐
+│Crontab                │◄──────────────────────┤(See CID...)│
+│1. Get out of bed      │  ┌─────────────────┐  └────────────┘
+│2. Shower              │  │11. Throw a party│
+│...                    │  └─────────────────┘
+│10. Take over the world│
+└───────────────────────┘
+</code></pre></div>
+<p>Data structures that reach into the past of the <code>StateStore</code> like this are:</p>
+<ul>
+<li><a href="../../../fvm_ipld_amt/index.html" title="mod fvm_ipld_amt">“AMT”</a>, a list.</li>
+<li><a href="../../../fvm_ipld_hamt/index.html" title="mod fvm_ipld_hamt">“HAMT”</a>, a map.</li>
+</ul>
+<p>Therefore, the Filecoin state is, indeed, a tree of IPLD data.
+It can be addressed by the root of the tree, so it is often referred to as
+the <em>state root</em>.</p>
+<p>We will now introduce some new terminology given the above information.</p>
+<p>With respect to a particular IPLD <a href="../../../fvm_ipld_blockstore/trait.Blockstore.html" title="trait fvm_ipld_blockstore::Blockstore"><code>Blockstore</code></a>:</p>
+<ul>
+<li>An item such a list is <em>fully inhabited</em> if all its recursive
+<a href="../../ipld/enum.Ipld.html#variant.Link" title="variant forest_filecoin::ipld::Ipld::Link"><code>Ipld::Link</code></a>s exist in the blockstore.</li>
+<li>Otherwise, an item is only <em>partially inhabited</em>.
+The links are said to be “dead links”.</li>
+</ul>
+<p>With respect to a particular <code>StateTree</code>:</p>
+<ul>
+<li>An item is <em>orphaned</em> if it is not reachable from the current state tree
+through any links.</li>
+</ul>
+<h2 id="snapshots"><a href="#snapshots">Snapshots</a></h2>
+<p>Recall that for each message execution, the state tree is mutated.
+Therefore, each epoch is associated with a state tree after execution,
+and a <a href="../../blocks/header/struct.BlockHeader.html#method.state_root" title="method forest_filecoin::blocks::header::BlockHeader::state_root"><em>parent state tree</em></a>.</p>
+<div class="example-wrap"><pre class="language-text"><code>                                           // state after execution of
+                                           // all messages in that epoch
+     ┌───────────────────────────────┐ ┌────────────┐
+     │ BlockHeader { epoch:  0, .. } │ │ state root ├──► initial actor states...
+  ┌● └───────────────────────────────┘ └────────────┘                    ▲   ▲
+  ~                                        // links to redundant data ─● │   │
+  └──┬───────────────────────────────┐ ┌────────────┐                    │   │
+     │ BlockHeader { epoch: 11, .. } │ │ state root ├─┬► actor state ─► AMT  │
+  ┌● └┬──────────────────────────────┘ └────────────┘ ~                      │
+  │   │ ┌─────────┐                                   └► actor state ─► HAMT ┘
+  │   └►│ Message │                                                      │
+  │     └─────────┘                                                      ▼
+  ├──┬───────────────────────────────┐     // new data in this epoch ─● IPLD
+  │  │ BlockHeader { epoch: 12, .. } │
+  │  └┬─────────────┬────────────────┘
+  │   │ ┌─────────┐ │ ┌─────────┐
+  │   └►│ Message │ └►│ Message │
+  │     └─────────┘   └─────────┘                                        ~   ~
+  └──┬───────────────────────────────┐ ┌────────────┐                    │   │
+     │ BlockHeader { epoch: 12, .. } │ │ state root ├─┬► actor state ─► AMT  │
+  ┌● └┬──────────────────────────────┘ └────────────┘ ~                      │
+  ~   │ ┌─────────┐                                   └► actor state ─► HAMT ┘
+      └►│ Message │
+        └─────────┘
+</code></pre></div>
+<p>We are now ready to define the different snapshot types for a given epoch N.</p>
+<ul>
+<li>A <em>lite snapshot</em> contains:
+<ul>
+<li>All block headers from genesis to epoch N.</li>
+<li>For the last W (width) epochs:
+<ul>
+<li>The <em>fully inhabited</em> state trees.</li>
+<li>The messages.</li>
+</ul>
+</li>
+<li>For epochs 0..N-W, the state trees will be dead or partially inhabited.</li>
+</ul>
+</li>
+<li>A <em>full snapshot</em> contains:
+<ul>
+<li>All block headers from genesis to epoch N.</li>
+<li>The fully inhabited state trees for epoch 0..N</li>
+</ul>
+</li>
+<li>A <em>diff snapshot</em> contains:
+<ul>
+<li>For epoch N-W..N:
+<ul>
+<li>The block headers.</li>
+<li>The messages.</li>
+<li>New data in that epoch, which will be partially inhabited</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Successive diff snapshots may be concatenated:</p>
+<ul>
+<li>From genesis, to produce a full snapshot.</li>
+<li>From a lite snapshot, to produce a successive lite snapshot.</li>
+</ul>
+<div class="footnotes"><hr><ol><li id="fn1"><p>The real <code>cron</code> actor doesn’t mutate state like this.&nbsp;<a href="#fnref1">↩</a></p></li></ol></div></div></details></section></div></main></body></html>
