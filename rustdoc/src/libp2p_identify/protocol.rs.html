@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-identify-0.43.0/src/protocol.rs`."><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_identify" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_identify/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-identify-0.43.1/src/protocol.rs`."><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_identify" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_identify/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -302,12 +302,6 @@
 <a href="#302" id="302">302</a>
 <a href="#303" id="303">303</a>
 <a href="#304" id="304">304</a>
-<a href="#305" id="305">305</a>
-<a href="#306" id="306">306</a>
-<a href="#307" id="307">307</a>
-<a href="#308" id="308">308</a>
-<a href="#309" id="309">309</a>
-<a href="#310" id="310">310</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -330,20 +324,15 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::proto;
 <span class="kw">use </span>asynchronous_codec::{FramedRead, FramedWrite};
-<span class="kw">use </span>futures::{future::BoxFuture, prelude::<span class="kw-2">*</span>};
-<span class="kw">use </span>libp2p_core::{
-    multiaddr,
-    upgrade::{InboundUpgrade, OutboundUpgrade, UpgradeInfo},
-    Multiaddr,
-};
+<span class="kw">use </span>futures::prelude::<span class="kw-2">*</span>;
+<span class="kw">use </span>libp2p_core::{multiaddr, Multiaddr};
 <span class="kw">use </span>libp2p_identity <span class="kw">as </span>identity;
 <span class="kw">use </span>libp2p_identity::PublicKey;
 <span class="kw">use </span>libp2p_swarm::StreamProtocol;
 <span class="kw">use </span>log::{debug, trace};
 <span class="kw">use </span>std::convert::TryFrom;
-<span class="kw">use </span>std::{io, iter, pin::Pin};
+<span class="kw">use </span>std::io;
 <span class="kw">use </span>thiserror::Error;
-<span class="kw">use </span>void::Void;
 
 <span class="kw">const </span>MAX_MESSAGE_SIZE_BYTES: usize = <span class="number">4096</span>;
 
@@ -351,29 +340,7 @@
 
 <span class="kw">pub const </span>PUSH_PROTOCOL_NAME: StreamProtocol = StreamProtocol::new(<span class="string">&quot;/ipfs/id/push/1.0.0&quot;</span>);
 
-<span class="doccomment">/// Substream upgrade protocol for `/ipfs/id/1.0.0`.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Identify;
-
-<span class="doccomment">/// Substream upgrade protocol for `/ipfs/id/push/1.0.0`.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>Push&lt;T&gt;(T);
-<span class="kw">pub struct </span>InboundPush();
-<span class="kw">pub struct </span>OutboundPush(Info);
-
-<span class="kw">impl </span>Push&lt;InboundPush&gt; {
-    <span class="kw">pub fn </span>inbound() -&gt; <span class="self">Self </span>{
-        Push(InboundPush())
-    }
-}
-
-<span class="kw">impl </span>Push&lt;OutboundPush&gt; {
-    <span class="kw">pub fn </span>outbound(info: Info) -&gt; <span class="self">Self </span>{
-        Push(OutboundPush(info))
-    }
-}
-
-<span class="doccomment">/// Information of a peer sent in protocol messages.
+<span class="doccomment">/// Identify information of a peer sent in protocol messages.
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Info {
     <span class="doccomment">/// The public key of the local peer.
@@ -392,75 +359,42 @@
     </span><span class="kw">pub </span>observed_addr: Multiaddr,
 }
 
-<span class="kw">impl </span>UpgradeInfo <span class="kw">for </span>Identify {
-    <span class="kw">type </span>Info = StreamProtocol;
-    <span class="kw">type </span>InfoIter = iter::Once&lt;<span class="self">Self</span>::Info&gt;;
-
-    <span class="kw">fn </span>protocol_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::InfoIter {
-        iter::once(PROTOCOL_NAME)
+<span class="kw">impl </span>Info {
+    <span class="kw">pub fn </span>merge(<span class="kw-2">&amp;mut </span><span class="self">self</span>, info: PushInfo) {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(public_key) = info.public_key {
+            <span class="self">self</span>.public_key = public_key;
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(protocol_version) = info.protocol_version {
+            <span class="self">self</span>.protocol_version = protocol_version;
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(agent_version) = info.agent_version {
+            <span class="self">self</span>.agent_version = agent_version;
+        }
+        <span class="kw">if </span>!info.listen_addrs.is_empty() {
+            <span class="self">self</span>.listen_addrs = info.listen_addrs;
+        }
+        <span class="kw">if </span>!info.protocols.is_empty() {
+            <span class="self">self</span>.protocols = info.protocols;
+        }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(observed_addr) = info.observed_addr {
+            <span class="self">self</span>.observed_addr = observed_addr;
+        }
     }
 }
 
-<span class="kw">impl</span>&lt;C&gt; InboundUpgrade&lt;C&gt; <span class="kw">for </span>Identify {
-    <span class="kw">type </span>Output = C;
-    <span class="kw">type </span>Error = UpgradeError;
-    <span class="kw">type </span>Future = future::Ready&lt;<span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output, UpgradeError&gt;&gt;;
-
-    <span class="kw">fn </span>upgrade_inbound(<span class="self">self</span>, socket: C, <span class="kw">_</span>: <span class="self">Self</span>::Info) -&gt; <span class="self">Self</span>::Future {
-        future::ok(socket)
-    }
+<span class="doccomment">/// Identify push information of a peer sent in protocol messages.
+/// Note that missing fields should be ignored, as peers may choose to send partial updates containing only the fields whose values have changed.
+</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>PushInfo {
+    <span class="kw">pub </span>public_key: <span class="prelude-ty">Option</span>&lt;PublicKey&gt;,
+    <span class="kw">pub </span>protocol_version: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="kw">pub </span>agent_version: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    <span class="kw">pub </span>listen_addrs: Vec&lt;Multiaddr&gt;,
+    <span class="kw">pub </span>protocols: Vec&lt;StreamProtocol&gt;,
+    <span class="kw">pub </span>observed_addr: <span class="prelude-ty">Option</span>&lt;Multiaddr&gt;,
 }
 
-<span class="kw">impl</span>&lt;C&gt; OutboundUpgrade&lt;C&gt; <span class="kw">for </span>Identify
-<span class="kw">where
-    </span>C: AsyncRead + AsyncWrite + Unpin + Send + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">type </span>Output = Info;
-    <span class="kw">type </span>Error = UpgradeError;
-    <span class="kw">type </span>Future = Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output, <span class="self">Self</span>::Error&gt;&gt; + Send&gt;&gt;;
-
-    <span class="kw">fn </span>upgrade_outbound(<span class="self">self</span>, socket: C, <span class="kw">_</span>: <span class="self">Self</span>::Info) -&gt; <span class="self">Self</span>::Future {
-        recv(socket).boxed()
-    }
-}
-
-<span class="kw">impl</span>&lt;T&gt; UpgradeInfo <span class="kw">for </span>Push&lt;T&gt; {
-    <span class="kw">type </span>Info = StreamProtocol;
-    <span class="kw">type </span>InfoIter = iter::Once&lt;<span class="self">Self</span>::Info&gt;;
-
-    <span class="kw">fn </span>protocol_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self</span>::InfoIter {
-        iter::once(PUSH_PROTOCOL_NAME)
-    }
-}
-
-<span class="kw">impl</span>&lt;C&gt; InboundUpgrade&lt;C&gt; <span class="kw">for </span>Push&lt;InboundPush&gt;
-<span class="kw">where
-    </span>C: AsyncRead + AsyncWrite + Unpin + Send + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">type </span>Output = BoxFuture&lt;<span class="lifetime">&#39;static</span>, <span class="prelude-ty">Result</span>&lt;Info, UpgradeError&gt;&gt;;
-    <span class="kw">type </span>Error = Void;
-    <span class="kw">type </span>Future = future::Ready&lt;<span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output, <span class="self">Self</span>::Error&gt;&gt;;
-
-    <span class="kw">fn </span>upgrade_inbound(<span class="self">self</span>, socket: C, <span class="kw">_</span>: <span class="self">Self</span>::Info) -&gt; <span class="self">Self</span>::Future {
-        <span class="comment">// Lazily upgrade stream, thus allowing upgrade to happen within identify&#39;s handler.
-        </span>future::ok(recv(socket).boxed())
-    }
-}
-
-<span class="kw">impl</span>&lt;C&gt; OutboundUpgrade&lt;C&gt; <span class="kw">for </span>Push&lt;OutboundPush&gt;
-<span class="kw">where
-    </span>C: AsyncWrite + Unpin + Send + <span class="lifetime">&#39;static</span>,
-{
-    <span class="kw">type </span>Output = ();
-    <span class="kw">type </span>Error = UpgradeError;
-    <span class="kw">type </span>Future = Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Output, <span class="self">Self</span>::Error&gt;&gt; + Send&gt;&gt;;
-
-    <span class="kw">fn </span>upgrade_outbound(<span class="self">self</span>, socket: C, <span class="kw">_</span>: <span class="self">Self</span>::Info) -&gt; <span class="self">Self</span>::Future {
-        send(socket, <span class="self">self</span>.<span class="number">0 </span>.<span class="number">0</span>).boxed()
-    }
-}
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>send&lt;T&gt;(io: T, info: Info) -&gt; <span class="prelude-ty">Result</span>&lt;(), UpgradeError&gt;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>send_identify&lt;T&gt;(io: T, info: Info) -&gt; <span class="prelude-ty">Result</span>&lt;(), UpgradeError&gt;
 <span class="kw">where
     </span>T: AsyncWrite + Unpin,
 {
@@ -494,7 +428,29 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">async fn </span>recv&lt;T&gt;(socket: T) -&gt; <span class="prelude-ty">Result</span>&lt;Info, UpgradeError&gt;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>recv_push&lt;T&gt;(socket: T) -&gt; <span class="prelude-ty">Result</span>&lt;PushInfo, UpgradeError&gt;
+<span class="kw">where
+    </span>T: AsyncRead + AsyncWrite + Unpin,
+{
+    <span class="kw">let </span>info = recv(socket).<span class="kw">await</span><span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>;
+
+    <span class="macro">trace!</span>(<span class="string">&quot;Received {:?}&quot;</span>, info);
+
+    <span class="prelude-val">Ok</span>(info)
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>recv_identify&lt;T&gt;(socket: T) -&gt; <span class="prelude-ty">Result</span>&lt;Info, UpgradeError&gt;
+<span class="kw">where
+    </span>T: AsyncRead + AsyncWrite + Unpin,
+{
+    <span class="kw">let </span>info = recv(socket).<span class="kw">await</span><span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>;
+
+    <span class="macro">trace!</span>(<span class="string">&quot;Received {:?}&quot;</span>, info);
+
+    <span class="prelude-val">Ok</span>(info)
+}
+
+<span class="kw">async fn </span>recv&lt;T&gt;(socket: T) -&gt; <span class="prelude-ty">Result</span>&lt;proto::Identify, UpgradeError&gt;
 <span class="kw">where
     </span>T: AsyncRead + AsyncWrite + Unpin,
 {
@@ -509,61 +465,93 @@
     )
     .next()
     .<span class="kw">await
-    </span>.ok_or(UpgradeError::StreamClosed)<span class="question-mark">??
-    </span>.try_into()<span class="question-mark">?</span>;
-
-    <span class="macro">trace!</span>(<span class="string">&quot;Received: {:?}&quot;</span>, info);
+    </span>.ok_or(UpgradeError::StreamClosed)<span class="question-mark">??</span>;
 
     <span class="prelude-val">Ok</span>(info)
+}
+
+<span class="kw">fn </span>parse_listen_addrs(listen_addrs: Vec&lt;Vec&lt;u8&gt;&gt;) -&gt; Vec&lt;Multiaddr&gt; {
+    listen_addrs
+        .into_iter()
+        .filter_map(|bytes| <span class="kw">match </span>Multiaddr::try_from(bytes) {
+            <span class="prelude-val">Ok</span>(a) =&gt; <span class="prelude-val">Some</span>(a),
+            <span class="prelude-val">Err</span>(e) =&gt; {
+                <span class="macro">debug!</span>(<span class="string">&quot;Unable to parse multiaddr: {e:?}&quot;</span>);
+                <span class="prelude-val">None
+            </span>}
+        })
+        .collect()
+}
+
+<span class="kw">fn </span>parse_protocols(protocols: Vec&lt;String&gt;) -&gt; Vec&lt;StreamProtocol&gt; {
+    protocols
+        .into_iter()
+        .filter_map(|p| <span class="kw">match </span>StreamProtocol::try_from_owned(p) {
+            <span class="prelude-val">Ok</span>(p) =&gt; <span class="prelude-val">Some</span>(p),
+            <span class="prelude-val">Err</span>(e) =&gt; {
+                <span class="macro">debug!</span>(<span class="string">&quot;Received invalid protocol from peer: {e}&quot;</span>);
+                <span class="prelude-val">None
+            </span>}
+        })
+        .collect()
+}
+
+<span class="kw">fn </span>parse_public_key(public_key: <span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;PublicKey&gt; {
+    public_key.and_then(|key| <span class="kw">match </span>PublicKey::try_decode_protobuf(<span class="kw-2">&amp;</span>key) {
+        <span class="prelude-val">Ok</span>(k) =&gt; <span class="prelude-val">Some</span>(k),
+        <span class="prelude-val">Err</span>(e) =&gt; {
+            <span class="macro">debug!</span>(<span class="string">&quot;Unable to decode public key: {e:?}&quot;</span>);
+            <span class="prelude-val">None
+        </span>}
+    })
+}
+
+<span class="kw">fn </span>parse_observed_addr(observed_addr: <span class="prelude-ty">Option</span>&lt;Vec&lt;u8&gt;&gt;) -&gt; <span class="prelude-ty">Option</span>&lt;Multiaddr&gt; {
+    observed_addr.and_then(|bytes| <span class="kw">match </span>Multiaddr::try_from(bytes) {
+        <span class="prelude-val">Ok</span>(a) =&gt; <span class="prelude-val">Some</span>(a),
+        <span class="prelude-val">Err</span>(e) =&gt; {
+            <span class="macro">debug!</span>(<span class="string">&quot;Unable to parse observed multiaddr: {e:?}&quot;</span>);
+            <span class="prelude-val">None
+        </span>}
+    })
 }
 
 <span class="kw">impl </span>TryFrom&lt;proto::Identify&gt; <span class="kw">for </span>Info {
     <span class="kw">type </span>Error = UpgradeError;
 
     <span class="kw">fn </span>try_from(msg: proto::Identify) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        <span class="kw">fn </span>parse_multiaddr(bytes: Vec&lt;u8&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Multiaddr, multiaddr::Error&gt; {
-            Multiaddr::try_from(bytes)
-        }
-
-        <span class="kw">let </span>listen_addrs = {
-            <span class="kw">let </span><span class="kw-2">mut </span>addrs = Vec::new();
-            <span class="kw">for </span>addr <span class="kw">in </span>msg.listenAddrs.into_iter() {
-                <span class="kw">match </span>parse_multiaddr(addr) {
-                    <span class="prelude-val">Ok</span>(a) =&gt; addrs.push(a),
-                    <span class="prelude-val">Err</span>(e) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Unable to parse multiaddr: {e:?}&quot;</span>);
-                    }
-                }
-            }
-            addrs
-        };
-
-        <span class="kw">let </span>public_key = PublicKey::try_decode_protobuf(<span class="kw-2">&amp;</span>msg.publicKey.unwrap_or_default())<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>observed_addr = <span class="kw">match </span>parse_multiaddr(msg.observedAddr.unwrap_or_default()) {
-            <span class="prelude-val">Ok</span>(a) =&gt; a,
-            <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Unable to parse multiaddr: {e:?}&quot;</span>);
-                Multiaddr::empty()
+        <span class="kw">let </span>public_key = {
+            <span class="kw">match </span>parse_public_key(msg.publicKey) {
+                <span class="prelude-val">Some</span>(key) =&gt; key,
+                <span class="comment">// This will always produce a DecodingError if the public key is missing.
+                </span><span class="prelude-val">None </span>=&gt; PublicKey::try_decode_protobuf(Default::default())<span class="question-mark">?</span>,
             }
         };
+
         <span class="kw">let </span>info = Info {
             public_key,
             protocol_version: msg.protocolVersion.unwrap_or_default(),
             agent_version: msg.agentVersion.unwrap_or_default(),
-            listen_addrs,
-            protocols: msg
-                .protocols
-                .into_iter()
-                .filter_map(|p| <span class="kw">match </span>StreamProtocol::try_from_owned(p) {
-                    <span class="prelude-val">Ok</span>(p) =&gt; <span class="prelude-val">Some</span>(p),
-                    <span class="prelude-val">Err</span>(e) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Received invalid protocol from peer: {e}&quot;</span>);
-                        <span class="prelude-val">None
-                    </span>}
-                })
-                .collect(),
-            observed_addr,
+            listen_addrs: parse_listen_addrs(msg.listenAddrs),
+            protocols: parse_protocols(msg.protocols),
+            observed_addr: parse_observed_addr(msg.observedAddr).unwrap_or(Multiaddr::empty()),
+        };
+
+        <span class="prelude-val">Ok</span>(info)
+    }
+}
+
+<span class="kw">impl </span>TryFrom&lt;proto::Identify&gt; <span class="kw">for </span>PushInfo {
+    <span class="kw">type </span>Error = UpgradeError;
+
+    <span class="kw">fn </span>try_from(msg: proto::Identify) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
+        <span class="kw">let </span>info = PushInfo {
+            public_key: parse_public_key(msg.publicKey),
+            protocol_version: msg.protocolVersion,
+            agent_version: msg.agentVersion,
+            listen_addrs: parse_listen_addrs(msg.listenAddrs),
+            protocols: parse_protocols(msg.protocols),
+            observed_addr: parse_observed_addr(msg.observedAddr),
         };
 
         <span class="prelude-val">Ok</span>(info)
@@ -613,7 +601,7 @@
             ),
         };
 
-        <span class="kw">let </span>info = Info::try_from(payload).expect(<span class="string">&quot;not to fail&quot;</span>);
+        <span class="kw">let </span>info = PushInfo::try_from(payload).expect(<span class="string">&quot;not to fail&quot;</span>);
 
         <span class="macro">assert_eq!</span>(info.listen_addrs, <span class="macro">vec!</span>[valid_multiaddr])
     }

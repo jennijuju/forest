@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-tcp-0.40.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_tcp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_tcp/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-tcp-0.40.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_tcp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_tcp/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1330,6 +1330,43 @@
 <a href="#1330" id="1330">1330</a>
 <a href="#1331" id="1331">1331</a>
 <a href="#1332" id="1332">1332</a>
+<a href="#1333" id="1333">1333</a>
+<a href="#1334" id="1334">1334</a>
+<a href="#1335" id="1335">1335</a>
+<a href="#1336" id="1336">1336</a>
+<a href="#1337" id="1337">1337</a>
+<a href="#1338" id="1338">1338</a>
+<a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
+<a href="#1361" id="1361">1361</a>
+<a href="#1362" id="1362">1362</a>
+<a href="#1363" id="1363">1363</a>
+<a href="#1364" id="1364">1364</a>
+<a href="#1365" id="1365">1365</a>
+<a href="#1366" id="1366">1366</a>
+<a href="#1367" id="1367">1367</a>
+<a href="#1368" id="1368">1368</a>
+<a href="#1369" id="1369">1369</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2017 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1678,13 +1715,12 @@
         }
     }
 
-    <span class="kw">fn </span>create_socket(<span class="kw-2">&amp;</span><span class="self">self</span>, socket_addr: <span class="kw-2">&amp;</span>SocketAddr) -&gt; io::Result&lt;Socket&gt; {
-        <span class="kw">let </span>domain = <span class="kw">if </span>socket_addr.is_ipv4() {
-            Domain::IPV4
-        } <span class="kw">else </span>{
-            Domain::IPV6
-        };
-        <span class="kw">let </span>socket = Socket::new(domain, Type::STREAM, <span class="prelude-val">Some</span>(socket2::Protocol::TCP))<span class="question-mark">?</span>;
+    <span class="kw">fn </span>create_socket(<span class="kw-2">&amp;</span><span class="self">self</span>, socket_addr: SocketAddr) -&gt; io::Result&lt;Socket&gt; {
+        <span class="kw">let </span>socket = Socket::new(
+            Domain::for_address(socket_addr),
+            Type::STREAM,
+            <span class="prelude-val">Some</span>(socket2::Protocol::TCP),
+        )<span class="question-mark">?</span>;
         <span class="kw">if </span>socket_addr.is_ipv6() {
             socket.set_only_v6(<span class="bool-val">true</span>)<span class="question-mark">?</span>;
         }
@@ -1707,7 +1743,7 @@
         id: ListenerId,
         socket_addr: SocketAddr,
     ) -&gt; io::Result&lt;ListenStream&lt;T&gt;&gt; {
-        <span class="kw">let </span>socket = <span class="self">self</span>.create_socket(<span class="kw-2">&amp;</span>socket_addr)<span class="question-mark">?</span>;
+        <span class="kw">let </span>socket = <span class="self">self</span>.create_socket(socket_addr)<span class="question-mark">?</span>;
         socket.bind(<span class="kw-2">&amp;</span>socket_addr.into())<span class="question-mark">?</span>;
         socket.listen(<span class="self">self</span>.config.backlog <span class="kw">as _</span>)<span class="question-mark">?</span>;
         socket.set_nonblocking(<span class="bool-val">true</span>)<span class="question-mark">?</span>;
@@ -1808,7 +1844,7 @@
         <span class="macro">log::debug!</span>(<span class="string">&quot;dialing {}&quot;</span>, socket_addr);
 
         <span class="kw">let </span>socket = <span class="self">self
-            </span>.create_socket(<span class="kw-2">&amp;</span>socket_addr)
+            </span>.create_socket(socket_addr)
             .map_err(TransportError::Other)<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="self">self</span>.port_reuse.local_dial_addr(<span class="kw-2">&amp;</span>socket_addr.ip()) {
@@ -2659,6 +2695,44 @@
                 .build()
                 .unwrap();
             <span class="macro">assert!</span>(rt.block_on(cycle_listeners::&lt;tokio::Tcp&gt;()));
+        }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_listens_ipv4_ipv6_separately() {
+        <span class="kw">fn </span>test&lt;T: Provider&gt;() {
+            <span class="kw">let </span>port = {
+                <span class="kw">let </span>listener = TcpListener::bind(<span class="string">&quot;127.0.0.1:0&quot;</span>).unwrap();
+                listener.local_addr().unwrap().port()
+            };
+            <span class="kw">let </span><span class="kw-2">mut </span>tcp = Transport::&lt;T&gt;::default().boxed();
+            <span class="kw">let </span>listener_id = ListenerId::next();
+            tcp.listen_on(
+                listener_id,
+                <span class="macro">format!</span>(<span class="string">&quot;/ip4/0.0.0.0/tcp/{port}&quot;</span>).parse().unwrap(),
+            )
+            .unwrap();
+            tcp.listen_on(
+                ListenerId::next(),
+                <span class="macro">format!</span>(<span class="string">&quot;/ip6/::/tcp/{port}&quot;</span>).parse().unwrap(),
+            )
+            .unwrap();
+        }
+        <span class="attr">#[cfg(feature = <span class="string">&quot;async-io&quot;</span>)]
+        </span>{
+            async_std::task::block_on(<span class="kw">async </span>{
+                test::&lt;async_io::Tcp&gt;();
+            })
+        }
+        <span class="attr">#[cfg(feature = <span class="string">&quot;tokio&quot;</span>)]
+        </span>{
+            <span class="kw">let </span>rt = ::tokio::runtime::Builder::new_current_thread()
+                .enable_io()
+                .build()
+                .unwrap();
+            rt.block_on(<span class="kw">async </span>{
+                test::&lt;async_io::Tcp&gt;();
+            });
         }
     }
 }

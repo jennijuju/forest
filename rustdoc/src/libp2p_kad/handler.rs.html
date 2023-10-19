@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-kad-0.44.5/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_kad" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_kad/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-kad-0.44.6/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_kad" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_kad/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1175,6 +1175,78 @@
 <a href="#1175" id="1175">1175</a>
 <a href="#1176" id="1176">1176</a>
 <a href="#1177" id="1177">1177</a>
+<a href="#1178" id="1178">1178</a>
+<a href="#1179" id="1179">1179</a>
+<a href="#1180" id="1180">1180</a>
+<a href="#1181" id="1181">1181</a>
+<a href="#1182" id="1182">1182</a>
+<a href="#1183" id="1183">1183</a>
+<a href="#1184" id="1184">1184</a>
+<a href="#1185" id="1185">1185</a>
+<a href="#1186" id="1186">1186</a>
+<a href="#1187" id="1187">1187</a>
+<a href="#1188" id="1188">1188</a>
+<a href="#1189" id="1189">1189</a>
+<a href="#1190" id="1190">1190</a>
+<a href="#1191" id="1191">1191</a>
+<a href="#1192" id="1192">1192</a>
+<a href="#1193" id="1193">1193</a>
+<a href="#1194" id="1194">1194</a>
+<a href="#1195" id="1195">1195</a>
+<a href="#1196" id="1196">1196</a>
+<a href="#1197" id="1197">1197</a>
+<a href="#1198" id="1198">1198</a>
+<a href="#1199" id="1199">1199</a>
+<a href="#1200" id="1200">1200</a>
+<a href="#1201" id="1201">1201</a>
+<a href="#1202" id="1202">1202</a>
+<a href="#1203" id="1203">1203</a>
+<a href="#1204" id="1204">1204</a>
+<a href="#1205" id="1205">1205</a>
+<a href="#1206" id="1206">1206</a>
+<a href="#1207" id="1207">1207</a>
+<a href="#1208" id="1208">1208</a>
+<a href="#1209" id="1209">1209</a>
+<a href="#1210" id="1210">1210</a>
+<a href="#1211" id="1211">1211</a>
+<a href="#1212" id="1212">1212</a>
+<a href="#1213" id="1213">1213</a>
+<a href="#1214" id="1214">1214</a>
+<a href="#1215" id="1215">1215</a>
+<a href="#1216" id="1216">1216</a>
+<a href="#1217" id="1217">1217</a>
+<a href="#1218" id="1218">1218</a>
+<a href="#1219" id="1219">1219</a>
+<a href="#1220" id="1220">1220</a>
+<a href="#1221" id="1221">1221</a>
+<a href="#1222" id="1222">1222</a>
+<a href="#1223" id="1223">1223</a>
+<a href="#1224" id="1224">1224</a>
+<a href="#1225" id="1225">1225</a>
+<a href="#1226" id="1226">1226</a>
+<a href="#1227" id="1227">1227</a>
+<a href="#1228" id="1228">1228</a>
+<a href="#1229" id="1229">1229</a>
+<a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
+<a href="#1239" id="1239">1239</a>
+<a href="#1240" id="1240">1240</a>
+<a href="#1241" id="1241">1241</a>
+<a href="#1242" id="1242">1242</a>
+<a href="#1243" id="1243">1243</a>
+<a href="#1244" id="1244">1244</a>
+<a href="#1245" id="1245">1245</a>
+<a href="#1246" id="1246">1246</a>
+<a href="#1247" id="1247">1247</a>
+<a href="#1248" id="1248">1248</a>
+<a href="#1249" id="1249">1249</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1197,8 +1269,7 @@
 
 </span><span class="kw">use </span><span class="kw">crate</span>::behaviour::Mode;
 <span class="kw">use </span><span class="kw">crate</span>::protocol::{
-    KadInStreamSink, KadOutStreamSink, KadPeer, KadRequestMsg, KadResponseMsg,
-    KademliaProtocolConfig,
+    KadInStreamSink, KadOutStreamSink, KadPeer, KadRequestMsg, KadResponseMsg, ProtocolConfig,
 };
 <span class="kw">use </span><span class="kw">crate</span>::record_priv::{<span class="self">self</span>, Record};
 <span class="kw">use </span><span class="kw">crate</span>::QueryId;
@@ -1231,9 +1302,9 @@
 /// make.
 ///
 /// It also handles requests made by the remote.
-</span><span class="kw">pub struct </span>KademliaHandler {
+</span><span class="kw">pub struct </span>Handler {
     <span class="doccomment">/// Configuration of the wire protocol.
-    </span>protocol_config: KademliaProtocolConfig,
+    </span>protocol_config: ProtocolConfig,
 
     <span class="doccomment">/// In client mode, we don&#39;t accept inbound substreams.
     </span>mode: Mode,
@@ -1268,7 +1339,7 @@
     </span>remote_peer_id: PeerId,
 
     <span class="doccomment">/// The current state of protocol confirmation.
-    </span>protocol_status: ProtocolStatus,
+    </span>protocol_status: <span class="prelude-ty">Option</span>&lt;ProtocolStatus&gt;,
 
     remote_supported_protocols: SupportedProtocols,
 
@@ -1278,19 +1349,12 @@
 
 <span class="doccomment">/// The states of protocol confirmation that a connection
 /// handler transitions through.
-</span><span class="attr">#[derive(Copy, Clone)]
-</span><span class="kw">enum </span>ProtocolStatus {
-    <span class="doccomment">/// It is as yet unknown whether the remote supports the
-    /// configured protocol name.
-    </span>Unknown,
-    <span class="doccomment">/// The configured protocol name has been confirmed by the remote
-    /// but has not yet been reported to the `Kademlia` behaviour.
-    </span>Confirmed,
-    <span class="doccomment">/// The configured protocol name(s) are not or no longer supported by the remote.
-    </span>NotSupported,
-    <span class="doccomment">/// The configured protocol has been confirmed by the remote
-    /// and the confirmation reported to the `Kademlia` behaviour.
-    </span>Reported,
+</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq)]
+</span><span class="kw">struct </span>ProtocolStatus {
+    <span class="doccomment">/// Whether the remote node supports one of our kademlia protocols.
+    </span>supported: bool,
+    <span class="doccomment">/// Whether we reported the state to the behaviour.
+    </span>reported: bool,
 }
 
 <span class="doccomment">/// State of an active outbound substream.
@@ -1303,7 +1367,7 @@
     </span><span class="comment">// TODO: add timeout
     </span>WaitingAnswer(KadOutStreamSink&lt;Stream&gt;, QueryId),
     <span class="doccomment">/// An error happened on the substream and we should report the error to the user.
-    </span>ReportError(KademliaHandlerQueryErr, QueryId),
+    </span>ReportError(HandlerQueryErr, QueryId),
     <span class="doccomment">/// The substream is being closed.
     </span>Closing(KadOutStreamSink&lt;Stream&gt;),
     <span class="doccomment">/// The substream is complete and will not perform any more work.
@@ -1320,7 +1384,7 @@
         connection_id: UniqueConnecId,
         substream: KadInStreamSink&lt;Stream&gt;,
     },
-    <span class="doccomment">/// Waiting for the behaviour to send a [`KademliaHandlerIn`] event containing the response.
+    <span class="doccomment">/// Waiting for the behaviour to send a [`HandlerIn`] event containing the response.
     </span>WaitingBehaviour(UniqueConnecId, KadInStreamSink&lt;Stream&gt;, <span class="prelude-ty">Option</span>&lt;Waker&gt;),
     <span class="doccomment">/// Waiting to send an answer back to the remote.
     </span>PendingSend(UniqueConnecId, KadInStreamSink&lt;Stream&gt;, KadResponseMsg),
@@ -1339,7 +1403,7 @@
 <span class="kw">impl </span>InboundSubstreamState {
     <span class="kw">fn </span>try_answer_with(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        id: KademliaRequestId,
+        id: RequestId,
         msg: KadResponseMsg,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), KadResponseMsg&gt; {
         <span class="kw">match </span>std::mem::replace(
@@ -1391,7 +1455,7 @@
 
 <span class="doccomment">/// Event produced by the Kademlia handler.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>KademliaHandlerEvent {
+</span><span class="kw">pub enum </span>HandlerEvent {
     <span class="doccomment">/// The configured protocol name has been confirmed by the peer through
     /// a successfully negotiated substream or by learning the supported protocols of the remote.
     </span>ProtocolConfirmed { endpoint: ConnectedPoint },
@@ -1405,10 +1469,10 @@
         <span class="doccomment">/// The key for which to locate the closest nodes.
         </span>key: Vec&lt;u8&gt;,
         <span class="doccomment">/// Identifier of the request. Needs to be passed back when answering.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
-    <span class="doccomment">/// Response to an `KademliaHandlerIn::FindNodeReq`.
+    <span class="doccomment">/// Response to an `HandlerIn::FindNodeReq`.
     </span>FindNodeRes {
         <span class="doccomment">/// Results of the request.
         </span>closer_peers: Vec&lt;KadPeer&gt;,
@@ -1422,10 +1486,10 @@
         <span class="doccomment">/// The key for which providers are requested.
         </span>key: record_priv::Key,
         <span class="doccomment">/// Identifier of the request. Needs to be passed back when answering.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
-    <span class="doccomment">/// Response to an `KademliaHandlerIn::GetProvidersReq`.
+    <span class="doccomment">/// Response to an `HandlerIn::GetProvidersReq`.
     </span>GetProvidersRes {
         <span class="doccomment">/// Nodes closest to the key.
         </span>closer_peers: Vec&lt;KadPeer&gt;,
@@ -1438,7 +1502,7 @@
     <span class="doccomment">/// An error happened when performing a query.
     </span>QueryError {
         <span class="doccomment">/// The error that happened.
-        </span>error: KademliaHandlerQueryErr,
+        </span>error: HandlerQueryErr,
         <span class="doccomment">/// The user data passed to the query.
         </span>query_id: QueryId,
     },
@@ -1456,10 +1520,10 @@
         <span class="doccomment">/// Key for which we should look in the dht
         </span>key: record_priv::Key,
         <span class="doccomment">/// Identifier of the request. Needs to be passed back when answering.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
-    <span class="doccomment">/// Response to a `KademliaHandlerIn::GetRecord`.
+    <span class="doccomment">/// Response to a `HandlerIn::GetRecord`.
     </span>GetRecordRes {
         <span class="doccomment">/// The result is present if the key has been found
         </span>record: <span class="prelude-ty">Option</span>&lt;Record&gt;,
@@ -1473,7 +1537,7 @@
     </span>PutRecord {
         record: Record,
         <span class="doccomment">/// Identifier of the request. Needs to be passed back when answering.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
     <span class="doccomment">/// Response to a request to store a record.
@@ -1489,7 +1553,7 @@
 
 <span class="doccomment">/// Error that can happen when requesting an RPC query.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>KademliaHandlerQueryErr {
+</span><span class="kw">pub enum </span>HandlerQueryErr {
     <span class="doccomment">/// Error while trying to perform the query.
     </span>Upgrade(StreamUpgradeError&lt;io::Error&gt;),
     <span class="doccomment">/// Received an answer that doesn&#39;t correspond to the request.
@@ -1498,44 +1562,44 @@
     </span>Io(io::Error),
 }
 
-<span class="kw">impl </span>fmt::Display <span class="kw">for </span>KademliaHandlerQueryErr {
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>HandlerQueryErr {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
         <span class="kw">match </span><span class="self">self </span>{
-            KademliaHandlerQueryErr::Upgrade(err) =&gt; {
+            HandlerQueryErr::Upgrade(err) =&gt; {
                 <span class="macro">write!</span>(f, <span class="string">&quot;Error while performing Kademlia query: {err}&quot;</span>)
             }
-            KademliaHandlerQueryErr::UnexpectedMessage =&gt; {
+            HandlerQueryErr::UnexpectedMessage =&gt; {
                 <span class="macro">write!</span>(
                     f,
                     <span class="string">&quot;Remote answered our Kademlia RPC query with the wrong message type&quot;
                 </span>)
             }
-            KademliaHandlerQueryErr::Io(err) =&gt; {
+            HandlerQueryErr::Io(err) =&gt; {
                 <span class="macro">write!</span>(f, <span class="string">&quot;I/O error during a Kademlia RPC query: {err}&quot;</span>)
             }
         }
     }
 }
 
-<span class="kw">impl </span>error::Error <span class="kw">for </span>KademliaHandlerQueryErr {
+<span class="kw">impl </span>error::Error <span class="kw">for </span>HandlerQueryErr {
     <span class="kw">fn </span>source(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(<span class="kw">dyn </span>error::Error + <span class="lifetime">&#39;static</span>)&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            KademliaHandlerQueryErr::Upgrade(err) =&gt; <span class="prelude-val">Some</span>(err),
-            KademliaHandlerQueryErr::UnexpectedMessage =&gt; <span class="prelude-val">None</span>,
-            KademliaHandlerQueryErr::Io(err) =&gt; <span class="prelude-val">Some</span>(err),
+            HandlerQueryErr::Upgrade(err) =&gt; <span class="prelude-val">Some</span>(err),
+            HandlerQueryErr::UnexpectedMessage =&gt; <span class="prelude-val">None</span>,
+            HandlerQueryErr::Io(err) =&gt; <span class="prelude-val">Some</span>(err),
         }
     }
 }
 
-<span class="kw">impl </span>From&lt;StreamUpgradeError&lt;io::Error&gt;&gt; <span class="kw">for </span>KademliaHandlerQueryErr {
+<span class="kw">impl </span>From&lt;StreamUpgradeError&lt;io::Error&gt;&gt; <span class="kw">for </span>HandlerQueryErr {
     <span class="kw">fn </span>from(err: StreamUpgradeError&lt;io::Error&gt;) -&gt; <span class="self">Self </span>{
-        KademliaHandlerQueryErr::Upgrade(err)
+        HandlerQueryErr::Upgrade(err)
     }
 }
 
 <span class="doccomment">/// Event to send to the handler.
 </span><span class="attr">#[derive(Debug)]
-</span><span class="kw">pub enum </span>KademliaHandlerIn {
+</span><span class="kw">pub enum </span>HandlerIn {
     <span class="doccomment">/// Resets the (sub)stream associated with the given request ID,
     /// thus signaling an error to the remote.
     ///
@@ -1543,7 +1607,7 @@
     /// can be used as an alternative to letting requests simply time
     /// out on the remote peer, thus potentially avoiding some delay
     /// for the query on the remote.
-    </span>Reset(KademliaRequestId),
+    </span>Reset(RequestId),
 
     <span class="doccomment">/// Change the connection to the specified mode.
     </span>ReconfigureMode { new_mode: Mode },
@@ -1564,7 +1628,7 @@
         <span class="doccomment">/// Identifier of the request that was made by the remote.
         ///
         /// It is a logic error to use an id of the handler of a different node.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
     <span class="doccomment">/// Same as `FindNodeReq`, but should also return the entries of the local providers list for
@@ -1585,7 +1649,7 @@
         <span class="doccomment">/// Identifier of the request that was made by the remote.
         ///
         /// It is a logic error to use an id of the handler of a different node.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
     <span class="doccomment">/// Indicates that this provider is known for this key.
@@ -1614,7 +1678,7 @@
         <span class="doccomment">/// Nodes that are closer to the key we were searching for.
         </span>closer_peers: Vec&lt;KadPeer&gt;,
         <span class="doccomment">/// Identifier of the request that was made by the remote.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 
     <span class="doccomment">/// Put a value into the dht records.
@@ -1631,14 +1695,14 @@
         <span class="doccomment">/// Value that was put.
         </span>value: Vec&lt;u8&gt;,
         <span class="doccomment">/// Identifier of the request that was made by the remote.
-        </span>request_id: KademliaRequestId,
+        </span>request_id: RequestId,
     },
 }
 
 <span class="doccomment">/// Unique identifier for a request. Must be passed back in order to answer a request from
 /// the remote.
 </span><span class="attr">#[derive(Debug, PartialEq, Eq, Copy, Clone)]
-</span><span class="kw">pub struct </span>KademliaRequestId {
+</span><span class="kw">pub struct </span>RequestId {
     <span class="doccomment">/// Unique identifier for an incoming connection.
     </span>connec_unique_id: UniqueConnecId,
 }
@@ -1647,9 +1711,9 @@
 </span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 </span><span class="kw">struct </span>UniqueConnecId(u64);
 
-<span class="kw">impl </span>KademliaHandler {
+<span class="kw">impl </span>Handler {
     <span class="kw">pub fn </span>new(
-        protocol_config: KademliaProtocolConfig,
+        protocol_config: ProtocolConfig,
         idle_timeout: Duration,
         endpoint: ConnectedPoint,
         remote_peer_id: PeerId,
@@ -1669,9 +1733,10 @@
             }
         }
 
-        <span class="kw">let </span>keep_alive = KeepAlive::Until(Instant::now() + idle_timeout);
+        <span class="attr">#[allow(deprecated)]
+        </span><span class="kw">let </span>keep_alive = KeepAlive::Until(Instant::now() + idle_timeout);
 
-        KademliaHandler {
+        Handler {
             protocol_config,
             mode,
             idle_timeout,
@@ -1683,7 +1748,7 @@
             num_requested_outbound_streams: <span class="number">0</span>,
             pending_messages: Default::default(),
             keep_alive,
-            protocol_status: ProtocolStatus::Unknown,
+            protocol_status: <span class="prelude-val">None</span>,
             remote_supported_protocols: Default::default(),
             connection_id,
         }
@@ -1705,11 +1770,14 @@
 
         <span class="self">self</span>.num_requested_outbound_streams -= <span class="number">1</span>;
 
-        <span class="kw">if let </span>ProtocolStatus::Unknown = <span class="self">self</span>.protocol_status {
+        <span class="kw">if </span><span class="self">self</span>.protocol_status.is_none() {
             <span class="comment">// Upon the first successfully negotiated substream, we know that the
             // remote is configured with the same protocol name and we want
             // the behaviour to add this peer to the routing table, if possible.
-            </span><span class="self">self</span>.protocol_status = ProtocolStatus::Confirmed;
+            </span><span class="self">self</span>.protocol_status = <span class="prelude-val">Some</span>(ProtocolStatus {
+                supported: <span class="bool-val">true</span>,
+                reported: <span class="bool-val">false</span>,
+            });
         }
     }
 
@@ -1727,11 +1795,14 @@
             future::Either::Right(p) =&gt; void::unreachable(p),
         };
 
-        <span class="kw">if let </span>ProtocolStatus::Unknown = <span class="self">self</span>.protocol_status {
+        <span class="kw">if </span><span class="self">self</span>.protocol_status.is_none() {
             <span class="comment">// Upon the first successfully negotiated substream, we know that the
             // remote is configured with the same protocol name and we want
             // the behaviour to add this peer to the routing table, if possible.
-            </span><span class="self">self</span>.protocol_status = ProtocolStatus::Confirmed;
+            </span><span class="self">self</span>.protocol_status = <span class="prelude-val">Some</span>(ProtocolStatus {
+                supported: <span class="bool-val">true</span>,
+                reported: <span class="bool-val">false</span>,
+            });
         }
 
         <span class="kw">if </span><span class="self">self</span>.inbound_substreams.len() == MAX_NUM_SUBSTREAMS {
@@ -1789,12 +1860,12 @@
     }
 }
 
-<span class="kw">impl </span>ConnectionHandler <span class="kw">for </span>KademliaHandler {
-    <span class="kw">type </span>FromBehaviour = KademliaHandlerIn;
-    <span class="kw">type </span>ToBehaviour = KademliaHandlerEvent;
+<span class="kw">impl </span>ConnectionHandler <span class="kw">for </span>Handler {
+    <span class="kw">type </span>FromBehaviour = HandlerIn;
+    <span class="kw">type </span>ToBehaviour = HandlerEvent;
     <span class="kw">type </span>Error = io::Error; <span class="comment">// TODO: better error type?
-    </span><span class="kw">type </span>InboundProtocol = Either&lt;KademliaProtocolConfig, upgrade::DeniedUpgrade&gt;;
-    <span class="kw">type </span>OutboundProtocol = KademliaProtocolConfig;
+    </span><span class="kw">type </span>InboundProtocol = Either&lt;ProtocolConfig, upgrade::DeniedUpgrade&gt;;
+    <span class="kw">type </span>OutboundProtocol = ProtocolConfig;
     <span class="kw">type </span>OutboundOpenInfo = ();
     <span class="kw">type </span>InboundOpenInfo = ();
 
@@ -1805,9 +1876,9 @@
         }
     }
 
-    <span class="kw">fn </span>on_behaviour_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: KademliaHandlerIn) {
+    <span class="kw">fn </span>on_behaviour_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, message: HandlerIn) {
         <span class="kw">match </span>message {
-            KademliaHandlerIn::Reset(request_id) =&gt; {
+            HandlerIn::Reset(request_id) =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(state) = <span class="self">self
                     </span>.inbound_substreams
                     .iter_mut()
@@ -1821,19 +1892,19 @@
                     state.close();
                 }
             }
-            KademliaHandlerIn::FindNodeReq { key, query_id } =&gt; {
+            HandlerIn::FindNodeReq { key, query_id } =&gt; {
                 <span class="kw">let </span>msg = KadRequestMsg::FindNode { key };
                 <span class="self">self</span>.pending_messages.push_back((msg, <span class="prelude-val">Some</span>(query_id)));
             }
-            KademliaHandlerIn::FindNodeRes {
+            HandlerIn::FindNodeRes {
                 closer_peers,
                 request_id,
             } =&gt; <span class="self">self</span>.answer_pending_request(request_id, KadResponseMsg::FindNode { closer_peers }),
-            KademliaHandlerIn::GetProvidersReq { key, query_id } =&gt; {
+            HandlerIn::GetProvidersReq { key, query_id } =&gt; {
                 <span class="kw">let </span>msg = KadRequestMsg::GetProviders { key };
                 <span class="self">self</span>.pending_messages.push_back((msg, <span class="prelude-val">Some</span>(query_id)));
             }
-            KademliaHandlerIn::GetProvidersRes {
+            HandlerIn::GetProvidersRes {
                 closer_peers,
                 provider_peers,
                 request_id,
@@ -1844,19 +1915,19 @@
                     provider_peers,
                 },
             ),
-            KademliaHandlerIn::AddProvider { key, provider } =&gt; {
+            HandlerIn::AddProvider { key, provider } =&gt; {
                 <span class="kw">let </span>msg = KadRequestMsg::AddProvider { key, provider };
                 <span class="self">self</span>.pending_messages.push_back((msg, <span class="prelude-val">None</span>));
             }
-            KademliaHandlerIn::GetRecord { key, query_id } =&gt; {
+            HandlerIn::GetRecord { key, query_id } =&gt; {
                 <span class="kw">let </span>msg = KadRequestMsg::GetValue { key };
                 <span class="self">self</span>.pending_messages.push_back((msg, <span class="prelude-val">Some</span>(query_id)));
             }
-            KademliaHandlerIn::PutRecord { record, query_id } =&gt; {
+            HandlerIn::PutRecord { record, query_id } =&gt; {
                 <span class="kw">let </span>msg = KadRequestMsg::PutValue { record };
                 <span class="self">self</span>.pending_messages.push_back((msg, <span class="prelude-val">Some</span>(query_id)));
             }
-            KademliaHandlerIn::GetRecordRes {
+            HandlerIn::GetRecordRes {
                 record,
                 closer_peers,
                 request_id,
@@ -1869,14 +1940,14 @@
                     },
                 );
             }
-            KademliaHandlerIn::PutRecordRes {
+            HandlerIn::PutRecordRes {
                 key,
                 request_id,
                 value,
             } =&gt; {
                 <span class="self">self</span>.answer_pending_request(request_id, KadResponseMsg::PutValue { key, value });
             }
-            KademliaHandlerIn::ReconfigureMode { new_mode } =&gt; {
+            HandlerIn::ReconfigureMode { new_mode } =&gt; {
                 <span class="kw">let </span>peer = <span class="self">self</span>.remote_peer_id;
 
                 <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.endpoint {
@@ -1910,13 +1981,22 @@
             <span class="self">Self</span>::Error,
         &gt;,
     &gt; {
-        <span class="kw">if let </span>ProtocolStatus::Confirmed = <span class="self">self</span>.protocol_status {
-            <span class="self">self</span>.protocol_status = ProtocolStatus::Reported;
-            <span class="kw">return </span>Poll::Ready(ConnectionHandlerEvent::NotifyBehaviour(
-                KademliaHandlerEvent::ProtocolConfirmed {
-                    endpoint: <span class="self">self</span>.endpoint.clone(),
-                },
-            ));
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.protocol_status {
+            <span class="prelude-val">Some</span>(status) <span class="kw">if </span>!status.reported =&gt; {
+                status.reported = <span class="bool-val">true</span>;
+                <span class="kw">let </span>event = <span class="kw">if </span>status.supported {
+                    HandlerEvent::ProtocolConfirmed {
+                        endpoint: <span class="self">self</span>.endpoint.clone(),
+                    }
+                } <span class="kw">else </span>{
+                    HandlerEvent::ProtocolNotSupported {
+                        endpoint: <span class="self">self</span>.endpoint.clone(),
+                    }
+                };
+
+                <span class="kw">return </span>Poll::Ready(ConnectionHandlerEvent::NotifyBehaviour(event));
+            }
+            <span class="kw">_ </span>=&gt; {}
         }
 
         <span class="kw">if let </span>Poll::Ready(<span class="prelude-val">Some</span>(event)) = <span class="self">self</span>.outbound_substreams.poll_next_unpin(cx) {
@@ -1939,13 +2019,17 @@
         }
 
         <span class="kw">let </span>no_streams = <span class="self">self</span>.outbound_substreams.is_empty() &amp;&amp; <span class="self">self</span>.inbound_substreams.is_empty();
-        <span class="self">self</span>.keep_alive = <span class="kw">match </span>(no_streams, <span class="self">self</span>.keep_alive) {
-            <span class="comment">// No open streams. Preserve the existing idle timeout.
-            </span>(<span class="bool-val">true</span>, k @ KeepAlive::Until(<span class="kw">_</span>)) =&gt; k,
-            <span class="comment">// No open streams. Set idle timeout.
-            </span>(<span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; KeepAlive::Until(Instant::now() + <span class="self">self</span>.idle_timeout),
-            <span class="comment">// Keep alive for open streams.
-            </span>(<span class="bool-val">false</span>, <span class="kw">_</span>) =&gt; KeepAlive::Yes,
+
+        <span class="self">self</span>.keep_alive = {
+            <span class="attr">#[allow(deprecated)]
+            </span><span class="kw">match </span>(no_streams, <span class="self">self</span>.keep_alive) {
+                <span class="comment">// No open streams. Preserve the existing idle timeout.
+                </span>(<span class="bool-val">true</span>, k @ KeepAlive::Until(<span class="kw">_</span>)) =&gt; k,
+                <span class="comment">// No open streams. Set idle timeout.
+                </span>(<span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; KeepAlive::Until(Instant::now() + <span class="self">self</span>.idle_timeout),
+                <span class="comment">// Keep alive for open streams.
+                </span>(<span class="bool-val">false</span>, <span class="kw">_</span>) =&gt; KeepAlive::Yes,
+            }
         };
 
         Poll::Pending
@@ -1982,36 +2066,55 @@
                         .iter()
                         .any(|p| <span class="self">self</span>.protocol_config.protocol_names().contains(p));
 
-                    <span class="kw">match </span>(remote_supports_our_kademlia_protocols, <span class="self">self</span>.protocol_status) {
-                        (<span class="bool-val">true</span>, ProtocolStatus::Confirmed | ProtocolStatus::Reported) =&gt; {}
-                        (<span class="bool-val">true</span>, <span class="kw">_</span>) =&gt; {
-                            <span class="macro">log::debug!</span>(
-                                <span class="string">&quot;Remote {} now supports our kademlia protocol on connection {}&quot;</span>,
-                                <span class="self">self</span>.remote_peer_id,
-                                <span class="self">self</span>.connection_id,
-                            );
-
-                            <span class="self">self</span>.protocol_status = ProtocolStatus::Confirmed;
-                        }
-                        (<span class="bool-val">false</span>, ProtocolStatus::Confirmed | ProtocolStatus::Reported) =&gt; {
-                            <span class="macro">log::debug!</span>(
-                                <span class="string">&quot;Remote {} no longer supports our kademlia protocol on connection {}&quot;</span>,
-                                <span class="self">self</span>.remote_peer_id,
-                                <span class="self">self</span>.connection_id,
-                            );
-
-                            <span class="self">self</span>.protocol_status = ProtocolStatus::NotSupported;
-                        }
-                        (<span class="bool-val">false</span>, <span class="kw">_</span>) =&gt; {}
-                    }
+                    <span class="self">self</span>.protocol_status = <span class="prelude-val">Some</span>(compute_new_protocol_status(
+                        remote_supports_our_kademlia_protocols,
+                        <span class="self">self</span>.protocol_status,
+                        <span class="self">self</span>.remote_peer_id,
+                        <span class="self">self</span>.connection_id,
+                    ))
                 }
             }
         }
     }
 }
 
-<span class="kw">impl </span>KademliaHandler {
-    <span class="kw">fn </span>answer_pending_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: KademliaRequestId, <span class="kw-2">mut </span>msg: KadResponseMsg) {
+<span class="kw">fn </span>compute_new_protocol_status(
+    now_supported: bool,
+    current_status: <span class="prelude-ty">Option</span>&lt;ProtocolStatus&gt;,
+    remote_peer_id: PeerId,
+    connection_id: ConnectionId,
+) -&gt; ProtocolStatus {
+    <span class="kw">let </span>current_status = <span class="kw">match </span>current_status {
+        <span class="prelude-val">None </span>=&gt; {
+            <span class="kw">return </span>ProtocolStatus {
+                supported: now_supported,
+                reported: <span class="bool-val">false</span>,
+            }
+        }
+        <span class="prelude-val">Some</span>(current) =&gt; current,
+    };
+
+    <span class="kw">if </span>now_supported == current_status.supported {
+        <span class="kw">return </span>ProtocolStatus {
+            supported: now_supported,
+            reported: <span class="bool-val">true</span>,
+        };
+    }
+
+    <span class="kw">if </span>now_supported {
+        <span class="macro">log::debug!</span>(<span class="string">&quot;Remote {remote_peer_id} now supports our kademlia protocol on connection {connection_id}&quot;</span>);
+    } <span class="kw">else </span>{
+        <span class="macro">log::debug!</span>(<span class="string">&quot;Remote {remote_peer_id} no longer supports our kademlia protocol on connection {connection_id}&quot;</span>);
+    }
+
+    ProtocolStatus {
+        supported: now_supported,
+        reported: <span class="bool-val">false</span>,
+    }
+}
+
+<span class="kw">impl </span>Handler {
+    <span class="kw">fn </span>answer_pending_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: RequestId, <span class="kw-2">mut </span>msg: KadResponseMsg) {
         <span class="kw">for </span>state <span class="kw">in </span><span class="self">self</span>.inbound_substreams.iter_mut() {
             <span class="kw">match </span>state.try_answer_with(request_id, msg) {
                 <span class="prelude-val">Ok</span>(()) =&gt; <span class="kw">return</span>,
@@ -2026,7 +2129,7 @@
 }
 
 <span class="kw">impl </span>futures::Stream <span class="kw">for </span>OutboundSubstreamState {
-    <span class="kw">type </span>Item = ConnectionHandlerEvent&lt;KademliaProtocolConfig, (), KademliaHandlerEvent, io::Error&gt;;
+    <span class="kw">type </span>Item = ConnectionHandlerEvent&lt;ProtocolConfig, (), HandlerEvent, io::Error&gt;;
 
     <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.get_mut();
@@ -2043,8 +2146,8 @@
                                 <span class="kw-2">*</span>this = OutboundSubstreamState::Done;
                                 <span class="kw">let </span>event = query_id.map(|query_id| {
                                     ConnectionHandlerEvent::NotifyBehaviour(
-                                        KademliaHandlerEvent::QueryError {
-                                            error: KademliaHandlerQueryErr::Io(error),
+                                        HandlerEvent::QueryError {
+                                            error: HandlerQueryErr::Io(error),
                                             query_id,
                                         },
                                     )
@@ -2060,12 +2163,10 @@
                         Poll::Ready(<span class="prelude-val">Err</span>(error)) =&gt; {
                             <span class="kw-2">*</span>this = OutboundSubstreamState::Done;
                             <span class="kw">let </span>event = query_id.map(|query_id| {
-                                ConnectionHandlerEvent::NotifyBehaviour(
-                                    KademliaHandlerEvent::QueryError {
-                                        error: KademliaHandlerQueryErr::Io(error),
-                                        query_id,
-                                    },
-                                )
+                                ConnectionHandlerEvent::NotifyBehaviour(HandlerEvent::QueryError {
+                                    error: HandlerQueryErr::Io(error),
+                                    query_id,
+                                })
                             });
 
                             <span class="kw">return </span>Poll::Ready(event);
@@ -2088,12 +2189,10 @@
                         Poll::Ready(<span class="prelude-val">Err</span>(error)) =&gt; {
                             <span class="kw-2">*</span>this = OutboundSubstreamState::Done;
                             <span class="kw">let </span>event = query_id.map(|query_id| {
-                                ConnectionHandlerEvent::NotifyBehaviour(
-                                    KademliaHandlerEvent::QueryError {
-                                        error: KademliaHandlerQueryErr::Io(error),
-                                        query_id,
-                                    },
-                                )
+                                ConnectionHandlerEvent::NotifyBehaviour(HandlerEvent::QueryError {
+                                    error: HandlerQueryErr::Io(error),
+                                    query_id,
+                                })
                             });
 
                             <span class="kw">return </span>Poll::Ready(event);
@@ -2116,8 +2215,8 @@
                         }
                         Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(error))) =&gt; {
                             <span class="kw-2">*</span>this = OutboundSubstreamState::Done;
-                            <span class="kw">let </span>event = KademliaHandlerEvent::QueryError {
-                                error: KademliaHandlerQueryErr::Io(error),
+                            <span class="kw">let </span>event = HandlerEvent::QueryError {
+                                error: HandlerQueryErr::Io(error),
                                 query_id,
                             };
 
@@ -2127,10 +2226,8 @@
                         }
                         Poll::Ready(<span class="prelude-val">None</span>) =&gt; {
                             <span class="kw-2">*</span>this = OutboundSubstreamState::Done;
-                            <span class="kw">let </span>event = KademliaHandlerEvent::QueryError {
-                                error: KademliaHandlerQueryErr::Io(
-                                    io::ErrorKind::UnexpectedEof.into(),
-                                ),
+                            <span class="kw">let </span>event = HandlerEvent::QueryError {
+                                error: HandlerQueryErr::Io(io::ErrorKind::UnexpectedEof.into()),
                                 query_id,
                             };
 
@@ -2142,7 +2239,7 @@
                 }
                 OutboundSubstreamState::ReportError(error, query_id) =&gt; {
                     <span class="kw-2">*</span>this = OutboundSubstreamState::Done;
-                    <span class="kw">let </span>event = KademliaHandlerEvent::QueryError { error, query_id };
+                    <span class="kw">let </span>event = HandlerEvent::QueryError { error, query_id };
 
                     <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(ConnectionHandlerEvent::NotifyBehaviour(event)));
                 }
@@ -2164,7 +2261,7 @@
 }
 
 <span class="kw">impl </span>futures::Stream <span class="kw">for </span>InboundSubstreamState {
-    <span class="kw">type </span>Item = ConnectionHandlerEvent&lt;KademliaProtocolConfig, (), KademliaHandlerEvent, io::Error&gt;;
+    <span class="kw">type </span>Item = ConnectionHandlerEvent&lt;ProtocolConfig, (), HandlerEvent, io::Error&gt;;
 
     <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
         <span class="kw">let </span>this = <span class="self">self</span>.get_mut();
@@ -2190,9 +2287,9 @@
                         <span class="kw-2">*</span>this =
                             InboundSubstreamState::WaitingBehaviour(connection_id, substream, <span class="prelude-val">None</span>);
                         <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(ConnectionHandlerEvent::NotifyBehaviour(
-                            KademliaHandlerEvent::FindNodeReq {
+                            HandlerEvent::FindNodeReq {
                                 key,
-                                request_id: KademliaRequestId {
+                                request_id: RequestId {
                                     connec_unique_id: connection_id,
                                 },
                             },
@@ -2202,9 +2299,9 @@
                         <span class="kw-2">*</span>this =
                             InboundSubstreamState::WaitingBehaviour(connection_id, substream, <span class="prelude-val">None</span>);
                         <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(ConnectionHandlerEvent::NotifyBehaviour(
-                            KademliaHandlerEvent::GetProvidersReq {
+                            HandlerEvent::GetProvidersReq {
                                 key,
-                                request_id: KademliaRequestId {
+                                request_id: RequestId {
                                     connec_unique_id: connection_id,
                                 },
                             },
@@ -2217,16 +2314,16 @@
                             substream,
                         };
                         <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(ConnectionHandlerEvent::NotifyBehaviour(
-                            KademliaHandlerEvent::AddProvider { key, provider },
+                            HandlerEvent::AddProvider { key, provider },
                         )));
                     }
                     Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(KadRequestMsg::GetValue { key }))) =&gt; {
                         <span class="kw-2">*</span>this =
                             InboundSubstreamState::WaitingBehaviour(connection_id, substream, <span class="prelude-val">None</span>);
                         <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(ConnectionHandlerEvent::NotifyBehaviour(
-                            KademliaHandlerEvent::GetRecord {
+                            HandlerEvent::GetRecord {
                                 key,
-                                request_id: KademliaRequestId {
+                                request_id: RequestId {
                                     connec_unique_id: connection_id,
                                 },
                             },
@@ -2236,9 +2333,9 @@
                         <span class="kw-2">*</span>this =
                             InboundSubstreamState::WaitingBehaviour(connection_id, substream, <span class="prelude-val">None</span>);
                         <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(ConnectionHandlerEvent::NotifyBehaviour(
-                            KademliaHandlerEvent::PutRecord {
+                            HandlerEvent::PutRecord {
                                 record,
-                                request_id: KademliaRequestId {
+                                request_id: RequestId {
                                     connec_unique_id: connection_id,
                                 },
                             },
@@ -2315,24 +2412,24 @@
 }
 
 <span class="doccomment">/// Process a Kademlia message that&#39;s supposed to be a response to one of our requests.
-</span><span class="kw">fn </span>process_kad_response(event: KadResponseMsg, query_id: QueryId) -&gt; KademliaHandlerEvent {
+</span><span class="kw">fn </span>process_kad_response(event: KadResponseMsg, query_id: QueryId) -&gt; HandlerEvent {
     <span class="comment">// TODO: must check that the response corresponds to the request
     </span><span class="kw">match </span>event {
         KadResponseMsg::Pong =&gt; {
             <span class="comment">// We never send out pings.
-            </span>KademliaHandlerEvent::QueryError {
-                error: KademliaHandlerQueryErr::UnexpectedMessage,
+            </span>HandlerEvent::QueryError {
+                error: HandlerQueryErr::UnexpectedMessage,
                 query_id,
             }
         }
-        KadResponseMsg::FindNode { closer_peers } =&gt; KademliaHandlerEvent::FindNodeRes {
+        KadResponseMsg::FindNode { closer_peers } =&gt; HandlerEvent::FindNodeRes {
             closer_peers,
             query_id,
         },
         KadResponseMsg::GetProviders {
             closer_peers,
             provider_peers,
-        } =&gt; KademliaHandlerEvent::GetProvidersRes {
+        } =&gt; HandlerEvent::GetProvidersRes {
             closer_peers,
             provider_peers,
             query_id,
@@ -2340,16 +2437,63 @@
         KadResponseMsg::GetValue {
             record,
             closer_peers,
-        } =&gt; KademliaHandlerEvent::GetRecordRes {
+        } =&gt; HandlerEvent::GetRecordRes {
             record,
             closer_peers,
             query_id,
         },
-        KadResponseMsg::PutValue { key, value, .. } =&gt; KademliaHandlerEvent::PutRecordRes {
+        KadResponseMsg::PutValue { key, value, .. } =&gt; HandlerEvent::PutRecordRes {
             key,
             value,
             query_id,
         },
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>quickcheck::{Arbitrary, Gen};
+
+    <span class="kw">impl </span>Arbitrary <span class="kw">for </span>ProtocolStatus {
+        <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>Gen) -&gt; <span class="self">Self </span>{
+            <span class="self">Self </span>{
+                supported: bool::arbitrary(g),
+                reported: bool::arbitrary(g),
+            }
+        }
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>compute_next_protocol_status_test() {
+        <span class="kw">let _ </span>= env_logger::try_init();
+
+        <span class="kw">fn </span>prop(now_supported: bool, current: <span class="prelude-ty">Option</span>&lt;ProtocolStatus&gt;) {
+            <span class="kw">let </span>new = compute_new_protocol_status(
+                now_supported,
+                current,
+                PeerId::random(),
+                ConnectionId::new_unchecked(<span class="number">0</span>),
+            );
+
+            <span class="kw">match </span>current {
+                <span class="prelude-val">None </span>=&gt; {
+                    <span class="macro">assert!</span>(!new.reported);
+                    <span class="macro">assert_eq!</span>(new.supported, now_supported);
+                }
+                <span class="prelude-val">Some</span>(current) =&gt; {
+                    <span class="kw">if </span>current.supported == now_supported {
+                        <span class="macro">assert!</span>(new.reported);
+                    } <span class="kw">else </span>{
+                        <span class="macro">assert!</span>(!new.reported);
+                    }
+
+                    <span class="macro">assert_eq!</span>(new.supported, now_supported);
+                }
+            }
+        }
+
+        quickcheck::quickcheck(prop <span class="kw">as fn</span>(<span class="kw">_</span>, <span class="kw">_</span>))
     }
 }
 </code></pre></div></section></main></body></html>

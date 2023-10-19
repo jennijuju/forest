@@ -2,7 +2,7 @@
 <details class="toggle type-contents-toggle"><summary class="hideme"><span>Show 19 variants</span></summary>    InvalidToken,
     InvalidSignature,
     InvalidEcdsaKey,
-    InvalidRsaKey(&amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.73.0/std/primitive.str.html">str</a>),
+    InvalidRsaKey(<a class="struct" href="https://doc.rust-lang.org/1.73.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>),
     RsaFailedSigning,
     InvalidAlgorithmName,
     InvalidKeyFormat,
@@ -25,7 +25,7 @@ attribute makes sure clients don’t count on exhaustive matching.
 </div></details><h2 id="variants" class="variants small-section-header">Variants (Non-exhaustive)<a href="#variants" class="anchor">§</a></h2><details class="toggle non-exhaustive"><summary class="hideme"><span>This enum is marked as non-exhaustive</span></summary><div class="docblock">Non-exhaustive enums could have additional variants added in future. Therefore, when matching against variants of non-exhaustive enums, an extra wildcard arm must be added to account for any future variants.</div></details><div class="variants"><section id="variant.InvalidToken" class="variant"><a href="#variant.InvalidToken" class="anchor">§</a><h3 class="code-header">InvalidToken</h3></section><div class="docblock"><p>When a token doesn’t have a valid JWT shape</p>
 </div><section id="variant.InvalidSignature" class="variant"><a href="#variant.InvalidSignature" class="anchor">§</a><h3 class="code-header">InvalidSignature</h3></section><div class="docblock"><p>When the signature doesn’t match</p>
 </div><section id="variant.InvalidEcdsaKey" class="variant"><a href="#variant.InvalidEcdsaKey" class="anchor">§</a><h3 class="code-header">InvalidEcdsaKey</h3></section><div class="docblock"><p>When the secret given is not a valid ECDSA key</p>
-</div><section id="variant.InvalidRsaKey" class="variant"><a href="#variant.InvalidRsaKey" class="anchor">§</a><h3 class="code-header">InvalidRsaKey(&amp;'static <a class="primitive" href="https://doc.rust-lang.org/1.73.0/std/primitive.str.html">str</a>)</h3></section><div class="docblock"><p>When the secret given is not a valid RSA key</p>
+</div><section id="variant.InvalidRsaKey" class="variant"><a href="#variant.InvalidRsaKey" class="anchor">§</a><h3 class="code-header">InvalidRsaKey(<a class="struct" href="https://doc.rust-lang.org/1.73.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>)</h3></section><div class="docblock"><p>When the secret given is not a valid RSA key</p>
 </div><section id="variant.RsaFailedSigning" class="variant"><a href="#variant.RsaFailedSigning" class="anchor">§</a><h3 class="code-header">RsaFailedSigning</h3></section><div class="docblock"><p>We could not sign with the given key</p>
 </div><section id="variant.InvalidAlgorithmName" class="variant"><a href="#variant.InvalidAlgorithmName" class="anchor">§</a><h3 class="code-header">InvalidAlgorithmName</h3></section><div class="docblock"><p>When the algorithm from string doesn’t match the one passed to <code>from_str</code></p>
 </div><section id="variant.InvalidKeyFormat" class="variant"><a href="#variant.InvalidKeyFormat" class="anchor">§</a><h3 class="code-header">InvalidKeyFormat</h3></section><div class="docblock"><p>When a key is provided with an invalid format</p>

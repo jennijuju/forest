@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-swarm-0.43.5/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_swarm" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_swarm/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-swarm-0.43.6/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_swarm" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_swarm/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2412,6 +2412,146 @@
 <a href="#2412" id="2412">2412</a>
 <a href="#2413" id="2413">2413</a>
 <a href="#2414" id="2414">2414</a>
+<a href="#2415" id="2415">2415</a>
+<a href="#2416" id="2416">2416</a>
+<a href="#2417" id="2417">2417</a>
+<a href="#2418" id="2418">2418</a>
+<a href="#2419" id="2419">2419</a>
+<a href="#2420" id="2420">2420</a>
+<a href="#2421" id="2421">2421</a>
+<a href="#2422" id="2422">2422</a>
+<a href="#2423" id="2423">2423</a>
+<a href="#2424" id="2424">2424</a>
+<a href="#2425" id="2425">2425</a>
+<a href="#2426" id="2426">2426</a>
+<a href="#2427" id="2427">2427</a>
+<a href="#2428" id="2428">2428</a>
+<a href="#2429" id="2429">2429</a>
+<a href="#2430" id="2430">2430</a>
+<a href="#2431" id="2431">2431</a>
+<a href="#2432" id="2432">2432</a>
+<a href="#2433" id="2433">2433</a>
+<a href="#2434" id="2434">2434</a>
+<a href="#2435" id="2435">2435</a>
+<a href="#2436" id="2436">2436</a>
+<a href="#2437" id="2437">2437</a>
+<a href="#2438" id="2438">2438</a>
+<a href="#2439" id="2439">2439</a>
+<a href="#2440" id="2440">2440</a>
+<a href="#2441" id="2441">2441</a>
+<a href="#2442" id="2442">2442</a>
+<a href="#2443" id="2443">2443</a>
+<a href="#2444" id="2444">2444</a>
+<a href="#2445" id="2445">2445</a>
+<a href="#2446" id="2446">2446</a>
+<a href="#2447" id="2447">2447</a>
+<a href="#2448" id="2448">2448</a>
+<a href="#2449" id="2449">2449</a>
+<a href="#2450" id="2450">2450</a>
+<a href="#2451" id="2451">2451</a>
+<a href="#2452" id="2452">2452</a>
+<a href="#2453" id="2453">2453</a>
+<a href="#2454" id="2454">2454</a>
+<a href="#2455" id="2455">2455</a>
+<a href="#2456" id="2456">2456</a>
+<a href="#2457" id="2457">2457</a>
+<a href="#2458" id="2458">2458</a>
+<a href="#2459" id="2459">2459</a>
+<a href="#2460" id="2460">2460</a>
+<a href="#2461" id="2461">2461</a>
+<a href="#2462" id="2462">2462</a>
+<a href="#2463" id="2463">2463</a>
+<a href="#2464" id="2464">2464</a>
+<a href="#2465" id="2465">2465</a>
+<a href="#2466" id="2466">2466</a>
+<a href="#2467" id="2467">2467</a>
+<a href="#2468" id="2468">2468</a>
+<a href="#2469" id="2469">2469</a>
+<a href="#2470" id="2470">2470</a>
+<a href="#2471" id="2471">2471</a>
+<a href="#2472" id="2472">2472</a>
+<a href="#2473" id="2473">2473</a>
+<a href="#2474" id="2474">2474</a>
+<a href="#2475" id="2475">2475</a>
+<a href="#2476" id="2476">2476</a>
+<a href="#2477" id="2477">2477</a>
+<a href="#2478" id="2478">2478</a>
+<a href="#2479" id="2479">2479</a>
+<a href="#2480" id="2480">2480</a>
+<a href="#2481" id="2481">2481</a>
+<a href="#2482" id="2482">2482</a>
+<a href="#2483" id="2483">2483</a>
+<a href="#2484" id="2484">2484</a>
+<a href="#2485" id="2485">2485</a>
+<a href="#2486" id="2486">2486</a>
+<a href="#2487" id="2487">2487</a>
+<a href="#2488" id="2488">2488</a>
+<a href="#2489" id="2489">2489</a>
+<a href="#2490" id="2490">2490</a>
+<a href="#2491" id="2491">2491</a>
+<a href="#2492" id="2492">2492</a>
+<a href="#2493" id="2493">2493</a>
+<a href="#2494" id="2494">2494</a>
+<a href="#2495" id="2495">2495</a>
+<a href="#2496" id="2496">2496</a>
+<a href="#2497" id="2497">2497</a>
+<a href="#2498" id="2498">2498</a>
+<a href="#2499" id="2499">2499</a>
+<a href="#2500" id="2500">2500</a>
+<a href="#2501" id="2501">2501</a>
+<a href="#2502" id="2502">2502</a>
+<a href="#2503" id="2503">2503</a>
+<a href="#2504" id="2504">2504</a>
+<a href="#2505" id="2505">2505</a>
+<a href="#2506" id="2506">2506</a>
+<a href="#2507" id="2507">2507</a>
+<a href="#2508" id="2508">2508</a>
+<a href="#2509" id="2509">2509</a>
+<a href="#2510" id="2510">2510</a>
+<a href="#2511" id="2511">2511</a>
+<a href="#2512" id="2512">2512</a>
+<a href="#2513" id="2513">2513</a>
+<a href="#2514" id="2514">2514</a>
+<a href="#2515" id="2515">2515</a>
+<a href="#2516" id="2516">2516</a>
+<a href="#2517" id="2517">2517</a>
+<a href="#2518" id="2518">2518</a>
+<a href="#2519" id="2519">2519</a>
+<a href="#2520" id="2520">2520</a>
+<a href="#2521" id="2521">2521</a>
+<a href="#2522" id="2522">2522</a>
+<a href="#2523" id="2523">2523</a>
+<a href="#2524" id="2524">2524</a>
+<a href="#2525" id="2525">2525</a>
+<a href="#2526" id="2526">2526</a>
+<a href="#2527" id="2527">2527</a>
+<a href="#2528" id="2528">2528</a>
+<a href="#2529" id="2529">2529</a>
+<a href="#2530" id="2530">2530</a>
+<a href="#2531" id="2531">2531</a>
+<a href="#2532" id="2532">2532</a>
+<a href="#2533" id="2533">2533</a>
+<a href="#2534" id="2534">2534</a>
+<a href="#2535" id="2535">2535</a>
+<a href="#2536" id="2536">2536</a>
+<a href="#2537" id="2537">2537</a>
+<a href="#2538" id="2538">2538</a>
+<a href="#2539" id="2539">2539</a>
+<a href="#2540" id="2540">2540</a>
+<a href="#2541" id="2541">2541</a>
+<a href="#2542" id="2542">2542</a>
+<a href="#2543" id="2543">2543</a>
+<a href="#2544" id="2544">2544</a>
+<a href="#2545" id="2545">2545</a>
+<a href="#2546" id="2546">2546</a>
+<a href="#2547" id="2547">2547</a>
+<a href="#2548" id="2548">2548</a>
+<a href="#2549" id="2549">2549</a>
+<a href="#2550" id="2550">2550</a>
+<a href="#2551" id="2551">2551</a>
+<a href="#2552" id="2552">2552</a>
+<a href="#2553" id="2553">2553</a>
+<a href="#2554" id="2554">2554</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -2573,8 +2713,7 @@
 
 <span class="doccomment">/// Substream for which a protocol has been chosen.
 ///
-/// Implements the [`AsyncRead`](futures::io::AsyncRead) and
-/// [`AsyncWrite`](futures::io::AsyncWrite) traits.
+/// Implements the [`AsyncRead`] and [`AsyncWrite`] traits.
 </span><span class="attr">#[deprecated(note = <span class="string">&quot;The &#39;substream&#39; terminology is deprecated. Use &#39;Stream&#39; instead&quot;</span>)]
 </span><span class="kw">pub type </span>NegotiatedSubstream = Stream;
 
@@ -2774,6 +2913,26 @@
 <span class="kw">where
     </span>TBehaviour: NetworkBehaviour,
 {
+    <span class="doccomment">/// Creates a new [`Swarm`] from the given [`Transport`], [`NetworkBehaviour`], [`PeerId`] and
+    /// [`Config`].
+    </span><span class="kw">pub fn </span>new(
+        transport: transport::Boxed&lt;(PeerId, StreamMuxerBox)&gt;,
+        behaviour: TBehaviour,
+        local_peer_id: PeerId,
+        config: Config,
+    ) -&gt; <span class="self">Self </span>{
+        Swarm {
+            local_peer_id,
+            transport,
+            pool: Pool::new(local_peer_id, config.pool_config),
+            behaviour,
+            supported_protocols: Default::default(),
+            confirmed_external_addr: Default::default(),
+            listened_addrs: HashMap::new(),
+            pending_event: <span class="prelude-val">None</span>,
+        }
+    }
+
     <span class="doccomment">/// Returns information about the connections underlying the [`Swarm`].
     </span><span class="kw">pub fn </span>network_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; NetworkInfo {
         <span class="kw">let </span>num_peers = <span class="self">self</span>.pool.num_peers();
@@ -2816,7 +2975,9 @@
     /// # use libp2p_swarm::dummy;
     /// # use libp2p_identity::PeerId;
     /// #
-    /// let mut swarm = SwarmBuilder::without_executor(
+    /// # #[tokio::main]
+    /// # async fn main() {
+    /// let mut swarm = SwarmBuilder::with_tokio_executor(
     ///     DummyTransport::new().boxed(),
     ///     dummy::Behaviour,
     ///     PeerId::random(),
@@ -2827,6 +2988,7 @@
     ///
     /// // Dial an unknown peer.
     /// swarm.dial(&quot;/ip6/::1/tcp/12345&quot;.parse::&lt;Multiaddr&gt;().unwrap());
+    /// # }
     /// ```
     </span><span class="kw">pub fn </span>dial(<span class="kw-2">&amp;mut </span><span class="self">self</span>, opts: <span class="kw">impl </span>Into&lt;DialOpts&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), DialError&gt; {
         <span class="kw">let </span>dial_opts = opts.into();
@@ -3761,7 +3923,132 @@
     }
 }
 
+<span class="kw">pub struct </span>Config {
+    pool_config: PoolConfig,
+}
+
+<span class="kw">impl </span>Config {
+    <span class="doccomment">/// Creates a new [`Config`] from the given executor. The [`Swarm`] is obtained via
+    /// [`Swarm::new`].
+    </span><span class="kw">pub fn </span>with_executor(executor: <span class="kw">impl </span>Executor + Send + <span class="lifetime">&#39;static</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            pool_config: PoolConfig::new(<span class="prelude-val">Some</span>(Box::new(executor))),
+        }
+    }
+
+    <span class="doccomment">/// Sets executor to the `wasm` executor.
+    /// Background tasks will be executed by the browser on the next micro-tick.
+    ///
+    /// Spawning a task is similar too:
+    /// ```typescript
+    /// function spawn(task: () =&gt; Promise&lt;void&gt;) {
+    ///     task()
+    /// }
+    /// ```
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;wasm-bindgen&quot;</span>)]
+    </span><span class="kw">pub fn </span>with_wasm_executor() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::with_executor(<span class="kw">crate</span>::executor::WasmBindgenExecutor)
+    }
+
+    <span class="doccomment">/// Builds a new [`Config`] from the given `tokio` executor.
+    </span><span class="attr">#[cfg(all(
+        feature = <span class="string">&quot;tokio&quot;</span>,
+        not(any(target_os = <span class="string">&quot;emscripten&quot;</span>, target_os = <span class="string">&quot;wasi&quot;</span>, target_os = <span class="string">&quot;unknown&quot;</span>))
+    ))]
+    </span><span class="kw">pub fn </span>with_tokio_executor() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::with_executor(<span class="kw">crate</span>::executor::TokioExecutor)
+    }
+
+    <span class="doccomment">/// Builds a new [`Config`] from the given `async-std` executor.
+    </span><span class="attr">#[cfg(all(
+        feature = <span class="string">&quot;async-std&quot;</span>,
+        not(any(target_os = <span class="string">&quot;emscripten&quot;</span>, target_os = <span class="string">&quot;wasi&quot;</span>, target_os = <span class="string">&quot;unknown&quot;</span>))
+    ))]
+    </span><span class="kw">pub fn </span>with_async_std_executor() -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::with_executor(<span class="kw">crate</span>::executor::AsyncStdExecutor)
+    }
+
+    <span class="doccomment">/// Configures the number of events from the [`NetworkBehaviour`] in
+    /// destination to the [`ConnectionHandler`] that can be buffered before
+    /// the [`Swarm`] has to wait. An individual buffer with this number of
+    /// events exists for each individual connection.
+    ///
+    /// The ideal value depends on the executor used, the CPU speed, and the
+    /// volume of events. If this value is too low, then the [`Swarm`] will
+    /// be sleeping more often than necessary. Increasing this value increases
+    /// the overall memory usage.
+    </span><span class="kw">pub fn </span>with_notify_handler_buffer_size(<span class="kw-2">mut </span><span class="self">self</span>, n: NonZeroUsize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.pool_config = <span class="self">self</span>.pool_config.with_notify_handler_buffer_size(n);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Configures the size of the buffer for events sent by a [`ConnectionHandler`] to the
+    /// [`NetworkBehaviour`].
+    ///
+    /// Each connection has its own buffer.
+    ///
+    /// The ideal value depends on the executor used, the CPU speed and the volume of events.
+    /// If this value is too low, then the [`ConnectionHandler`]s will be sleeping more often
+    /// than necessary. Increasing this value increases the overall memory
+    /// usage, and more importantly the latency between the moment when an
+    /// event is emitted and the moment when it is received by the
+    /// [`NetworkBehaviour`].
+    </span><span class="kw">pub fn </span>with_per_connection_event_buffer_size(<span class="kw-2">mut </span><span class="self">self</span>, n: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.pool_config = <span class="self">self</span>.pool_config.with_per_connection_event_buffer_size(n);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Number of addresses concurrently dialed for a single outbound connection attempt.
+    </span><span class="kw">pub fn </span>with_dial_concurrency_factor(<span class="kw-2">mut </span><span class="self">self</span>, factor: NonZeroU8) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.pool_config = <span class="self">self</span>.pool_config.with_dial_concurrency_factor(factor);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Configures an override for the substream upgrade protocol to use.
+    ///
+    /// The subtream upgrade protocol is the multistream-select protocol
+    /// used for protocol negotiation on substreams. Since a listener
+    /// supports all existing versions, the choice of upgrade protocol
+    /// only effects the &quot;dialer&quot;, i.e. the peer opening a substream.
+    ///
+    /// &gt; **Note**: If configured, specific upgrade protocols for
+    /// &gt; individual [`SubstreamProtocol`]s emitted by the `NetworkBehaviour`
+    /// &gt; are ignored.
+    </span><span class="kw">pub fn </span>with_substream_upgrade_protocol_override(
+        <span class="kw-2">mut </span><span class="self">self</span>,
+        v: libp2p_core::upgrade::Version,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.pool_config = <span class="self">self</span>.pool_config.with_substream_upgrade_protocol_override(v);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// The maximum number of inbound streams concurrently negotiating on a
+    /// connection. New inbound streams exceeding the limit are dropped and thus
+    /// reset.
+    ///
+    /// Note: This only enforces a limit on the number of concurrently
+    /// negotiating inbound streams. The total number of inbound streams on a
+    /// connection is the sum of negotiating and negotiated streams. A limit on
+    /// the total number of streams can be enforced at the
+    /// [`StreamMuxerBox`] level.
+    </span><span class="kw">pub fn </span>with_max_negotiating_inbound_streams(<span class="kw-2">mut </span><span class="self">self</span>, v: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.pool_config = <span class="self">self</span>.pool_config.with_max_negotiating_inbound_streams(v);
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// How long to keep a connection alive once it is idling.
+    ///
+    /// Defaults to 0.
+    </span><span class="kw">pub fn </span>with_idle_connection_timeout(<span class="kw-2">mut </span><span class="self">self</span>, timeout: Duration) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.pool_config.idle_connection_timeout = timeout;
+        <span class="self">self
+    </span>}
+}
+
 <span class="doccomment">/// A [`SwarmBuilder`] provides an API for configuring and constructing a [`Swarm`].
+</span><span class="attr">#[deprecated(
+    note = <span class="string">&quot;Use the new `libp2p::SwarmBuilder` instead of `libp2p::swarm::SwarmBuilder` or create a `Swarm` directly via `Swarm::new`.&quot;
+</span>)]
 </span><span class="kw">pub struct </span>SwarmBuilder&lt;TBehaviour&gt; {
     local_peer_id: PeerId,
     transport: transport::Boxed&lt;(PeerId, StreamMuxerBox)&gt;,
@@ -3769,7 +4056,8 @@
     pool_config: PoolConfig,
 }
 
-<span class="kw">impl</span>&lt;TBehaviour&gt; SwarmBuilder&lt;TBehaviour&gt;
+<span class="attr">#[allow(deprecated)]
+</span><span class="kw">impl</span>&lt;TBehaviour&gt; SwarmBuilder&lt;TBehaviour&gt;
 <span class="kw">where
     </span>TBehaviour: NetworkBehaviour,
 {
@@ -3929,8 +4217,7 @@
     /// Note: This only enforces a limit on the number of concurrently
     /// negotiating inbound streams. The total number of inbound streams on a
     /// connection is the sum of negotiating and negotiated streams. A limit on
-    /// the total number of streams can be enforced at the
-    /// [`StreamMuxerBox`](libp2p_core::muxing::StreamMuxerBox) level.
+    /// the total number of streams can be enforced at the [`StreamMuxerBox`] level.
     </span><span class="kw">pub fn </span>max_negotiating_inbound_streams(<span class="kw-2">mut </span><span class="self">self</span>, v: usize) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.pool_config = <span class="self">self</span>.pool_config.with_max_negotiating_inbound_streams(v);
         <span class="self">self
@@ -4236,9 +4523,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::dummy;
     <span class="kw">use </span><span class="kw">crate</span>::test::{CallTraceBehaviour, MockBehaviour};
-    <span class="kw">use </span>futures::executor::block_on;
-    <span class="kw">use </span>futures::executor::ThreadPool;
-    <span class="kw">use </span>futures::{executor, future};
+    <span class="kw">use </span>futures::future;
     <span class="kw">use </span>libp2p_core::multiaddr::multiaddr;
     <span class="kw">use </span>libp2p_core::transport::memory::MemoryTransportError;
     <span class="kw">use </span>libp2p_core::transport::TransportEvent;
@@ -4257,25 +4542,23 @@
     }
 
     <span class="kw">fn </span>new_test_swarm(
-    ) -&gt; SwarmBuilder&lt;CallTraceBehaviour&lt;MockBehaviour&lt;dummy::ConnectionHandler, ()&gt;&gt;&gt; {
+        config: Config,
+    ) -&gt; Swarm&lt;CallTraceBehaviour&lt;MockBehaviour&lt;dummy::ConnectionHandler, ()&gt;&gt;&gt; {
         <span class="kw">let </span>id_keys = identity::Keypair::generate_ed25519();
         <span class="kw">let </span>local_public_key = id_keys.public();
         <span class="kw">let </span>transport = transport::MemoryTransport::default()
             .upgrade(upgrade::Version::V1)
-            .authenticate(plaintext::PlainText2Config {
-                local_public_key: local_public_key.clone(),
-            })
+            .authenticate(plaintext::Config::new(<span class="kw-2">&amp;</span>id_keys))
             .multiplex(yamux::Config::default())
             .boxed();
         <span class="kw">let </span>behaviour = CallTraceBehaviour::new(MockBehaviour::new(dummy::ConnectionHandler));
-        <span class="kw">let </span>builder = <span class="kw">match </span>ThreadPool::new().ok() {
-            <span class="prelude-val">Some</span>(tp) =&gt; {
-                SwarmBuilder::with_executor(transport, behaviour, local_public_key.into(), tp)
-            }
-            <span class="prelude-val">None </span>=&gt; SwarmBuilder::without_executor(transport, behaviour, local_public_key.into()),
-        };
 
-        builder.idle_connection_timeout(Duration::from_secs(<span class="number">5</span>))
+        Swarm::new(
+            transport,
+            behaviour,
+            local_public_key.into(),
+            config.with_idle_connection_timeout(Duration::from_secs(<span class="number">5</span>)),
+        )
     }
 
     <span class="kw">fn </span>swarms_connected&lt;TBehaviour&gt;(
@@ -4324,10 +4607,10 @@
     ///
     /// The test expects both behaviours to be notified via calls to [`NetworkBehaviour::on_swarm_event`]
     /// with pairs of [`FromSwarm::ConnectionEstablished`] / [`FromSwarm::ConnectionClosed`]
-    </span><span class="attr">#[test]
-    </span><span class="kw">fn </span>test_swarm_disconnect() {
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm().build();
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm().build();
+    </span><span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_swarm_disconnect() {
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm(Config::with_tokio_executor());
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm(Config::with_tokio_executor());
 
         <span class="kw">let </span>addr1: Multiaddr = multiaddr::Protocol::Memory(rand::random::&lt;u64&gt;()).into();
         <span class="kw">let </span>addr2: Multiaddr = multiaddr::Protocol::Memory(rand::random::&lt;u64&gt;()).into();
@@ -4345,7 +4628,7 @@
         }
         <span class="kw">let </span><span class="kw-2">mut </span>state = State::Connecting;
 
-        executor::block_on(future::poll_fn(<span class="kw">move </span>|cx| <span class="kw">loop </span>{
+        future::poll_fn(<span class="kw">move </span>|cx| <span class="kw">loop </span>{
             <span class="kw">let </span>poll1 = Swarm::poll_next_event(Pin::new(<span class="kw-2">&amp;mut </span>swarm1), cx);
             <span class="kw">let </span>poll2 = Swarm::poll_next_event(Pin::new(<span class="kw-2">&amp;mut </span>swarm2), cx);
             <span class="kw">match </span>state {
@@ -4377,8 +4660,9 @@
             <span class="kw">if </span>poll1.is_pending() &amp;&amp; poll2.is_pending() {
                 <span class="kw">return </span>Poll::Pending;
             }
-        }))
-    }
+        })
+        .<span class="kw">await
+    </span>}
 
     <span class="doccomment">/// Establishes multiple connections between two peers,
     /// after which one peer disconnects the other
@@ -4386,10 +4670,10 @@
     ///
     /// The test expects both behaviours to be notified via calls to [`NetworkBehaviour::on_swarm_event`]
     /// with pairs of [`FromSwarm::ConnectionEstablished`] / [`FromSwarm::ConnectionClosed`]
-    </span><span class="attr">#[test]
-    </span><span class="kw">fn </span>test_behaviour_disconnect_all() {
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm().build();
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm().build();
+    </span><span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_behaviour_disconnect_all() {
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm(Config::with_tokio_executor());
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm(Config::with_tokio_executor());
 
         <span class="kw">let </span>addr1: Multiaddr = multiaddr::Protocol::Memory(rand::random::&lt;u64&gt;()).into();
         <span class="kw">let </span>addr2: Multiaddr = multiaddr::Protocol::Memory(rand::random::&lt;u64&gt;()).into();
@@ -4407,7 +4691,7 @@
         }
         <span class="kw">let </span><span class="kw-2">mut </span>state = State::Connecting;
 
-        executor::block_on(future::poll_fn(<span class="kw">move </span>|cx| <span class="kw">loop </span>{
+        future::poll_fn(<span class="kw">move </span>|cx| <span class="kw">loop </span>{
             <span class="kw">let </span>poll1 = Swarm::poll_next_event(Pin::new(<span class="kw-2">&amp;mut </span>swarm1), cx);
             <span class="kw">let </span>poll2 = Swarm::poll_next_event(Pin::new(<span class="kw-2">&amp;mut </span>swarm2), cx);
             <span class="kw">match </span>state {
@@ -4443,8 +4727,9 @@
             <span class="kw">if </span>poll1.is_pending() &amp;&amp; poll2.is_pending() {
                 <span class="kw">return </span>Poll::Pending;
             }
-        }))
-    }
+        })
+        .<span class="kw">await
+    </span>}
 
     <span class="doccomment">/// Establishes multiple connections between two peers,
     /// after which one peer closes a single connection
@@ -4452,10 +4737,10 @@
     ///
     /// The test expects both behaviours to be notified via calls to [`NetworkBehaviour::on_swarm_event`]
     /// with pairs of [`FromSwarm::ConnectionEstablished`] / [`FromSwarm::ConnectionClosed`]
-    </span><span class="attr">#[test]
-    </span><span class="kw">fn </span>test_behaviour_disconnect_one() {
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm().build();
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm().build();
+    </span><span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_behaviour_disconnect_one() {
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm(Config::with_tokio_executor());
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm(Config::with_tokio_executor());
 
         <span class="kw">let </span>addr1: Multiaddr = multiaddr::Protocol::Memory(rand::random::&lt;u64&gt;()).into();
         <span class="kw">let </span>addr2: Multiaddr = multiaddr::Protocol::Memory(rand::random::&lt;u64&gt;()).into();
@@ -4473,7 +4758,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>state = State::Connecting;
         <span class="kw">let </span><span class="kw-2">mut </span>disconnected_conn_id = <span class="prelude-val">None</span>;
 
-        executor::block_on(future::poll_fn(<span class="kw">move </span>|cx| <span class="kw">loop </span>{
+        future::poll_fn(<span class="kw">move </span>|cx| <span class="kw">loop </span>{
             <span class="kw">let </span>poll1 = Swarm::poll_next_event(Pin::new(<span class="kw-2">&amp;mut </span>swarm1), cx);
             <span class="kw">let </span>poll2 = Swarm::poll_next_event(Pin::new(<span class="kw-2">&amp;mut </span>swarm2), cx);
             <span class="kw">match </span>state {
@@ -4517,8 +4802,9 @@
             <span class="kw">if </span>poll1.is_pending() &amp;&amp; poll2.is_pending() {
                 <span class="kw">return </span>Poll::Pending;
             }
-        }))
-    }
+        })
+        .<span class="kw">await
+    </span>}
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>concurrent_dialing() {
@@ -4532,10 +4818,11 @@
         }
 
         <span class="kw">fn </span>prop(concurrency_factor: DialConcurrencyFactor) {
-            block_on(<span class="kw">async </span>{
-                <span class="kw">let </span><span class="kw-2">mut </span>swarm = new_test_swarm()
-                    .dial_concurrency_factor(concurrency_factor.<span class="number">0</span>)
-                    .build();
+            tokio::runtime::Runtime::new().unwrap().block_on(<span class="kw">async </span>{
+                <span class="kw">let </span><span class="kw-2">mut </span>swarm = new_test_swarm(
+                    Config::with_tokio_executor()
+                        .with_dial_concurrency_factor(concurrency_factor.<span class="number">0</span>),
+                );
 
                 <span class="comment">// Listen on `concurrency_factor + 1` addresses.
                 //
@@ -4569,19 +4856,14 @@
                     )
                     .unwrap();
                 <span class="kw">for </span><span class="kw-2">mut </span>transport <span class="kw">in </span>transports.into_iter() {
-                    <span class="kw">loop </span>{
-                        <span class="kw">match </span>futures::future::select(transport.select_next_some(), swarm.next())
-                            .<span class="kw">await
-                        </span>{
-                            future::Either::Left((TransportEvent::Incoming { .. }, <span class="kw">_</span>)) =&gt; {
-                                <span class="kw">break</span>;
-                            }
-                            future::Either::Left(<span class="kw">_</span>) =&gt; {
-                                <span class="macro">panic!</span>(<span class="string">&quot;Unexpected transport event.&quot;</span>)
-                            }
-                            future::Either::Right((e, <span class="kw">_</span>)) =&gt; {
-                                <span class="macro">panic!</span>(<span class="string">&quot;Expect swarm to not emit any event {e:?}&quot;</span>)
-                            }
+                    <span class="kw">match </span>futures::future::select(transport.select_next_some(), swarm.next()).<span class="kw">await
+                    </span>{
+                        future::Either::Left((TransportEvent::Incoming { .. }, <span class="kw">_</span>)) =&gt; {}
+                        future::Either::Left(<span class="kw">_</span>) =&gt; {
+                            <span class="macro">panic!</span>(<span class="string">&quot;Unexpected transport event.&quot;</span>)
+                        }
+                        future::Either::Right((e, <span class="kw">_</span>)) =&gt; {
+                            <span class="macro">panic!</span>(<span class="string">&quot;Expect swarm to not emit any event {e:?}&quot;</span>)
                         }
                     }
                 }
@@ -4596,31 +4878,29 @@
         QuickCheck::new().tests(<span class="number">10</span>).quickcheck(prop <span class="kw">as fn</span>(<span class="kw">_</span>) -&gt; <span class="kw">_</span>);
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>invalid_peer_id() {
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>invalid_peer_id() {
         <span class="comment">// Checks whether dialing an address containing the wrong peer id raises an error
         // for the expected peer id instead of the obtained peer id.
 
-        </span><span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm().build();
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm().build();
+        </span><span class="kw">let </span><span class="kw-2">mut </span>swarm1 = new_test_swarm(Config::with_tokio_executor());
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm2 = new_test_swarm(Config::with_tokio_executor());
 
         swarm1.listen_on(<span class="string">&quot;/memory/0&quot;</span>.parse().unwrap()).unwrap();
 
-        <span class="kw">let </span>address =
-            futures::executor::block_on(future::poll_fn(|cx| <span class="kw">match </span>swarm1.poll_next_unpin(cx) {
-                Poll::Ready(<span class="prelude-val">Some</span>(SwarmEvent::NewListenAddr { address, .. })) =&gt; {
-                    Poll::Ready(address)
-                }
-                Poll::Pending =&gt; Poll::Pending,
-                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Was expecting the listen address to be reported&quot;</span>),
-            }));
+        <span class="kw">let </span>address = future::poll_fn(|cx| <span class="kw">match </span>swarm1.poll_next_unpin(cx) {
+            Poll::Ready(<span class="prelude-val">Some</span>(SwarmEvent::NewListenAddr { address, .. })) =&gt; Poll::Ready(address),
+            Poll::Pending =&gt; Poll::Pending,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Was expecting the listen address to be reported&quot;</span>),
+        })
+        .<span class="kw">await</span>;
 
         <span class="kw">let </span>other_id = PeerId::random();
         <span class="kw">let </span>other_addr = address.with(multiaddr::Protocol::P2p(other_id));
 
         swarm2.dial(other_addr.clone()).unwrap();
 
-        <span class="kw">let </span>(peer_id, error) = futures::executor::block_on(future::poll_fn(|cx| {
+        <span class="kw">let </span>(peer_id, error) = future::poll_fn(|cx| {
             <span class="kw">if let </span>Poll::Ready(<span class="prelude-val">Some</span>(SwarmEvent::IncomingConnection { .. })) =
                 swarm1.poll_next_unpin(cx)
             {}
@@ -4632,7 +4912,8 @@
                 Poll::Ready(x) =&gt; <span class="macro">panic!</span>(<span class="string">&quot;unexpected {x:?}&quot;</span>),
                 Poll::Pending =&gt; Poll::Pending,
             }
-        }));
+        })
+        .<span class="kw">await</span>;
         <span class="macro">assert_eq!</span>(peer_id.unwrap(), other_id);
         <span class="kw">match </span>error {
             DialError::WrongPeerId { obtained, endpoint } =&gt; {
@@ -4649,8 +4930,8 @@
         }
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>dial_self() {
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>dial_self() {
         <span class="comment">// Check whether dialing ourselves correctly fails.
         //
         // Dialing the same address we&#39;re listening should result in three events:
@@ -4661,17 +4942,15 @@
         //
         // The last two can happen in any order.
 
-        </span><span class="kw">let </span><span class="kw-2">mut </span>swarm = new_test_swarm().build();
+        </span><span class="kw">let </span><span class="kw-2">mut </span>swarm = new_test_swarm(Config::with_tokio_executor());
         swarm.listen_on(<span class="string">&quot;/memory/0&quot;</span>.parse().unwrap()).unwrap();
 
-        <span class="kw">let </span>local_address =
-            futures::executor::block_on(future::poll_fn(|cx| <span class="kw">match </span>swarm.poll_next_unpin(cx) {
-                Poll::Ready(<span class="prelude-val">Some</span>(SwarmEvent::NewListenAddr { address, .. })) =&gt; {
-                    Poll::Ready(address)
-                }
-                Poll::Pending =&gt; Poll::Pending,
-                <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Was expecting the listen address to be reported&quot;</span>),
-            }));
+        <span class="kw">let </span>local_address = future::poll_fn(|cx| <span class="kw">match </span>swarm.poll_next_unpin(cx) {
+            Poll::Ready(<span class="prelude-val">Some</span>(SwarmEvent::NewListenAddr { address, .. })) =&gt; Poll::Ready(address),
+            Poll::Pending =&gt; Poll::Pending,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;Was expecting the listen address to be reported&quot;</span>),
+        })
+        .<span class="kw">await</span>;
 
         swarm.listened_addrs.clear(); <span class="comment">// This is a hack to actually execute the dial to ourselves which would otherwise be filtered.
 
@@ -4679,7 +4958,7 @@
 
         <span class="kw">let </span><span class="kw-2">mut </span>got_dial_err = <span class="bool-val">false</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>got_inc_err = <span class="bool-val">false</span>;
-        futures::executor::block_on(future::poll_fn(|cx| -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), io::Error&gt;&gt; {
+        future::poll_fn(|cx| -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;(), io::Error&gt;&gt; {
             <span class="kw">loop </span>{
                 <span class="kw">match </span>swarm.poll_next_unpin(cx) {
                     Poll::Ready(<span class="prelude-val">Some</span>(SwarmEvent::OutgoingConnectionError {
@@ -4713,26 +4992,27 @@
                     Poll::Pending =&gt; <span class="kw">break </span>Poll::Pending,
                 }
             }
-        }))
-        .unwrap();
+        })
+        .<span class="kw">await
+        </span>.unwrap();
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>dial_self_by_id() {
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>dial_self_by_id() {
         <span class="comment">// Trying to dial self by passing the same `PeerId` shouldn&#39;t even be possible in the first
         // place.
-        </span><span class="kw">let </span>swarm = new_test_swarm().build();
+        </span><span class="kw">let </span>swarm = new_test_swarm(Config::with_tokio_executor());
         <span class="kw">let </span>peer_id = <span class="kw-2">*</span>swarm.local_peer_id();
         <span class="macro">assert!</span>(!swarm.is_connected(<span class="kw-2">&amp;</span>peer_id));
     }
 
-    <span class="attr">#[async_std::test]
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>multiple_addresses_err() {
         <span class="comment">// Tries dialing multiple addresses, and makes sure there&#39;s one dialing error per address.
 
         </span><span class="kw">let </span>target = PeerId::random();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm = new_test_swarm().build();
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm = new_test_swarm(Config::with_tokio_executor());
 
         <span class="kw">let </span>addresses = HashSet::from([
             <span class="macro">multiaddr!</span>[Ip4([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]), Tcp(rand::random::&lt;u16&gt;())],
@@ -4774,16 +5054,16 @@
         }
     }
 
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>aborting_pending_connection_surfaces_error() {
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>aborting_pending_connection_surfaces_error() {
         <span class="kw">let _ </span>= env_logger::try_init();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>dialer = new_test_swarm().build();
-        <span class="kw">let </span><span class="kw-2">mut </span>listener = new_test_swarm().build();
+        <span class="kw">let </span><span class="kw-2">mut </span>dialer = new_test_swarm(Config::with_tokio_executor());
+        <span class="kw">let </span><span class="kw-2">mut </span>listener = new_test_swarm(Config::with_tokio_executor());
 
         <span class="kw">let </span>listener_peer_id = <span class="kw-2">*</span>listener.local_peer_id();
         listener.listen_on(<span class="macro">multiaddr!</span>[Memory(<span class="number">0u64</span>)]).unwrap();
-        <span class="kw">let </span>listener_address = <span class="kw">match </span>block_on(listener.next()).unwrap() {
+        <span class="kw">let </span>listener_address = <span class="kw">match </span>listener.next().<span class="kw">await</span>.unwrap() {
             SwarmEvent::NewListenAddr { address, .. } =&gt; address,
             e =&gt; <span class="macro">panic!</span>(<span class="string">&quot;Unexpected network event: {e:?}&quot;</span>),
         };
@@ -4800,7 +5080,7 @@
             .disconnect_peer_id(listener_peer_id)
             .expect_err(<span class="string">&quot;Expect peer to not yet be connected.&quot;</span>);
 
-        <span class="kw">match </span>block_on(dialer.next()).unwrap() {
+        <span class="kw">match </span>dialer.next().<span class="kw">await</span>.unwrap() {
             SwarmEvent::OutgoingConnectionError {
                 error: DialError::Aborted,
                 ..

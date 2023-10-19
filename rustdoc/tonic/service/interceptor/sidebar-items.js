@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["interceptor","interceptor_fn"],"struct":["InterceptedService","InterceptorLayer","ResponseFuture"],"trait":["Interceptor"],"type":["InterceptorFn"]};
+window.SIDEBAR_ITEMS = {"fn":["interceptor"],"struct":["InterceptedService","InterceptorLayer","ResponseFuture"],"trait":["Interceptor"]};

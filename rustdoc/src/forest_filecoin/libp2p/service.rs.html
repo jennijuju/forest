@@ -869,7 +869,7 @@
     multiaddr::Protocol,
     noise, ping,
     request_response::{<span class="self">self</span>, RequestId, ResponseChannel},
-    swarm::{SwarmBuilder, SwarmEvent},
+    swarm::{<span class="self">self</span>, SwarmEvent},
     yamux, PeerId, Swarm, Transport,
 };
 <span class="kw">use </span>tokio_stream::wrappers::IntervalStream;
@@ -1045,15 +1045,15 @@
         <span class="kw">let </span>transport =
             build_transport(net_keypair.clone()).expect(<span class="string">&quot;Failed to build libp2p transport&quot;</span>);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>swarm = SwarmBuilder::with_tokio_executor(
+        <span class="kw">let </span><span class="kw-2">mut </span>swarm = Swarm::new(
             transport,
             ForestBehaviour::new(<span class="kw-2">&amp;</span>net_keypair, <span class="kw-2">&amp;</span>config, network_name)<span class="question-mark">?</span>,
             peer_id,
-        )
-        .notify_handler_buffer_size(std::num::NonZeroUsize::new(<span class="number">20</span>).expect(<span class="string">&quot;Not zero&quot;</span>))
-        .per_connection_event_buffer_size(<span class="number">64</span>)
-        .idle_connection_timeout(Duration::from_secs(<span class="number">60 </span>* <span class="number">10</span>))
-        .build();
+            swarm::Config::with_tokio_executor()
+                .with_notify_handler_buffer_size(std::num::NonZeroUsize::new(<span class="number">20</span>).expect(<span class="string">&quot;Not zero&quot;</span>))
+                .with_per_connection_event_buffer_size(<span class="number">64</span>)
+                .with_idle_connection_timeout(Duration::from_secs(<span class="number">60 </span>* <span class="number">10</span>)),
+        );
 
         <span class="comment">// Subscribe to gossipsub topics with the network name suffix
         </span><span class="kw">for </span>topic <span class="kw">in </span>PUBSUB_TOPICS.iter() {
@@ -1664,7 +1664,7 @@
 /// has all above protocols enabled.
 </span><span class="kw">pub fn </span>build_transport(local_key: Keypair) -&gt; anyhow::Result&lt;Boxed&lt;(PeerId, StreamMuxerBox)&gt;&gt; {
     <span class="kw">let </span>build_tcp = || libp2p::tcp::tokio::Transport::new(libp2p::tcp::Config::new().nodelay(<span class="bool-val">true</span>));
-    <span class="kw">let </span>build_dns_tcp = || libp2p::dns::TokioDnsConfig::system(build_tcp());
+    <span class="kw">let </span>build_dns_tcp = || libp2p::dns::tokio::Transport::system(build_tcp());
     <span class="kw">let </span>transport = build_dns_tcp()<span class="question-mark">?</span>;
 
     <span class="kw">let </span>auth_config = noise::Config::new(<span class="kw-2">&amp;</span>local_key).context(<span class="string">&quot;Noise key generation failed&quot;</span>)<span class="question-mark">?</span>;

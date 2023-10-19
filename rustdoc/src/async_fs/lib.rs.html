@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-fs-1.6.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="async_fs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../async_fs/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/async-fs-2.0.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="async_fs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/smol-rs/smol/master/assets/images/logo_fullsize_transparent.png"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../async_fs/index.html"><img src="https://raw.githubusercontent.com/smol-rs/smol/master/assets/images/logo_fullsize_transparent.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1810,6 +1810,12 @@
 <a href="#1810" id="1810">1810</a>
 <a href="#1811" id="1811">1811</a>
 <a href="#1812" id="1812">1812</a>
+<a href="#1813" id="1813">1813</a>
+<a href="#1814" id="1814">1814</a>
+<a href="#1815" id="1815">1815</a>
+<a href="#1816" id="1816">1816</a>
+<a href="#1817" id="1817">1817</a>
+<a href="#1818" id="1818">1818</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Async filesystem primitives.
 //!
 //! This crate is an async version of [`std::fs`].
@@ -1835,7 +1841,14 @@
 //! # std::io::Result::Ok(()) });
 //! ```
 
-</span><span class="attr">#![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
+</span><span class="attr">#![forbid(unsafe_code)]
+#![warn(missing_docs, missing_debug_implementations, rust_2018_idioms)]
+#![doc(
+    html_favicon_url = <span class="string">&quot;https://raw.githubusercontent.com/smol-rs/smol/master/assets/images/logo_fullsize_transparent.png&quot;
+</span>)]
+#![doc(
+    html_logo_url = <span class="string">&quot;https://raw.githubusercontent.com/smol-rs/smol/master/assets/images/logo_fullsize_transparent.png&quot;
+</span>)]
 
 </span><span class="kw">use </span>std::ffi::OsString;
 <span class="kw">use </span>std::fmt;
@@ -1854,9 +1867,10 @@
 
 <span class="kw">use </span>async_lock::Mutex;
 <span class="kw">use </span>blocking::{unblock, Unblock};
+<span class="kw">use </span>futures_lite::future::FutureExt;
 <span class="kw">use </span>futures_lite::io::{AsyncRead, AsyncSeek, AsyncWrite, AsyncWriteExt};
+<span class="kw">use </span>futures_lite::ready;
 <span class="kw">use </span>futures_lite::stream::Stream;
-<span class="kw">use </span>futures_lite::{future, ready};
 
 <span class="attr">#[doc(no_inline)]
 </span><span class="kw">pub use </span>std::fs::{FileType, Metadata, Permissions};
@@ -1883,7 +1897,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>canonicalize&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;PathBuf&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::canonicalize(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::canonicalize(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Copies a file to a new location.
@@ -1941,7 +1955,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>create_dir&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::create_dir(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::create_dir(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Creates a directory and its parent directories if they are missing.
@@ -1963,7 +1977,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>create_dir_all&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::create_dir_all(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::create_dir_all(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Creates a hard link on the filesystem.
@@ -2042,7 +2056,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>read&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;Vec&lt;u8&gt;&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::read(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::read(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Returns a stream of entries in a directory.
@@ -2073,7 +2087,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>read_dir&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;ReadDir&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::read_dir(<span class="kw-2">&amp;</span>path).map(|inner| ReadDir(State::Idle(<span class="prelude-val">Some</span>(inner))))).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::read_dir(path).map(|inner| ReadDir(State::Idle(<span class="prelude-val">Some</span>(inner))))).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// A stream of entries in a directory.
@@ -2088,7 +2102,7 @@
 /// The `ReadDir` can be either idle or busy performing an asynchronous operation.
 </span><span class="kw">enum </span>State {
     Idle(<span class="prelude-ty">Option</span>&lt;std::fs::ReadDir&gt;),
-    Busy(future::Boxed&lt;(std::fs::ReadDir, <span class="prelude-ty">Option</span>&lt;io::Result&lt;std::fs::DirEntry&gt;&gt;)&gt;),
+    Busy(blocking::Task&lt;(std::fs::ReadDir, <span class="prelude-ty">Option</span>&lt;io::Result&lt;std::fs::DirEntry&gt;&gt;)&gt;),
 }
 
 <span class="kw">impl </span>fmt::Debug <span class="kw">for </span>ReadDir {
@@ -2107,14 +2121,14 @@
                     <span class="kw">let </span><span class="kw-2">mut </span>inner = opt.take().unwrap();
 
                     <span class="comment">// Start the operation asynchronously.
-                    </span><span class="self">self</span>.<span class="number">0 </span>= State::Busy(Box::pin(unblock(<span class="kw">move </span>|| {
+                    </span><span class="self">self</span>.<span class="number">0 </span>= State::Busy(unblock(<span class="kw">move </span>|| {
                         <span class="kw">let </span>next = inner.next();
                         (inner, next)
-                    })));
+                    }));
                 }
                 <span class="comment">// Poll the asynchronous operation the file is currently blocked on.
                 </span>State::Busy(task) =&gt; {
-                    <span class="kw">let </span>(inner, opt) = <span class="macro">ready!</span>(task.as_mut().poll(cx));
+                    <span class="kw">let </span>(inner, opt) = <span class="macro">ready!</span>(task.poll(cx));
                     <span class="self">self</span>.<span class="number">0 </span>= State::Idle(<span class="prelude-val">Some</span>(inner));
                     <span class="kw">return </span>Poll::Ready(opt.map(|res| res.map(|inner| DirEntry(Arc::new(inner)))));
                 }
@@ -2275,7 +2289,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>read_link&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;PathBuf&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::read_link(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::read_link(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Reads the entire contents of a file as a string.
@@ -2304,7 +2318,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>read_to_string&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;String&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::read_to_string(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::read_to_string(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Removes an empty directory.
@@ -2329,7 +2343,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>remove_dir&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::remove_dir(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::remove_dir(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Removes a directory and all of its contents.
@@ -2351,7 +2365,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>remove_dir_all&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::remove_dir_all(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::remove_dir_all(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Removes a file.
@@ -2373,7 +2387,7 @@
 /// ```
 </span><span class="kw">pub async fn </span>remove_file&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;()&gt; {
     <span class="kw">let </span>path = path.as_ref().to_owned();
-    unblock(<span class="kw">move </span>|| std::fs::remove_file(<span class="kw-2">&amp;</span>path)).<span class="kw">await
+    unblock(<span class="kw">move </span>|| std::fs::remove_file(path)).<span class="kw">await
 </span>}
 
 <span class="doccomment">/// Renames a file or directory to a new location.
@@ -2683,7 +2697,7 @@
     /// ```
     </span><span class="kw">pub async fn </span>open&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;File&gt; {
         <span class="kw">let </span>path = path.as_ref().to_owned();
-        <span class="kw">let </span>file = unblock(<span class="kw">move </span>|| std::fs::File::open(<span class="kw-2">&amp;</span>path)).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>file = unblock(<span class="kw">move </span>|| std::fs::File::open(path)).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(File::new(file, <span class="bool-val">false</span>))
     }
 
@@ -2714,7 +2728,7 @@
     /// ```
     </span><span class="kw">pub async fn </span>create&lt;P: AsRef&lt;Path&gt;&gt;(path: P) -&gt; io::Result&lt;File&gt; {
         <span class="kw">let </span>path = path.as_ref().to_owned();
-        <span class="kw">let </span>file = unblock(<span class="kw">move </span>|| std::fs::File::create(<span class="kw-2">&amp;</span>path)).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>file = unblock(<span class="kw">move </span>|| std::fs::File::create(path)).<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(File::new(file, <span class="bool-val">false</span>))
     }
 
@@ -2876,20 +2890,6 @@
 }
 
 <span class="attr">#[cfg(unix)]
-</span><span class="kw">impl </span>std::os::unix::io::FromRawFd <span class="kw">for </span>File {
-    <span class="kw">unsafe fn </span>from_raw_fd(raw: std::os::unix::io::RawFd) -&gt; File {
-        File::from(std::fs::File::from_raw_fd(raw))
-    }
-}
-
-<span class="attr">#[cfg(windows)]
-</span><span class="kw">impl </span>std::os::windows::io::FromRawHandle <span class="kw">for </span>File {
-    <span class="kw">unsafe fn </span>from_raw_handle(raw: std::os::windows::io::RawHandle) -&gt; File {
-        File::from(std::fs::File::from_raw_handle(raw))
-    }
-}
-
-<span class="attr">#[cfg(unix)]
 </span><span class="kw">impl </span>std::os::unix::io::AsRawFd <span class="kw">for </span>File {
     <span class="kw">fn </span>as_raw_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; std::os::unix::io::RawFd {
         <span class="self">self</span>.file.as_raw_fd()
@@ -2903,28 +2903,28 @@
     }
 }
 
-<span class="attr">#[cfg(all(not(async_fs_no_io_safety), unix))]
+<span class="attr">#[cfg(unix)]
 </span><span class="kw">impl </span>From&lt;std::os::unix::io::OwnedFd&gt; <span class="kw">for </span>File {
     <span class="kw">fn </span>from(fd: std::os::unix::io::OwnedFd) -&gt; <span class="self">Self </span>{
         File::from(std::fs::File::from(fd))
     }
 }
 
-<span class="attr">#[cfg(all(not(async_fs_no_io_safety), windows))]
+<span class="attr">#[cfg(windows)]
 </span><span class="kw">impl </span>From&lt;std::os::windows::io::OwnedHandle&gt; <span class="kw">for </span>File {
     <span class="kw">fn </span>from(fd: std::os::windows::io::OwnedHandle) -&gt; <span class="self">Self </span>{
         File::from(std::fs::File::from(fd))
     }
 }
 
-<span class="attr">#[cfg(all(not(async_fs_no_io_safety), unix))]
+<span class="attr">#[cfg(unix)]
 </span><span class="kw">impl </span>std::os::unix::io::AsFd <span class="kw">for </span>File {
     <span class="kw">fn </span>as_fd(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; std::os::unix::io::BorrowedFd&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="self">self</span>.file.as_fd()
     }
 }
 
-<span class="attr">#[cfg(all(not(async_fs_no_io_safety), windows))]
+<span class="attr">#[cfg(windows)]
 </span><span class="kw">impl </span>std::os::windows::io::AsHandle <span class="kw">for </span>File {
     <span class="kw">fn </span>as_handle(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; std::os::windows::io::BorrowedHandle&lt;<span class="lifetime">&#39;_</span>&gt; {
         <span class="self">self</span>.file.as_handle()
@@ -3313,9 +3313,20 @@
     </span>}
 }
 
+<span class="kw">mod </span>__private {
+    <span class="attr">#[doc(hidden)]
+    </span><span class="kw">pub trait </span>Sealed {}
+
+    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw">super</span>::OpenOptions {}
+    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw">super</span>::File {}
+    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw">super</span>::DirBuilder {}
+    <span class="kw">impl </span>Sealed <span class="kw">for </span><span class="kw">super</span>::DirEntry {}
+}
+
 <span class="doccomment">/// Unix-specific extensions.
 </span><span class="attr">#[cfg(unix)]
 </span><span class="kw">pub mod </span>unix {
+    <span class="kw">use </span><span class="kw">super</span>::__private::Sealed;
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[doc(no_inline)]
@@ -3339,7 +3350,7 @@
     </span>}
 
     <span class="doccomment">/// Unix-specific extensions to [`DirBuilder`].
-    </span><span class="kw">pub trait </span>DirBuilderExt {
+    </span><span class="kw">pub trait </span>DirBuilderExt: Sealed {
         <span class="doccomment">/// Sets the mode to create new directories with.
         ///
         /// This option defaults to `0o777`.
@@ -3356,7 +3367,7 @@
     }
 
     <span class="doccomment">/// Unix-specific extension methods for [`DirEntry`].
-    </span><span class="kw">pub trait </span>DirEntryExt {
+    </span><span class="kw">pub trait </span>DirEntryExt: Sealed {
         <span class="doccomment">/// Returns the underlying `d_ino` field in the contained `dirent` structure.
         ///
         /// # Examples
@@ -3377,7 +3388,7 @@
     }
 
     <span class="doccomment">/// Unix-specific extensions to [`OpenOptions`].
-    </span><span class="kw">pub trait </span>OpenOptionsExt {
+    </span><span class="kw">pub trait </span>OpenOptionsExt: Sealed {
         <span class="doccomment">/// Sets the mode bits that a new file will be created with.
         ///
         /// If a new file is created as part of an [`OpenOptions::open()`] call then this
@@ -3428,6 +3439,7 @@
 <span class="doccomment">/// Windows-specific extensions.
 </span><span class="attr">#[cfg(windows)]
 </span><span class="kw">pub mod </span>windows {
+    <span class="kw">use </span><span class="kw">super</span>::__private::Sealed;
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[doc(no_inline)]
@@ -3468,7 +3480,7 @@
     </span>}
 
     <span class="doccomment">/// Windows-specific extensions to [`OpenOptions`].
-    </span><span class="kw">pub trait </span>OpenOptionsExt {
+    </span><span class="kw">pub trait </span>OpenOptionsExt: Sealed {
         <span class="doccomment">/// Overrides the `dwDesiredAccess` argument to the call to [`CreateFile`]
         /// with the specified value.
         ///
@@ -3538,7 +3550,7 @@
         /// let file = OpenOptions::new()
         ///     .create(true)
         ///     .write(true)
-        ///     .custom_flags(winapi::um::winbase::FILE_FLAG_DELETE_ON_CLOSE)
+        ///     .custom_flags(windows_sys::Win32::Storage::FileSystem::FILE_FLAG_DELETE_ON_CLOSE)
         ///     .open(&quot;foo.txt&quot;)
         ///     .await?;
         /// # std::io::Result::Ok(()) });
@@ -3572,7 +3584,7 @@
         /// let file = OpenOptions::new()
         ///     .write(true)
         ///     .create(true)
-        ///     .attributes(winapi::um::winnt::FILE_ATTRIBUTE_HIDDEN)
+        ///     .attributes(windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_HIDDEN)
         ///     .open(&quot;foo.txt&quot;)
         ///     .await?;
         /// # std::io::Result::Ok(()) });
@@ -3610,7 +3622,7 @@
         /// let file = OpenOptions::new()
         ///     .write(true)
         ///     .create(true)
-        ///     .security_qos_flags(winapi::um::winbase::SECURITY_IDENTIFICATION)
+        ///     .security_qos_flags(windows_sys::Win32::Storage::FileSystem::SECURITY_IDENTIFICATION)
         ///     .open(r&quot;\\.\pipe\MyPipe&quot;)
         ///     .await?;
         /// # std::io::Result::Ok(()) });

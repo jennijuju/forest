@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tonic-0.9.2/src/codec/encode.rs`."><title>encode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tonic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tonic/index.html"><img src="https://raw.githubusercontent.com/tokio-rs/website/master/public/img/icons/tonic.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tonic-0.10.2/src/codec/encode.rs`."><title>encode.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="tonic" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../tonic/index.html"><img src="https://raw.githubusercontent.com/tokio-rs/website/master/public/img/icons/tonic.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -272,21 +272,150 @@
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
 <a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+<a href="#343" id="343">343</a>
+<a href="#344" id="344">344</a>
+<a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
+<a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
+<a href="#386" id="386">386</a>
+<a href="#387" id="387">387</a>
+<a href="#388" id="388">388</a>
+<a href="#389" id="389">389</a>
+<a href="#390" id="390">390</a>
+<a href="#391" id="391">391</a>
+<a href="#392" id="392">392</a>
+<a href="#393" id="393">393</a>
+<a href="#394" id="394">394</a>
+<a href="#395" id="395">395</a>
+<a href="#396" id="396">396</a>
+<a href="#397" id="397">397</a>
+<a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span><span class="kw">super</span>::compression::{compress, CompressionEncoding, SingleMessageCompressionOverride};
 <span class="kw">use super</span>::{EncodeBuf, Encoder, DEFAULT_MAX_SEND_MESSAGE_SIZE, HEADER_SIZE};
 <span class="kw">use crate</span>::{Code, Status};
 <span class="kw">use </span>bytes::{BufMut, Bytes, BytesMut};
-<span class="kw">use </span>futures_core::{Stream, TryStream};
-<span class="kw">use </span>futures_util::{ready, StreamExt, TryStreamExt};
 <span class="kw">use </span>http::HeaderMap;
 <span class="kw">use </span>http_body::Body;
 <span class="kw">use </span>pin_project::pin_project;
 <span class="kw">use </span>std::{
     pin::Pin,
-    task::{Context, Poll},
+    task::{ready, Context, Poll},
 };
+<span class="kw">use </span>tokio_stream::{Stream, StreamExt};
+
+<span class="kw">use </span>fuse::Fuse;
 
 <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">const </span>BUFFER_SIZE: usize = <span class="number">8 </span>* <span class="number">1024</span>;
+<span class="kw">const </span>YIELD_THRESHOLD: usize = <span class="number">32 </span>* <span class="number">1024</span>;
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>encode_server&lt;T, U&gt;(
     encoder: T,
@@ -299,14 +428,13 @@
     </span>T: Encoder&lt;Error = Status&gt;,
     U: Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;T::Item, Status&gt;&gt;,
 {
-    <span class="kw">let </span>stream = encode(
+    <span class="kw">let </span>stream = EncodedBytes::new(
         encoder,
         source,
         compression_encoding,
         compression_override,
         max_message_size,
-    )
-    .into_stream();
+    );
 
     EncodeBody::new_server(stream)
 }
@@ -321,55 +449,125 @@
     </span>T: Encoder&lt;Error = Status&gt;,
     U: Stream&lt;Item = T::Item&gt;,
 {
-    <span class="kw">let </span>stream = encode(
+    <span class="kw">let </span>stream = EncodedBytes::new(
         encoder,
         source.map(<span class="prelude-val">Ok</span>),
         compression_encoding,
         SingleMessageCompressionOverride::default(),
         max_message_size,
-    )
-    .into_stream();
+    );
     EncodeBody::new_client(stream)
 }
 
-<span class="kw">fn </span>encode&lt;T, U&gt;(
-    <span class="kw-2">mut </span>encoder: T,
-    source: U,
-    compression_encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
-    compression_override: SingleMessageCompressionOverride,
-    max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
-) -&gt; <span class="kw">impl </span>TryStream&lt;<span class="prelude-val">Ok </span>= Bytes, Error = Status&gt;
+<span class="doccomment">/// Combinator for efficient encoding of messages into reasonably sized buffers.
+/// EncodedBytes encodes ready messages from its delegate stream into a BytesMut,
+/// splitting off and yielding a buffer when either:
+///  * The delegate stream polls as not ready, or
+///  * The encoded buffer surpasses YIELD_THRESHOLD.
+</span><span class="attr">#[pin_project(project = EncodedBytesProj)]
+#[derive(Debug)]
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>EncodedBytes&lt;T, U&gt;
 <span class="kw">where
     </span>T: Encoder&lt;Error = Status&gt;,
     U: Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;T::Item, Status&gt;&gt;,
 {
-    <span class="kw">let </span><span class="kw-2">mut </span>buf = BytesMut::with_capacity(BUFFER_SIZE);
+    <span class="attr">#[pin]
+    </span>source: Fuse&lt;U&gt;,
+    encoder: T,
+    compression_encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
+    max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    buf: BytesMut,
+    uncompression_buf: BytesMut,
+}
 
-    <span class="kw">let </span>compression_encoding = <span class="kw">if </span>compression_override == SingleMessageCompressionOverride::Disable
-    {
-        <span class="prelude-val">None
-    </span>} <span class="kw">else </span>{
-        compression_encoding
-    };
+<span class="kw">impl</span>&lt;T, U&gt; EncodedBytes&lt;T, U&gt;
+<span class="kw">where
+    </span>T: Encoder&lt;Error = Status&gt;,
+    U: Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;T::Item, Status&gt;&gt;,
+{
+    <span class="kw">fn </span>new(
+        encoder: T,
+        source: U,
+        compression_encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
+        compression_override: SingleMessageCompressionOverride,
+        max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>buf = BytesMut::with_capacity(BUFFER_SIZE);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>uncompression_buf = <span class="kw">if </span>compression_encoding.is_some() {
-        BytesMut::with_capacity(BUFFER_SIZE)
-    } <span class="kw">else </span>{
-        BytesMut::new()
-    };
+        <span class="kw">let </span>compression_encoding =
+            <span class="kw">if </span>compression_override == SingleMessageCompressionOverride::Disable {
+                <span class="prelude-val">None
+            </span>} <span class="kw">else </span>{
+                compression_encoding
+            };
 
-    source.map(<span class="kw">move </span>|result| {
-        <span class="kw">let </span>item = result<span class="question-mark">?</span>;
+        <span class="kw">let </span>uncompression_buf = <span class="kw">if </span>compression_encoding.is_some() {
+            BytesMut::with_capacity(BUFFER_SIZE)
+        } <span class="kw">else </span>{
+            BytesMut::new()
+        };
 
-        encode_item(
-            <span class="kw-2">&amp;mut </span>encoder,
-            <span class="kw-2">&amp;mut </span>buf,
-            <span class="kw-2">&amp;mut </span>uncompression_buf,
+        <span class="kw">return </span>EncodedBytes {
+            source: Fuse::new(source),
+            encoder,
             compression_encoding,
             max_message_size,
-            item,
-        )
-    })
+            buf,
+            uncompression_buf,
+        };
+    }
+}
+
+<span class="kw">impl</span>&lt;T, U&gt; Stream <span class="kw">for </span>EncodedBytes&lt;T, U&gt;
+<span class="kw">where
+    </span>T: Encoder&lt;Error = Status&gt;,
+    U: Stream&lt;Item = <span class="prelude-ty">Result</span>&lt;T::Item, Status&gt;&gt;,
+{
+    <span class="kw">type </span>Item = <span class="prelude-ty">Result</span>&lt;Bytes, Status&gt;;
+
+    <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt;&gt; {
+        <span class="kw">let </span>EncodedBytesProj {
+            <span class="kw-2">mut </span>source,
+            encoder,
+            compression_encoding,
+            max_message_size,
+            buf,
+            uncompression_buf,
+        } = <span class="self">self</span>.project();
+
+        <span class="kw">loop </span>{
+            <span class="kw">match </span>source.as_mut().poll_next(cx) {
+                Poll::Pending <span class="kw">if </span>buf.is_empty() =&gt; {
+                    <span class="kw">return </span>Poll::Pending;
+                }
+                Poll::Ready(<span class="prelude-val">None</span>) <span class="kw">if </span>buf.is_empty() =&gt; {
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">None</span>);
+                }
+                Poll::Pending | Poll::Ready(<span class="prelude-val">None</span>) =&gt; {
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(buf.split_to(buf.len()).freeze())));
+                }
+                Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(item))) =&gt; {
+                    <span class="kw">if let </span><span class="prelude-val">Err</span>(status) = encode_item(
+                        encoder,
+                        buf,
+                        uncompression_buf,
+                        <span class="kw-2">*</span>compression_encoding,
+                        <span class="kw-2">*</span>max_message_size,
+                        item,
+                    ) {
+                        <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(status)));
+                    }
+
+                    <span class="kw">if </span>buf.len() &gt;= YIELD_THRESHOLD {
+                        <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(buf.split_to(buf.len()).freeze())));
+                    }
+                }
+                Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(status))) =&gt; {
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(status)));
+                }
+            }
+        }
+    }
 }
 
 <span class="kw">fn </span>encode_item&lt;T&gt;(
@@ -379,10 +577,12 @@
     compression_encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
     max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     item: T::Item,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Bytes, Status&gt;
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt;
 <span class="kw">where
     </span>T: Encoder&lt;Error = Status&gt;,
 {
+    <span class="kw">let </span>offset = buf.len();
+
     buf.reserve(HEADER_SIZE);
     <span class="kw">unsafe </span>{
         buf.advance_mut(HEADER_SIZE);
@@ -406,14 +606,14 @@
     }
 
     <span class="comment">// now that we know length, we can write the header
-    </span>finish_encoding(compression_encoding, max_message_size, buf)
+    </span>finish_encoding(compression_encoding, max_message_size, <span class="kw-2">&amp;mut </span>buf[offset..])
 }
 
 <span class="kw">fn </span>finish_encoding(
     compression_encoding: <span class="prelude-ty">Option</span>&lt;CompressionEncoding&gt;,
     max_message_size: <span class="prelude-ty">Option</span>&lt;usize&gt;,
-    buf: <span class="kw-2">&amp;mut </span>BytesMut,
-) -&gt; <span class="prelude-ty">Result</span>&lt;Bytes, Status&gt; {
+    buf: <span class="kw-2">&amp;mut </span>[u8],
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), Status&gt; {
     <span class="kw">let </span>len = buf.len() - HEADER_SIZE;
     <span class="kw">let </span>limit = max_message_size.unwrap_or(DEFAULT_MAX_SEND_MESSAGE_SIZE);
     <span class="kw">if </span>len &gt; limit {
@@ -437,7 +637,7 @@
         buf.put_u32(len <span class="kw">as </span>u32);
     }
 
-    <span class="prelude-val">Ok</span>(buf.split_to(len + HEADER_SIZE).freeze())
+    <span class="prelude-val">Ok</span>(())
 }
 
 <span class="attr">#[derive(Debug)]
@@ -525,8 +725,8 @@
         <span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
         cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Data, <span class="self">Self</span>::Error&gt;&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>self_proj = <span class="self">self</span>.project();
-        <span class="kw">match </span><span class="macro">ready!</span>(self_proj.inner.try_poll_next_unpin(cx)) {
+        <span class="kw">let </span>self_proj = <span class="self">self</span>.project();
+        <span class="kw">match </span><span class="macro">ready!</span>(self_proj.inner.poll_next(cx)) {
             <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(d)) =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Ok</span>(d)).into(),
             <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(status)) =&gt; <span class="kw">match </span>self_proj.state.role {
                 Role::Client =&gt; <span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(status)).into(),
@@ -544,6 +744,60 @@
         _cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; Poll&lt;<span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;HeaderMap&gt;, Status&gt;&gt; {
         Poll::Ready(<span class="self">self</span>.project().state.trailers())
+    }
+}
+
+<span class="kw">mod </span>fuse {
+    <span class="kw">use </span>std::{
+        pin::Pin,
+        task::{ready, Context, Poll},
+    };
+
+    <span class="kw">use </span>tokio_stream::Stream;
+
+    <span class="doccomment">/// Stream for the [`fuse`](super::StreamExt::fuse) method.
+    </span><span class="attr">#[derive(Debug)]
+    #[pin_project::pin_project]
+    #[must_use = <span class="string">&quot;streams do nothing unless polled&quot;</span>]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">struct </span>Fuse&lt;St&gt; {
+        <span class="attr">#[pin]
+        </span>stream: St,
+        done: bool,
+    }
+
+    <span class="kw">impl</span>&lt;St&gt; Fuse&lt;St&gt; {
+        <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(stream: St) -&gt; <span class="self">Self </span>{
+            <span class="self">Self </span>{
+                stream,
+                done: <span class="bool-val">false</span>,
+            }
+        }
+    }
+
+    <span class="kw">impl</span>&lt;S: Stream&gt; Stream <span class="kw">for </span>Fuse&lt;S&gt; {
+        <span class="kw">type </span>Item = S::Item;
+
+        <span class="kw">fn </span>poll_next(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;S::Item&gt;&gt; {
+            <span class="kw">let </span>this = <span class="self">self</span>.project();
+
+            <span class="kw">if </span><span class="kw-2">*</span>this.done {
+                <span class="kw">return </span>Poll::Ready(<span class="prelude-val">None</span>);
+            }
+
+            <span class="kw">let </span>item = <span class="macro">ready!</span>(this.stream.poll_next(cx));
+            <span class="kw">if </span>item.is_none() {
+                <span class="kw-2">*</span>this.done = <span class="bool-val">true</span>;
+            }
+            Poll::Ready(item)
+        }
+
+        <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+            <span class="kw">if </span><span class="self">self</span>.done {
+                (<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="number">0</span>))
+            } <span class="kw">else </span>{
+                <span class="self">self</span>.stream.size_hint()
+            }
+        }
     }
 }
 </code></pre></div></section></main></body></html>

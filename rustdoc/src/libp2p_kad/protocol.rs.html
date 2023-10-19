@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-kad-0.44.5/src/protocol.rs`."><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_kad" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_kad/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-kad-0.44.6/src/protocol.rs`."><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_kad" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_kad/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -729,7 +729,7 @@
 
 </span><span class="doccomment">//! The Kademlia connection protocol upgrade and associated message types.
 //!
-//! The connection protocol upgrade is provided by [`KademliaProtocolConfig`], with the
+//! The connection protocol upgrade is provided by [`ProtocolConfig`], with the
 //! request and response types [`KadRequestMsg`] and [`KadResponseMsg`], respectively.
 //! The upgrade&#39;s output is a `Sink + Stream` of messages. The `Stream` component is used
 //! to poll the underlying transport for incoming messages, and the `Sink` component
@@ -755,7 +755,7 @@
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">const </span>DEFAULT_MAX_PACKET_SIZE: usize = <span class="number">16 </span>* <span class="number">1024</span>;
 <span class="doccomment">/// Status of our connection to a node reported by the Kademlia protocol.
 </span><span class="attr">#[derive(Copy, Clone, PartialEq, Eq, Debug, Hash)]
-</span><span class="kw">pub enum </span>KadConnectionType {
+</span><span class="kw">pub enum </span>ConnectionType {
     <span class="doccomment">/// Sender hasn&#39;t tried to connect to peer.
     </span>NotConnected = <span class="number">0</span>,
     <span class="doccomment">/// Sender is currently connected to peer.
@@ -766,26 +766,26 @@
     </span>CannotConnect = <span class="number">3</span>,
 }
 
-<span class="kw">impl </span>From&lt;proto::ConnectionType&gt; <span class="kw">for </span>KadConnectionType {
-    <span class="kw">fn </span>from(raw: proto::ConnectionType) -&gt; KadConnectionType {
+<span class="kw">impl </span>From&lt;proto::ConnectionType&gt; <span class="kw">for </span>ConnectionType {
+    <span class="kw">fn </span>from(raw: proto::ConnectionType) -&gt; ConnectionType {
         <span class="kw">use </span>proto::ConnectionType::<span class="kw-2">*</span>;
         <span class="kw">match </span>raw {
-            NOT_CONNECTED =&gt; KadConnectionType::NotConnected,
-            CONNECTED =&gt; KadConnectionType::Connected,
-            CAN_CONNECT =&gt; KadConnectionType::CanConnect,
-            CANNOT_CONNECT =&gt; KadConnectionType::CannotConnect,
+            NOT_CONNECTED =&gt; ConnectionType::NotConnected,
+            CONNECTED =&gt; ConnectionType::Connected,
+            CAN_CONNECT =&gt; ConnectionType::CanConnect,
+            CANNOT_CONNECT =&gt; ConnectionType::CannotConnect,
         }
     }
 }
 
-<span class="kw">impl </span>From&lt;KadConnectionType&gt; <span class="kw">for </span>proto::ConnectionType {
-    <span class="kw">fn </span>from(val: KadConnectionType) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;ConnectionType&gt; <span class="kw">for </span>proto::ConnectionType {
+    <span class="kw">fn </span>from(val: ConnectionType) -&gt; <span class="self">Self </span>{
         <span class="kw">use </span>proto::ConnectionType::<span class="kw-2">*</span>;
         <span class="kw">match </span>val {
-            KadConnectionType::NotConnected =&gt; NOT_CONNECTED,
-            KadConnectionType::Connected =&gt; CONNECTED,
-            KadConnectionType::CanConnect =&gt; CAN_CONNECT,
-            KadConnectionType::CannotConnect =&gt; CANNOT_CONNECT,
+            ConnectionType::NotConnected =&gt; NOT_CONNECTED,
+            ConnectionType::Connected =&gt; CONNECTED,
+            ConnectionType::CanConnect =&gt; CAN_CONNECT,
+            ConnectionType::CannotConnect =&gt; CANNOT_CONNECT,
         }
     }
 }
@@ -798,7 +798,7 @@
     <span class="doccomment">/// The multiaddresses that the sender think can be used in order to reach the peer.
     </span><span class="kw">pub </span>multiaddrs: Vec&lt;Multiaddr&gt;,
     <span class="doccomment">/// How the sender is connected to that remote.
-    </span><span class="kw">pub </span>connection_ty: KadConnectionType,
+    </span><span class="kw">pub </span>connection_ty: ConnectionType,
 }
 
 <span class="comment">// Builds a `KadPeer` from a corresponding protobuf message.
@@ -844,13 +844,13 @@
 //       only one request, then we can change the output of the `InboundUpgrade` and
 //       `OutboundUpgrade` to be just a single message
 </span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>KademliaProtocolConfig {
+</span><span class="kw">pub struct </span>ProtocolConfig {
     protocol_names: Vec&lt;StreamProtocol&gt;,
     <span class="doccomment">/// Maximum allowed size of a packet.
     </span>max_packet_size: usize,
 }
 
-<span class="kw">impl </span>KademliaProtocolConfig {
+<span class="kw">impl </span>ProtocolConfig {
     <span class="doccomment">/// Returns the configured protocol name.
     </span><span class="kw">pub fn </span>protocol_names(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[StreamProtocol] {
         <span class="kw-2">&amp;</span><span class="self">self</span>.protocol_names
@@ -868,16 +868,16 @@
     }
 }
 
-<span class="kw">impl </span>Default <span class="kw">for </span>KademliaProtocolConfig {
+<span class="kw">impl </span>Default <span class="kw">for </span>ProtocolConfig {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-        KademliaProtocolConfig {
+        ProtocolConfig {
             protocol_names: iter::once(DEFAULT_PROTO_NAME).collect(),
             max_packet_size: DEFAULT_MAX_PACKET_SIZE,
         }
     }
 }
 
-<span class="kw">impl </span>UpgradeInfo <span class="kw">for </span>KademliaProtocolConfig {
+<span class="kw">impl </span>UpgradeInfo <span class="kw">for </span>ProtocolConfig {
     <span class="kw">type </span>Info = StreamProtocol;
     <span class="kw">type </span>InfoIter = std::vec::IntoIter&lt;<span class="self">Self</span>::Info&gt;;
 
@@ -922,7 +922,7 @@
 <span class="doccomment">/// Sink of requests and stream of responses.
 </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">type </span>KadOutStreamSink&lt;S&gt; = Framed&lt;S, Codec&lt;KadRequestMsg, KadResponseMsg&gt;&gt;;
 
-<span class="kw">impl</span>&lt;C&gt; InboundUpgrade&lt;C&gt; <span class="kw">for </span>KademliaProtocolConfig
+<span class="kw">impl</span>&lt;C&gt; InboundUpgrade&lt;C&gt; <span class="kw">for </span>ProtocolConfig
 <span class="kw">where
     </span>C: AsyncRead + AsyncWrite + Unpin,
 {
@@ -937,7 +937,7 @@
     }
 }
 
-<span class="kw">impl</span>&lt;C&gt; OutboundUpgrade&lt;C&gt; <span class="kw">for </span>KademliaProtocolConfig
+<span class="kw">impl</span>&lt;C&gt; OutboundUpgrade&lt;C&gt; <span class="kw">for </span>ProtocolConfig
 <span class="kw">where
     </span>C: AsyncRead + AsyncWrite + Unpin,
 {
@@ -1333,7 +1333,7 @@
     use futures::{Future, Sink, Stream};
     use libp2p_core::{PeerId, PublicKey, Transport};
     use multihash::{encode, Hash};
-    use protocol::{KadConnectionType, KadPeer, KademliaProtocolConfig};
+    use protocol::{ConnectionType, KadPeer, ProtocolConfig};
     use std::sync::mpsc;
     use std::thread;
 
@@ -1350,7 +1350,7 @@
             closer_peers: vec![KadPeer {
                 node_id: PeerId::random(),
                 multiaddrs: vec![&quot;/ip4/100.101.102.103/tcp/20105&quot;.parse().unwrap()],
-                connection_ty: KadConnectionType::Connected,
+                connection_ty: ConnectionType::Connected,
             }],
         });
         test_one(KadMsg::GetProvidersReq {
@@ -1360,12 +1360,12 @@
             closer_peers: vec![KadPeer {
                 node_id: PeerId::random(),
                 multiaddrs: vec![&quot;/ip4/100.101.102.103/tcp/20105&quot;.parse().unwrap()],
-                connection_ty: KadConnectionType::Connected,
+                connection_ty: ConnectionType::Connected,
             }],
             provider_peers: vec![KadPeer {
                 node_id: PeerId::random(),
                 multiaddrs: vec![&quot;/ip4/200.201.202.203/tcp/1999&quot;.parse().unwrap()],
-                connection_ty: KadConnectionType::NotConnected,
+                connection_ty: ConnectionType::NotConnected,
             }],
         });
         test_one(KadMsg::AddProvider {
@@ -1373,7 +1373,7 @@
             provider_peer: KadPeer {
                 node_id: PeerId::random(),
                 multiaddrs: vec![&quot;/ip4/9.1.2.3/udp/23&quot;.parse().unwrap()],
-                connection_ty: KadConnectionType::Connected,
+                connection_ty: ConnectionType::Connected,
             },
         });
         // TODO: all messages
@@ -1383,7 +1383,7 @@
             let (tx, rx) = mpsc::channel();
 
             let bg_thread = thread::spawn(move || {
-                let transport = TcpTransport::default().with_upgrade(KademliaProtocolConfig);
+                let transport = TcpTransport::default().with_upgrade(ProtocolConfig);
 
                 let (listener, addr) = transport
                     .listen_on( &quot;/ip4/127.0.0.1/tcp/0&quot;.parse().unwrap())
@@ -1403,7 +1403,7 @@
                 let _ = rt.block_on(future).unwrap();
             });
 
-            let transport = TcpTransport::default().with_upgrade(KademliaProtocolConfig);
+            let transport = TcpTransport::default().with_upgrade(ProtocolConfig);
 
             let future = transport
                 .dial(rx.recv().unwrap())
