@@ -428,6 +428,16 @@
 <a href="#428" id="428">428</a>
 <a href="#429" id="429">429</a>
 <a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -479,6 +489,9 @@ OPTIONS:
     <span class="doccomment">/// Allow RPC to be active or not (default: true)
     </span><span class="attr">#[arg(short, long)]
     </span><span class="kw">pub </span>rpc: <span class="prelude-ty">Option</span>&lt;bool&gt;,
+    <span class="doccomment">/// Disable Metrics endpoint
+    </span><span class="attr">#[arg(short, long)]
+    </span><span class="kw">pub </span>no_metrics: bool,
     <span class="doccomment">/// Client JWT token to use for JSON-RPC authentication
     </span><span class="attr">#[arg(short, long)]
     </span><span class="kw">pub </span>token: <span class="prelude-ty">Option</span>&lt;String&gt;,
@@ -616,9 +629,16 @@ OPTIONS:
         } <span class="kw">else </span>{
             cfg.client.enable_rpc = <span class="bool-val">false</span>;
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics_address) = <span class="self">self</span>.metrics_address {
-            cfg.client.metrics_address = metrics_address;
+
+        <span class="kw">if </span><span class="self">self</span>.no_metrics {
+            cfg.client.enable_metrics_endpoint = <span class="bool-val">false</span>;
+        } <span class="kw">else </span>{
+            cfg.client.enable_metrics_endpoint = <span class="bool-val">true</span>;
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics_address) = <span class="self">self</span>.metrics_address {
+                cfg.client.metrics_address = metrics_address;
+            }
         }
+
         <span class="kw">if </span><span class="self">self</span>.import_snapshot.is_some() &amp;&amp; <span class="self">self</span>.import_chain.is_some() {
             <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Can&#39;t set import_snapshot and import_chain at the same time!&quot;</span>)
         } <span class="kw">else if </span><span class="self">self</span>.import_snapshot.is_some() &amp;&amp; <span class="self">self</span>.consume_snapshot.is_some() {

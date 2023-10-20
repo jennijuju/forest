@@ -896,7 +896,7 @@
         });
     }
 
-    {
+    <span class="kw">if </span>config.client.enable_metrics_endpoint {
         <span class="comment">// Start Prometheus server port
         </span><span class="kw">let </span>prometheus_listener = TcpListener::bind(config.client.metrics_address).context(
             <span class="macro">format!</span>(<span class="string">&quot;could not bind to {}&quot;</span>, config.client.metrics_address),
