@@ -244,6 +244,7 @@
 <span class="kw">use </span>ahash::{HashMap, HashMapExt};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>itertools::Itertools;
 <span class="kw">use </span>tracing::debug;
 
 <span class="kw">use super</span>::{
@@ -259,67 +260,66 @@
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
-    <span class="kw">let </span><span class="kw-2">mut </span>response_chain: Vec&lt;TipsetBundle&gt; = Vec::with_capacity(request.request_len <span class="kw">as </span>usize);
+    <span class="kw">if </span>!request.is_options_valid() {
+        <span class="kw">return </span>ChainExchangeResponse {
+            chain: Default::default(),
+            status: ChainExchangeResponseStatus::BadRequest,
+            message: <span class="macro">format!</span>(<span class="string">&quot;Invalid options {}&quot;</span>, request.options),
+        };
+    }
 
-    <span class="kw">let </span><span class="kw-2">mut </span>curr_tipset_cids = request.start.clone();
-
-    <span class="kw">loop </span>{
-        <span class="kw">let </span><span class="kw-2">mut </span>tipset_bundle: TipsetBundle = TipsetBundle::default();
-        <span class="kw">let </span>tipset = <span class="kw">match </span>cs.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::from_iter(curr_tipset_cids)) {
+    <span class="kw">let </span>inner = <span class="kw">move </span>|| {
+        <span class="kw">let </span>root = <span class="kw">match </span>cs.tipset_from_keys(<span class="kw-2">&amp;</span>TipsetKeys::from_iter(request.start.clone())) {
             <span class="prelude-val">Ok</span>(tipset) =&gt; tipset,
-            <span class="prelude-val">Err</span>(err) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Cannot get tipset from keys: {}&quot;</span>, err);
-
-                <span class="kw">return </span>ChainExchangeResponse {
-                    chain: <span class="macro">vec!</span>[],
-                    status: ChainExchangeResponseStatus::InternalError,
-                    message: <span class="string">&quot;Tipset was not found in the database&quot;</span>.into(),
-                };
+            <span class="prelude-val">Err</span>(<span class="kw">crate</span>::chain::store::Error::NotFound(<span class="kw">_</span>)) =&gt; {
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(ChainExchangeResponse {
+                    status: ChainExchangeResponseStatus::BlockNotFound,
+                    chain: Default::default(),
+                    message: <span class="string">&quot;Start tipset was not found in the database&quot;</span>.into(),
+                });
+            }
+            <span class="prelude-val">Err</span>(e) =&gt; {
+                <span class="macro">debug!</span>(<span class="string">&quot;Failed to get tipset from keys: {e}&quot;</span>);
+                <span class="macro">anyhow::bail!</span>(e);
             }
         };
 
-        <span class="kw">if </span>request.include_messages() {
-            <span class="kw">match </span>compact_messages(cs.blockstore(), <span class="kw-2">&amp;</span>tipset) {
-                <span class="prelude-val">Ok</span>(compacted_messages) =&gt; tipset_bundle.messages = <span class="prelude-val">Some</span>(compacted_messages),
-                <span class="prelude-val">Err</span>(err) =&gt; {
-                    <span class="macro">debug!</span>(<span class="string">&quot;Cannot compact messages for tipset: {}&quot;</span>, err);
-
-                    <span class="kw">return </span>ChainExchangeResponse {
-                        chain: <span class="macro">vec!</span>[],
-                        status: ChainExchangeResponseStatus::InternalError,
-                        message: <span class="string">&quot;Can not fulfil the request&quot;</span>.into(),
-                    };
+        <span class="kw">let </span>chain: Vec&lt;<span class="kw">_</span>&gt; = cs
+            .chain_index
+            .chain(root)
+            .take(request.request_len <span class="kw">as _</span>)
+            .map(|tipset| {
+                <span class="kw">let </span><span class="kw-2">mut </span>tipset_bundle: TipsetBundle = TipsetBundle::default();
+                <span class="kw">if </span>request.include_messages() {
+                    tipset_bundle.messages = <span class="prelude-val">Some</span>(compact_messages(cs.blockstore(), <span class="kw-2">&amp;</span>tipset)<span class="question-mark">?</span>);
                 }
-            }
-        }
 
-        curr_tipset_cids = tipset.parents().cids.clone().into_iter().collect();
-        <span class="kw">let </span>tipset_epoch = tipset.epoch();
+                <span class="kw">if </span>request.include_blocks() {
+                    tipset_bundle.blocks = tipset.blocks().to_vec();
+                }
 
-        <span class="kw">if </span>request.include_blocks() {
-            <span class="comment">// Cloning blocks isn&#39;t ideal, this can maybe be switched to serialize this
-            // data in the function. This may not be possible without overriding rpc in
-            // libp2p
-            </span>tipset_bundle.blocks = tipset.blocks().to_vec();
-        }
+                anyhow::Ok(tipset_bundle)
+            })
+            .try_collect()<span class="question-mark">?</span>;
 
-        response_chain.push(tipset_bundle);
+        anyhow::Ok(ChainExchangeResponse {
+            status: <span class="kw">if </span>request.request_len &gt; chain.len() <span class="kw">as </span>u64 {
+                ChainExchangeResponseStatus::PartialResponse
+            } <span class="kw">else </span>{
+                ChainExchangeResponseStatus::Success
+            },
+            chain,
+            message: <span class="string">&quot;Success&quot;</span>.into(),
+        })
+    };
 
-        <span class="kw">if </span>response_chain.len() <span class="kw">as </span>u64 &gt;= request.request_len || tipset_epoch == <span class="number">0 </span>{
-            <span class="kw">break</span>;
-        }
-    }
-
-    <span class="kw">let </span>result_chain_length = response_chain.len() <span class="kw">as </span>u64;
-
-    ChainExchangeResponse {
-        chain: response_chain,
-        status: <span class="kw">if </span>result_chain_length &lt; request.request_len {
-            ChainExchangeResponseStatus::PartialResponse
-        } <span class="kw">else </span>{
-            ChainExchangeResponseStatus::Success
+    <span class="kw">match </span>inner() {
+        <span class="prelude-val">Ok</span>(r) =&gt; r,
+        <span class="prelude-val">Err</span>(e) =&gt; ChainExchangeResponse {
+            chain: Default::default(),
+            status: ChainExchangeResponseStatus::InternalError,
+            message: e.to_string(),
         },
-        message: <span class="string">&quot;Success&quot;</span>.into(),
     }
 }
 

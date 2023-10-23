@@ -265,6 +265,11 @@
 <a href="#265" id="265">265</a>
 <a href="#266" id="266">266</a>
 <a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -288,7 +293,7 @@
 </span><span class="kw">pub struct </span>ChainExchangeRequest {
     <span class="doccomment">/// The tipset [Cid] to start the request from.
     </span><span class="kw">pub </span>start: Vec&lt;Cid&gt;,
-    <span class="doccomment">/// The amount of epochs to request.
+    <span class="doccomment">/// The amount of tipsets to request.
     </span><span class="kw">pub </span>request_len: u64,
     <span class="doccomment">/// 1 for Block only, 2 for Messages only, 3 for Blocks and Messages.
     </span><span class="kw">pub </span>options: u64,
@@ -305,6 +310,11 @@
     </span><span class="kw">pub fn </span>include_messages(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.options &amp; MESSAGES &gt; <span class="number">0
     </span>}
+
+    <span class="doccomment">/// If either the [HEADERS] bit or the [MESSAGES] bit is set.
+    </span><span class="kw">pub fn </span>is_options_valid(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.include_blocks() || <span class="self">self</span>.include_messages()
+    }
 }
 
 <span class="doccomment">/// Status codes of a `chain_exchange` response.
