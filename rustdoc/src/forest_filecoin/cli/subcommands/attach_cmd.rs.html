@@ -452,7 +452,6 @@
 <a href="#452" id="452">452</a>
 <a href="#453" id="453">453</a>
 <a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -462,7 +461,6 @@
     str::FromStr,
 };
 
-<span class="kw">use </span><span class="kw">super</span>::Config;
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncStage;
 <span class="kw">use </span><span class="kw">crate</span>::cli::humantoken;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
@@ -813,9 +811,9 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>context = Context::default();
-        <span class="self">self</span>.setup_context(<span class="kw-2">&amp;mut </span>context, <span class="kw-2">&amp;</span>config.client.rpc_token);
+        <span class="self">self</span>.setup_context(<span class="kw-2">&amp;mut </span>context, <span class="kw-2">&amp;</span>rpc_token);
 
         <span class="self">self</span>.import_prelude(<span class="kw-2">&amp;mut </span>context)<span class="question-mark">?</span>;
 

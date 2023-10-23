@@ -332,7 +332,6 @@
 <a href="#332" id="332">332</a>
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
-<a href="#335" id="335">335</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -351,7 +350,6 @@
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-<span class="kw">use </span><span class="kw">super</span>::Config;
 <span class="kw">use </span><span class="kw">crate</span>::cli::humantoken::TokenAmountPretty;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::handle_rpc_err;
 
@@ -495,13 +493,13 @@
 }
 
 <span class="kw">impl </span>InfoCommand {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>res = <span class="macro">tokio::try_join!</span>(
-            node_status((), <span class="kw-2">&amp;</span>config.client.rpc_token),
-            chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token),
-            state_network_name((), <span class="kw-2">&amp;</span>config.client.rpc_token),
-            start_time(<span class="kw-2">&amp;</span>config.client.rpc_token),
-            wallet_default_address((), <span class="kw-2">&amp;</span>config.client.rpc_token)
+            node_status((), <span class="kw-2">&amp;</span>rpc_token),
+            chain_head(<span class="kw-2">&amp;</span>rpc_token),
+            state_network_name((), <span class="kw-2">&amp;</span>rpc_token),
+            start_time(<span class="kw-2">&amp;</span>rpc_token),
+            wallet_default_address((), <span class="kw-2">&amp;</span>rpc_token)
         );
 
         <span class="kw">match </span>res {
@@ -512,7 +510,7 @@
 
                 <span class="kw">let </span>default_wallet_address_balance = <span class="kw">if let </span><span class="prelude-val">Some</span>(def_addr) = <span class="kw-2">&amp;</span>default_wallet_address
                 {
-                    <span class="kw">let </span>balance = wallet_balance((def_addr.clone(),), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                    <span class="kw">let </span>balance = wallet_balance((def_addr.clone(),), <span class="kw-2">&amp;</span>rpc_token)
                         .<span class="kw">await
                         </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
                     <span class="prelude-val">Some</span>(balance)

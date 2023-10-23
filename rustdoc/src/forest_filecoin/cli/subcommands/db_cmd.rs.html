@@ -73,15 +73,11 @@
 <a href="#73" id="73">73</a>
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::Config;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::progress_api::GetProgressType;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{db_ops::db_gc, progress_ops::get_progress};
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
@@ -106,7 +102,7 @@
 }
 
 <span class="kw">impl </span>DBCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: <span class="kw-2">&amp;</span>Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Stats =&gt; bail_moved_cmd(<span class="string">&quot;db stats&quot;</span>, <span class="string">&quot;forest-tool db stats&quot;</span>),
             <span class="self">Self</span>::GC =&gt; {
@@ -139,9 +135,7 @@
                     }
                 });
 
-                db_gc((), <span class="kw-2">&amp;</span>config.client.rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                db_gc((), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
                 bar.lock().<span class="kw">await</span>.finish_println(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
                     <span class="string">&quot;Database garbage collection completed. took {}s&quot;</span>,

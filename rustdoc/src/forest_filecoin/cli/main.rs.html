@@ -54,8 +54,6 @@
 <a href="#54" id="54">54</a>
 <a href="#55" id="55">55</a>
 <a href="#56" id="56">56</a>
-<a href="#57" id="57">57</a>
-<a href="#58" id="58">58</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -82,10 +80,8 @@
         .build()
         .unwrap()
         .block_on(<span class="kw">async </span>{
-            <span class="kw">let </span><span class="kw-2">mut </span>config = <span class="kw">crate</span>::Config::default();
-            config.client.rpc_token = token;
             logger::setup_logger(<span class="kw-2">&amp;</span><span class="kw">crate</span>::cli_shared::cli::CliOpts::default());
-            <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = state_network_name((), <span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(name) = state_network_name((), <span class="kw-2">&amp;</span>token).<span class="kw">await </span>{
                 <span class="kw">if </span>get_actual_chain_name(<span class="kw-2">&amp;</span>name) != <span class="string">&quot;mainnet&quot; </span>{
                     CurrentNetwork::set_global(Network::Testnet);
                 }
@@ -95,21 +91,21 @@
                 Subcommand::Fetch(_cmd) =&gt; {
                     bail_moved_cmd(<span class="string">&quot;fetch-params&quot;</span>, <span class="string">&quot;forest-tool fetch-params&quot;</span>)
                 }
-                Subcommand::Chain(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Auth(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Net(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                Subcommand::Chain(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::Auth(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::Net(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
                 Subcommand::Wallet(..) =&gt; bail_moved_cmd(<span class="string">&quot;wallet&quot;</span>, <span class="string">&quot;forest-wallet&quot;</span>),
-                Subcommand::Sync(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Mpool(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::State(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Config(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config, <span class="kw-2">&amp;mut </span>std::io::stdout()),
-                Subcommand::Send(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::Info(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
-                Subcommand::DB(cmd) =&gt; cmd.run(<span class="kw-2">&amp;</span>config).<span class="kw">await</span>,
-                Subcommand::Snapshot(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                Subcommand::Sync(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::Mpool(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::State(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::Config(cmd) =&gt; cmd.run(<span class="kw-2">&amp;mut </span>std::io::stdout()),
+                Subcommand::Send(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::Info(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::DB(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
+                Subcommand::Snapshot(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
                 Subcommand::Archive(cmd) =&gt; cmd.run().<span class="kw">await</span>,
-                Subcommand::Attach(cmd) =&gt; cmd.run(config),
-                Subcommand::Shutdown(cmd) =&gt; cmd.run(config).<span class="kw">await</span>,
+                Subcommand::Attach(cmd) =&gt; cmd.run(token),
+                Subcommand::Shutdown(cmd) =&gt; cmd.run(token).<span class="kw">await</span>,
                 Subcommand::Car(..) =&gt; bail_moved_cmd(<span class="string">&quot;car&quot;</span>, <span class="string">&quot;forest-tool&quot;</span>),
             }
         })

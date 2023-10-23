@@ -82,7 +82,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::shim::message::{Message, METHOD_SEND};
 <span class="kw">use </span>num::Zero <span class="kw">as _</span>;
 
-<span class="kw">use super</span>::{handle_rpc_err, Config};
+<span class="kw">use </span><span class="kw">super</span>::handle_rpc_err;
 <span class="kw">use </span><span class="kw">crate</span>::cli::humantoken;
 
 <span class="attr">#[derive(Debug, clap::Args)]
@@ -104,12 +104,12 @@
 }
 
 <span class="kw">impl </span>SendCommand {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>from: Address = <span class="kw">if let </span><span class="prelude-val">Some</span>(from) = <span class="kw-2">&amp;</span><span class="self">self</span>.from {
             StrictAddress::from_str(from)<span class="question-mark">?</span>.into()
         } <span class="kw">else </span>{
             Address::from_str(
-                <span class="kw-2">&amp;</span>wallet_default_address((), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw-2">&amp;</span>wallet_default_address((), <span class="kw-2">&amp;</span>rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?
                     </span>.ok_or_else(|| {
@@ -132,7 +132,7 @@
             </span>..Default::default()
         };
 
-        <span class="kw">let </span>signed_msg = mpool_push_message((LotusJson(message), <span class="prelude-val">None</span>), <span class="kw-2">&amp;</span>config.client.rpc_token)
+        <span class="kw">let </span>signed_msg = mpool_push_message((LotusJson(message), <span class="prelude-val">None</span>), <span class="kw-2">&amp;</span>rpc_token)
             .<span class="kw">await
             </span>.map_err(handle_rpc_err)<span class="question-mark">?
             </span>.into_inner();

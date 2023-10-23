@@ -529,7 +529,6 @@
 <a href="#529" id="529">529</a>
 <a href="#530" id="530">530</a>
 <a href="#531" id="531">531</a>
-<a href="#532" id="532">532</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -548,7 +547,7 @@
 <span class="kw">use </span>num::BigInt;
 <span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use super</span>::{handle_rpc_err, Config};
+<span class="kw">use </span><span class="kw">super</span>::handle_rpc_err;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>MpoolCommands {
@@ -614,12 +613,12 @@
 <span class="kw">async fn </span>get_actor_sequence(
     message: <span class="kw-2">&amp;</span>Message,
     tipset: <span class="kw-2">&amp;</span>Arc&lt;Tipset&gt;,
-    config: <span class="kw-2">&amp;</span>Config,
+    rpc_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
 ) -&gt; <span class="prelude-ty">Option</span>&lt;u64&gt; {
     <span class="kw">let </span>address = message.from;
     <span class="kw">let </span>get_actor_result = state_get_actor(
         (address.to_owned().into(), tipset.key().to_owned().into()),
-        <span class="kw-2">&amp;</span>config.client.rpc_token,
+        rpc_token,
     )
     .<span class="kw">await</span>;
 
@@ -752,7 +751,7 @@
 }
 
 <span class="kw">impl </span>MpoolCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Pending {
                 local,
@@ -760,12 +759,12 @@
                 to,
                 from,
             } =&gt; {
-                <span class="kw">let </span>messages = mpool_pending((LotusJson(<span class="macro">vec!</span>[]),), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>messages = mpool_pending((LotusJson(<span class="macro">vec!</span>[]),), <span class="kw-2">&amp;</span>rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>local_addrs = <span class="kw">if </span>local {
-                    <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                    <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>rpc_token)
                         .<span class="kw">await
                         </span>.map_err(handle_rpc_err)<span class="question-mark">?
                         </span>.into_inner();
@@ -794,24 +793,23 @@
                 basefee_lookback,
                 local,
             } =&gt; {
-                <span class="kw">let </span>tipset = chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>tipset = chain_head(<span class="kw-2">&amp;</span>rpc_token)
                     .<span class="kw">await
                     </span>.map(|LotusJson(tipset)| Arc::new(tipset))
                     .map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="kw">let </span>curr_base_fee = tipset.blocks()[<span class="number">0</span>].parent_base_fee().to_owned();
 
-                <span class="kw">let </span>atto_str =
-                    chain_get_min_base_fee((basefee_lookback,), <span class="kw-2">&amp;</span>config.client.rpc_token)
-                        .<span class="kw">await
-                        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>atto_str = chain_get_min_base_fee((basefee_lookback,), <span class="kw-2">&amp;</span>rpc_token)
+                    .<span class="kw">await
+                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
                 <span class="kw">let </span>min_base_fee = TokenAmount::from_atto(atto_str.parse::&lt;BigInt&gt;()<span class="question-mark">?</span>);
 
-                <span class="kw">let </span>messages = mpool_pending((LotusJson(<span class="macro">vec!</span>[]),), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>messages = mpool_pending((LotusJson(<span class="macro">vec!</span>[]),), <span class="kw-2">&amp;</span>rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>local_addrs = <span class="kw">if </span>local {
-                    <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                    <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>rpc_token)
                         .<span class="kw">await
                         </span>.map_err(handle_rpc_err)<span class="question-mark">?
                         </span>.into_inner();
@@ -828,7 +826,7 @@
 
                 <span class="kw">let </span><span class="kw-2">mut </span>actor_sequences: HashMap&lt;Address, u64&gt; = HashMap::default();
                 <span class="kw">for </span>msg <span class="kw">in </span>messages.iter() {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>(sequence) = get_actor_sequence(msg, <span class="kw-2">&amp;</span>tipset, <span class="kw-2">&amp;</span>config).<span class="kw">await </span>{
+                    <span class="kw">if let </span><span class="prelude-val">Some</span>(sequence) = get_actor_sequence(msg, <span class="kw-2">&amp;</span>tipset, <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await </span>{
                         actor_sequences.insert(msg.from, sequence);
                     }
                 }

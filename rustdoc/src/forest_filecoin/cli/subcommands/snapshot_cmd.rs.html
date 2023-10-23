@@ -203,16 +203,6 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
-<a href="#206" id="206">206</a>
-<a href="#207" id="207">207</a>
-<a href="#208" id="208">208</a>
-<a href="#209" id="209">209</a>
-<a href="#210" id="210">210</a>
-<a href="#211" id="211">211</a>
-<a href="#212" id="212">212</a>
-<a href="#213" id="213">213</a>
-<a href="#214" id="214">214</a>
-<a href="#215" id="215">215</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -224,7 +214,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::chain_api::ChainExportParams;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, state_network_name};
 <span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
-<span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>chrono::NaiveDateTime;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>human_repr::HumanCount;
@@ -291,7 +281,7 @@
 }
 
 <span class="kw">impl </span>SnapshotCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, config: Config) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Export {
                 output_path,
@@ -300,24 +290,22 @@
                 tipset,
                 depth,
             } =&gt; {
-                <span class="kw">let </span>chain_head = <span class="kw">match </span>chain_head(<span class="kw-2">&amp;</span>config.client.rpc_token).<span class="kw">await </span>{
+                <span class="kw">let </span>chain_head = <span class="kw">match </span>chain_head(<span class="kw-2">&amp;</span>rpc_token).<span class="kw">await </span>{
                     <span class="prelude-val">Ok</span>(LotusJson(head)) =&gt; head,
                     <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; cli_error_and_die(<span class="string">&quot;Could not get network head&quot;</span>, <span class="number">1</span>),
                 };
 
                 <span class="kw">let </span>epoch = tipset.unwrap_or(chain_head.epoch());
 
-                <span class="kw">let </span>chain_name = state_network_name((), <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>chain_name = state_network_name((), <span class="kw-2">&amp;</span>rpc_token)
                     .<span class="kw">await
                     </span>.map(|name| <span class="kw">crate</span>::daemon::get_actual_chain_name(<span class="kw-2">&amp;</span>name).to_string())
                     .map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>LotusJson(tipset) = chain_get_tipset_by_height(
-                    (epoch, TipsetKeys::default()),
-                    <span class="kw-2">&amp;</span>config.client.rpc_token,
-                )
-                .<span class="kw">await
-                </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>LotusJson(tipset) =
+                    chain_get_tipset_by_height((epoch, TipsetKeys::default()), <span class="kw-2">&amp;</span>rpc_token)
+                        .<span class="kw">await
+                        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
                 <span class="kw">let </span>output_path = <span class="kw">match </span>output_path.is_dir() {
                     <span class="bool-val">true </span>=&gt; output_path.join(snapshot::filename(
@@ -340,20 +328,12 @@
 
                 <span class="kw">let </span>params = ChainExportParams {
                     epoch,
-                    recent_roots: depth.unwrap_or(config.chain.recent_state_roots),
+                    recent_roots: depth.unwrap_or(Config::default().chain.recent_state_roots),
                     output_path: temp_path.to_path_buf(),
                     tipset_keys: chain_head.key().clone(),
                     skip_checksum,
                     dry_run,
                 };
-
-                <span class="kw">let </span>finality = config.chain.policy.chain_finality.min(epoch);
-                <span class="kw">if </span>params.recent_roots &lt; finality {
-                    <span class="macro">bail!</span>(
-                        <span class="string">&quot;For {}, depth has to be at least {finality}.&quot;</span>,
-                        config.chain.network
-                    );
-                }
 
                 <span class="kw">let </span>handle = tokio::spawn({
                     <span class="kw">let </span>tmp_file = temp_path.to_owned();
@@ -382,7 +362,7 @@
                     }
                 });
 
-                <span class="kw">let </span>hash_result = chain_export(params, <span class="kw-2">&amp;</span>config.client.rpc_token)
+                <span class="kw">let </span>hash_result = chain_export(params, <span class="kw-2">&amp;</span>rpc_token)
                     .<span class="kw">await
                     </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
 
