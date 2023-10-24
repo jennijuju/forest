@@ -75,6 +75,7 @@
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
+<a href="#78" id="78">78</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -122,7 +123,8 @@
     <span class="kw">pub </span>parity_db: <span class="kw">crate</span>::db::parity_db_config::ParityDbConfig,
     <span class="kw">pub </span>network: Libp2pConfig,
     <span class="kw">pub </span>sync: SyncConfig,
-    <span class="kw">pub </span>chain: Arc&lt;ChainConfig&gt;,
+    <span class="attr">#[serde(skip)]
+    </span><span class="kw">pub </span>chain: Arc&lt;ChainConfig&gt;,
     <span class="kw">pub </span>daemon: DaemonConfig,
 }
 
