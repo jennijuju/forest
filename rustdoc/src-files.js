@@ -506,7 +506,7 @@ var srcIndex = JSON.parse('{\
 "termios":["",[["os",[],["linux.rs","mod.rs"]]],["ffi.rs","lib.rs"]],\
 "thin_vec":["",[],["lib.rs"]],\
 "thiserror":["",[],["aserror.rs","display.rs","lib.rs"]],\
-"thiserror_impl":["",[],["ast.rs","attr.rs","expand.rs","fmt.rs","generics.rs","lib.rs","prop.rs","valid.rs"]],\
+"thiserror_impl":["",[],["ast.rs","attr.rs","expand.rs","fmt.rs","generics.rs","lib.rs","prop.rs","span.rs","valid.rs"]],\
 "thread_id":["",[],["lib.rs"]],\
 "thread_local":["",[],["cached.rs","lib.rs","thread_id.rs","unreachable.rs"]],\
 "threadpool":["",[],["lib.rs"]],\
