@@ -702,6 +702,7 @@
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
 <a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1320,10 +1321,10 @@
         <span class="kw">let </span>this = <span class="self">self</span>.project();
         <span class="kw">let </span>receive_block = || {
             <span class="kw">if let </span><span class="prelude-val">Ok</span>(item) = this.block_receiver.try_recv() {
-                <span class="kw">return </span>anyhow::Ok(item);
+                <span class="kw">return </span>item;
             }
-            anyhow::Ok(<span class="prelude-val">None</span>)
-        };
+            <span class="prelude-val">None
+        </span>};
         <span class="kw">loop </span>{
             <span class="kw">while let </span><span class="prelude-val">Some</span>(cid) = this.queue.pop() {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(data) = this.db.get(<span class="kw-2">&amp;</span>cid)<span class="question-mark">? </span>{
@@ -1333,7 +1334,7 @@
                 }
             }
 
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(block) = receive_block()<span class="question-mark">? </span>{
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(block) = receive_block() {
                 <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(block));
             }
 
@@ -1395,9 +1396,10 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = item {
                     <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(item));
                 }
-                <span class="comment">// Close the sender when it&#39;s empty, then we can exit in the next iteration.
+                <span class="comment">// Close the sender when it&#39;s empty and exit.
                 </span><span class="kw">if </span>this.extract_sender.is_empty() &amp;&amp; this.block_receiver.is_empty() {
-                    this.extract_sender.close();
+                    this.worker_handle.abort();
+                    <span class="kw">return </span>Poll::Ready(<span class="prelude-val">None</span>);
                 }
             } <span class="kw">else </span>{
                 <span class="comment">// That&#39;s it, nothing else to do. End of stream.
