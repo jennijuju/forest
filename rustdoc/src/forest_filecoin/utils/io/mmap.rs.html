@@ -121,6 +121,9 @@
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
 <a href="#123" id="123">123</a>
+<a href="#124" id="124">124</a>
+<a href="#125" id="125">125</a>
+<a href="#126" id="126">126</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -236,7 +239,10 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_out_of_band_mmap_read() {
-        <span class="kw">let </span>temp_file = tempfile::NamedTempFile::new_in(<span class="string">&quot;.&quot;</span>).unwrap();
+        <span class="kw">let </span>temp_file = tempfile::Builder::new()
+            .tempfile()
+            .unwrap()
+            .into_temp_path();
         <span class="kw">let </span>mmap = Mmap::map(<span class="kw-2">&amp;</span>fs::File::open(<span class="kw-2">&amp;</span>temp_file).unwrap()).unwrap();
 
         <span class="kw">let </span><span class="kw-2">mut </span>buffer = [];
