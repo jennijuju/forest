@@ -914,6 +914,8 @@
 <a href="#914" id="914">914</a>
 <a href="#915" id="915">915</a>
 <a href="#916" id="916">916</a>
+<a href="#917" id="917">917</a>
+<a href="#918" id="918">918</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1327,10 +1329,12 @@
                 metrics::LIBP2P_MESSAGE_TOTAL
                     .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::PEER_DISCONNECTED])
                     .inc();
-                <span class="comment">// Unset heaviest tipset for disconnected peers
-                </span>metrics::PEER_TIPSET_EPOCH
-                    .with_label_values(<span class="kw-2">&amp;</span>[peer_id.to_string().as_str()])
-                    .set(-<span class="number">1</span>);
+                <span class="comment">// Remove peer id labels for disconnected peers
+                </span><span class="kw">if let </span><span class="prelude-val">Err</span>(e) =
+                    metrics::PEER_TIPSET_EPOCH.remove_label_values(<span class="kw-2">&amp;</span>[peer_id.to_string().as_str()])
+                {
+                    <span class="macro">debug!</span>(<span class="string">&quot;{e}&quot;</span>);
+                }
                 <span class="comment">// Spawn and immediately move on to the next event
                 </span>tokio::task::spawn(<span class="self">Self</span>::handle_peer_disconnected_event(
                     network.clone(),
