@@ -337,7 +337,7 @@
                 }
             }
 
-            rand_ts = <span class="self">self</span>.chain_index.load_tipset(rand_ts.parents())<span class="question-mark">?</span>;
+            rand_ts = <span class="self">self</span>.chain_index.load_required_tipset(rand_ts.parents())<span class="question-mark">?</span>;
         }
 
         <span class="macro">bail!</span>(

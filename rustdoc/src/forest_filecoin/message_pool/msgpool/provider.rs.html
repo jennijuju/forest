@@ -256,7 +256,7 @@
     }
 
     <span class="kw">fn </span>load_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
-        <span class="prelude-val">Ok</span>(<span class="self">self</span>.sm.chain_store().tipset_from_keys(tsk)<span class="question-mark">?</span>)
+        <span class="prelude-val">Ok</span>(<span class="self">self</span>.sm.chain_store().load_required_tipset(tsk)<span class="question-mark">?</span>)
     }
 
     <span class="kw">fn </span>chain_compute_base_fee(<span class="kw-2">&amp;</span><span class="self">self</span>, ts: <span class="kw-2">&amp;</span>Tipset) -&gt; <span class="prelude-ty">Result</span>&lt;TokenAmount, Error&gt; {

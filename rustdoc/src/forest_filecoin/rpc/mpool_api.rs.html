@@ -138,6 +138,9 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -165,7 +168,10 @@
 {
     <span class="kw">let </span>(LotusJson(cid_vec),) = params;
     <span class="kw">let </span>tsk = TipsetKeys::from_iter(cid_vec);
-    <span class="kw">let </span><span class="kw-2">mut </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span><span class="kw-2">mut </span>ts = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(<span class="kw-2">mut </span>pending, mpts) = data.mpool.pending()<span class="question-mark">?</span>;
 
@@ -210,7 +216,7 @@
         ts = data
             .state_manager
             .chain_store()
-            .tipset_from_keys(ts.parents())<span class="question-mark">?</span>;
+            .load_required_tipset(ts.parents())<span class="question-mark">?</span>;
     }
     <span class="prelude-val">Ok</span>(pending.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;().into())
 }

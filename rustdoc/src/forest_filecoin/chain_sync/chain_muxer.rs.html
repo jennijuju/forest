@@ -1139,7 +1139,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;FullTipset, ChainMuxerError&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>blocks = Vec::new();
         <span class="comment">// Retrieve tipset from store based on passed in TipsetKeys
-        </span><span class="kw">let </span>ts = chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tipset_keys)<span class="question-mark">?</span>;
+        </span><span class="kw">let </span>ts = chain_store.load_required_tipset(<span class="kw-2">&amp;</span>tipset_keys)<span class="question-mark">?</span>;
         <span class="kw">for </span>header <span class="kw">in </span>ts.blocks() {
             <span class="comment">// Retrieve bls and secp messages from specified BlockHeader
             </span><span class="kw">let </span>(bls_msgs, secp_msgs) =

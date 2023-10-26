@@ -1312,6 +1312,9 @@
 <a href="#1312" id="1312">1312</a>
 <a href="#1313" id="1313">1313</a>
 <a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
+<a href="#1317" id="1317">1317</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1971,7 +1974,7 @@
         <span class="comment">// Load parent state.
         </span><span class="kw">let </span>pts = <span class="self">self
             </span>.cs
-            .tipset_from_keys(tipset.parents())
+            .load_required_tipset(tipset.parents())
             .map_err(|err| Error::Other(err.to_string()))<span class="question-mark">?</span>;
         <span class="kw">let </span>messages = <span class="self">self
             </span>.cs
@@ -2037,11 +2040,14 @@
                 }
             }
 
-            <span class="kw">let </span>tipset = <span class="self">self</span>.cs.tipset_from_keys(current.parents()).map_err(|err| {
-                Error::Other(<span class="macro">format!</span>(
-                    <span class="string">&quot;failed to load tipset during msg wait searchback: {err:}&quot;
-                </span>))
-            })<span class="question-mark">?</span>;
+            <span class="kw">let </span>tipset = <span class="self">self
+                </span>.cs
+                .load_required_tipset(current.parents())
+                .map_err(|err| {
+                    Error::Other(<span class="macro">format!</span>(
+                        <span class="string">&quot;failed to load tipset during msg wait searchback: {err:}&quot;
+                    </span>))
+                })<span class="question-mark">?</span>;
             <span class="kw">let </span>r = <span class="self">self</span>.tipset_executed_message(
                 <span class="kw-2">&amp;</span>tipset,
                 <span class="kw-2">*</span>message_cid,
@@ -2368,7 +2374,7 @@
         </span><span class="kw">let </span>tipsets = itertools::unfold(<span class="prelude-val">Some</span>(end), |tipset| {
             <span class="kw">let </span>child = tipset.take()<span class="question-mark">?</span>;
             <span class="comment">// if this has parents, unfold them in the next iteration
-            </span><span class="kw-2">*</span>tipset = <span class="self">self</span>.cs.tipset_from_keys(child.parents()).ok();
+            </span><span class="kw-2">*</span>tipset = <span class="self">self</span>.cs.load_required_tipset(child.parents()).ok();
             <span class="prelude-val">Some</span>(child)
         })
         .take_while(|tipset| tipset.epoch() &gt;= <span class="kw-2">*</span>epochs.start());

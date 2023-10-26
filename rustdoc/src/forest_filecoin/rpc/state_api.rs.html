@@ -344,6 +344,18 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -379,7 +391,10 @@
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
     <span class="kw">let </span>(message_json, LotusJson(key)) = params;
     <span class="kw">let </span><span class="kw-2">mut </span>message = message_json.into_inner();
-    <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
+    <span class="kw">let </span>tipset = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(state_manager.call(<span class="kw-2">&amp;mut </span>message, <span class="prelude-val">Some</span>(tipset))<span class="question-mark">?</span>)
 }
 
@@ -391,7 +406,10 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateReplayResult, JsonRpcError&gt; {
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
     <span class="kw">let </span>(LotusJson(cid), LotusJson(key)) = params;
-    <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
+    <span class="kw">let </span>tipset = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     <span class="kw">let </span>(msg, ret) = state_manager.replay(<span class="kw-2">&amp;</span>tipset, cid).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(InvocResult {
@@ -418,7 +436,7 @@
     Params(params): Params&lt;StateNetworkVersionParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateNetworkVersionResult, JsonRpcError&gt; {
     <span class="kw">let </span>(LotusJson(tsk),) = params;
-    <span class="kw">let </span>ts = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = data.chain_store.load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(data.state_manager.get_network_version(ts.epoch()))
 }
 
@@ -427,7 +445,7 @@
     Params(params): Params&lt;StateGetActorParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateGetActorResult, JsonRpcError&gt; {
     <span class="kw">let </span>(LotusJson(addr), LotusJson(tsk)) = params;
-    <span class="kw">let </span>ts = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = data.chain_store.load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>state = data.state_manager.get_actor(<span class="kw-2">&amp;</span>addr, <span class="kw-2">*</span>ts.parent_state());
     state.map(Into::into).map_err(|e| e.into())
 }
@@ -440,7 +458,10 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateMarketBalanceResult, JsonRpcError&gt; {
     <span class="kw">let </span>(address, LotusJson(key)) = params;
     <span class="kw">let </span>address = address.into_inner();
-    <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
+    <span class="kw">let </span>tipset = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     data.state_manager
         .market_balance(<span class="kw-2">&amp;</span>address, <span class="kw-2">&amp;</span>tipset)
         .map_err(|e| e.into())
@@ -451,7 +472,7 @@
     Params(params): Params&lt;StateMarketDealsParams&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateMarketDealsResult, JsonRpcError&gt; {
     <span class="kw">let </span>(LotusJson(tsk),) = params;
-    <span class="kw">let </span>ts = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = data.chain_store.load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>actor = data
         .state_manager
         .get_actor(<span class="kw-2">&amp;</span>Address::MARKET_ACTOR, <span class="kw-2">*</span>ts.parent_state())<span class="question-mark">?
@@ -488,7 +509,10 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;StateGetReceiptResult, JsonRpcError&gt; {
     <span class="kw">let </span>(LotusJson(cid), LotusJson(key)) = params;
     <span class="kw">let </span>state_manager = <span class="kw-2">&amp;</span>data.state_manager;
-    <span class="kw">let </span>tipset = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
+    <span class="kw">let </span>tipset = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>key)<span class="question-mark">?</span>;
     state_manager
         .get_receipt(tipset, cid)
         .map(|s| s.into())

@@ -274,6 +274,21 @@
 <a href="#274" id="274">274</a>
 <a href="#275" id="275">275</a>
 <a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -345,7 +360,7 @@
         </span>))<span class="question-mark">?</span>;
     }
 
-    <span class="kw">let </span>head = data.chain_store.tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>head = data.chain_store.load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>start_ts =
         data.chain_store
             .chain_index
@@ -447,7 +462,10 @@
     </span>DB: Blockstore,
 {
     <span class="kw">let </span>(height, tsk) = params;
-    <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span>tss = data
         .state_manager
         .chain_store()
@@ -499,7 +517,10 @@
 <span class="kw">where
     </span>DB: Blockstore,
 {
-    <span class="kw">let </span>ts = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>ts = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>ts).clone().into())
 }
 
@@ -513,7 +534,10 @@
     </span>DB: Blockstore,
 {
     <span class="kw">let </span>(params,) = params;
-    <span class="kw">let </span>new_head = data.state_manager.chain_store().tipset_from_keys(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>;
+    <span class="kw">let </span>new_head = data
+        .state_manager
+        .chain_store()
+        .load_required_tipset(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>current = data.state_manager.chain_store().heaviest_tipset();
     <span class="kw">while </span>current.epoch() &gt;= new_head.epoch() {
         <span class="kw">for </span>cid <span class="kw">in </span>current.key().cids.clone() {
@@ -522,7 +546,10 @@
                 .unmark_block_as_validated(<span class="kw-2">&amp;</span>cid);
         }
         <span class="kw">let </span>parents = current.blocks()[<span class="number">0</span>].parents();
-        current = data.state_manager.chain_store().tipset_from_keys(parents)<span class="question-mark">?</span>;
+        current = data
+            .state_manager
+            .chain_store()
+            .load_required_tipset(parents)<span class="question-mark">?</span>;
     }
     data.state_manager
         .chain_store()
@@ -543,7 +570,10 @@
 
     <span class="kw">for _ in </span><span class="number">0</span>..basefee_lookback {
         <span class="kw">let </span>parents = current.blocks()[<span class="number">0</span>].parents();
-        current = data.state_manager.chain_store().tipset_from_keys(parents)<span class="question-mark">?</span>;
+        current = data
+            .state_manager
+            .chain_store()
+            .load_required_tipset(parents)<span class="question-mark">?</span>;
 
         min_base_fee = min_base_fee.min(current.blocks()[<span class="number">0</span>].parent_base_fee().to_owned());
     }

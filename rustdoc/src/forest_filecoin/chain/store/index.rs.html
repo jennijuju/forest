@@ -289,6 +289,14 @@
 <a href="#289" id="289">289</a>
 <a href="#290" id="290">290</a>
 <a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -337,23 +345,31 @@
 
     <span class="doccomment">/// Loads a tipset from memory given the tipset keys and cache. Semantically
     /// identical to [`Tipset::load`] but the result is cached.
-    </span><span class="kw">pub fn </span>load_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
+    </span><span class="kw">pub fn </span>load_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;Arc&lt;Tipset&gt;&gt;, Error&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(ts) = <span class="self">self</span>.ts_cache.lock().get(tsk) {
             metrics::LRU_CACHE_HIT
                 .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::TIPSET])
                 .inc();
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(ts.clone());
+            <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(ts.clone()));
         }
 
-        <span class="kw">let </span>ts = Arc::new(
-            Tipset::load(<span class="kw-2">&amp;</span><span class="self">self</span>.db, tsk)<span class="question-mark">?
-                </span>.ok_or_else(|| Error::NotFound(String::from(<span class="string">&quot;Key for header&quot;</span>)))<span class="question-mark">?</span>,
-        );
-        <span class="self">self</span>.ts_cache.lock().put(tsk.clone(), ts.clone());
-        metrics::LRU_CACHE_MISS
-            .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::TIPSET])
-            .inc();
-        <span class="prelude-val">Ok</span>(ts)
+        <span class="kw">let </span>ts_opt = Tipset::load(<span class="kw-2">&amp;</span><span class="self">self</span>.db, tsk)<span class="question-mark">?</span>.map(Arc::new);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(ts) = <span class="kw-2">&amp;</span>ts_opt {
+            <span class="self">self</span>.ts_cache.lock().put(tsk.clone(), ts.clone());
+            metrics::LRU_CACHE_MISS
+                .with_label_values(<span class="kw-2">&amp;</span>[metrics::values::TIPSET])
+                .inc();
+        }
+
+        <span class="prelude-val">Ok</span>(ts_opt)
+    }
+
+    <span class="doccomment">/// Loads a tipset from memory given the tipset keys and cache.
+    /// This calls fails if the tipset is missing or invalid. Semantically
+    /// identical to [`Tipset::load_required`] but the result is cached.
+    </span><span class="kw">pub fn </span>load_required_tipset(<span class="kw-2">&amp;</span><span class="self">self</span>, tsk: <span class="kw-2">&amp;</span>TipsetKeys) -&gt; <span class="prelude-ty">Result</span>&lt;Arc&lt;Tipset&gt;, Error&gt; {
+        <span class="self">self</span>.load_tipset(tsk)<span class="question-mark">?
+            </span>.ok_or_else(|| Error::NotFound(<span class="string">&quot;Key for header&quot;</span>.into()))
     }
 
     <span class="doccomment">/// Find tipset at epoch `to` in the chain of ancestors starting at `from`.
@@ -434,7 +450,7 @@
     </span><span class="kw">pub fn </span>chain(<span class="kw-2">&amp;</span><span class="self">self</span>, from: Arc&lt;Tipset&gt;) -&gt; <span class="kw">impl </span>Iterator&lt;Item = Arc&lt;Tipset&gt;&gt; + <span class="lifetime">&#39;_ </span>{
         itertools::unfold(<span class="prelude-val">Some</span>(from), <span class="kw">move </span>|tipset| {
             tipset.take().map(|child| {
-                <span class="kw-2">*</span>tipset = <span class="self">self</span>.load_tipset(child.parents()).ok();
+                <span class="kw-2">*</span>tipset = <span class="self">self</span>.load_required_tipset(child.parents()).ok();
                 child
             })
         })
@@ -458,10 +474,10 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(entry) = check_for_beacon_entry(ts)<span class="question-mark">? </span>{
             <span class="kw">return </span><span class="prelude-val">Ok</span>(entry);
         }
-        <span class="kw">let </span><span class="kw-2">mut </span>cur = <span class="self">self</span>.load_tipset(ts.parents())<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>cur = <span class="self">self</span>.load_required_tipset(ts.parents())<span class="question-mark">?</span>;
         <span class="kw">for </span>i <span class="kw">in </span><span class="number">1</span>..<span class="number">20 </span>{
             <span class="kw">if </span>i != <span class="number">1 </span>{
-                cur = <span class="self">self</span>.load_tipset(cur.parents())<span class="question-mark">?</span>;
+                cur = <span class="self">self</span>.load_required_tipset(cur.parents())<span class="question-mark">?</span>;
             }
             <span class="kw">if let </span><span class="prelude-val">Some</span>(entry) = check_for_beacon_entry(<span class="kw-2">&amp;</span>cur)<span class="question-mark">? </span>{
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(entry);

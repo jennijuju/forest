@@ -512,7 +512,7 @@
     block_sanity_checks(header).map_err(to_errs)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>base_tipset = chain_store
-        .tipset_from_keys(header.parents())
+        .load_required_tipset(header.parents())
         .map_err(to_errs)<span class="question-mark">?</span>;
 
     block_timestamp_checks(
