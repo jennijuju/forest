@@ -438,6 +438,11 @@
 <a href="#438" id="438">438</a>
 <a href="#439" id="439">439</a>
 <a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -590,6 +595,9 @@ OPTIONS:
     <span class="doccomment">/// Check your command-line options and configuration file if one is used
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>dry_run: bool,
+    <span class="doccomment">/// Skip loading actors from the actors bundle.
+    </span><span class="attr">#[arg(long)]
+    </span><span class="kw">pub </span>skip_load_actors: bool,
 }
 
 <span class="kw">impl </span>CliOpts {
@@ -687,6 +695,8 @@ OPTIONS:
         <span class="kw">if let </span><span class="prelude-val">Some</span>(encrypt_keystore) = <span class="self">self</span>.encrypt_keystore {
             cfg.client.encrypt_keystore = encrypt_keystore;
         }
+
+        cfg.client.load_actors = !<span class="self">self</span>.skip_load_actors;
 
         <span class="prelude-val">Ok</span>((cfg, path))
     }

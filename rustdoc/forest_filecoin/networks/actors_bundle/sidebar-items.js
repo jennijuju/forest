@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["generate_actor_bundle"],"macro":["actor_bundle_info"],"static":["ACTOR_BUNDLES"],"struct":["ActorBundleInfo"]};

@@ -403,7 +403,7 @@
 
     <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>validate_calibnet_genesis() {
-        <span class="kw">let </span><span class="kw-2">mut </span>temp_path = Builder::new().tempfile().unwrap();
+        <span class="kw">let </span><span class="kw-2">mut </span>temp_path = tempfile::Builder::new().tempfile().unwrap();
         temp_path.write_all(calibnet::DEFAULT_GENESIS).unwrap();
         <span class="macro">assert!</span>(validate(<span class="kw-2">&amp;</span>temp_path.into_temp_path(), <span class="bool-val">false</span>, <span class="bool-val">true</span>)
             .<span class="kw">await

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["StateMigrationCommands"],"fn":["generate_actor_bundle"]};
+window.SIDEBAR_ITEMS = {"enum":["StateMigrationCommands"]};

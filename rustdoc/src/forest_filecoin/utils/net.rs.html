@@ -93,6 +93,16 @@
 <a href="#93" id="93">93</a>
 <a href="#94" id="94">94</a>
 <a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -100,6 +110,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::reqwest_resume;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::{AsyncWriteExt, TryStreamExt};
+<span class="kw">use </span>reqwest::Response;
 <span class="kw">use </span>std::{io::ErrorKind, path::Path};
 <span class="kw">use </span>tap::Pipe;
 <span class="kw">use </span>tokio::io::AsyncBufRead;
@@ -187,5 +198,14 @@
         stream,
         content_length,
     )))
+}
+
+<span class="kw">pub async fn </span>http_get(url: <span class="kw-2">&amp;</span>Url) -&gt; anyhow::Result&lt;Response&gt; {
+    <span class="macro">info!</span>(%url, <span class="string">&quot;GET&quot;</span>);
+    <span class="prelude-val">Ok</span>(global_http_client()
+        .get(url.clone())
+        .send()
+        .<span class="kw">await</span><span class="question-mark">?
+        </span>.error_for_status()<span class="question-mark">?</span>)
 }
 </code></pre></div></section></main></body></html>

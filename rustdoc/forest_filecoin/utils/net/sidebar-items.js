@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["download_ipfs_file_trustlessly","global_http_client","reader"]};
+window.SIDEBAR_ITEMS = {"fn":["download_ipfs_file_trustlessly","global_http_client","http_get","reader"]};

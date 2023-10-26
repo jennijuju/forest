@@ -31,37 +31,61 @@
 <a href="#31" id="31">31</a>
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
+<a href="#38" id="38">38</a>
+<a href="#39" id="39">39</a>
+<a href="#40" id="40">40</a>
+<a href="#41" id="41">41</a>
+<a href="#42" id="42">42</a>
+<a href="#43" id="43">43</a>
+<a href="#44" id="44">44</a>
+<a href="#45" id="45">45</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::utils::db::{car_stream::CarHeader, car_util::load_car};
-<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
+</span><span class="kw">use crate</span>::{
+    networks::{ActorBundleInfo, ACTOR_BUNDLES},
+    utils::{db::car_util::load_car, net::http_get},
+};
+<span class="kw">use </span>anyhow::ensure;
+<span class="kw">use </span>futures::{stream::FuturesUnordered, TryStreamExt};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
+<span class="kw">use </span>std::io::Cursor;
+<span class="kw">use </span>tracing::warn;
 
-<span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;CarHeader&gt; {
-    <span class="kw">const </span>ERROR_MESSAGE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Actor bundles assets are not properly downloaded, make sure git-lfs is installed and run `git lfs pull` again. See &lt;https://github.com/git-lfs/git-lfs/blob/main/INSTALLING.md&gt;&quot;</span>;
+<span class="doccomment">/// Tries to load the missing actor bundles to the blockstore. If the bundle is
+/// not present, it will be downloaded.
+</span><span class="kw">pub async fn </span>load_actor_bundles(db: <span class="kw-2">&amp;</span><span class="kw">impl </span>Blockstore) -&gt; anyhow::Result&lt;()&gt; {
+    FuturesUnordered::from_iter(
+        ACTOR_BUNDLES
+            .iter()
+            .filter(|bundle| !db.has(<span class="kw-2">&amp;</span>bundle.manifest).unwrap_or(<span class="bool-val">false</span>))
+            .map(
+                |ActorBundleInfo {
+                     manifest: root,
+                     url,
+                     alt_url,
+                 }| <span class="kw">async move </span>{
+                    <span class="kw">let </span>response = <span class="kw">if let </span><span class="prelude-val">Ok</span>(response) = http_get(url).<span class="kw">await </span>{
+                        response
+                    } <span class="kw">else </span>{
+                        <span class="macro">warn!</span>(<span class="string">&quot;failed to download bundle from primary URL, trying alternative URL&quot;</span>);
+                        http_get(alt_url).<span class="kw">await</span><span class="question-mark">?
+                    </span>};
+                    <span class="kw">let </span>bytes = response.bytes().<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="kw">let </span>header = load_car(db, Cursor::new(bytes)).<span class="kw">await</span><span class="question-mark">?</span>;
+                    <span class="macro">ensure!</span>(header.roots.len() == <span class="number">1</span>);
+                    <span class="macro">ensure!</span>(<span class="kw-2">&amp;</span>header.roots[<span class="number">0</span>] == root);
+                    <span class="prelude-val">Ok</span>(())
+                },
+            ),
+    )
+    .try_collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;()
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="kw">const </span>ACTOR_BUNDLES_CAR_ZST: <span class="kw-2">&amp;</span>[u8] = <span class="macro">include_bytes!</span>(<span class="string">&quot;../../assets/actor_bundles.car.zst&quot;</span>);
-
-    load_car(db, ACTOR_BUNDLES_CAR_ZST)
-        .<span class="kw">await
-        </span>.context(ERROR_MESSAGE)
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::networks::ACTOR_BUNDLES;
-    <span class="kw">use </span>ahash::HashSet;
-    <span class="kw">use </span>cid::Cid;
-    <span class="kw">use </span>pretty_assertions::assert_eq;
-
-    <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_load_actor_bundles() {
-        <span class="kw">let </span>db = fvm_ipld_blockstore::MemoryBlockstore::new();
-        <span class="kw">let </span>roots = HashSet::from_iter(load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span>.unwrap().roots);
-        <span class="kw">let </span>roots_expected: HashSet&lt;Cid&gt; = ACTOR_BUNDLES.iter().map(|b| b.manifest).collect();
-        <span class="macro">assert_eq!</span>(roots, roots_expected);
-    }
+    <span class="prelude-val">Ok</span>(())
 }
 </code></pre></div></section></main></body></html>
