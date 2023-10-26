@@ -170,6 +170,107 @@
 <a href="#170" id="170">170</a>
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+<a href="#204" id="204">204</a>
+<a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
+<a href="#227" id="227">227</a>
+<a href="#228" id="228">228</a>
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -185,13 +286,17 @@
 <span class="kw">pub mod </span>sync_ops;
 <span class="kw">pub mod </span>wallet_ops;
 
+<span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::env;
+<span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::marker::PhantomData;
+<span class="kw">use </span>std::str::FromStr;
 
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::HasLotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
-<span class="kw">use </span>jsonrpc_v2::{Error, Id, RequestObject, V2};
-<span class="kw">use </span>once_cell::sync::Lazy;
-<span class="kw">use </span>serde::{de::DeserializeOwned, Deserialize, Serialize};
+<span class="kw">use </span>jsonrpc_v2::{Id, RequestObject, V2};
+<span class="kw">use </span>serde::Deserialize;
 <span class="kw">use </span>tracing::debug;
 
 <span class="kw">pub const </span>API_INFO_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;FULLNODE_API_INFO&quot;</span>;
@@ -206,34 +311,129 @@
     wallet_ops::<span class="kw-2">*</span>,
 };
 
-<span class="kw">pub struct </span>ApiInfo {
+<span class="attr">#[derive(Clone, Debug)]
+</span><span class="kw">pub struct </span>ApiInfo {
     <span class="kw">pub </span>multiaddr: Multiaddr,
     <span class="kw">pub </span>token: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
-<span class="kw">pub static </span>API_INFO: Lazy&lt;ApiInfo&gt; = Lazy::new(|| {
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>ApiInfo {
+    <span class="doccomment">/// Convert an [`ApiInfo`] to a string
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(token) = <span class="kw-2">&amp;</span><span class="self">self</span>.token {
+            token.fmt(f)<span class="question-mark">?</span>;
+            <span class="macro">write!</span>(f, <span class="string">&quot;:&quot;</span>)<span class="question-mark">?</span>;
+        }
+        <span class="self">self</span>.multiaddr.fmt(f)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="kw">impl </span>FromStr <span class="kw">for </span>ApiInfo {
+    <span class="kw">type </span><span class="prelude-val">Err </span>= multiaddr::Error;
+    <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
+        <span class="prelude-val">Ok</span>(<span class="kw">match </span>s.split_once(<span class="string">&#39;:&#39;</span>) {
+            <span class="comment">// token:host
+            </span><span class="prelude-val">Some</span>((jwt, host)) =&gt; ApiInfo {
+                multiaddr: host.parse()<span class="question-mark">?</span>,
+                token: <span class="prelude-val">Some</span>(jwt.to_owned()),
+            },
+            <span class="comment">// host
+            </span><span class="prelude-val">None </span>=&gt; ApiInfo {
+                multiaddr: s.parse()<span class="question-mark">?</span>,
+                token: <span class="prelude-val">None</span>,
+            },
+        })
+    }
+}
+
+<span class="kw">impl </span>ApiInfo {
+    <span class="comment">// Update API handle with new (optional) token
+    </span><span class="kw">pub fn </span>set_token(<span class="self">self</span>, token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="self">Self </span>{
+        ApiInfo {
+            token: token.or(<span class="self">self</span>.token),
+            ..<span class="self">self
+        </span>}
+    }
+
     <span class="comment">// Get API_INFO environment variable if exists, otherwise, use default
-    // multiaddress
-    </span><span class="kw">let </span>api_info = env::var(API_INFO_KEY).unwrap_or_else(|<span class="kw">_</span>| DEFAULT_MULTIADDRESS.to_owned());
+    // multiaddress. Fails if the environment variable is malformed.
+    </span><span class="kw">pub fn </span>from_env() -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, multiaddr::Error&gt; {
+        <span class="kw">let </span>api_info = env::var(API_INFO_KEY).unwrap_or_else(|<span class="kw">_</span>| DEFAULT_MULTIADDRESS.to_owned());
+        ApiInfo::from_str(<span class="kw-2">&amp;</span>api_info)
+    }
 
-    <span class="kw">let </span>(multiaddr, token) = <span class="kw">match </span>api_info.split_once(<span class="string">&#39;:&#39;</span>) {
-        <span class="comment">// Typically this is when a JWT was provided
-        </span><span class="prelude-val">Some</span>((jwt, host)) =&gt; (
-            host.parse().expect(<span class="string">&quot;Parse multiaddress&quot;</span>),
-            <span class="prelude-val">Some</span>(jwt.to_owned()),
-        ),
-        <span class="comment">// Use entire API_INFO env var as host string
-        </span><span class="prelude-val">None </span>=&gt; (api_info.parse().expect(<span class="string">&quot;Parse multiaddress&quot;</span>), <span class="prelude-val">None</span>),
-    };
+    <span class="kw">pub async fn </span>call&lt;T: HasLotusJson&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, req: RpcRequest&lt;T&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;T, JsonRpcError&gt; {
+        <span class="kw">let </span>rpc_req = RequestObject::request()
+            .with_method(req.method_name)
+            .with_params(req.params)
+            .with_id(<span class="number">0</span>)
+            .finish();
 
-    ApiInfo { multiaddr, token }
-});
+        <span class="kw">let </span>api_url = multiaddress_to_url(<span class="kw-2">&amp;</span><span class="self">self</span>.multiaddr);
+
+        <span class="macro">debug!</span>(<span class="string">&quot;Using JSON-RPC v2 HTTP URL: {}&quot;</span>, api_url);
+
+        <span class="kw">let </span>request = global_http_client().post(api_url).json(<span class="kw-2">&amp;</span>rpc_req);
+        <span class="kw">let </span>request = <span class="kw">match </span><span class="self">self</span>.token.as_ref() {
+            <span class="prelude-val">Some</span>(token) =&gt; request.header(http::header::AUTHORIZATION, token),
+            <span class="kw">_ </span>=&gt; request,
+        };
+
+        <span class="kw">let </span>rpc_res: JsonRpcResponse&lt;T::LotusJson&gt; =
+            request.send().<span class="kw">await</span><span class="question-mark">?</span>.error_for_status()<span class="question-mark">?</span>.json().<span class="kw">await</span><span class="question-mark">?</span>;
+
+        <span class="kw">match </span>rpc_res {
+            JsonRpcResponse::Result { result, .. } =&gt; <span class="prelude-val">Ok</span>(HasLotusJson::from_lotus_json(result)),
+            JsonRpcResponse::Error { error, .. } =&gt; <span class="prelude-val">Err</span>(error),
+        }
+    }
+}
 
 <span class="doccomment">/// Error object in a response
-</span><span class="attr">#[derive(Deserialize)]
+</span><span class="attr">#[derive(Debug, Deserialize)]
 </span><span class="kw">pub struct </span>JsonRpcError {
     <span class="kw">pub </span>code: i64,
-    <span class="kw">pub </span>message: String,
+    <span class="kw">pub </span>message: Cow&lt;<span class="lifetime">&#39;static</span>, str&gt;,
+}
+
+<span class="kw">impl </span>JsonRpcError {
+    <span class="comment">// https://www.jsonrpc.org/specification#error_object
+    // -32700 	Parse error 	Invalid JSON was received by the server.
+    //                          An error occurred on the server while parsing the JSON text.
+    // -32600 	Invalid Request 	The JSON sent is not a valid Request object.
+    // -32601 	Method not found 	The method does not exist / is not available.
+    // -32602 	Invalid params 	Invalid method parameter(s).
+    // -32603 	Internal error 	Internal JSON-RPC error.
+    // -32000 to -32099 	Server error 	Reserved for implementation-defined server-errors.
+    </span><span class="kw">pub const </span>INVALID_PARAMS: JsonRpcError = JsonRpcError {
+        code: -<span class="number">32602</span>,
+        message: Cow::Borrowed(<span class="string">&quot;Invalid method parameter(s).&quot;</span>),
+    };
+}
+
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>JsonRpcError {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{} (code={})&quot;</span>, <span class="self">self</span>.message, <span class="self">self</span>.code)
+    }
+}
+
+<span class="kw">impl </span>std::error::Error <span class="kw">for </span>JsonRpcError {
+    <span class="kw">fn </span>description(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.message
+    }
+}
+
+<span class="kw">impl </span>From&lt;reqwest::Error&gt; <span class="kw">for </span>JsonRpcError {
+    <span class="kw">fn </span>from(reqwest_error: reqwest::Error) -&gt; <span class="self">Self </span>{
+        JsonRpcError {
+            code: reqwest_error
+                .status()
+                .map(|s| s.as_u16())
+                .unwrap_or_default() <span class="kw">as </span>i64,
+            message: Cow::Owned(reqwest_error.to_string()),
+        }
+    }
 }
 
 <span class="attr">#[derive(Deserialize)]
@@ -258,9 +458,9 @@
 }
 
 <span class="doccomment">/// Parses a multi-address into a URL
-</span><span class="kw">fn </span>multiaddress_to_url(multiaddr: Multiaddr) -&gt; String {
+</span><span class="kw">fn </span>multiaddress_to_url(multiaddr: <span class="kw-2">&amp;</span>Multiaddr) -&gt; String {
     <span class="comment">// Fold Multiaddress into a Url struct
-    </span><span class="kw">let </span>addr = multiaddr.into_iter().fold(
+    </span><span class="kw">let </span>addr = multiaddr.iter().fold(
         Url {
             protocol: DEFAULT_PROTOCOL.to_owned(),
             port: DEFAULT_PORT,
@@ -310,36 +510,38 @@
     url
 }
 
-<span class="doccomment">/// Utility method for sending RPC requests over HTTP
-</span><span class="kw">async fn </span>call&lt;P, R&gt;(method_name: <span class="kw-2">&amp;</span>str, params: P, token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;R, Error&gt;
-<span class="kw">where
-    </span>P: Serialize,
-    R: DeserializeOwned,
-{
-    <span class="kw">let </span>rpc_req = RequestObject::request()
-        .with_method(method_name)
-        .with_params(serde_json::to_value(params)<span class="question-mark">?</span>)
-        .finish();
+<span class="doccomment">/// An `RpcRequest` is an at-rest description of a remote procedure call. It can
+/// be invoked using `ApiInfo::call`.
+///
+/// When adding support for a new RPC method, the corresponding `RpcRequest`
+/// value should be public for use in testing.
+</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>RpcRequest&lt;T = serde_json::Value&gt; {
+    <span class="kw">pub </span>method_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    params: serde_json::Value,
+    result_type: PhantomData&lt;T&gt;,
+}
 
-    <span class="kw">let </span>api_url = multiaddress_to_url(API_INFO.multiaddr.to_owned());
+<span class="kw">impl</span>&lt;T&gt; RpcRequest&lt;T&gt; {
+    <span class="kw">pub fn </span>new&lt;P: HasLotusJson&gt;(method_name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str, params: P) -&gt; <span class="self">Self </span>{
+        RpcRequest {
+            method_name,
+            params: serde_json::to_value(HasLotusJson::into_lotus_json(params)).unwrap_or(
+                serde_json::Value::String(
+                    <span class="string">&quot;INTERNAL ERROR: Parameters could not be serialized as JSON&quot;</span>.to_string(),
+                ),
+            ),
+            result_type: PhantomData,
+        }
+    }
 
-    <span class="macro">debug!</span>(<span class="string">&quot;Using JSON-RPC v2 HTTP URL: {}&quot;</span>, api_url);
-
-    <span class="kw">let </span>request = global_http_client().post(api_url).json(<span class="kw-2">&amp;</span>rpc_req);
-    <span class="kw">let </span>request = <span class="kw">match </span>(API_INFO.token.as_ref(), token) {
-        (<span class="prelude-val">Some</span>(token), <span class="kw">_</span>) | (<span class="kw">_</span>, <span class="prelude-val">Some</span>(token)) =&gt; request.header(http::header::AUTHORIZATION, token),
-        <span class="kw">_ </span>=&gt; request,
-    };
-
-    <span class="kw">let </span>rpc_res = request.send().<span class="kw">await</span><span class="question-mark">?</span>.error_for_status()<span class="question-mark">?</span>.json().<span class="kw">await</span><span class="question-mark">?</span>;
-
-    <span class="kw">match </span>rpc_res {
-        JsonRpcResponse::Result { result, .. } =&gt; <span class="prelude-val">Ok</span>(result),
-        JsonRpcResponse::Error { error, .. } =&gt; <span class="prelude-val">Err</span>(Error::Full {
-            data: <span class="prelude-val">None</span>,
-            code: error.code,
-            message: error.message,
-        }),
+    <span class="comment">// Discard type information about the response.
+    </span><span class="kw">pub fn </span>lower(<span class="self">self</span>) -&gt; RpcRequest {
+        RpcRequest {
+            method_name: <span class="self">self</span>.method_name,
+            params: <span class="self">self</span>.params,
+            result_type: PhantomData,
+        }
     }
 }
 </code></pre></div></section></main></body></html>

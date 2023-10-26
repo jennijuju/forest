@@ -125,6 +125,16 @@
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -138,6 +148,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::key_management::KeyStore;
 <span class="kw">pub use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multihash, NetworkMessage};
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::lotus_json_with_self;
 <span class="kw">use </span><span class="kw">crate</span>::message::signed_message::SignedMessage;
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, MpoolRpcProvider};
 <span class="kw">use </span><span class="kw">crate</span>::shim::executor::Receipt;
@@ -179,6 +190,8 @@
     </span><span class="kw">pub </span>active_syncs: Vec&lt;SyncState&gt;,
 }
 
+<span class="macro">lotus_json_with_self!</span>(RPCSyncState);
+
 <span class="kw">pub type </span>JsonRpcServerState = Arc&lt;JsonRpcServer&lt;JsonRpcMapRouter&gt;&gt;;
 
 <span class="comment">// Chain API
@@ -192,12 +205,14 @@
     </span><span class="kw">pub </span>cids: Vec&lt;Cid&gt;,
 }
 
-<span class="attr">#[derive(Serialize, Deserialize)]
+<span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>MessageSendSpec {
     <span class="attr">#[serde(with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span>max_fee: TokenAmount,
 }
+
+<span class="macro">lotus_json_with_self!</span>(MessageSendSpec);
 
 <span class="attr">#[derive(Serialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
@@ -228,23 +243,28 @@
     <span class="kw">pub </span>addrs: HashSet&lt;Multiaddr&gt;,
 }
 
+<span class="macro">lotus_json_with_self!</span>(AddrInfo);
+
 <span class="attr">#[derive(Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>PeerID {
     <span class="kw">pub </span>multihash: Multihash,
 }
 
 <span class="doccomment">/// Represents the current version of the API.
-</span><span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]
 </span><span class="kw">pub struct </span>APIVersion {
     <span class="kw">pub </span>version: String,
-    <span class="kw">pub </span>api_version: Version,
+    <span class="attr">#[serde(rename = <span class="string">&quot;APIVersion&quot;</span>)]
+    </span><span class="kw">pub </span>api_version: Version,
     <span class="kw">pub </span>block_delay: u64,
 }
 
+<span class="macro">lotus_json_with_self!</span>(APIVersion);
+
 <span class="doccomment">/// Integer based value on version information. Highest order bits for Major,
 /// Mid order for Minor and lowest for Patch.
-</span><span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>Version(u32);
 
 <span class="kw">impl </span>Version {

@@ -252,7 +252,7 @@
             .with_method(WALLET_NEW, wallet_new::&lt;DB&gt;)
             .with_method(WALLET_SET_DEFAULT, wallet_set_default::&lt;DB&gt;)
             .with_method(WALLET_SIGN, wallet_sign::&lt;DB&gt;)
-            .with_method(WALLET_VERIFY, wallet_verify::&lt;DB&gt;)
+            .with_method(WALLET_VERIFY, wallet_verify)
             .with_method(WALLET_DELETE, wallet_delete::&lt;DB&gt;)
             <span class="comment">// State API
             </span>.with_method(STATE_CALL, state_call::&lt;DB&gt;)

@@ -124,22 +124,17 @@
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
-<a href="#127" id="127">127</a>
-<a href="#128" id="128">128</a>
-<a href="#129" id="129">129</a>
-<a href="#130" id="130">130</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::chain_ops::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{ApiInfo, JsonRpcError};
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
-<span class="kw">use </span>futures::TryFutureExt;
 
-<span class="kw">use super</span>::<span class="kw-2">*</span>;
+<span class="kw">use super</span>::{print_pretty_json, print_rpc_res_cids};
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>ChainCommands {
@@ -186,17 +181,16 @@
 }
 
 <span class="kw">impl </span>ChainCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Block { cid } =&gt; {
-                print_rpc_res_pretty(chain_get_block((cid.into(),), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>)
+            <span class="self">Self</span>::Block { cid } =&gt; print_pretty_json(api.chain_get_block(cid).<span class="kw">await</span><span class="question-mark">?</span>),
+            <span class="self">Self</span>::Genesis =&gt; print_pretty_json(LotusJson(api.chain_get_genesis().<span class="kw">await</span><span class="question-mark">?</span>)),
+            <span class="self">Self</span>::Head =&gt; print_rpc_res_cids(api.chain_head().<span class="kw">await</span><span class="question-mark">?</span>),
+            <span class="self">Self</span>::Message { cid } =&gt; print_pretty_json(api.chain_get_message(cid).<span class="kw">await</span><span class="question-mark">?</span>),
+            <span class="self">Self</span>::ReadObj { cid } =&gt; {
+                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, api.chain_read_obj(cid).<span class="kw">await</span><span class="question-mark">?</span>);
+                <span class="prelude-val">Ok</span>(())
             }
-            <span class="self">Self</span>::Genesis =&gt; print_rpc_res_pretty(chain_get_genesis(<span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>),
-            <span class="self">Self</span>::Head =&gt; print_rpc_res_cids(chain_head(<span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>),
-            <span class="self">Self</span>::Message { cid } =&gt; {
-                print_rpc_res_pretty(chain_get_message((cid.into(),), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>)
-            }
-            <span class="self">Self</span>::ReadObj { cid } =&gt; print_rpc_res(chain_read_obj((cid.into(),), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>),
             <span class="self">Self</span>::SetHead {
                 cids,
                 epoch: <span class="prelude-val">Some</span>(epoch),
@@ -204,12 +198,9 @@
             } =&gt; {
                 maybe_confirm(no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
                 <span class="macro">assert!</span>(cids.is_empty(), <span class="string">&quot;should be disallowed by clap&quot;</span>);
-                tipset_by_epoch_or_offset(epoch, <span class="kw-2">&amp;</span>rpc_token)
-                    .and_then(|tipset_json| {
-                        chain_set_head((tipset_json.into_inner().key().clone(),), <span class="kw-2">&amp;</span>rpc_token)
-                    })
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)
+                <span class="kw">let </span>tipset = tipset_by_epoch_or_offset(<span class="kw-2">&amp;</span>api, epoch).<span class="kw">await</span><span class="question-mark">?</span>;
+                api.chain_set_head(tipset.key().clone()).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::SetHead {
                 cids,
@@ -217,9 +208,9 @@
                 force: no_confirm,
             } =&gt; {
                 maybe_confirm(no_confirm, SET_HEAD_CONFIRMATION_MESSAGE)<span class="question-mark">?</span>;
-                chain_set_head((TipsetKeys::from_iter(cids.clone()),), <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)
+                api.chain_set_head(TipsetKeys::from_iter(cids.clone()))
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(())
             }
         }
     }
@@ -228,17 +219,18 @@
 <span class="doccomment">/// If `epoch_or_offset` is negative, get the tipset that many blocks before the
 /// current head. Else treat `epoch_or_offset` as an epoch, and get that tipset.
 </span><span class="kw">async fn </span>tipset_by_epoch_or_offset(
+    api: <span class="kw-2">&amp;</span>ApiInfo,
     epoch_or_offset: i64,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt; {
-    <span class="kw">let </span>current_head = chain_head(auth_token).<span class="kw">await</span><span class="question-mark">?</span>.into_inner();
+) -&gt; <span class="prelude-ty">Result</span>&lt;Tipset, JsonRpcError&gt; {
+    <span class="kw">let </span>current_head = api.chain_head().<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>target_epoch = <span class="kw">match </span>epoch_or_offset.is_negative() {
         <span class="bool-val">true </span>=&gt; current_head.epoch() + epoch_or_offset, <span class="comment">// adding negative number
         </span><span class="bool-val">false </span>=&gt; epoch_or_offset,
     };
 
-    chain_get_tipset_by_height((target_epoch, current_head.key().clone()), auth_token).<span class="kw">await
+    api.chain_get_tipset_by_height(target_epoch, current_head.key().clone())
+        .<span class="kw">await
 </span>}
 
 <span class="kw">const </span>SET_HEAD_CONFIRMATION_MESSAGE: <span class="kw-2">&amp;</span>str =

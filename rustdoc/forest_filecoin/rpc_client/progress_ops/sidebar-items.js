@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["get_progress"]};
+window.SIDEBAR_ITEMS = {};

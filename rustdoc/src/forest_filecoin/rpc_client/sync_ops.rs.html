@@ -26,32 +26,42 @@
 <a href="#26" id="26">26</a>
 <a href="#27" id="27">27</a>
 <a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::sync_api::<span class="kw-2">*</span>;
-<span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
+</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCSyncState, sync_api::<span class="kw-2">*</span>};
+<span class="kw">use </span>cid::Cid;
 
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
+<span class="kw">use super</span>::{ApiInfo, JsonRpcError, RpcRequest};
 
-<span class="kw">pub async fn </span>sync_check_bad(
-    params: SyncCheckBadParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SyncCheckBadResult, JsonRpcError&gt; {
-    call(SYNC_CHECK_BAD, params, auth_token).<span class="kw">await
-</span>}
+<span class="kw">impl </span>ApiInfo {
+    <span class="kw">pub async fn </span>sync_check_bad(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::sync_check_bad_req(cid)).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>sync_mark_bad(
-    params: SyncMarkBadParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SyncMarkBadResult, JsonRpcError&gt; {
-    call(SYNC_MARK_BAD, params, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>sync_check_bad_req(cid: Cid) -&gt; RpcRequest&lt;String&gt; {
+        RpcRequest::new(SYNC_CHECK_BAD, (cid,))
+    }
 
-<span class="kw">pub async fn </span>sync_status(
-    (): SyncStateParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SyncStateResult, JsonRpcError&gt; {
-    call(SYNC_STATE, (), auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub async fn </span>sync_mark_bad(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::sync_mark_bad_req(cid)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>sync_mark_bad_req(cid: Cid) -&gt; RpcRequest&lt;()&gt; {
+        RpcRequest::new(SYNC_MARK_BAD, (cid,))
+    }
+
+    <span class="kw">pub async fn </span>sync_status(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;RPCSyncState, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::sync_status_req()).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>sync_status_req() -&gt; RpcRequest&lt;RPCSyncState&gt; {
+        RpcRequest::new(SYNC_STATE, ())
+    }
+}
 </code></pre></div></section></main></body></html>

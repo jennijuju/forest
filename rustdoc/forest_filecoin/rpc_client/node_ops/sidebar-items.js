@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["node_status"]};
+window.SIDEBAR_ITEMS = {};

@@ -79,12 +79,11 @@
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::progress_api::GetProgressType;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{db_ops::db_gc, progress_ops::get_progress};
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::ApiInfo;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
 
-<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::handle_rpc_err;
 <span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
 
 <span class="attr">#[derive(Debug, Subcommand)]
@@ -102,7 +101,7 @@
 }
 
 <span class="kw">impl </span>DBCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Stats =&gt; bail_moved_cmd(<span class="string">&quot;db stats&quot;</span>, <span class="string">&quot;forest-tool db stats&quot;</span>),
             <span class="self">Self</span>::GC =&gt; {
@@ -115,14 +114,15 @@
                 }));
                 tokio::spawn({
                     <span class="kw">let </span>bar = bar.clone();
+                    <span class="kw">let </span>api = api.clone();
                     <span class="kw">async move </span>{
                         <span class="kw">let </span><span class="kw-2">mut </span>interval =
                             tokio::time::interval(tokio::time::Duration::from_secs(<span class="number">1</span>));
                         <span class="kw">loop </span>{
                             interval.tick().<span class="kw">await</span>;
-                            <span class="kw">if let </span><span class="prelude-val">Ok</span>((progress, total)) =
-                                get_progress((GetProgressType::DatabaseGarbageCollection,), <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)
-                                    .<span class="kw">await
+                            <span class="kw">if let </span><span class="prelude-val">Ok</span>((progress, total)) = api
+                                .get_progress(GetProgressType::DatabaseGarbageCollection)
+                                .<span class="kw">await
                             </span>{
                                 <span class="kw">let </span>bar = bar.lock().<span class="kw">await</span>;
                                 <span class="kw">if </span>bar.is_finish() {
@@ -135,7 +135,7 @@
                     }
                 });
 
-                db_gc((), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                api.db_gc().<span class="kw">await</span><span class="question-mark">?</span>;
 
                 bar.lock().<span class="kw">await</span>.finish_println(<span class="kw-2">&amp;</span><span class="macro">format!</span>(
                     <span class="string">&quot;Database garbage collection completed. took {}s&quot;</span>,

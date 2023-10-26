@@ -104,8 +104,6 @@
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
 <a href="#106" id="106">106</a>
-<a href="#107" id="107">107</a>
-<a href="#108" id="108">108</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -124,7 +122,7 @@
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_addrs_listen&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;NetAddrsListenResult, JsonRpcError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;AddrInfo, JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
     <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
         method: NetRPCMethods::AddrsListen(tx),
@@ -141,7 +139,7 @@
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_peers&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;NetPeersResult, JsonRpcError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;AddrInfo&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = oneshot::channel();
     <span class="kw">let </span>req = NetworkMessage::JSONRPCRequest {
         method: NetRPCMethods::Peers(tx),
@@ -175,9 +173,8 @@
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_connect&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;NetConnectParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;NetConnectResult, JsonRpcError&gt; {
-    <span class="kw">let </span>(AddrInfo { id, addrs },) = params;
+    Params((AddrInfo { id, addrs },)): Params&lt;(AddrInfo,)&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
     <span class="kw">let </span>(<span class="kw">_</span>, id) = multibase::decode(<span class="macro">format!</span>(<span class="string">&quot;{}{}&quot;</span>, <span class="string">&quot;z&quot;</span>, id))<span class="question-mark">?</span>;
     <span class="kw">let </span>peer_id = PeerId::from_bytes(<span class="kw-2">&amp;</span>id)<span class="question-mark">?</span>;
 
@@ -199,9 +196,8 @@
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>net_disconnect&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;NetDisconnectParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;NetDisconnectResult, JsonRpcError&gt; {
-    <span class="kw">let </span>(id,) = params;
+    Params((id,)): Params&lt;(String,)&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
     <span class="kw">let </span>peer_id = PeerId::from_str(<span class="kw-2">&amp;</span>id)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(tx, rx) = oneshot::channel();

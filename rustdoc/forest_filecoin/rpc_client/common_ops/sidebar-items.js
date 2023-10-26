@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["shutdown","start_time","version"]};
+window.SIDEBAR_ITEMS = {};

@@ -146,10 +146,6 @@
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
 <a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -158,13 +154,13 @@
     time::Duration,
 };
 
+<span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncStage;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::<span class="kw-2">*</span>;
-<span class="kw">use crate</span>::{chain_sync::SyncStage, lotus_json::LotusJson};
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>ticker::Ticker;
 
-<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{format_vec_pretty, handle_rpc_err};
+<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::format_vec_pretty;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>SyncCommands {
@@ -191,14 +187,14 @@
 }
 
 <span class="kw">impl </span>SyncCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Wait { watch } =&gt; {
                 <span class="kw">let </span>ticker = Ticker::new(<span class="number">0</span>.., Duration::from_secs(<span class="number">1</span>));
                 <span class="kw">let </span><span class="kw-2">mut </span>stdout = stdout();
 
                 <span class="kw">for _ in </span>ticker {
-                    <span class="kw">let </span>response = sync_status((), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>response = api.sync_status().<span class="kw">await</span><span class="question-mark">?</span>;
                     <span class="kw">let </span>state = <span class="kw-2">&amp;</span>response.active_syncs[<span class="number">0</span>];
 
                     <span class="kw">let </span>target_height = <span class="kw">if let </span><span class="prelude-val">Some</span>(tipset) = state.target() {
@@ -243,7 +239,7 @@
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Status =&gt; {
-                <span class="kw">let </span>response = sync_status((), <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.sync_status().<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="kw">let </span>state = <span class="kw-2">&amp;</span>response.active_syncs[<span class="number">0</span>];
                 <span class="kw">let </span>base = state.base();
@@ -280,9 +276,7 @@
             }
             <span class="self">Self</span>::CheckBad { cid } =&gt; {
                 <span class="kw">let </span>cid: Cid = cid.parse()<span class="question-mark">?</span>;
-                <span class="kw">let </span>response = sync_check_bad((LotusJson(cid),), <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.sync_check_bad(cid).<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="kw">if </span>response.is_empty() {
                     <span class="macro">println!</span>(<span class="string">&quot;Block \&quot;{cid}\&quot; is not marked as a bad block&quot;</span>);
@@ -293,9 +287,7 @@
             }
             <span class="self">Self</span>::MarkBad { cid } =&gt; {
                 <span class="kw">let </span>cid: Cid = cid.parse()<span class="question-mark">?</span>;
-                sync_mark_bad((LotusJson(cid),), <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                api.sync_mark_bad(cid).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;OK&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }

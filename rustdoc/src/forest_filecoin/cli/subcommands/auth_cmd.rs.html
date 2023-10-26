@@ -68,25 +68,16 @@
 <a href="#68" id="68">68</a>
 <a href="#69" id="69">69</a>
 <a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
-<a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::auth::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_api::auth_api::AuthNewParams;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{auth_new, API_INFO};
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{ApiInfo, JsonRpcError};
 <span class="kw">use </span>chrono::Duration;
 <span class="kw">use </span>clap::Subcommand;
-<span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
 <span class="kw">use </span>std::str::FromStr;
 
-<span class="kw">use super</span>::{handle_rpc_err, print_rpc_res_bytes};
+<span class="kw">use </span><span class="kw">super</span>::print_rpc_res_bytes;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>AuthCommands {
@@ -124,29 +115,24 @@
 }
 
 <span class="kw">impl </span>AuthCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::CreateToken { perm, expire_in } =&gt; {
                 <span class="kw">let </span>perm: String = perm.parse()<span class="question-mark">?</span>;
-                <span class="kw">let </span>perms = process_perms(perm).map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>perms = process_perms(perm)<span class="question-mark">?</span>;
                 <span class="kw">let </span>token_exp = Duration::from_std(expire_in.into())<span class="question-mark">?</span>;
-                <span class="kw">let </span>auth_params = AuthNewParams { perms, token_exp };
-                print_rpc_res_bytes(auth_new(auth_params, <span class="kw-2">&amp;</span>rpc_token).<span class="kw">await</span>)
+                print_rpc_res_bytes(api.auth_new(perms, token_exp).<span class="kw">await</span><span class="question-mark">?</span>)
             }
             <span class="self">Self</span>::ApiInfo { perm, expire_in } =&gt; {
                 <span class="kw">let </span>perm: String = perm.parse()<span class="question-mark">?</span>;
-                <span class="kw">let </span>perms = process_perms(perm).map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>perms = process_perms(perm)<span class="question-mark">?</span>;
                 <span class="kw">let </span>token_exp = Duration::from_std(expire_in.into())<span class="question-mark">?</span>;
-                <span class="kw">let </span>auth_params = AuthNewParams { perms, token_exp };
-                <span class="kw">let </span>token = auth_new(auth_params, <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
-                <span class="kw">let </span>addr = API_INFO.multiaddr.to_owned();
-                <span class="macro">println!</span>(
-                    <span class="string">&quot;FULLNODE_API_INFO=\&quot;{}:{}\&quot;&quot;</span>,
-                    String::from_utf8(token).map_err(|e| handle_rpc_err(e.into()))<span class="question-mark">?</span>,
-                    addr
-                );
+                <span class="kw">let </span>token = api.auth_new(perms, token_exp).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>new_api = ApiInfo {
+                    token: <span class="prelude-val">Some</span>(String::from_utf8(token)<span class="question-mark">?</span>),
+                    ..api
+                };
+                <span class="macro">println!</span>(<span class="string">&quot;FULLNODE_API_INFO=\&quot;{}\&quot;&quot;</span>, new_api);
                 <span class="prelude-val">Ok</span>(())
             }
         }

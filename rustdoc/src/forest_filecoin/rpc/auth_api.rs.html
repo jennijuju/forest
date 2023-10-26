@@ -33,42 +33,36 @@
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::auth::<span class="kw-2">*</span>;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{auth_api::<span class="kw-2">*</span>, data_types::RPCState};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 
 <span class="doccomment">/// RPC call to create a new JWT Token
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_new&lt;DB&gt;(
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_new&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(params): Params&lt;AuthNewParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;AuthNewResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Vec&lt;u8&gt;&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>auth_params: AuthNewParams = params;
     <span class="kw">let </span>ks = data.keystore.read().<span class="kw">await</span>;
     <span class="kw">let </span>ki = ks.get(JWT_IDENTIFIER)<span class="question-mark">?</span>;
     <span class="kw">let </span>token = create_token(auth_params.perms, ki.private_key(), auth_params.token_exp)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(token.as_bytes().to_vec())
+    <span class="prelude-val">Ok</span>(LotusJson(token.as_bytes().to_vec()))
 }
 
 <span class="doccomment">/// RPC call to verify JWT Token and return the token&#39;s permissions
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>auth_verify&lt;DB&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;AuthVerifyParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;AuthVerifyResult, JsonRpcError&gt;
+    Params((header_raw,)): Params&lt;(String,)&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;String&gt;, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore,
 {
     <span class="kw">let </span>ks = data.keystore.read().<span class="kw">await</span>;
-    <span class="kw">let </span>(header_raw,) = params;
     <span class="kw">let </span>token = header_raw.trim_start_matches(<span class="string">&quot;Bearer &quot;</span>);
     <span class="kw">let </span>ki = ks.get(JWT_IDENTIFIER)<span class="question-mark">?</span>;
     <span class="kw">let </span>perms = verify_token(token, ki.private_key())<span class="question-mark">?</span>;

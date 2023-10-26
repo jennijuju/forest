@@ -12,18 +12,28 @@
 <a href="#12" id="12">12</a>
 <a href="#13" id="13">13</a>
 <a href="#14" id="14">14</a>
+<a href="#15" id="15">15</a>
+<a href="#16" id="16">16</a>
+<a href="#17" id="17">17</a>
+<a href="#18" id="18">18</a>
+<a href="#19" id="19">19</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::progress_api::<span class="kw-2">*</span>;
-<span class="kw">use </span>jsonrpc_v2::Error;
 
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
+<span class="kw">use super</span>::{ApiInfo, JsonRpcError, RpcRequest};
 
-<span class="kw">pub async fn </span>get_progress(
-    params: GetProgressParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;GetProgressResult, Error&gt; {
-    call(GET_PROGRESS, params, auth_token).<span class="kw">await
-</span>}
+<span class="kw">impl </span>ApiInfo {
+    <span class="kw">pub async fn </span>get_progress(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        progress_type: GetProgressType,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;GetProgressResult, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::get_progress_req(progress_type)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>get_progress_req(progress_type: GetProgressType) -&gt; RpcRequest&lt;(u64, u64)&gt; {
+        RpcRequest::new(GET_PROGRESS, progress_type)
+    }
+}
 </code></pre></div></section></main></body></html>

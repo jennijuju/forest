@@ -239,48 +239,6 @@
 <a href="#239" id="239">239</a>
 <a href="#240" id="240">240</a>
 <a href="#241" id="241">241</a>
-<a href="#242" id="242">242</a>
-<a href="#243" id="243">243</a>
-<a href="#244" id="244">244</a>
-<a href="#245" id="245">245</a>
-<a href="#246" id="246">246</a>
-<a href="#247" id="247">247</a>
-<a href="#248" id="248">248</a>
-<a href="#249" id="249">249</a>
-<a href="#250" id="250">250</a>
-<a href="#251" id="251">251</a>
-<a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -304,16 +262,14 @@
 <span class="kw">mod </span>state_cmd;
 <span class="kw">mod </span>sync_cmd;
 
-<span class="kw">use </span>std::io::{<span class="self">self</span>, Write};
+<span class="kw">use </span>std::io::Write;
 
 <span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::Config;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::cli::HELP_MESSAGE;
-<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::utils::version::FOREST_VERSION_STRING;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Parser;
-<span class="kw">use </span>jsonrpc_v2::Error <span class="kw">as </span>JsonRpcError;
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>tracing::error;
@@ -477,14 +433,6 @@
     </span>Car(CarCommands),
 }
 
-<span class="doccomment">/// Pretty-print a JSON-RPC error and exit
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>handle_rpc_err(e: JsonRpcError) -&gt; anyhow::Error {
-    <span class="kw">match </span>serde_json::to_string(<span class="kw-2">&amp;</span>e) {
-        <span class="prelude-val">Ok</span>(err_msg) =&gt; anyhow::Error::msg(err_msg),
-        <span class="prelude-val">Err</span>(err) =&gt; err.into(),
-    }
-}
-
 <span class="doccomment">/// Format a vector to a prettified string
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>format_vec_pretty(vec: Vec&lt;String&gt;) -&gt; String {
     <span class="macro">format!</span>(<span class="string">&quot;[{}]&quot;</span>, vec.join(<span class="string">&quot;, &quot;</span>))
@@ -497,27 +445,14 @@
     std::process::exit(code);
 }
 
-<span class="doccomment">/// Prints a plain HTTP JSON-RPC response result
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res(res: <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt;) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>obj = res.map_err(handle_rpc_err)<span class="question-mark">?</span>;
-    <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">&amp;</span>obj);
-    <span class="prelude-val">Ok</span>(())
-}
-
 <span class="doccomment">/// Prints a pretty HTTP JSON-RPC response result
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_pretty&lt;T: Serialize&gt;(
-    res: <span class="prelude-ty">Result</span>&lt;T, JsonRpcError&gt;,
-) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>obj = res.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_pretty_json&lt;T: Serialize&gt;(obj: T) -&gt; anyhow::Result&lt;()&gt; {
     <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, serde_json::to_string_pretty(<span class="kw-2">&amp;</span>obj)<span class="question-mark">?</span>);
     <span class="prelude-val">Ok</span>(())
 }
 
 <span class="doccomment">/// Prints a tipset from a HTTP JSON-RPC response result
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_cids(
-    res: <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt;,
-) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>tipset = res.map_err(handle_rpc_err)<span class="question-mark">?</span>.into_inner();
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_cids(tipset: Tipset) -&gt; anyhow::Result&lt;()&gt; {
     <span class="macro">println!</span>(
         <span class="string">&quot;{}&quot;</span>,
         serde_json::to_string_pretty(
@@ -532,28 +467,9 @@
 }
 
 <span class="doccomment">/// Prints a bytes HTTP JSON-RPC response result
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_bytes(res: <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, JsonRpcError&gt;) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">let </span>obj = res.map_err(handle_rpc_err)<span class="question-mark">?</span>;
-    <span class="macro">println!</span>(
-        <span class="string">&quot;{}&quot;</span>,
-        String::from_utf8(obj).map_err(|e| handle_rpc_err(e.into()))<span class="question-mark">?
-    </span>);
+</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_rpc_res_bytes(obj: Vec&lt;u8&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, String::from_utf8(obj)<span class="question-mark">?</span>);
     <span class="prelude-val">Ok</span>(())
-}
-
-<span class="doccomment">/// Prints a string HTTP JSON-RPC response result to a buffered `stdout`
-</span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>print_stdout(out: String) {
-    <span class="kw">let </span>stdout = io::stdout();
-    <span class="kw">let </span><span class="kw-2">mut </span>handle = stdout.lock();
-    handle
-        .write_all(out.as_bytes())
-        .map_err(|e| handle_rpc_err(e.into()))
-        .unwrap();
-
-    handle
-        .write(<span class="string">&quot;\n&quot;</span>.as_bytes())
-        .map_err(|e| handle_rpc_err(e.into()))
-        .unwrap();
 }
 
 <span class="kw">pub fn </span>prompt_confirm() -&gt; bool {

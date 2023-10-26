@@ -251,35 +251,6 @@
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
 <a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -288,22 +259,20 @@
     str::{<span class="self">self</span>, FromStr},
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::key_management::KeyInfo;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::wallet_ops::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::{Protocol, StrictAddress},
     crypto::{Signature, SignatureType},
     econ::TokenAmount,
 };
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::read_file_to_string;
+<span class="kw">use crate</span>::{key_management::KeyInfo, rpc_client::ApiInfo};
 <span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>base64::{prelude::BASE64_STANDARD, Engine};
 <span class="kw">use </span>clap::{arg, Subcommand};
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Password};
 <span class="kw">use </span>num::BigInt;
 
-<span class="kw">use </span><span class="kw">super</span>::handle_rpc_err;
 <span class="kw">use </span><span class="kw">crate</span>::cli::humantoken::TokenAmountPretty <span class="kw">as _</span>;
 
 <span class="attr">#[derive(Debug, Subcommand)]
@@ -383,7 +352,7 @@
 }
 
 <span class="kw">impl </span>WalletCommands {
-    <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::New { signature_type } =&gt; {
                 <span class="kw">let </span>signature_type = <span class="kw">match </span>signature_type.to_lowercase().as_str() {
@@ -391,49 +360,37 @@
                     <span class="kw">_ </span>=&gt; SignatureType::Bls,
                 };
 
-                <span class="kw">let </span>signature_type_json = LotusJson(signature_type);
-
-                <span class="kw">let </span>response = wallet_new((signature_type_json,), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.wallet_new(signature_type).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Balance { address } =&gt; {
-                <span class="kw">let </span>response = wallet_balance((address.to_string(),), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.wallet_balance(address.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Default =&gt; {
-                <span class="kw">let </span>response = wallet_default_address((), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?
+                <span class="kw">let </span>response = api
+                    .wallet_default_address()
+                    .<span class="kw">await</span><span class="question-mark">?
                     </span>.unwrap_or_else(|| <span class="string">&quot;No default wallet address set&quot;</span>.to_string());
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Export { address } =&gt; {
-                <span class="kw">let </span>response = wallet_export((address.to_string(),), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.wallet_export(address.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
 
-                <span class="kw">let </span>encoded_key = serde_json::to_string(<span class="kw-2">&amp;</span>response)<span class="question-mark">?</span>;
+                <span class="kw">let </span>encoded_key = serde_json::to_string(<span class="kw-2">&amp;</span>LotusJson(response))<span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, hex::encode(encoded_key));
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Has { key } =&gt; {
-                <span class="kw">let </span>response = wallet_has((key.to_string(),), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.wallet_has(key.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Delete { address } =&gt; {
-                wallet_delete((address.to_string(),), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                api.wallet_delete(address.to_string()).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="macro">println!</span>(<span class="string">&quot;deleted {address}.&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
             }
@@ -460,9 +417,7 @@
                 <span class="kw">let </span>LotusJson(key) = serde_json::from_str::&lt;LotusJson&lt;KeyInfo&gt;&gt;(key_str)
                     .context(<span class="string">&quot;invalid key format&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>key = wallet_import(<span class="macro">vec!</span>[key].into(), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>key = api.wallet_import(<span class="macro">vec!</span>[key]).<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="macro">println!</span>(<span class="string">&quot;{key}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())
@@ -471,14 +426,9 @@
                 no_round,
                 no_abbrev,
             } =&gt; {
-                <span class="kw">let </span>response = wallet_list((), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?
-                    </span>.into_inner();
+                <span class="kw">let </span>response = api.wallet_list().<span class="kw">await</span><span class="question-mark">?</span>;
 
-                <span class="kw">let </span>default = wallet_default_address((), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>default = api.wallet_default_address().<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="kw">let </span>(title_address, title_default_mark, title_balance) =
                     (<span class="string">&quot;Address&quot;</span>, <span class="string">&quot;Default&quot;</span>, <span class="string">&quot;Balance&quot;</span>);
@@ -492,9 +442,7 @@
                         <span class="string">&quot;&quot;
                     </span>};
 
-                    <span class="kw">let </span>balance_string = wallet_balance((addr.clone(),), <span class="kw-2">&amp;</span>token)
-                        .<span class="kw">await
-                        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                    <span class="kw">let </span>balance_string = api.wallet_balance(addr.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
 
                     <span class="kw">let </span>balance_token_amount =
                         TokenAmount::from_atto(balance_string.parse::&lt;BigInt&gt;()<span class="question-mark">?</span>);
@@ -518,9 +466,7 @@
                 <span class="kw">let </span>StrictAddress(key) = StrictAddress::from_str(key)
                     .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Invalid address: {key}&quot;</span>))<span class="question-mark">?</span>;
 
-                wallet_set_default((key.into(),), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                api.wallet_set_default(key).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Sign { address, message } =&gt; {
@@ -530,10 +476,8 @@
                 <span class="kw">let </span>message = hex::decode(message).context(<span class="string">&quot;Message has to be a hex string&quot;</span>)<span class="question-mark">?</span>;
                 <span class="kw">let </span>message = BASE64_STANDARD.encode(message);
 
-                <span class="kw">let </span>response = wallet_sign(((address).into(), message.into_bytes()), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
-                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, hex::encode(response.<span class="number">0</span>.bytes()));
+                <span class="kw">let </span>response = api.wallet_sign(address, message.into_bytes()).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, hex::encode(response.bytes()));
                 <span class="prelude-val">Ok</span>(())
             }
             <span class="self">Self</span>::Verify {
@@ -552,9 +496,7 @@
                 };
                 <span class="kw">let </span>msg = hex::decode(message).context(<span class="string">&quot;Message has to be a hex string&quot;</span>)<span class="question-mark">?</span>;
 
-                <span class="kw">let </span>response = wallet_verify(((address).into(), msg, LotusJson(signature)), <span class="kw-2">&amp;</span>token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>response = api.wallet_verify(address, msg, signature).<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="macro">println!</span>(<span class="string">&quot;{response}&quot;</span>);
                 <span class="prelude-val">Ok</span>(())

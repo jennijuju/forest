@@ -250,52 +250,13 @@
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
-<a href="#253" id="253">253</a>
-<a href="#254" id="254">254</a>
-<a href="#255" id="255">255</a>
-<a href="#256" id="256">256</a>
-<a href="#257" id="257">257</a>
-<a href="#258" id="258">258</a>
-<a href="#259" id="259">259</a>
-<a href="#260" id="260">260</a>
-<a href="#261" id="261">261</a>
-<a href="#262" id="262">262</a>
-<a href="#263" id="263">263</a>
-<a href="#264" id="264">264</a>
-<a href="#265" id="265">265</a>
-<a href="#266" id="266">266</a>
-<a href="#267" id="267">267</a>
-<a href="#268" id="268">268</a>
-<a href="#269" id="269">269</a>
-<a href="#270" id="270">270</a>
-<a href="#271" id="271">271</a>
-<a href="#272" id="272">272</a>
-<a href="#273" id="273">273</a>
-<a href="#274" id="274">274</a>
-<a href="#275" id="275">275</a>
-<a href="#276" id="276">276</a>
-<a href="#277" id="277">277</a>
-<a href="#278" id="278">278</a>
-<a href="#279" id="279">279</a>
-<a href="#280" id="280">280</a>
-<a href="#281" id="281">281</a>
-<a href="#282" id="282">282</a>
-<a href="#283" id="283">283</a>
-<a href="#284" id="284">284</a>
-<a href="#285" id="285">285</a>
-<a href="#286" id="286">286</a>
-<a href="#287" id="287">287</a>
-<a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
+<span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset, TipsetKeys};
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
 <span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
@@ -303,8 +264,10 @@
     chain_api::<span class="kw-2">*</span>,
     data_types::{BlockMessages, RPCState},
 };
+<span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
 <span class="kw">use </span><span class="kw">crate</span>::utils::io::VoidAsyncWriter;
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
 <span class="kw">use </span>hex::ToHex;
@@ -313,14 +276,10 @@
 <span class="kw">use </span>sha2::Sha256;
 <span class="kw">use </span>tokio::sync::Mutex;
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_message&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_message&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetMessageParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetMessageResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(msg_cid),) = params;
+    Params(LotusJson((msg_cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Message&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>ret: Message = data
         .state_manager
         .blockstore()
@@ -339,7 +298,7 @@
         skip_checksum,
         dry_run,
     }): Params&lt;ChainExportParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainExportResult, JsonRpcError&gt;
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;, JsonRpcError&gt;
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync + <span class="lifetime">&#39;static</span>,
 {
@@ -393,14 +352,10 @@
     }
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_read_obj&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_read_obj&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainReadObjParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainReadObjResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(obj_cid),) = params;
+    Params(LotusJson((obj_cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
     <span class="kw">let </span>ret = data
         .state_manager
         .blockstore()
@@ -409,25 +364,17 @@
     <span class="prelude-val">Ok</span>(hex::encode(ret))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_has_obj&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_has_obj&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainHasObjParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainHasObjResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(obj_cid),) = params;
+    Params(LotusJson((obj_cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;bool, JsonRpcError&gt; {
     <span class="prelude-val">Ok</span>(data.state_manager.blockstore().get(<span class="kw-2">&amp;</span>obj_cid)<span class="question-mark">?</span>.is_some())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block_messages&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block_messages&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetBlockMessagesParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetBlockMessagesResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(blk_cid),) = params;
+    Params(LotusJson((blk_cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;BlockMessages, JsonRpcError&gt; {
     <span class="kw">let </span>blk: BlockHeader = data
         .state_manager
         .blockstore()
@@ -454,14 +401,10 @@
     <span class="prelude-val">Ok</span>(ret)
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_by_height&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset_by_height&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetTipsetByHeightParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipsetByHeightResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(height, tsk) = params;
+    Params(LotusJson((height, tsk))): Params&lt;LotusJson&lt;(ChainEpoch, TipsetKeys)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>ts = data
         .state_manager
         .chain_store()
@@ -474,34 +417,24 @@
     <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>tss).clone().into())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_genesis&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_genesis&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetGenesisResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
+) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;LotusJson&lt;Tipset&gt;&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>genesis = data.state_manager.chain_store().genesis();
     <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(Tipset::from(genesis).into()))
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_head&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_head&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainHeadResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>heaviest = data.state_manager.chain_store().heaviest_tipset();
     <span class="prelude-val">Ok</span>((<span class="kw-2">*</span>heaviest).clone().into())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_block&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetBlockParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetBlockResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(blk_cid),) = params;
+    Params(LotusJson((blk_cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;BlockHeader&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>blk: BlockHeader = data
         .state_manager
         .blockstore()
@@ -510,13 +443,10 @@
     <span class="prelude-val">Ok</span>(blk.into())
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_get_tipset&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params((LotusJson(tsk),)): Params&lt;ChainGetTipSetParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetTipSetResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
+    Params(LotusJson((tsk,))): Params&lt;LotusJson&lt;(TipsetKeys,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Tipset&gt;, JsonRpcError&gt; {
     <span class="kw">let </span>ts = data
         .state_manager
         .chain_store()
@@ -526,18 +456,14 @@
 
 <span class="comment">// This is basically a port of the reference implementation at
 // https://github.com/filecoin-project/lotus/blob/v1.23.0/node/impl/full/chain.go#L321
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_set_head&lt;DB&gt;(
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_set_head&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainSetHeadParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainSetHeadResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(params,) = params;
+    Params(LotusJson((tsk,))): Params&lt;LotusJson&lt;(TipsetKeys,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
     <span class="kw">let </span>new_head = data
         .state_manager
         .chain_store()
-        .load_required_tipset(<span class="kw-2">&amp;</span>params)<span class="question-mark">?</span>;
+        .load_required_tipset(<span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
     <span class="kw">let </span><span class="kw-2">mut </span>current = data.state_manager.chain_store().heaviest_tipset();
     <span class="kw">while </span>current.epoch() &gt;= new_head.epoch() {
         <span class="kw">for </span>cid <span class="kw">in </span>current.key().cids.clone() {
@@ -557,14 +483,10 @@
         .map_err(Into::into)
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>chain_get_min_base_fee&lt;DB&gt;(
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>chain_get_min_base_fee&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;ChainGetMinBaseFeeParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ChainGetMinBaseFeeResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(basefee_lookback,) = params;
+    Params((basefee_lookback,)): Params&lt;(u32,)&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>current = data.state_manager.chain_store().heaviest_tipset();
     <span class="kw">let </span><span class="kw-2">mut </span>min_base_fee = current.blocks()[<span class="number">0</span>].parent_base_fee().clone();
 

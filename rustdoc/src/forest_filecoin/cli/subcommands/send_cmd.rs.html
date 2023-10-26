@@ -60,29 +60,18 @@
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
 <a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::str::FromStr;
+</span><span class="kw">use </span>std::str::FromStr <span class="kw">as _</span>;
 
-<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{mpool_push_message, wallet_default_address};
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::ApiInfo;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{Address, StrictAddress};
 <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
 <span class="kw">use </span><span class="kw">crate</span>::shim::message::{Message, METHOD_SEND};
+<span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>num::Zero <span class="kw">as _</span>;
 
-<span class="kw">use </span><span class="kw">super</span>::handle_rpc_err;
 <span class="kw">use </span><span class="kw">crate</span>::cli::humantoken;
 
 <span class="attr">#[derive(Debug, clap::Args)]
@@ -104,21 +93,15 @@
 }
 
 <span class="kw">impl </span>SendCommand {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>from: Address = <span class="kw">if let </span><span class="prelude-val">Some</span>(from) = <span class="kw-2">&amp;</span><span class="self">self</span>.from {
-            StrictAddress::from_str(from)<span class="question-mark">?</span>.into()
-        } <span class="kw">else </span>{
-            Address::from_str(
-                <span class="kw-2">&amp;</span>wallet_default_address((), <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?
-                    </span>.ok_or_else(|| {
-                        <span class="macro">anyhow::anyhow!</span>(
-                            <span class="string">&quot;No default wallet address selected. Please set a default address.&quot;
-                        </span>)
-                    })<span class="question-mark">?</span>,
-            )<span class="question-mark">?
-        </span>};
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="kw">let </span>from: Address =
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(from) = <span class="kw-2">&amp;</span><span class="self">self</span>.from {
+                StrictAddress::from_str(from)<span class="question-mark">?</span>.into()
+            } <span class="kw">else </span>{
+                Address::from_str(<span class="kw-2">&amp;</span>api.wallet_default_address().<span class="kw">await</span><span class="question-mark">?</span>.context(
+                    <span class="string">&quot;No default wallet address selected. Please set a default address.&quot;</span>,
+                )<span class="question-mark">?</span>)<span class="question-mark">?
+            </span>};
 
         <span class="kw">let </span>message = Message {
             from,
@@ -132,10 +115,7 @@
             </span>..Default::default()
         };
 
-        <span class="kw">let </span>signed_msg = mpool_push_message((LotusJson(message), <span class="prelude-val">None</span>), <span class="kw-2">&amp;</span>rpc_token)
-            .<span class="kw">await
-            </span>.map_err(handle_rpc_err)<span class="question-mark">?
-            </span>.into_inner();
+        <span class="kw">let </span>signed_msg = api.mpool_push_message(message, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, signed_msg.cid().unwrap());
 

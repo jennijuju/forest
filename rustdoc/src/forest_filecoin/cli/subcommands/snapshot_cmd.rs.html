@@ -194,25 +194,15 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
-<a href="#200" id="200">200</a>
-<a href="#201" id="201">201</a>
-<a href="#202" id="202">202</a>
-<a href="#203" id="203">203</a>
-<a href="#204" id="204">204</a>
-<a href="#205" id="205">205</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
-<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::{cli_error_and_die, handle_rpc_err};
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::chain_api::ChainExportParams;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{chain_ops::<span class="kw-2">*</span>, state_network_name};
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::ApiInfo;
 <span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
 <span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>chrono::NaiveDateTime;
@@ -281,7 +271,7 @@
 }
 
 <span class="kw">impl </span>SnapshotCommands {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Export {
                 output_path,
@@ -290,22 +280,16 @@
                 tipset,
                 depth,
             } =&gt; {
-                <span class="kw">let </span>chain_head = <span class="kw">match </span>chain_head(<span class="kw-2">&amp;</span>rpc_token).<span class="kw">await </span>{
-                    <span class="prelude-val">Ok</span>(LotusJson(head)) =&gt; head,
-                    <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; cli_error_and_die(<span class="string">&quot;Could not get network head&quot;</span>, <span class="number">1</span>),
-                };
+                <span class="kw">let </span>chain_head = api.chain_head().<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="kw">let </span>epoch = tipset.unwrap_or(chain_head.epoch());
 
-                <span class="kw">let </span>chain_name = state_network_name((), <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map(|name| <span class="kw">crate</span>::daemon::get_actual_chain_name(<span class="kw-2">&amp;</span>name).to_string())
-                    .map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>raw_network_name = api.state_network_name().<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">let </span>chain_name = <span class="kw">crate</span>::daemon::get_actual_chain_name(<span class="kw-2">&amp;</span>raw_network_name);
 
-                <span class="kw">let </span>LotusJson(tipset) =
-                    chain_get_tipset_by_height((epoch, TipsetKeys::default()), <span class="kw-2">&amp;</span>rpc_token)
-                        .<span class="kw">await
-                        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>tipset = api
+                    .chain_get_tipset_by_height(epoch, TipsetKeys::default())
+                    .<span class="kw">await</span><span class="question-mark">?</span>;
 
                 <span class="kw">let </span>output_path = <span class="kw">match </span>output_path.is_dir() {
                     <span class="bool-val">true </span>=&gt; output_path.join(snapshot::filename(
@@ -362,9 +346,7 @@
                     }
                 });
 
-                <span class="kw">let </span>hash_result = chain_export(params, <span class="kw-2">&amp;</span>rpc_token)
-                    .<span class="kw">await
-                    </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+                <span class="kw">let </span>hash_result = api.chain_export(params).<span class="kw">await</span><span class="question-mark">?</span>;
 
                 handle.abort();
                 <span class="kw">let _ </span>= handle.<span class="kw">await</span>;

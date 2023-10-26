@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["AUTH_NEW","AUTH_VERIFY"],"struct":["AuthNewParams"],"type":["AuthNewResult","AuthVerifyParams","AuthVerifyResult"]};
+window.SIDEBAR_ITEMS = {"constant":["AUTH_NEW","AUTH_VERIFY"],"struct":["AuthNewParams"]};

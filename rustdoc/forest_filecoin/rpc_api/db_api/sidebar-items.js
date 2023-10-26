@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DB_GC"],"type":["DBGCParams","DBGCResult"]};
+window.SIDEBAR_ITEMS = {"constant":["DB_GC"]};

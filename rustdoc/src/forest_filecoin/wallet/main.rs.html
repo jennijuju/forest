@@ -37,9 +37,9 @@
 
 </span><span class="kw">use </span>std::ffi::OsString;
 
-<span class="kw">use </span><span class="kw">super</span>::subcommands::{handle_rpc_err, Cli};
+<span class="kw">use </span><span class="kw">super</span>::subcommands::Cli;
 <span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::state_network_name;
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::ApiInfo;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{CurrentNetwork, Network};
 <span class="kw">use </span>clap::Parser;
 <span class="kw">use </span>std::str::FromStr;
@@ -51,19 +51,19 @@
     <span class="comment">// Capture Cli inputs
     </span><span class="kw">let </span>Cli { opts, cmd } = Cli::parse_from(args);
 
+    <span class="kw">let </span>api = ApiInfo::from_env()<span class="question-mark">?</span>.set_token(opts.token.clone());
+
     tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()<span class="question-mark">?
         </span>.block_on(<span class="kw">async </span>{
-            <span class="kw">let </span>name = state_network_name((), <span class="kw-2">&amp;</span>opts.token)
-                .<span class="kw">await
-                </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
+            <span class="kw">let </span>name = api.state_network_name().<span class="kw">await</span><span class="question-mark">?</span>;
             <span class="kw">let </span>chain = NetworkChain::from_str(<span class="kw-2">&amp;</span>name)<span class="question-mark">?</span>;
             <span class="kw">if </span>chain.is_testnet() {
                 CurrentNetwork::set_global(Network::Testnet);
             }
             <span class="comment">// Run command
-            </span>cmd.run(opts.token).<span class="kw">await
+            </span>cmd.run(api).<span class="kw">await
         </span>})
 }
 </code></pre></div></section></main></body></html>

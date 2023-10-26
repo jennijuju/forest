@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["handle_rpc_err"],"mod":["wallet_cmd"],"struct":["Cli"]};
+window.SIDEBAR_ITEMS = {"mod":["wallet_cmd"],"struct":["Cli"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["db_gc"]};
+window.SIDEBAR_ITEMS = {};

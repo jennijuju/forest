@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["auth_new"]};
+window.SIDEBAR_ITEMS = {};

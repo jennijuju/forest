@@ -82,88 +82,152 @@
 <a href="#82" id="82">82</a>
 <a href="#83" id="83">83</a>
 <a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
+<a href="#114" id="114">114</a>
+<a href="#115" id="115">115</a>
+<a href="#116" id="116">116</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::wallet_api::<span class="kw-2">*</span>;
-<span class="kw">use </span>jsonrpc_v2::Error;
+</span><span class="kw">use super</span>::{ApiInfo, JsonRpcError, RpcRequest};
+<span class="kw">use crate</span>::{
+    key_management::KeyInfo,
+    rpc_api::wallet_api::<span class="kw-2">*</span>,
+    shim::{
+        address::Address,
+        crypto::{Signature, SignatureType},
+    },
+};
 
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
+<span class="kw">impl </span>ApiInfo {
+    <span class="kw">pub async fn </span>wallet_default_address(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="prelude-ty">Option</span>&lt;String&gt;, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_default_address_req()).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>wallet_new(
-    signature_type: WalletNewParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletNewResult, Error&gt; {
-    call(WALLET_NEW, signature_type, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>wallet_default_address_req() -&gt; RpcRequest&lt;<span class="prelude-ty">Option</span>&lt;String&gt;&gt; {
+        RpcRequest::new(WALLET_DEFAULT_ADDRESS, ())
+    }
 
-<span class="kw">pub async fn </span>wallet_default_address(
-    (): WalletDefaultAddressParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletDefaultAddressResult, Error&gt; {
-    call(WALLET_DEFAULT_ADDRESS, (), auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub async fn </span>wallet_new(<span class="kw-2">&amp;</span><span class="self">self</span>, signature_type: SignatureType) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_new_req(signature_type)).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>wallet_balance(
-    address: WalletBalanceParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletBalanceResult, Error&gt; {
-    call(WALLET_BALANCE, address, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>wallet_new_req(signature_type: SignatureType) -&gt; RpcRequest&lt;String&gt; {
+        RpcRequest::new(WALLET_NEW, (signature_type,))
+    }
 
-<span class="kw">pub async fn </span>wallet_export(
-    address: WalletExportParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletExportResult, Error&gt; {
-    call(WALLET_EXPORT, address, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub async fn </span>wallet_balance(<span class="kw-2">&amp;</span><span class="self">self</span>, address: String) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_balance_req(address)).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>wallet_import(
-    key: WalletImportParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletImportResult, Error&gt; {
-    call(WALLET_IMPORT, key, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>wallet_balance_req(address: String) -&gt; RpcRequest&lt;String&gt; {
+        RpcRequest::new(WALLET_BALANCE, (address,))
+    }
 
-<span class="kw">pub async fn </span>wallet_list(
-    (): WalletListParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletListResult, Error&gt; {
-    call(WALLET_LIST, (), auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub async fn </span>wallet_export(<span class="kw-2">&amp;</span><span class="self">self</span>, address: String) -&gt; <span class="prelude-ty">Result</span>&lt;KeyInfo, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_export_req(address)).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>wallet_has(
-    key: WalletHasParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletHasResult, Error&gt; {
-    call(WALLET_HAS, key, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>wallet_export_req(address: String) -&gt; RpcRequest&lt;KeyInfo&gt; {
+        RpcRequest::new(WALLET_EXPORT, (address,))
+    }
 
-<span class="kw">pub async fn </span>wallet_set_default(
-    address: WalletSetDefaultParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletSetDefaultResult, Error&gt; {
-    call(WALLET_SET_DEFAULT, address, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub async fn </span>wallet_import(<span class="kw-2">&amp;</span><span class="self">self</span>, key: Vec&lt;KeyInfo&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_import_req(key)).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>wallet_sign(
-    message: WalletSignParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletSignResult, Error&gt; {
-    call(WALLET_SIGN, message, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>wallet_import_req(key: Vec&lt;KeyInfo&gt;) -&gt; RpcRequest&lt;String&gt; {
+        RpcRequest::new(WALLET_IMPORT, key)
+    }
 
-<span class="kw">pub async fn </span>wallet_verify(
-    message: WalletVerifyParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletVerifyResult, Error&gt; {
-    call(WALLET_VERIFY, message, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub async fn </span>wallet_list(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;Address&gt;, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_list_req()).<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>wallet_delete(
-    message: WalletDeleteParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;WalletDeleteResult, Error&gt; {
-    call(WALLET_DELETE, message, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>wallet_list_req() -&gt; RpcRequest&lt;Vec&lt;Address&gt;&gt; {
+        RpcRequest::new(WALLET_LIST, ())
+    }
+
+    <span class="kw">pub async fn </span>wallet_has(<span class="kw-2">&amp;</span><span class="self">self</span>, key: String) -&gt; <span class="prelude-ty">Result</span>&lt;bool, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_has_req(key)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>wallet_has_req(key: String) -&gt; RpcRequest&lt;bool&gt; {
+        RpcRequest::new(WALLET_HAS, (key,))
+    }
+
+    <span class="kw">pub async fn </span>wallet_set_default(<span class="kw-2">&amp;</span><span class="self">self</span>, address: Address) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_set_default_req(address)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>wallet_set_default_req(address: Address) -&gt; RpcRequest&lt;()&gt; {
+        RpcRequest::new(WALLET_SET_DEFAULT, (address,))
+    }
+
+    <span class="kw">pub async fn </span>wallet_sign(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        address: Address,
+        data: Vec&lt;u8&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;Signature, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_sign_req(address, data)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>wallet_sign_req(address: Address, data: Vec&lt;u8&gt;) -&gt; RpcRequest&lt;Signature&gt; {
+        RpcRequest::new(WALLET_SIGN, (address, data))
+    }
+
+    <span class="kw">pub async fn </span>wallet_verify(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        address: Address,
+        data: Vec&lt;u8&gt;,
+        signature: Signature,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;bool, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_verify_req(address, data, signature))
+            .<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>wallet_verify_req(
+        address: Address,
+        data: Vec&lt;u8&gt;,
+        signature: Signature,
+    ) -&gt; RpcRequest&lt;bool&gt; {
+        RpcRequest::new(WALLET_VERIFY, (address, data, signature))
+    }
+
+    <span class="kw">pub async fn </span>wallet_delete(<span class="kw-2">&amp;</span><span class="self">self</span>, address: String) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::wallet_delete_req(address)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>wallet_delete_req(address: String) -&gt; RpcRequest&lt;()&gt; {
+        RpcRequest::new(WALLET_DELETE, (address,))
+    }
+}
 </code></pre></div></section></main></body></html>

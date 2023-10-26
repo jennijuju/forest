@@ -34,19 +34,11 @@
 <a href="#34" id="34">34</a>
 <a href="#35" id="35">35</a>
 <a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
-<a href="#38" id="38">38</a>
-<a href="#39" id="39">39</a>
-<a href="#40" id="40">40</a>
-<a href="#41" id="41">41</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
-</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
-    common_api::<span class="kw-2">*</span>,
-    data_types::{APIVersion, RPCState, Version},
-};
+</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::{APIVersion, RPCState, Version};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError};
 <span class="kw">use </span>semver::Version <span class="kw">as </span>SemVer;
@@ -55,7 +47,7 @@
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>version(
     block_delay: u64,
     forest_version: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
-) -&gt; <span class="prelude-ty">Result</span>&lt;VersionResult, JsonRpcError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;APIVersion, JsonRpcError&gt; {
     <span class="kw">let </span>v = SemVer::parse(forest_version).unwrap();
     <span class="prelude-val">Ok</span>(APIVersion {
         version: forest_version.to_string(),
@@ -64,9 +56,7 @@
     })
 }
 
-<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>shutdown(
-    shutdown_send: Sender&lt;()&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;ShutdownResult, JsonRpcError&gt; {
+<span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>shutdown(shutdown_send: Sender&lt;()&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
     <span class="comment">// Trigger graceful shutdown
     </span><span class="kw">if let </span><span class="prelude-val">Err</span>(err) = shutdown_send.send(()).<span class="kw">await </span>{
         <span class="kw">return </span><span class="prelude-val">Err</span>(JsonRpcError::from(err));
@@ -77,7 +67,7 @@
 <span class="doccomment">/// gets start time from network
 </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>start_time&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;StartTimeResult, JsonRpcError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;chrono::DateTime&lt;chrono::Utc&gt;, JsonRpcError&gt; {
     <span class="prelude-val">Ok</span>(data.start_time)
 }
 </code></pre></div></section></main></body></html>

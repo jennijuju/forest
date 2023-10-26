@@ -319,28 +319,11 @@
 <a href="#319" id="319">319</a>
 <a href="#320" id="320">320</a>
 <a href="#321" id="321">321</a>
-<a href="#322" id="322">322</a>
-<a href="#323" id="323">323</a>
-<a href="#324" id="324">324</a>
-<a href="#325" id="325">325</a>
-<a href="#326" id="326">326</a>
-<a href="#327" id="327">327</a>
-<a href="#328" id="328">328</a>
-<a href="#329" id="329">329</a>
-<a href="#330" id="330">330</a>
-<a href="#331" id="331">331</a>
-<a href="#332" id="332">332</a>
-<a href="#333" id="333">333</a>
-<a href="#334" id="334">334</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::Tipset;
-<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::{
-    chain_head, node_ops::node_status, start_time, state_network_name, wallet_balance,
-    wallet_default_address,
-};
+<span class="kw">use </span><span class="kw">crate</span>::rpc_client::ApiInfo;
 <span class="kw">use </span><span class="kw">crate</span>::shim::econ::TokenAmount;
 <span class="kw">use </span>chrono::{DateTime, Utc};
 <span class="kw">use </span>clap::Subcommand;
@@ -351,7 +334,6 @@
 <span class="kw">use </span>std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 <span class="kw">use </span><span class="kw">crate</span>::cli::humantoken::TokenAmountPretty;
-<span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::handle_rpc_err;
 
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>InfoCommand {
@@ -493,47 +475,39 @@
 }
 
 <span class="kw">impl </span>InfoCommand {
-    <span class="kw">pub async fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>res = <span class="macro">tokio::try_join!</span>(
-            node_status((), <span class="kw-2">&amp;</span>rpc_token),
-            chain_head(<span class="kw-2">&amp;</span>rpc_token),
-            state_network_name((), <span class="kw-2">&amp;</span>rpc_token),
-            start_time(<span class="kw-2">&amp;</span>rpc_token),
-            wallet_default_address((), <span class="kw-2">&amp;</span>rpc_token)
+    <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="kw">let </span>(node_status, head, network, start_time, default_wallet_address) = <span class="macro">tokio::try_join!</span>(
+            api.node_status(),
+            api.chain_head(),
+            api.state_network_name(),
+            api.start_time(),
+            api.wallet_default_address(),
+        )<span class="question-mark">?</span>;
+
+        <span class="kw">let </span>cur_duration: Duration = SystemTime::now().duration_since(UNIX_EPOCH)<span class="question-mark">?</span>;
+        <span class="kw">let </span>blocks_per_tipset_last_finality =
+            node_status.chain_status.blocks_per_tipset_last_finality;
+
+        <span class="kw">let </span>default_wallet_address_balance = <span class="kw">if let </span><span class="prelude-val">Some</span>(def_addr) = <span class="kw-2">&amp;</span>default_wallet_address {
+            <span class="kw">let </span>balance = api.wallet_balance(def_addr.clone()).<span class="kw">await</span><span class="question-mark">?</span>;
+            <span class="prelude-val">Some</span>(balance)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>};
+
+        <span class="kw">let </span>node_status_info = NodeStatusInfo::new(
+            cur_duration,
+            blocks_per_tipset_last_finality,
+            <span class="kw-2">&amp;</span>head,
+            start_time,
+            network,
+            default_wallet_address.clone(),
+            default_wallet_address_balance,
         );
 
-        <span class="kw">match </span>res {
-            <span class="prelude-val">Ok</span>((node_status, LotusJson(head), network, start_time, default_wallet_address)) =&gt; {
-                <span class="kw">let </span>cur_duration: Duration = SystemTime::now().duration_since(UNIX_EPOCH)<span class="question-mark">?</span>;
-                <span class="kw">let </span>blocks_per_tipset_last_finality =
-                    node_status.chain_status.blocks_per_tipset_last_finality;
+        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, node_status_info.format(Utc::now()));
 
-                <span class="kw">let </span>default_wallet_address_balance = <span class="kw">if let </span><span class="prelude-val">Some</span>(def_addr) = <span class="kw-2">&amp;</span>default_wallet_address
-                {
-                    <span class="kw">let </span>balance = wallet_balance((def_addr.clone(),), <span class="kw-2">&amp;</span>rpc_token)
-                        .<span class="kw">await
-                        </span>.map_err(handle_rpc_err)<span class="question-mark">?</span>;
-                    <span class="prelude-val">Some</span>(balance)
-                } <span class="kw">else </span>{
-                    <span class="prelude-val">None
-                </span>};
-
-                <span class="kw">let </span>node_status_info = NodeStatusInfo::new(
-                    cur_duration,
-                    blocks_per_tipset_last_finality,
-                    <span class="kw-2">&amp;</span>head,
-                    start_time,
-                    network,
-                    default_wallet_address.clone(),
-                    default_wallet_address_balance,
-                );
-
-                <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, node_status_info.format(Utc::now()));
-
-                <span class="prelude-val">Ok</span>(())
-            }
-            <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(handle_rpc_err(e)),
-        }
+        <span class="prelude-val">Ok</span>(())
     }
 }
 

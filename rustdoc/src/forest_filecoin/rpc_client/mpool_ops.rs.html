@@ -19,25 +19,57 @@
 <a href="#19" id="19">19</a>
 <a href="#20" id="20">20</a>
 <a href="#21" id="21">21</a>
+<a href="#22" id="22">22</a>
+<a href="#23" id="23">23</a>
+<a href="#24" id="24">24</a>
+<a href="#25" id="25">25</a>
+<a href="#26" id="26">26</a>
+<a href="#27" id="27">27</a>
+<a href="#28" id="28">28</a>
+<a href="#29" id="29">29</a>
+<a href="#30" id="30">30</a>
+<a href="#31" id="31">31</a>
+<a href="#32" id="32">32</a>
+<a href="#33" id="33">33</a>
+<a href="#34" id="34">34</a>
+<a href="#35" id="35">35</a>
+<a href="#36" id="36">36</a>
+<a href="#37" id="37">37</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::mpool_api::<span class="kw-2">*</span>;
-<span class="kw">use </span>jsonrpc_v2::Error;
+</span><span class="kw">use crate</span>::{
+    message::SignedMessage,
+    rpc_api::{data_types::MessageSendSpec, mpool_api::<span class="kw-2">*</span>},
+    shim::message::Message,
+};
+<span class="kw">use </span>cid::Cid;
 
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::call;
+<span class="kw">use super</span>::{ApiInfo, JsonRpcError, RpcRequest};
 
-<span class="kw">pub async fn </span>mpool_push_message(
-    params: MpoolPushMessageParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushMessageResult, Error&gt; {
-    call(MPOOL_PUSH_MESSAGE, params, auth_token).<span class="kw">await
-</span>}
+<span class="kw">impl </span>ApiInfo {
+    <span class="kw">pub async fn </span>mpool_push_message(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        message: Message,
+        specs: <span class="prelude-ty">Option</span>&lt;MessageSendSpec&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;SignedMessage, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::mpool_push_message_req(message, specs))
+            .<span class="kw">await
+    </span>}
 
-<span class="kw">pub async fn </span>mpool_pending(
-    params: MpoolPendingParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPendingResult, Error&gt; {
-    call(MPOOL_PENDING, params, auth_token).<span class="kw">await
-</span>}
+    <span class="kw">pub fn </span>mpool_push_message_req(
+        message: Message,
+        specs: <span class="prelude-ty">Option</span>&lt;MessageSendSpec&gt;,
+    ) -&gt; RpcRequest&lt;SignedMessage&gt; {
+        RpcRequest::new(MPOOL_PUSH_MESSAGE, (message, specs))
+    }
+
+    <span class="kw">pub async fn </span>mpool_pending(<span class="kw-2">&amp;</span><span class="self">self</span>, cids: Vec&lt;Cid&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;SignedMessage&gt;, JsonRpcError&gt; {
+        <span class="self">self</span>.call(<span class="self">Self</span>::mpool_pending_req(cids)).<span class="kw">await
+    </span>}
+
+    <span class="kw">pub fn </span>mpool_pending_req(cids: Vec&lt;Cid&gt;) -&gt; RpcRequest&lt;Vec&lt;SignedMessage&gt;&gt; {
+        RpcRequest::new(MPOOL_PENDING, (cids,))
+    }
+}
 </code></pre></div></section></main></body></html>

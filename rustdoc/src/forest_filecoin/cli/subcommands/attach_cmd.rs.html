@@ -449,6 +449,10 @@
 <a href="#449" id="449">449</a>
 <a href="#450" id="450">450</a>
 <a href="#451" id="451">451</a>
+<a href="#452" id="452">452</a>
+<a href="#453" id="453">453</a>
+<a href="#454" id="454">454</a>
+<a href="#455" id="455">455</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -458,13 +462,11 @@
     str::FromStr,
 };
 
+<span class="kw">use </span><span class="kw">crate</span>::chain::ChainEpochDelta;
 <span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncStage;
-<span class="kw">use </span><span class="kw">crate</span>::cli::humantoken;
-<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_api::mpool_api::MpoolPushMessageResult;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_client::node_ops::node_status;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, clock::ChainEpoch, message::Message};
+<span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, message::Message};
+<span class="kw">use crate</span>::{cli::humantoken, message::SignedMessage};
 <span class="kw">use </span>boa_engine::{
     object::{builtins::JsArray, FunctionObjectBuilder},
     prelude::JsObject,
@@ -476,8 +478,9 @@
 <span class="kw">use </span>boa_runtime::Console;
 <span class="kw">use </span>convert_case::{Case, Casing};
 <span class="kw">use </span>directories::BaseDirs;
+<span class="kw">use </span>futures::Future;
 <span class="kw">use </span>rustyline::{config::Config <span class="kw">as </span>RustyLineConfig, history::FileHistory, EditMode, Editor};
-<span class="kw">use </span>serde::Serialize;
+<span class="kw">use </span>serde::{de::DeserializeOwned, Serialize};
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>JsonValue;
 <span class="kw">use </span>tokio::time;
 
@@ -609,7 +612,7 @@
     }
 }
 
-<span class="kw">fn </span>check_result&lt;R&gt;(context: <span class="kw-2">&amp;mut </span>Context, result: <span class="prelude-ty">Result</span>&lt;R, jsonrpc_v2::Error&gt;) -&gt; JsResult&lt;JsValue&gt;
+<span class="kw">fn </span>check_result&lt;R&gt;(context: <span class="kw-2">&amp;mut </span>Context, result: anyhow::Result&lt;R&gt;) -&gt; JsResult&lt;JsValue&gt;
 <span class="kw">where
     </span>R: Serialize,
 {
@@ -620,60 +623,71 @@
             JsValue::from_json(<span class="kw-2">&amp;</span>value, context)
         }
         <span class="prelude-val">Err</span>(err) =&gt; {
-            <span class="kw">let </span>message = <span class="kw">match </span>err {
-                jsonrpc_v2::Error::Full { code, message, .. } =&gt; {
-                    <span class="macro">format!</span>(<span class="string">&quot;JSON RPC Error: Code: {code}, Message: {message}&quot;</span>)
-                }
-                jsonrpc_v2::Error::Provided { code, message } =&gt; {
-                    <span class="macro">format!</span>(<span class="string">&quot;JSON RPC Error: Code: {code}, Message: {message}&quot;</span>)
-                }
-            };
-            <span class="macro">eprintln!</span>(<span class="string">&quot;Error: {message}&quot;</span>);
+            <span class="macro">eprintln!</span>(<span class="string">&quot;Error: {err}&quot;</span>);
             <span class="prelude-val">Ok</span>(JsValue::Undefined)
         }
     }
 }
 
-<span class="macro">macro_rules! </span>bind_func {
-    (<span class="macro-nonterminal">$context</span>:expr, <span class="macro-nonterminal">$token</span>:expr, <span class="macro-nonterminal">$func</span>:ident) =&gt; {
-        <span class="kw">let </span>js_func_name = <span class="macro">stringify!</span>(<span class="macro-nonterminal">$func</span>).to_case(Case::Camel);
-        <span class="kw">let </span>js_func = FunctionObjectBuilder::new(<span class="macro-nonterminal">$context</span>, <span class="kw">unsafe </span>{
-            NativeFunction::from_closure_with_captures(
-                |_this, params, token, context| {
-                    <span class="kw">let </span>handle = tokio::runtime::Handle::current();
+<span class="kw">fn </span>bind_async&lt;T: DeserializeOwned, R: Serialize, Fut&gt;(
+    context: <span class="kw-2">&amp;mut </span>Context,
+    api: <span class="kw-2">&amp;</span>ApiInfo,
+    name: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str,
+    req: <span class="kw">impl </span>Fn(T, ApiInfo) -&gt; Fut + <span class="lifetime">&#39;static</span>,
+) <span class="kw">where
+    </span>Fut: Future&lt;Output = anyhow::Result&lt;R&gt;&gt;,
+{
+    <span class="kw">let </span>js_func_name = name.to_case(Case::Camel);
+    <span class="comment">// Safety: This is unsafe since GC&#39;ed variables caught in the closure will
+    // not get traced. We&#39;re safe because we do not use any GC&#39;ed variables.
+    </span><span class="kw">let </span>js_func = FunctionObjectBuilder::new(context, <span class="kw">unsafe </span>{
+        NativeFunction::from_closure({
+            <span class="kw">let </span>api = api.clone();
+            <span class="kw">move </span>|_this, params, context| {
+                <span class="kw">let </span>handle = tokio::runtime::Handle::current();
 
-                    <span class="kw">let </span>result = tokio::task::block_in_place(|| {
-                        <span class="kw">let </span>value = <span class="kw">if </span>params.is_empty() {
-                            JsValue::Null
-                        } <span class="kw">else </span>{
-                            <span class="kw">let </span>arr = JsArray::from_iter(params.to_vec(), context);
-                            <span class="kw">let </span>obj: JsObject = arr.into();
-                            JsValue::from(obj)
-                        };
-                        <span class="kw">let </span>args = serde_json::from_value(value.to_json(context)<span class="question-mark">?</span>)<span class="question-mark">?</span>;
-                        handle.block_on(<span class="macro-nonterminal">$func</span>(args, token))
-                    });
-                    check_result(context, result)
-                },
-                <span class="macro-nonterminal">$token</span>.clone(),
-            )
+                <span class="kw">let </span>result = tokio::task::block_in_place(|| {
+                    <span class="kw">let </span>value = <span class="kw">if </span>params.is_empty() {
+                        JsValue::Null
+                    } <span class="kw">else </span>{
+                        <span class="kw">let </span>arr = JsArray::from_iter(params.to_vec(), context);
+                        <span class="kw">let </span>obj: JsObject = arr.into();
+                        JsValue::from(obj)
+                    };
+                    <span class="kw">let </span>args = serde_json::from_value(
+                        value.to_json(context).map_err(|e| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;{e}&quot;</span>))<span class="question-mark">?</span>,
+                    )<span class="question-mark">?</span>;
+                    handle.block_on(req(args, api.clone()))
+                });
+                check_result(context, result)
+            }
         })
-        .name(js_func_name.clone())
-        .build();
+    })
+    .name(js_func_name.clone())
+    .build();
 
-        <span class="kw">let </span>attr = Attribute::WRITABLE | Attribute::NON_ENUMERABLE | Attribute::CONFIGURABLE;
-        <span class="macro-nonterminal">$context
-            </span>.register_global_property(js_func_name, js_func, attr)
-            .expect(<span class="string">&quot;`register_global_property` should not fail&quot;</span>);
+    <span class="kw">let </span>attr = Attribute::WRITABLE | Attribute::NON_ENUMERABLE | Attribute::CONFIGURABLE;
+    context
+        .register_global_property(js_func_name, js_func, attr)
+        .expect(<span class="string">&quot;`register_global_property` should not fail&quot;</span>);
+}
+
+<span class="macro">macro_rules! </span>bind_request {
+    (<span class="macro-nonterminal">$context</span>:expr, <span class="macro-nonterminal">$api</span>:expr, $(<span class="macro-nonterminal">$name</span>:literal =&gt; <span class="macro-nonterminal">$req</span>:expr),* $(,)<span class="question-mark">?</span>) =&gt; {
+    $(
+        bind_async(<span class="macro-nonterminal">$context</span>, <span class="kw-2">&amp;</span><span class="macro-nonterminal">$api</span>, <span class="macro-nonterminal">$name</span>, <span class="kw">move </span>|args, api| {
+            <span class="comment">// Some of the closures are redundant, others are not.
+            </span><span class="attr">#[allow(clippy::redundant_closure_call)]
+            </span><span class="kw">let </span>rpc = <span class="macro-nonterminal">$req</span>(args).lower();
+            <span class="kw">async move </span>{ <span class="prelude-val">Ok</span>(api.call(rpc).<span class="kw">await</span><span class="question-mark">?</span>) }
+        });
+    )*
     };
 }
 
 <span class="kw">type </span>SendMessageParams = (String, String, String);
 
-<span class="kw">async fn </span>send_message(
-    params: SendMessageParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;MpoolPushMessageResult, jsonrpc_v2::Error&gt; {
+<span class="kw">async fn </span>send_message(params: SendMessageParams, api: ApiInfo) -&gt; anyhow::Result&lt;SignedMessage&gt; {
     <span class="kw">let </span>(from, to, value) = params;
 
     <span class="kw">let </span>message = Message::transfer(
@@ -682,36 +696,26 @@
         humantoken::parse(<span class="kw-2">&amp;</span>value)<span class="question-mark">?</span>, <span class="comment">// Convert forest_shim::TokenAmount to TokenAmount3
     </span>);
 
-    <span class="kw">let </span>json_message = LotusJson(message);
-    mpool_push_message((json_message, <span class="prelude-val">None</span>), auth_token).<span class="kw">await
-</span>}
+    <span class="prelude-val">Ok</span>(api.mpool_push_message(message, <span class="prelude-val">None</span>).<span class="kw">await</span><span class="question-mark">?</span>)
+}
 
 <span class="kw">type </span>SleepParams = (u64,);
 <span class="kw">type </span>SleepResult = ();
 
-<span class="kw">async fn </span>sleep(
-    params: SleepParams,
-    _auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SleepResult, jsonrpc_v2::Error&gt; {
+<span class="kw">async fn </span>sleep(params: SleepParams, _api: ApiInfo) -&gt; anyhow::Result&lt;SleepResult&gt; {
     <span class="kw">let </span>secs = params.<span class="number">0</span>;
     time::sleep(time::Duration::from_secs(secs)).<span class="kw">await</span>;
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="kw">type </span>SleepTipsetsParams = (ChainEpoch,);
-<span class="kw">type </span>SleepTipsetsResult = ();
-
-<span class="kw">async fn </span>sleep_tipsets(
-    params: SleepTipsetsParams,
-    auth_token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SleepTipsetsResult, jsonrpc_v2::Error&gt; {
+<span class="kw">async fn </span>sleep_tipsets(epochs: ChainEpochDelta, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>epoch = <span class="prelude-val">None</span>;
     <span class="kw">loop </span>{
-        <span class="kw">let </span>state = sync_status((), auth_token).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>state = api.sync_status().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">if </span>state.active_syncs[<span class="number">0</span>].stage() == SyncStage::Complete {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(prev) = epoch {
                 <span class="kw">let </span>curr = state.active_syncs[<span class="number">0</span>].epoch();
-                <span class="kw">if </span>(curr - prev) &gt;= params.<span class="number">0 </span>{
+                <span class="kw">if </span>(curr - prev) &gt;= epochs {
                     <span class="kw">return </span><span class="prelude-val">Ok</span>(());
                 }
             } <span class="kw">else </span>{
@@ -723,7 +727,7 @@
 }
 
 <span class="kw">impl </span>AttachCommand {
-    <span class="kw">fn </span>setup_context(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>Context, token: <span class="kw-2">&amp;</span><span class="prelude-ty">Option</span>&lt;String&gt;) {
+    <span class="kw">fn </span>setup_context(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>Context, api: ApiInfo) {
         <span class="kw">let </span>console = Console::init(context);
         context
             .register_global_property(Console::NAME, console, Attribute::all())
@@ -732,7 +736,9 @@
             .register_global_property(<span class="string">&quot;_BOA_VERSION&quot;</span>, <span class="string">&quot;0.17.0&quot;</span>, Attribute::default())
             .expect(<span class="string">&quot;`register_global_property` should not fail&quot;</span>);
 
-        <span class="comment">// Add custom implementation that mimics `require`
+        <span class="comment">// Safety: This is unsafe since GC&#39;ed variables caught in the closure will
+        // not get traced. We&#39;re safe because we do not use any GC&#39;ed variables.
+        // Add custom implementation that mimics `require`
         </span><span class="kw">let </span>require_func = <span class="kw">unsafe </span>{
             NativeFunction::from_closure_with_captures(
                 |_this, params, jspath, context| require(_this, params, context, jspath),
@@ -747,43 +753,45 @@
         <span class="comment">// Add custom object that mimics `module.exports`
         </span>set_module(context);
 
-        <span class="comment">// Net API
-        </span><span class="macro">bind_func!</span>(context, token, net_addrs_listen);
-        <span class="macro">bind_func!</span>(context, token, net_peers);
-        <span class="macro">bind_func!</span>(context, token, net_disconnect);
-        <span class="macro">bind_func!</span>(context, token, net_connect);
+        <span class="macro">bind_request!</span>(context, api,
+                <span class="comment">// Net API
+                </span><span class="string">&quot;net_addrs_listen&quot; </span>=&gt; |()| ApiInfo::net_addrs_listen_req(),
+                <span class="string">&quot;net_peers&quot;        </span>=&gt; |()| ApiInfo::net_peers_req(),
+                <span class="string">&quot;net_disconnect&quot;   </span>=&gt; ApiInfo::net_disconnect_req,
+                <span class="string">&quot;net_connect&quot;      </span>=&gt; ApiInfo::net_connect_req,
 
-        <span class="comment">// Node API
-        </span><span class="macro">bind_func!</span>(context, token, node_status);
+                <span class="comment">// Node API
+                </span><span class="string">&quot;node_status&quot; </span>=&gt; |()| ApiInfo::node_status_req(),
 
-        <span class="comment">// Sync API
-        </span><span class="macro">bind_func!</span>(context, token, sync_check_bad);
-        <span class="macro">bind_func!</span>(context, token, sync_mark_bad);
-        <span class="macro">bind_func!</span>(context, token, sync_status);
+                <span class="comment">// Sync API
+                </span><span class="string">&quot;sync_check_bad&quot; </span>=&gt; ApiInfo::sync_check_bad_req,
+                <span class="string">&quot;sync_mark_bad&quot;  </span>=&gt; ApiInfo::sync_mark_bad_req,
+                <span class="string">&quot;sync_status&quot;    </span>=&gt; |()| ApiInfo::sync_status_req(),
 
-        <span class="comment">// Wallet API
-        // TODO(elmattic): https://github.com/ChainSafe/forest/issues/3575
-        //                 bind wallet_sign, wallet_verify
-        </span><span class="macro">bind_func!</span>(context, token, wallet_new);
-        <span class="macro">bind_func!</span>(context, token, wallet_default_address);
-        <span class="macro">bind_func!</span>(context, token, wallet_balance);
-        <span class="macro">bind_func!</span>(context, token, wallet_export);
-        <span class="macro">bind_func!</span>(context, token, wallet_import);
-        <span class="macro">bind_func!</span>(context, token, wallet_list);
-        <span class="macro">bind_func!</span>(context, token, wallet_has);
-        <span class="macro">bind_func!</span>(context, token, wallet_set_default);
+                <span class="comment">// Wallet API
+                // TODO(elmattic): https://github.com/ChainSafe/forest/issues/3575
+                //                 bind wallet_sign, wallet_verify
+                </span><span class="string">&quot;wallet_new&quot;         </span>=&gt; ApiInfo::wallet_new_req,
+                <span class="string">&quot;wallet_default&quot;     </span>=&gt; |()| ApiInfo::wallet_default_address_req(),
+                <span class="string">&quot;wallet_balance&quot;     </span>=&gt; ApiInfo::wallet_balance_req,
+                <span class="string">&quot;wallet_export&quot;      </span>=&gt; ApiInfo::wallet_export_req,
+                <span class="string">&quot;wallet_import&quot;      </span>=&gt; ApiInfo::wallet_import_req,
+                <span class="string">&quot;wallet_list&quot;        </span>=&gt; |()| ApiInfo::wallet_list_req(),
+                <span class="string">&quot;wallet_has&quot;         </span>=&gt; ApiInfo::wallet_has_req,
+                <span class="string">&quot;wallet_set_default&quot; </span>=&gt; ApiInfo::wallet_set_default_req,
 
-        <span class="comment">// Message Pool API
-        </span><span class="macro">bind_func!</span>(context, token, mpool_push_message);
+                <span class="comment">// Message Pool API
+                </span><span class="string">&quot;mpool_push_message&quot; </span>=&gt; |(message, specs)| ApiInfo::mpool_push_message_req(message, specs),
 
-        <span class="comment">// Common API
-        </span><span class="macro">bind_func!</span>(context, token, version);
-        <span class="macro">bind_func!</span>(context, token, shutdown);
+                <span class="comment">// Common API
+                </span><span class="string">&quot;version&quot; </span>=&gt; |()| ApiInfo::version_req(),
+                <span class="string">&quot;shutdown&quot; </span>=&gt; |()| ApiInfo::shutdown_req(),
+        );
 
         <span class="comment">// Bind send_message, sleep, sleep_tipsets
-        </span><span class="macro">bind_func!</span>(context, token, send_message);
-        <span class="macro">bind_func!</span>(context, token, sleep);
-        <span class="macro">bind_func!</span>(context, token, sleep_tipsets);
+        </span>bind_async(context, <span class="kw-2">&amp;</span>api, <span class="string">&quot;send_message&quot;</span>, send_message);
+        bind_async(context, <span class="kw-2">&amp;</span>api, <span class="string">&quot;seep&quot;</span>, sleep);
+        bind_async(context, <span class="kw-2">&amp;</span>api, <span class="string">&quot;sleep_tipsets&quot;</span>, sleep_tipsets);
     }
 
     <span class="kw">fn </span>import_prelude(<span class="kw-2">&amp;</span><span class="self">self</span>, context: <span class="kw-2">&amp;mut </span>Context) -&gt; anyhow::Result&lt;()&gt; {
@@ -805,9 +813,9 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>run(<span class="self">self</span>, rpc_token: <span class="prelude-ty">Option</span>&lt;String&gt;) -&gt; anyhow::Result&lt;()&gt; {
+    <span class="kw">pub fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>context = Context::default();
-        <span class="self">self</span>.setup_context(<span class="kw-2">&amp;mut </span>context, <span class="kw-2">&amp;</span>rpc_token);
+        <span class="self">self</span>.setup_context(<span class="kw-2">&amp;mut </span>context, api);
 
         <span class="self">self</span>.import_prelude(<span class="kw-2">&amp;mut </span>context)<span class="question-mark">?</span>;
 

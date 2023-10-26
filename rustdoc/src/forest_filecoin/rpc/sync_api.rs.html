@@ -186,52 +186,31 @@
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
-<a href="#189" id="189">189</a>
-<a href="#190" id="190">190</a>
-<a href="#191" id="191">191</a>
-<a href="#192" id="192">192</a>
-<a href="#193" id="193">193</a>
-<a href="#194" id="194">194</a>
-<a href="#195" id="195">195</a>
-<a href="#196" id="196">196</a>
-<a href="#197" id="197">197</a>
-<a href="#198" id="198">198</a>
-<a href="#199" id="199">199</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
 
 </span><span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncState;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
-<span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
-    data_types::{RPCState, RPCSyncState},
-    sync_api::<span class="kw-2">*</span>,
-};
+<span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::{RPCState, RPCSyncState};
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
 <span class="kw">use </span>parking_lot::RwLock;
 
 <span class="doccomment">/// Checks if a given block is marked as bad.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_check_bad&lt;DB&gt;(
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_check_bad&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;SyncCheckBadParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SyncCheckBadResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(cid),) = params;
+    Params(LotusJson((cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
     <span class="prelude-val">Ok</span>(data.bad_blocks.peek(<span class="kw-2">&amp;</span>cid).unwrap_or_default())
 }
 
 <span class="doccomment">/// Marks a block as bad, meaning it will never be synced.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_mark_bad&lt;DB&gt;(
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_mark_bad&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(params): Params&lt;SyncMarkBadParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SyncMarkBadResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
-    <span class="kw">let </span>(LotusJson(cid),) = params;
+    Params(LotusJson((cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
     data.bad_blocks
         .put(cid, <span class="string">&quot;Marked bad manually through RPC API&quot;</span>.to_string());
     <span class="prelude-val">Ok</span>(())
@@ -242,12 +221,9 @@
 }
 
 <span class="doccomment">/// Returns the current status of the `ChainSync` process.
-</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_state&lt;DB&gt;(
+</span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>sync_state&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;SyncStateResult, JsonRpcError&gt;
-<span class="kw">where
-    </span>DB: Blockstore,
-{
+) -&gt; <span class="prelude-ty">Result</span>&lt;RPCSyncState, JsonRpcError&gt; {
     <span class="kw">let </span>active_syncs = <span class="macro">vec!</span>[clone_state(data.sync_state.as_ref()).<span class="kw">await</span>];
     <span class="prelude-val">Ok</span>(RPCSyncState { active_syncs })
 }
@@ -357,16 +333,18 @@
         )
         .unwrap()
         .into_inner();
-        <span class="kw">match </span>sync_check_bad(Data(state.clone()), Params((cid.into(),))).<span class="kw">await </span>{
+        <span class="kw">match </span>sync_check_bad(Data(state.clone()), Params(LotusJson((cid,)))).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(reason) =&gt; <span class="macro">assert_eq!</span>(reason, <span class="string">&quot;&quot;</span>),
             <span class="prelude-val">Err</span>(e) =&gt; std::panic::panic_any(e),
         }
 
         <span class="comment">// Mark that block as bad manually and check again to verify
-        </span><span class="macro">assert!</span>(sync_mark_bad(Data(state.clone()), Params((cid.into(),)))
-            .<span class="kw">await
-            </span>.is_ok());
-        <span class="kw">match </span>sync_check_bad(Data(state), Params((LotusJson(cid),))).<span class="kw">await </span>{
+        </span><span class="macro">assert!</span>(
+            sync_mark_bad(Data(state.clone()), Params(LotusJson((cid,))))
+                .<span class="kw">await
+                </span>.is_ok()
+        );
+        <span class="kw">match </span>sync_check_bad(Data(state), Params(LotusJson((cid,)))).<span class="kw">await </span>{
             <span class="prelude-val">Ok</span>(reason) =&gt; <span class="macro">assert_eq!</span>(reason, <span class="string">&quot;Marked bad manually through RPC API&quot;</span>),
             <span class="prelude-val">Err</span>(e) =&gt; std::panic::panic_any(e),
         }

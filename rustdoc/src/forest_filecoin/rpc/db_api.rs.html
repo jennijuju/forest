@@ -13,18 +13,16 @@
 <a href="#13" id="13">13</a>
 <a href="#14" id="14">14</a>
 <a href="#15" id="15">15</a>
-<a href="#16" id="16">16</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::{data_types::RPCState, db_api::<span class="kw-2">*</span>};
+</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::RPCState;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError, Params};
+<span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JsonRpcError};
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>db_gc&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
-    Params(<span class="kw">_</span>): Params&lt;DBGCParams&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;DBGCResult, JsonRpcError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;(), JsonRpcError&gt; {
     <span class="kw">let </span>(tx, rx) = flume::bounded(<span class="number">1</span>);
     data.gc_event_tx.send_async(tx).<span class="kw">await</span><span class="question-mark">?</span>;
     rx.recv_async().<span class="kw">await</span><span class="question-mark">??</span>;
