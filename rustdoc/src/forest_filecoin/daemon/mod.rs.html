@@ -700,10 +700,6 @@
 <a href="#700" id="700">700</a>
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -729,7 +725,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::key_management::{
     KeyStore, KeyStoreConfig, ENCRYPTED_KEYSTORE_NAME, FOREST_KEYSTORE_PHRASE_ENV,
 };
-<span class="kw">use </span><span class="kw">crate</span>::libp2p::{Libp2pConfig, Libp2pService, PeerId, PeerManager};
+<span class="kw">use </span><span class="kw">crate</span>::libp2p::{Libp2pConfig, Libp2pService, PeerManager};
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, MpoolConfig, MpoolRpcProvider};
 <span class="kw">use </span><span class="kw">crate</span>::rpc::start_rpc;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::RPCState;
@@ -855,11 +851,6 @@
     <span class="kw">let </span>start_time = chrono::Utc::now();
     <span class="kw">let </span>path: PathBuf = config.client.data_dir.join(<span class="string">&quot;libp2p&quot;</span>);
     <span class="kw">let </span>net_keypair = <span class="kw">crate</span>::libp2p::keypair::get_or_create_keypair(<span class="kw-2">&amp;</span>path)<span class="question-mark">?</span>;
-
-    <span class="comment">// Hint at the multihash which has to go in the `/p2p/&lt;multihash&gt;` part of the
-    // peer&#39;s multiaddress. Useful if others want to use this node to bootstrap
-    // from.
-    </span><span class="macro">info!</span>(<span class="string">&quot;PeerId: {}&quot;</span>, PeerId::from(net_keypair.public()));
 
     <span class="kw">let </span><span class="kw-2">mut </span>keystore = load_or_create_keystore(<span class="kw-2">&amp;</span>config).<span class="kw">await</span><span class="question-mark">?</span>;
 
@@ -1006,7 +997,8 @@
         net_keypair,
         <span class="kw-2">&amp;</span>network_name,
         genesis_cid,
-    )<span class="question-mark">?</span>;
+    )
+    .<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">let </span>network_rx = p2p_service.network_receiver();
     <span class="kw">let </span>network_send = p2p_service.network_sender();
