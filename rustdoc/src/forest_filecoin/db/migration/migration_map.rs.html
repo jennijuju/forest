@@ -466,10 +466,6 @@
 <a href="#466" id="466">466</a>
 <a href="#467" id="467">467</a>
 <a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -508,8 +504,6 @@
     <span class="doccomment">/// Performs post-migration checks. This is the place to check if the migration database is
     /// ready to be used by Forest and renamed into a versioned database.
     </span><span class="kw">fn </span>post_checks(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;()&gt;;
-    <span class="doccomment">/// Returns the name of the temporary database that will be created during the migration.
-    </span><span class="kw">fn </span>temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String;
 }
 
 <span class="doccomment">/// Migrations map. The key is the starting version and the value is the tuple of the target version
@@ -667,6 +661,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>std::fs;
 
+    <span class="kw">use </span><span class="kw">crate</span>::db::migration::migration_map::temporary_db_name;
     <span class="kw">use </span>tempfile::TempDir;
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
@@ -747,10 +742,6 @@
             </span><span class="self">Self</span>: Sized,
         {
             <span class="self">Self </span>{}
-        }
-
-        <span class="kw">fn </span>temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-            <span class="string">&quot;&quot;</span>.into()
         }
     }
 
@@ -893,13 +884,13 @@
         }
 
         <span class="kw">fn </span>migrate(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;PathBuf&gt; {
-            <span class="kw">let </span>temp_db_path = chain_data_path.join(<span class="self">self</span>.temporary_db_name());
+            <span class="kw">let </span>temp_db_path = chain_data_path.join(temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>.from, <span class="kw-2">&amp;</span><span class="self">self</span>.to));
             fs::create_dir(<span class="kw-2">&amp;</span>temp_db_path).unwrap();
             <span class="prelude-val">Ok</span>(temp_db_path)
         }
 
         <span class="kw">fn </span>post_checks(<span class="kw-2">&amp;</span><span class="self">self</span>, chain_data_path: <span class="kw-2">&amp;</span>Path) -&gt; anyhow::Result&lt;()&gt; {
-            <span class="kw">let </span>path = chain_data_path.join(<span class="self">self</span>.temporary_db_name());
+            <span class="kw">let </span>path = chain_data_path.join(temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>.from, <span class="kw-2">&amp;</span><span class="self">self</span>.to));
             <span class="kw">if </span>!path.exists() {
                 <span class="macro">anyhow::bail!</span>(<span class="string">&quot;{} does not exist&quot;</span>, path.display());
             }
@@ -911,10 +902,6 @@
             </span><span class="self">Self</span>: Sized,
         {
             <span class="self">Self </span>{ from, to }
-        }
-
-        <span class="kw">fn </span>temporary_db_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-            <span class="macro">format!</span>(<span class="string">&quot;migration_{}_{}&quot;</span>, <span class="self">self</span>.from, <span class="self">self</span>.to).replace(<span class="string">&#39;.&#39;</span>, <span class="string">&quot;_&quot;</span>)
         }
     }
 
@@ -941,5 +928,10 @@
         fs::create_dir(temp_dir.path().join(<span class="string">&quot;migration_0_1_0_0_2_0&quot;</span>)).unwrap();
         <span class="macro">assert!</span>(migration.post_checks(temp_dir.path()).is_ok());
     }
+}
+
+<span class="doccomment">/// Returns the name of the temporary database that will be created during the migration.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>temporary_db_name(from: <span class="kw-2">&amp;</span>Version, to: <span class="kw-2">&amp;</span>Version) -&gt; String {
+    <span class="macro">format!</span>(<span class="string">&quot;migration_{}_{}&quot;</span>, from, to).replace(<span class="string">&#39;.&#39;</span>, <span class="string">&quot;_&quot;</span>)
 }
 </code></pre></div></section></main></body></html>
