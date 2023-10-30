@@ -700,6 +700,7 @@
 <a href="#700" id="700">700</a>
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
+<a href="#703" id="703">703</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1027,6 +1028,7 @@
         tipset_sink,
         tipset_stream,
         config.sync.clone(),
+        opts.stateless,
     )<span class="question-mark">?</span>;
     <span class="kw">let </span>bad_blocks = chain_muxer.bad_blocks_cloned();
     <span class="kw">let </span>sync_state = chain_muxer.sync_state_cloned();
@@ -1089,7 +1091,7 @@
 
     <span class="comment">// Sets the latest snapshot if needed for downloading later
     </span><span class="kw">let </span><span class="kw-2">mut </span>config = config;
-    <span class="kw">if </span>config.client.snapshot_path.is_none() {
+    <span class="kw">if </span>config.client.snapshot_path.is_none() &amp;&amp; !opts.stateless {
         set_snapshot_path_if_needed(
             <span class="kw-2">&amp;mut </span>config,
             epoch,
