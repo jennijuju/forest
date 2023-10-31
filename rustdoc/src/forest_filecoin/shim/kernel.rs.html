@@ -136,8 +136,35 @@
 <a href="#136" id="136">136</a>
 <a href="#137" id="137">137</a>
 <a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
+</span><span class="doccomment">//! We have three goals for our error shims:
+//! - preserve upstream error _numbers_.
+//! - preserve upstream error messages.
+//! - allow _matching_ on specific errors.
+//!
+//! There are a couple of things that make this difficult:
+//! - `fvm_shared*::error::ErrorNumber` is `#[non_exhaustive]`
+//!
+//! We have designed with the following assumptions about the `fvm*` crates:
+//! - new error variants are append-only
+//! - error messages are consistent between crates
+
 </span><span class="kw">use </span><span class="self">self</span>::ErrorNumber <span class="kw">as </span>NShim;
 <span class="kw">use </span><span class="self">self</span>::SyscallError <span class="kw">as </span>EShim;
 <span class="kw">use </span>fvm2::kernel::SyscallError <span class="kw">as </span>E2;
@@ -146,73 +173,35 @@
 <span class="kw">use </span>fvm_shared2::error::ErrorNumber <span class="kw">as </span>N2;
 <span class="kw">use </span>fvm_shared3::error::ErrorNumber <span class="kw">as </span>N3;
 <span class="kw">use </span>fvm_shared4::error::ErrorNumber <span class="kw">as </span>N4;
-<span class="kw">use </span>itertools::Either;
+<span class="kw">use </span>num_traits::FromPrimitive;
 <span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::fmt::Debug;
 
 <span class="macro">macro_rules! </span>error_number {
     ($(<span class="macro-nonterminal">$variant</span>:ident),* $(,)<span class="question-mark">?</span>) =&gt; {
         <span class="attr">#[derive(Debug, Clone)]
-        #[non_exhaustive]
         </span><span class="kw">pub enum </span>ErrorNumber {
             $(<span class="macro-nonterminal">$variant</span>,)*
-            Unknown(UnknownErrorNumber),
-        }
-
-        $(
-            <span class="macro">static_assertions::const_assert_eq!</span>(N2::<span class="macro-nonterminal">$variant </span><span class="kw">as </span>u32, N3::<span class="macro-nonterminal">$variant </span><span class="kw">as </span>u32);
-        )*
-
-        <span class="kw">impl </span>From&lt;N2&gt; <span class="kw">for </span>ErrorNumber {
-            <span class="kw">fn </span>from(value: N2) -&gt; <span class="self">Self </span>{
-                <span class="kw">match </span>value {
-                    $(N2::<span class="macro-nonterminal">$variant </span>=&gt; <span class="self">Self</span>::<span class="macro-nonterminal">$variant</span>,)*
-                    u =&gt; <span class="self">Self</span>::Unknown(UnknownErrorNumber::N2(u)),
-                }
-            }
-        }
-
-        <span class="kw">impl </span>From&lt;N3&gt; <span class="kw">for </span>ErrorNumber {
-            <span class="kw">fn </span>from(value: N3) -&gt; <span class="self">Self </span>{
-                <span class="kw">match </span>value {
-                    $(N3::<span class="macro-nonterminal">$variant </span>=&gt; <span class="self">Self</span>::<span class="macro-nonterminal">$variant</span>,)*
-                    u =&gt; <span class="self">Self</span>::Unknown(UnknownErrorNumber::N3(u)),
-                }
-            }
+            <span class="doccomment">/// This is to catch `#[non_exhaustive]` upstream errors, and MUST NOT for be constructed
+            </span>Unknown(u32),
         }
 
         <span class="kw">impl </span>From&lt;N4&gt; <span class="kw">for </span>ErrorNumber {
-            <span class="kw">fn </span>from(value: N4) -&gt; <span class="self">Self </span>{
-                <span class="kw">match </span>value {
+            <span class="kw">fn </span>from(error: N4) -&gt; <span class="self">Self </span>{
+                <span class="kw">match </span>error {
                     $(N4::<span class="macro-nonterminal">$variant </span>=&gt; <span class="self">Self</span>::<span class="macro-nonterminal">$variant</span>,)*
-                    u =&gt; <span class="self">Self</span>::Unknown(UnknownErrorNumber::N4(u)),
+                    <span class="kw">_ </span>=&gt; <span class="self">Self</span>::Unknown(error <span class="kw">as </span>u32),
                 }
             }
         }
 
-        <span class="kw">impl </span>ErrorNumber {
-            <span class="kw">fn </span>as_unshimmed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Either&lt;N3, Either&lt;N4, N2&gt;&gt; {
+        <span class="kw">impl </span>fmt::Display <span class="kw">for </span>ErrorNumber {
+            <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
                 <span class="kw">match </span><span class="self">self </span>{
-                    $(<span class="self">Self</span>::<span class="macro-nonterminal">$variant </span>=&gt; Either::Left(N3::<span class="macro-nonterminal">$variant</span>),)*
-                    <span class="self">Self</span>::Unknown(u) =&gt; u.as_unshimmed(),
+                    $(<span class="self">Self</span>::<span class="macro-nonterminal">$variant </span>=&gt; std::fmt::Display::fmt(<span class="kw-2">&amp;</span>N4::<span class="macro-nonterminal">$variant</span>, f),)*
+                    <span class="self">Self</span>::Unknown(u) =&gt; std::fmt::Debug::fmt(<span class="kw-2">&amp;</span>u, f),
                 }
             }
-        }
-    };
-}
-
-<span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub enum </span>UnknownErrorNumber {
-    N2(N2),
-    N3(N3),
-    N4(N4),
-}
-
-<span class="kw">impl </span>UnknownErrorNumber {
-    <span class="kw">fn </span>as_unshimmed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Either&lt;N3, Either&lt;N4, N2&gt;&gt; {
-        <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::N2(n) =&gt; Either::Right(Either::Right(<span class="kw-2">*</span>n)),
-            <span class="self">Self</span>::N3(n) =&gt; Either::Left(<span class="kw-2">*</span>n),
-            <span class="self">Self</span>::N4(n) =&gt; Either::Right(Either::Left(<span class="kw-2">*</span>n)),
         }
     }
 }
@@ -230,11 +219,26 @@
     Serialization,
     Forbidden,
     BufferTooSmall,
+    ReadOnly,
 }
 
-<span class="kw">impl </span>fmt::Display <span class="kw">for </span>ErrorNumber {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        <span class="self">self</span>.as_unshimmed().fmt(f)
+<span class="kw">impl </span>From&lt;N2&gt; <span class="kw">for </span>ErrorNumber {
+    <span class="kw">fn </span>from(value: N2) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>opt: <span class="prelude-ty">Option</span>&lt;N4&gt; = FromPrimitive::from_u32(value <span class="kw">as </span>u32);
+        <span class="kw">match </span>opt {
+            <span class="prelude-val">Some</span>(err) =&gt; err.into(),
+            <span class="prelude-val">None </span>=&gt; <span class="self">Self</span>::Unknown(value <span class="kw">as </span>u32),
+        }
+    }
+}
+
+<span class="kw">impl </span>From&lt;N3&gt; <span class="kw">for </span>ErrorNumber {
+    <span class="kw">fn </span>from(value: N3) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>opt: <span class="prelude-ty">Option</span>&lt;N4&gt; = FromPrimitive::from_u32(value <span class="kw">as </span>u32);
+        <span class="kw">match </span>opt {
+            <span class="prelude-val">Some</span>(err) =&gt; err.into(),
+            <span class="prelude-val">None </span>=&gt; <span class="self">Self</span>::Unknown(value <span class="kw">as </span>u32),
+        }
     }
 }
 
@@ -272,6 +276,32 @@
             message,
             number: number.into(),
         }
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_n2_error_fmt() {
+        <span class="kw">let </span>shim: NShim = N2::IllegalArgument.into();
+
+        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, shim), <span class="string">&quot;illegal argument&quot;</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_n3_error_fmt() {
+        <span class="kw">let </span>shim: NShim = N3::ReadOnly.into();
+
+        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, shim), <span class="string">&quot;execution context is read-only&quot;</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_unknown_error_fmt() {
+        <span class="kw">let </span>shim: NShim = ErrorNumber::Unknown(<span class="number">23</span>);
+
+        <span class="macro">assert_eq!</span>(<span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, shim), <span class="string">&quot;23&quot;</span>);
     }
 }
 </code></pre></div></section></main></body></html>
