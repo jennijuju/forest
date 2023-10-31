@@ -203,6 +203,19 @@
 <a href="#203" id="203">203</a>
 <a href="#204" id="204">204</a>
 <a href="#205" id="205">205</a>
+<a href="#206" id="206">206</a>
+<a href="#207" id="207">207</a>
+<a href="#208" id="208">208</a>
+<a href="#209" id="209">209</a>
+<a href="#210" id="210">210</a>
+<a href="#211" id="211">211</a>
+<a href="#212" id="212">212</a>
+<a href="#213" id="213">213</a>
+<a href="#214" id="214">214</a>
+<a href="#215" id="215">215</a>
+<a href="#216" id="216">216</a>
+<a href="#217" id="217">217</a>
+<a href="#218" id="218">218</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -335,6 +348,7 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use </span>http::StatusCode;
     <span class="kw">use </span>reqwest::Response;
+    <span class="kw">use </span>std::time::Duration;
 
     <span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
 
@@ -354,8 +368,12 @@
                  url,
                  alt_url,
              }| <span class="kw">async move </span>{
-                <span class="kw">let </span>primary = http_get(url).<span class="kw">await</span>;
-                <span class="kw">let </span>alt = http_get(alt_url).<span class="kw">await</span>;
+                <span class="kw">let </span>(primary, alt) = <span class="kw">match </span>(http_get(url).<span class="kw">await</span>, http_get(alt_url).<span class="kw">await</span>) {
+                    (<span class="prelude-val">Ok</span>(primary), <span class="prelude-val">Ok</span>(alt)) =&gt; (primary, alt),
+                    (<span class="prelude-val">Err</span>(<span class="kw">_</span>), <span class="prelude-val">Err</span>(<span class="kw">_</span>)) =&gt; <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Both sources are down&quot;</span>),
+                    <span class="comment">// If either of the sources are otherwise down, we don&#39;t want to fail the test.
+                    </span><span class="kw">_ </span>=&gt; <span class="kw">return </span>anyhow::Ok(()),
+                };
 
                 <span class="comment">// Check that neither of the sources respond with 404.
                 // Such code would indicate that the bundle URLs are incorrect.
@@ -381,8 +399,12 @@
                 <span class="comment">// Check that the bundles are identical.
                 // This is to ensure that the bundle was not tamperered with and that the
                 // bundle was uploaded to the alternative URL correctly.
-                </span><span class="kw">let </span>primary = primary.bytes().<span class="kw">await</span><span class="question-mark">?</span>;
-                <span class="kw">let </span>alt = alt.bytes().<span class="kw">await</span><span class="question-mark">?</span>;
+                </span><span class="kw">let </span>(primary, alt) = <span class="kw">match </span>(primary.bytes().<span class="kw">await</span>, alt.bytes().<span class="kw">await</span>) {
+                    (<span class="prelude-val">Ok</span>(primary), <span class="prelude-val">Ok</span>(alt)) =&gt; (primary, alt),
+                    (<span class="prelude-val">Err</span>(<span class="kw">_</span>), <span class="prelude-val">Err</span>(<span class="kw">_</span>)) =&gt; <span class="macro">anyhow::bail!</span>(<span class="string">&quot;Both sources are down&quot;</span>),
+                    <span class="comment">// If either of the sources are otherwise down, we don&#39;t want to fail the test.
+                    </span><span class="kw">_ </span>=&gt; <span class="kw">return </span>anyhow::Ok(()),
+                };
 
                 <span class="kw">let </span>car_primary = CarStream::new(Cursor::new(primary)).<span class="kw">await</span><span class="question-mark">?</span>;
                 <span class="kw">let </span>car_secondary = CarStream::new(Cursor::new(alt)).<span class="kw">await</span><span class="question-mark">?</span>;
@@ -404,8 +426,12 @@
         </span>.unwrap();
     }
 
-    <span class="kw">pub async fn </span>http_get(url: <span class="kw-2">&amp;</span>Url) -&gt; Response {
-        global_http_client().get(url.clone()).send().<span class="kw">await</span>.unwrap()
+    <span class="kw">pub async fn </span>http_get(url: <span class="kw-2">&amp;</span>Url) -&gt; anyhow::Result&lt;Response&gt; {
+        <span class="prelude-val">Ok</span>(global_http_client()
+            .get(url.clone())
+            .timeout(Duration::from_secs(<span class="number">120</span>))
+            .send()
+            .<span class="kw">await</span><span class="question-mark">?</span>)
     }
 }
 </code></pre></div></section></main></body></html>
