@@ -175,17 +175,12 @@
 <a href="#175" id="175">175</a>
 <a href="#176" id="176">176</a>
 <a href="#177" id="177">177</a>
-<a href="#178" id="178">178</a>
-<a href="#179" id="179">179</a>
-<a href="#180" id="180">180</a>
-<a href="#181" id="181">181</a>
-<a href="#182" id="182">182</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
+<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height, NetworkChain};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
     clock::ChainEpoch,
@@ -213,7 +208,7 @@
         actors_in: <span class="kw-2">&amp;mut </span>StateTree&lt;BS&gt;,
         new_manifest: <span class="kw-2">&amp;</span>BuiltinActorManifest,
         prior_epoch: ChainEpoch,
-        chain_config: <span class="kw-2">&amp;</span>ChainConfig,
+        chain: NetworkChain,
     ) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>system_actor = actors_in
             .get_actor(<span class="kw-2">&amp;</span>Address::new_id(<span class="number">0</span>))<span class="question-mark">?
@@ -273,12 +268,7 @@
 
         <span class="self">self</span>.add_migrator(
             miner_v8_actor_code,
-            miner::miner_migrator(
-                miner_v9_actor_code,
-                store,
-                market_state_v8.proposals,
-                chain_config,
-            )<span class="question-mark">?</span>,
+            miner::miner_migrator(miner_v9_actor_code, store, market_state_v8.proposals, chain)<span class="question-mark">?</span>,
         );
 
         <span class="kw">let </span>verifreg_state_v8_cid = verifreg_actor_v8.state;
@@ -353,7 +343,7 @@
         <span class="kw-2">&amp;mut </span>actors_in,
         <span class="kw-2">&amp;</span>new_manifest,
         epoch,
-        chain_config,
+        chain_config.network.clone(),
     )<span class="question-mark">?</span>;
 
     <span class="kw">let </span>actors_out = StateTree::new(blockstore.clone(), StateTreeVersion::V4)<span class="question-mark">?</span>;

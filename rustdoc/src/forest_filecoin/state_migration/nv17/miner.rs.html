@@ -963,7 +963,7 @@
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
+<span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
 <span class="kw">use </span><span class="kw">crate</span>::shim::{address::Address, piece::PieceInfo};
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::CborStoreExt;
 <span class="kw">use </span>ahash::HashMap;
@@ -983,7 +983,7 @@
 };
 
 <span class="kw">pub struct </span>MinerMigrator {
-    network: NetworkChain,
+    chain: NetworkChain,
     out_code: Cid,
     market_proposals: Cid,
     empty_deadline_v8_cid: Cid,
@@ -996,7 +996,7 @@
     out_code: Cid,
     store: <span class="kw-2">&amp;</span>Arc&lt;BS&gt;,
     market_proposals: Cid,
-    chain_config: <span class="kw-2">&amp;</span>ChainConfig,
+    chain: NetworkChain,
 ) -&gt; anyhow::Result&lt;Arc&lt;<span class="kw">dyn </span>ActorMigration&lt;BS&gt; + Send + Sync&gt;&gt;
 <span class="kw">where
     </span>BS: Blockstore + Send + Sync,
@@ -1005,7 +1005,7 @@
         fil_actor_miner_state::v8::Deadline::new(store)<span class="question-mark">?</span>;
     <span class="kw">let </span>empty_deadline_v8_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>empty_deadline_v8)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>policy = <span class="kw">match </span><span class="kw-2">&amp;</span>chain_config.network {
+    <span class="kw">let </span>policy = <span class="kw">match </span>chain {
         NetworkChain::Mainnet =&gt; fil_actors_shared::v8::runtime::Policy::mainnet(),
         NetworkChain::Calibnet =&gt; fil_actors_shared::v8::runtime::Policy::calibnet(),
         NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="macro">unimplemented!</span>(<span class="string">&quot;Policy::devnet&quot;</span>),
@@ -1017,7 +1017,7 @@
     <span class="kw">let </span>empty_deadline_v9 = fil_actor_miner_state::v9::Deadline::new(store)<span class="question-mark">?</span>;
     <span class="kw">let </span>empty_deadline_v9_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>empty_deadline_v9)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>policy = <span class="kw">match </span><span class="kw-2">&amp;</span>chain_config.network {
+    <span class="kw">let </span>policy = <span class="kw">match </span>chain {
         NetworkChain::Mainnet =&gt; fil_actors_shared::v9::runtime::Policy::mainnet(),
         NetworkChain::Calibnet =&gt; fil_actors_shared::v9::runtime::Policy::calibnet(),
         NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="macro">unimplemented!</span>(<span class="string">&quot;Policy::devnet&quot;</span>),
@@ -1027,7 +1027,7 @@
     <span class="kw">let </span>empty_deadlines_v9_cid = store.put_cbor_default(<span class="kw-2">&amp;</span>empty_deadlines_v9)<span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(Arc::new(MinerMigrator {
-        network: chain_config.network.clone(),
+        chain,
         out_code,
         market_proposals,
         empty_deadline_v8_cid,
@@ -1211,7 +1211,7 @@
                 .get_cbor(deadlines)<span class="question-mark">?
                 </span>.context(<span class="string">&quot;Failed to get in_deadlines&quot;</span>)<span class="question-mark">?</span>;
 
-            <span class="kw">let </span>policy = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.network {
+            <span class="kw">let </span>policy = <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.chain {
                 NetworkChain::Mainnet =&gt; fil_actors_shared::v9::runtime::Policy::mainnet(),
                 NetworkChain::Calibnet =&gt; fil_actors_shared::v9::runtime::Policy::calibnet(),
                 NetworkChain::Devnet(<span class="kw">_</span>) =&gt; <span class="macro">unimplemented!</span>(<span class="string">&quot;Policy::devnet&quot;</span>),
@@ -1319,7 +1319,7 @@
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span><span class="kw">crate</span>::networks::Height;
+    <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
     <span class="kw">use </span><span class="kw">crate</span>::shim::bigint::BigInt;
     <span class="kw">use </span><span class="kw">crate</span>::shim::{
         econ::TokenAmount,

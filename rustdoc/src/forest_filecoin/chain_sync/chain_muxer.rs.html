@@ -971,6 +971,12 @@
 <a href="#971" id="971">971</a>
 <a href="#972" id="972">972</a>
 <a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1015,6 +1021,12 @@
     validation::{TipsetValidationError, TipsetValidator},
 };
 
+<span class="comment">// Sync the messages for one or many tipsets @ a time
+// Lotus uses a window size of 8: https://github.com/filecoin-project/lotus/blob/c1d22d8b3298fdce573107413729be608e72187d/chain/sync.go#L56
+</span><span class="kw">const </span>DEFAULT_REQUEST_WINDOW: usize = <span class="number">8</span>;
+<span class="kw">const </span>DEFAULT_TIPSET_SAMPLE_SIZE: usize = <span class="number">5</span>;
+<span class="kw">const </span>DEFAULT_RECENT_STATE_ROOTS: i64 = <span class="number">2000</span>;
+
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::chain_sync) <span class="kw">type </span>WorkerState = Arc&lt;RwLock&lt;SyncState&gt;&gt;;
 
 <span class="kw">type </span>ChainMuxerFuture&lt;T, E&gt; = Pin&lt;Box&lt;<span class="kw">dyn </span>Future&lt;Output = <span class="prelude-ty">Result</span>&lt;T, E&gt;&gt; + Send&gt;&gt;;
@@ -1048,7 +1060,11 @@
 #[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 </span><span class="kw">pub struct </span>SyncConfig {
     <span class="doccomment">/// Request window length for tipsets during chain exchange
-    </span><span class="kw">pub </span>req_window: i64,
+    </span><span class="attr">#[cfg_attr(test, arbitrary(gen(|g| u32::arbitrary(g) <span class="kw">as _</span>)))]
+    </span><span class="kw">pub </span>request_window: usize,
+    <span class="doccomment">/// Number of recent state roots to keep in the database after `sync`
+    /// and to include in the exported snapshot.
+    </span><span class="kw">pub </span>recent_state_roots: i64,
     <span class="doccomment">/// Sample size of tipsets to acquire before determining what the network
     /// head is
     </span><span class="attr">#[cfg_attr(test, arbitrary(gen(|g| u32::arbitrary(g) <span class="kw">as _</span>)))]
@@ -1058,8 +1074,9 @@
 <span class="kw">impl </span>Default <span class="kw">for </span>SyncConfig {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            req_window: <span class="number">200</span>,
-            tipset_sample_size: <span class="number">5</span>,
+            request_window: DEFAULT_REQUEST_WINDOW,
+            recent_state_roots: DEFAULT_RECENT_STATE_ROOTS,
+            tipset_sample_size: DEFAULT_TIPSET_SAMPLE_SIZE,
         }
     }
 }
@@ -1123,9 +1140,6 @@
     <span class="doccomment">/// Tipset channel receiver
     </span>tipset_receiver: flume::Receiver&lt;Arc&lt;Tipset&gt;&gt;,
 
-    <span class="doccomment">/// Syncing configurations
-    </span>sync_config: SyncConfig,
-
     <span class="doccomment">/// When `stateless_mode` is true, forest connects to the P2P network but does not sync to HEAD.
     </span>stateless_mode: bool,
 }
@@ -1145,7 +1159,6 @@
         genesis: Arc&lt;Tipset&gt;,
         tipset_sender: flume::Sender&lt;Arc&lt;Tipset&gt;&gt;,
         tipset_receiver: flume::Receiver&lt;Arc&lt;Tipset&gt;&gt;,
-        cfg: SyncConfig,
         stateless_mode: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ChainMuxerError&gt; {
         <span class="kw">let </span>network =
@@ -1156,13 +1169,12 @@
             worker_state: Default::default(),
             network,
             genesis,
-            state_manager,
             bad_blocks: Arc::new(BadBlockCache::default()),
             net_handler: network_rx,
             mpool,
             tipset_sender,
             tipset_receiver,
-            sync_config: cfg,
+            state_manager,
             stateless_mode,
         })
     }
@@ -1539,7 +1551,7 @@
         <span class="kw">let </span>genesis = <span class="self">self</span>.genesis.clone();
         <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
         <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
-        <span class="kw">let </span>tipset_sample_size = <span class="self">self</span>.sync_config.tipset_sample_size;
+        <span class="kw">let </span>tipset_sample_size = <span class="self">self</span>.state_manager.sync_config().tipset_sample_size;
         <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs <span class="kw">as </span>u64;
 
         <span class="kw">let </span>evaluator = <span class="kw">async move </span>{
@@ -1864,7 +1876,7 @@
                     <span class="kw">if </span><span class="self">self</span>.stateless_mode {
                         <span class="macro">info!</span>(<span class="string">&quot;Running chain muxer in stateless mode...&quot;</span>);
                         <span class="self">self</span>.state = ChainMuxerState::Stateless(<span class="self">self</span>.stateless_node());
-                    } <span class="kw">else if </span><span class="self">self</span>.sync_config.tipset_sample_size == <span class="number">0 </span>{
+                    } <span class="kw">else if </span><span class="self">self</span>.state_manager.sync_config().tipset_sample_size == <span class="number">0 </span>{
                         <span class="comment">// A standalone node might use this option to not be stuck waiting for P2P
                         // messages.
                         </span><span class="macro">info!</span>(<span class="string">&quot;Skip evaluating network head, assume in-sync.&quot;</span>);

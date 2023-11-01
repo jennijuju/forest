@@ -701,6 +701,12 @@
 <a href="#701" id="701">701</a>
 <a href="#702" id="702">702</a>
 <a href="#703" id="703">703</a>
+<a href="#704" id="704">704</a>
+<a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
+<a href="#709" id="709">709</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -728,6 +734,7 @@
 };
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Libp2pConfig, Libp2pService, PeerManager};
 <span class="kw">use </span><span class="kw">crate</span>::message_pool::{MessagePool, MpoolConfig, MpoolRpcProvider};
+<span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
 <span class="kw">use </span><span class="kw">crate</span>::rpc::start_rpc;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::RPCState;
 <span class="kw">use </span><span class="kw">crate</span>::shim::address::{CurrentNetwork, Network};
@@ -839,7 +846,8 @@
     config: Config,
     shutdown_send: mpsc::Sender&lt;()&gt;,
 ) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="kw">if </span>config.chain.is_testnet() {
+    <span class="kw">let </span>chain_config = Arc::new(ChainConfig::from_chain(<span class="kw-2">&amp;</span>config.chain));
+    <span class="kw">if </span>chain_config.is_testnet() {
         CurrentNetwork::set_global(Network::Testnet);
     }
 
@@ -917,7 +925,7 @@
     //   initialized
     </span><span class="kw">let </span>genesis_header = read_genesis_header(
         config.client.genesis_file.as_ref(),
-        config.chain.genesis_bytes(),
+        chain_config.genesis_bytes(),
         <span class="kw-2">&amp;</span>db,
     )
     .<span class="kw">await</span><span class="question-mark">?</span>;
@@ -926,7 +934,7 @@
     </span><span class="kw">let </span>chain_store = Arc::new(ChainStore::new(
         Arc::clone(<span class="kw-2">&amp;</span>db),
         db.writer().clone(),
-        config.chain.clone(),
+        chain_config.clone(),
         genesis_header.clone(),
     )<span class="question-mark">?</span>);
 
@@ -936,8 +944,8 @@
         <span class="kw">let </span>get_tipset = <span class="kw">move </span>|| chain_store.heaviest_tipset().as_ref().clone();
         Arc::new(DbGarbageCollector::new(
             db,
-            config.chain.policy.chain_finality,
-            config.chain.recent_state_roots,
+            chain_config.policy.chain_finality,
+            config.sync.recent_state_roots,
             get_tipset,
         ))
     };
@@ -956,7 +964,11 @@
     <span class="kw">let </span>publisher = chain_store.publisher();
 
     <span class="comment">// Initialize StateManager
-    </span><span class="kw">let </span>sm = StateManager::new(Arc::clone(<span class="kw-2">&amp;</span>chain_store), Arc::clone(<span class="kw-2">&amp;</span>config.chain))<span class="question-mark">?</span>;
+    </span><span class="kw">let </span>sm = StateManager::new(
+        Arc::clone(<span class="kw-2">&amp;</span>chain_store),
+        Arc::clone(<span class="kw-2">&amp;</span>chain_config),
+        Arc::new(config.sync.clone()),
+    )<span class="question-mark">?</span>;
 
     <span class="kw">let </span>state_manager = Arc::new(sm);
 
@@ -968,7 +980,7 @@
 
     <span class="comment">// if bootstrap peers are not set, set them
     </span><span class="kw">let </span>config = <span class="kw">if </span>config.network.bootstrap_peers.is_empty() {
-        <span class="kw">let </span>bootstrap_peers = config.chain.bootstrap_peers.clone();
+        <span class="kw">let </span>bootstrap_peers = chain_config.bootstrap_peers.clone();
 
         Config {
             network: Libp2pConfig {
@@ -1011,7 +1023,7 @@
         network_name.clone(),
         network_send.clone(),
         MpoolConfig::load_config(db.writer().as_ref())<span class="question-mark">?</span>,
-        state_manager.chain_config(),
+        state_manager.chain_config().clone(),
         <span class="kw-2">&amp;mut </span>services,
     )<span class="question-mark">?</span>;
 
@@ -1027,7 +1039,6 @@
         Arc::new(Tipset::from(genesis_header)),
         tipset_sink,
         tipset_stream,
-        config.sync.clone(),
         opts.stateless,
     )<span class="question-mark">?</span>;
     <span class="kw">let </span>bad_blocks = chain_muxer.bad_blocks_cloned();
@@ -1094,6 +1105,7 @@
     <span class="kw">if </span>config.client.snapshot_path.is_none() &amp;&amp; !opts.stateless {
         set_snapshot_path_if_needed(
             <span class="kw-2">&amp;mut </span>config,
+            <span class="kw-2">&amp;</span>chain_config,
             epoch,
             opts.auto_download_snapshot,
             <span class="kw-2">&amp;</span>db_root_dir,
@@ -1159,6 +1171,7 @@
 /// An [`Err`] should be considered fatal.
 </span><span class="kw">async fn </span>set_snapshot_path_if_needed(
     config: <span class="kw-2">&amp;mut </span>Config,
+    chain_config: <span class="kw-2">&amp;</span>ChainConfig,
     epoch: ChainEpoch,
     auto_download_snapshot: bool,
     download_directory: <span class="kw-2">&amp;</span>Path,
@@ -1171,10 +1184,10 @@
     }
 
     <span class="kw">let </span>vendor = snapshot::TrustedVendor::default();
-    <span class="kw">let </span>chain = <span class="kw-2">&amp;</span>config.chain.network;
+    <span class="kw">let </span>chain = <span class="kw-2">&amp;</span>config.chain;
 
     <span class="comment">// What height is our chain at right now, and what network version does that correspond to?
-    </span><span class="kw">let </span>network_version = config.chain.network_version(epoch);
+    </span><span class="kw">let </span>network_version = chain_config.network_version(epoch);
     <span class="kw">let </span>network_version_is_small = network_version &lt; NetworkVersion::V16;
 
     <span class="comment">// We don&#39;t support small network versions (we can&#39;t validate from e.g genesis).
@@ -1193,10 +1206,9 @@
         (<span class="bool-val">true</span>, <span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; {
             <span class="comment">// we need a snapshot, don&#39;t have one, and don&#39;t have permission to download one, so ask the user
             </span><span class="kw">let </span>url = <span class="kw">crate</span>::cli_shared::snapshot::stable_url(vendor, chain)<span class="question-mark">?</span>;
-            <span class="kw">let </span>(num_bytes, _path) =
-                <span class="kw">crate</span>::cli_shared::snapshot::peek(vendor, <span class="kw-2">&amp;</span>config.chain.network)
-                    .<span class="kw">await
-                    </span>.context(<span class="string">&quot;couldn&#39;t get snapshot size&quot;</span>)<span class="question-mark">?</span>;
+            <span class="kw">let </span>(num_bytes, _path) = <span class="kw">crate</span>::cli_shared::snapshot::peek(vendor, chain)
+                .<span class="kw">await
+                </span>.context(<span class="string">&quot;couldn&#39;t get snapshot size&quot;</span>)<span class="question-mark">?</span>;
             <span class="comment">// dialoguer will double-print long lines, so manually print the first clause ourselves,
             // then let `Confirm` handle the second.
             </span><span class="macro">println!</span>(<span class="string">&quot;Forest requires a snapshot to sync with the network, but automatic fetching is disabled.&quot;</span>);

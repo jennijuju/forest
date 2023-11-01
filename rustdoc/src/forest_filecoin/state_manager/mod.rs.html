@@ -1315,6 +1315,14 @@
 <a href="#1315" id="1315">1315</a>
 <a href="#1316" id="1316">1316</a>
 <a href="#1317" id="1317">1317</a>
+<a href="#1318" id="1318">1318</a>
+<a href="#1319" id="1319">1319</a>
+<a href="#1320" id="1320">1320</a>
+<a href="#1321" id="1321">1321</a>
+<a href="#1322" id="1322">1322</a>
+<a href="#1323" id="1323">1323</a>
+<a href="#1324" id="1324">1324</a>
+<a href="#1325" id="1325">1325</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1322,6 +1330,7 @@
 <span class="kw">mod </span>errors;
 <span class="kw">mod </span>metrics;
 <span class="kw">mod </span>utils;
+<span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncConfig;
 <span class="kw">use </span><span class="kw">crate</span>::interpreter::{MessageCallbackCtx, VMTrace};
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::run_state_migrations;
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
@@ -1521,6 +1530,7 @@
     // store it here is because it has a look-up cache.
     </span>beacon: Arc&lt;<span class="kw">crate</span>::beacon::BeaconSchedule&gt;,
     chain_config: Arc&lt;ChainConfig&gt;,
+    sync_config: Arc&lt;SyncConfig&gt;,
     engine: <span class="kw">crate</span>::shim::machine::MultiEngine,
 }
 
@@ -1534,6 +1544,7 @@
     <span class="kw">pub fn </span>new(
         cs: Arc&lt;ChainStore&lt;DB&gt;&gt;,
         chain_config: Arc&lt;ChainConfig&gt;,
+        sync_config: Arc&lt;SyncConfig&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, anyhow::Error&gt; {
         <span class="kw">let </span>genesis = cs.genesis();
         <span class="kw">let </span>beacon = Arc::new(chain_config.get_beacon_schedule(genesis.timestamp()));
@@ -1543,6 +1554,7 @@
             cache: TipsetStateCache::new(),
             beacon,
             chain_config,
+            sync_config,
             engine: <span class="kw">crate</span>::shim::machine::MultiEngine::default(),
         })
     }
@@ -1556,8 +1568,12 @@
         <span class="self">self</span>.chain_config.network_version(epoch)
     }
 
-    <span class="kw">pub fn </span>chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Arc&lt;ChainConfig&gt; {
-        Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config)
+    <span class="kw">pub fn </span>chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Arc&lt;ChainConfig&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.chain_config
+    }
+
+    <span class="kw">pub fn </span>sync_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Arc&lt;SyncConfig&gt; {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.sync_config
     }
 
     <span class="doccomment">/// Gets actor from given [`Cid`], if it exists.
@@ -1687,7 +1703,7 @@
     ) -&gt; StateCallResult {
         <span class="kw">let </span>bstate = tipset.parent_state();
         <span class="kw">let </span>bheight = tipset.epoch();
-        <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config());
+        <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="self">self</span>.chain_config());
         <span class="kw">let </span><span class="kw-2">mut </span>vm = VM::new(
             ExecutionContext {
                 heaviest_tipset: Arc::clone(tipset),
@@ -1700,7 +1716,7 @@
                     <span class="kw-2">&amp;</span><span class="self">self</span>.blockstore_owned(),
                     bstate,
                 )<span class="question-mark">?</span>,
-                chain_config: <span class="self">self</span>.chain_config(),
+                chain_config: <span class="self">self</span>.chain_config().clone(),
                 chain_index: Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store().chain_index),
                 timestamp: tipset.min_timestamp(),
             },
@@ -1764,7 +1780,7 @@
         <span class="comment">// Since we&#39;re simulating a future message, pretend we&#39;re applying it in the
         // &quot;next&quot; tipset
         </span><span class="kw">let </span>epoch = ts.epoch() + <span class="number">1</span>;
-        <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_config());
+        <span class="kw">let </span>genesis_info = GenesisInfo::from_chain_config(<span class="self">self</span>.chain_config());
         <span class="kw">let </span><span class="kw-2">mut </span>vm = VM::new(
             ExecutionContext {
                 heaviest_tipset: Arc::clone(<span class="kw-2">&amp;</span>ts),
@@ -1777,7 +1793,7 @@
                     <span class="kw-2">&amp;</span><span class="self">self</span>.blockstore_owned(),
                     <span class="kw-2">&amp;</span>st,
                 )<span class="question-mark">?</span>,
-                chain_config: <span class="self">self</span>.chain_config(),
+                chain_config: <span class="self">self</span>.chain_config().clone(),
                 chain_index: Arc::clone(<span class="kw-2">&amp;</span><span class="self">self</span>.chain_store().chain_index),
                 timestamp: ts.min_timestamp(),
             },
@@ -2390,7 +2406,7 @@
         validate_tipsets(
             genesis_timestamp,
             <span class="self">self</span>.chain_store().chain_index.clone(),
-            <span class="self">self</span>.chain_config(),
+            <span class="self">self</span>.chain_config().clone(),
             <span class="self">self</span>.beacon_schedule(),
             <span class="kw-2">&amp;</span><span class="self">self</span>.engine,
             tipsets,

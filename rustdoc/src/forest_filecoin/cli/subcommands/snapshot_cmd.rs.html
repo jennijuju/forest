@@ -194,11 +194,13 @@
 <a href="#194" id="194">194</a>
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use super</span>::<span class="kw-2">*</span>;
 <span class="kw">use </span><span class="kw">crate</span>::blocks::TipsetKeys;
+<span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncConfig;
 <span class="kw">use </span><span class="kw">crate</span>::cli_shared::snapshot::{<span class="self">self</span>, TrustedVendor};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::forest::DEFAULT_FOREST_CAR_FRAME_SIZE;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::chain_api::ChainExportParams;
@@ -312,7 +314,7 @@
 
                 <span class="kw">let </span>params = ChainExportParams {
                     epoch,
-                    recent_roots: depth.unwrap_or(Config::default().chain.recent_state_roots),
+                    recent_roots: depth.unwrap_or(SyncConfig::default().recent_state_roots),
                     output_path: temp_path.to_path_buf(),
                     tipset_keys: chain_head.key().clone(),
                     skip_checksum,

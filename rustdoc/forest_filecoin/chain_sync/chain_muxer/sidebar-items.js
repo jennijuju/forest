@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["ChainMuxerError","ChainMuxerState","NetworkHeadEvaluation","PubsubMessageProcessingStrategy"],"struct":["ChainMuxer","SyncConfig"],"type":["ChainMuxerFuture","WorkerState"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_RECENT_STATE_ROOTS","DEFAULT_REQUEST_WINDOW","DEFAULT_TIPSET_SAMPLE_SIZE"],"enum":["ChainMuxerError","ChainMuxerState","NetworkHeadEvaluation","PubsubMessageProcessingStrategy"],"struct":["ChainMuxer","SyncConfig"],"type":["ChainMuxerFuture","WorkerState"]};

@@ -440,12 +440,6 @@
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -455,10 +449,9 @@
 <span class="kw">use </span>std::{
     net::SocketAddr,
     path::{Path, PathBuf},
-    sync::Arc,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, NetworkChain};
+<span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
     io::{read_file_to_string, read_toml, ProgressBarVisibility},
     misc::LoggingColor,
@@ -541,11 +534,11 @@ OPTIONS:
     /// pre-loaded database
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>skip_load: <span class="prelude-ty">Option</span>&lt;bool&gt;,
-    <span class="doccomment">/// Number of tipsets requested over chain exchange (default is 200)
+    <span class="doccomment">/// Number of tipsets requested over one chain exchange (default is 8)
     </span><span class="attr">#[arg(long)]
-    </span><span class="kw">pub </span>req_window: <span class="prelude-ty">Option</span>&lt;i64&gt;,
+    </span><span class="kw">pub </span>req_window: <span class="prelude-ty">Option</span>&lt;usize&gt;,
     <span class="doccomment">/// Number of tipsets to include in the sample that determines what the
-    /// network head is
+    /// network head is (default is 5)
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>tipset_sample_size: <span class="prelude-ty">Option</span>&lt;u8&gt;,
     <span class="doccomment">/// Amount of Peers we want to be connected to (default is 75)
@@ -620,12 +613,7 @@ OPTIONS:
         };
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(chain) = <span class="kw-2">&amp;</span><span class="self">self</span>.chain {
-            <span class="comment">// override the chain configuration
-            </span>cfg.chain = Arc::new(ChainConfig::from_chain(chain));
-        } <span class="kw">else </span>{
-            <span class="comment">// override any custom changes to the chain configuration based on the used
-            // network.
-            </span>cfg.chain = Arc::new(ChainConfig::from_chain(<span class="kw-2">&amp;</span>cfg.chain.network));
+            cfg.chain = chain.clone();
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(genesis_file) = <span class="kw-2">&amp;</span><span class="self">self</span>.genesis {
@@ -692,8 +680,8 @@ OPTIONS:
         <span class="comment">// (where to find these flags, should be easy to do with structops)
 
         // check and set syncing configurations
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(req_window) = <span class="kw-2">&amp;</span><span class="self">self</span>.req_window {
-            cfg.sync.req_window = req_window.to_owned();
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(req_window) = <span class="self">self</span>.req_window {
+            cfg.sync.request_window = req_window;
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(tipset_sample_size) = <span class="self">self</span>.tipset_sample_size {
             cfg.sync.tipset_sample_size = tipset_sample_size.into();

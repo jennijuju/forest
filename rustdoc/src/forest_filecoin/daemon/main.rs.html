@@ -245,7 +245,7 @@
         }
         check_for_unknown_keys(path.to_path_buf(), <span class="kw-2">&amp;</span>cfg);
     } <span class="kw">else </span>{
-        <span class="macro">info!</span>(<span class="string">&quot;Using default {} config&quot;</span>, cfg.chain.network);
+        <span class="macro">info!</span>(<span class="string">&quot;Using default {} config&quot;</span>, cfg.chain);
     }
     <span class="kw">if </span>opts.dry_run {
         <span class="kw">return </span><span class="prelude-val">Ok</span>(());

@@ -186,6 +186,8 @@
 <a href="#186" id="186">186</a>
 <a href="#187" id="187">187</a>
 <a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -235,7 +237,7 @@
     <span class="kw">use </span><span class="kw">crate</span>::beacon::{mock_beacon::MockBeacon, BeaconPoint, BeaconSchedule};
     <span class="kw">use </span><span class="kw">crate</span>::blocks::{BlockHeader, Tipset};
     <span class="kw">use </span><span class="kw">crate</span>::chain::ChainStore;
-    <span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncStage;
+    <span class="kw">use </span><span class="kw">crate</span>::chain_sync::{SyncConfig, SyncStage};
     <span class="kw">use </span><span class="kw">crate</span>::db::MemoryDB;
     <span class="kw">use </span><span class="kw">crate</span>::key_management::{KeyStore, KeyStoreConfig};
     <span class="kw">use </span><span class="kw">crate</span>::libp2p::NetworkMessage;
@@ -262,6 +264,7 @@
         <span class="kw">let </span><span class="kw-2">mut </span>services = JoinSet::new();
         <span class="kw">let </span>db = Arc::new(MemoryDB::default());
         <span class="kw">let </span>chain_config = Arc::new(ChainConfig::default());
+        <span class="kw">let </span>sync_config = Arc::new(SyncConfig::default());
 
         <span class="kw">let </span>genesis_header = BlockHeader::builder()
             .miner_address(Address::new_id(<span class="number">0</span>))
@@ -273,7 +276,8 @@
             ChainStore::new(db.clone(), db, chain_config.clone(), genesis_header).unwrap(),
         );
 
-        <span class="kw">let </span>state_manager = Arc::new(StateManager::new(cs_arc.clone(), chain_config).unwrap());
+        <span class="kw">let </span>state_manager =
+            Arc::new(StateManager::new(cs_arc.clone(), chain_config, sync_config).unwrap());
         <span class="kw">let </span>state_manager_for_thread = state_manager.clone();
         <span class="kw">let </span>cs_for_test = <span class="kw-2">&amp;</span>cs_arc;
         <span class="kw">let </span>cs_for_chain = <span class="kw-2">&amp;</span>cs_arc;
@@ -300,7 +304,7 @@
                 <span class="string">&quot;test&quot;</span>.to_string(),
                 mpool_network_send,
                 Default::default(),
-                state_manager_for_thread.chain_config(),
+                state_manager_for_thread.chain_config().clone(),
                 <span class="kw-2">&amp;mut </span>services,
             )
             .unwrap()

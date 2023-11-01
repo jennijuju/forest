@@ -74,17 +74,14 @@
 <a href="#74" id="74">74</a>
 <a href="#75" id="75">75</a>
 <a href="#76" id="76">76</a>
-<a href="#77" id="77">77</a>
-<a href="#78" id="78">78</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::chain_sync::SyncConfig;
-<span class="kw">use </span><span class="kw">crate</span>::db::db_engine::DbConfig;
+</span><span class="kw">use </span><span class="kw">crate</span>::db::db_engine::DbConfig;
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::Libp2pConfig;
-<span class="kw">use </span><span class="kw">crate</span>::networks::ChainConfig;
+<span class="kw">use crate</span>::{chain_sync::SyncConfig, networks::NetworkChain};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
-<span class="kw">use </span>std::{path::PathBuf, sync::Arc};
+<span class="kw">use </span>std::path::PathBuf;
 
 <span class="kw">use </span><span class="kw">super</span>::client::Client;
 
@@ -119,12 +116,11 @@
 #[cfg_attr(test, derive(derive_quickcheck_arbitrary::Arbitrary))]
 #[serde(default)]
 </span><span class="kw">pub struct </span>Config {
+    <span class="kw">pub </span>chain: NetworkChain,
     <span class="kw">pub </span>client: Client,
     <span class="kw">pub </span>parity_db: <span class="kw">crate</span>::db::parity_db_config::ParityDbConfig,
     <span class="kw">pub </span>network: Libp2pConfig,
     <span class="kw">pub </span>sync: SyncConfig,
-    <span class="attr">#[serde(skip)]
-    </span><span class="kw">pub </span>chain: Arc&lt;ChainConfig&gt;,
     <span class="kw">pub </span>daemon: DaemonConfig,
 }
 

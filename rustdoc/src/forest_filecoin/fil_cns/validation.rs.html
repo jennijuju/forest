@@ -527,7 +527,7 @@
     <span class="comment">// Retrieve lookback tipset for validation
     </span><span class="kw">let </span>(lookback_tipset, lookback_state) = ChainStore::get_lookback_tipset_for_round(
         state_manager.chain_store().chain_index.clone(),
-        state_manager.chain_config(),
+        state_manager.chain_config().clone(),
         base_tipset.clone(),
         block.header().epoch(),
     )
@@ -609,7 +609,7 @@
             v_base_tipset.as_ref(),
             v_prev_beacon.as_ref(),
             <span class="kw-2">&amp;</span>work_addr,
-            <span class="kw-2">&amp;</span>v_state_manager.chain_config(),
+            v_state_manager.chain_config(),
         )
     }));
 
