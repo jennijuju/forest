@@ -922,61 +922,6 @@
 <a href="#922" id="922">922</a>
 <a href="#923" id="923">923</a>
 <a href="#924" id="924">924</a>
-<a href="#925" id="925">925</a>
-<a href="#926" id="926">926</a>
-<a href="#927" id="927">927</a>
-<a href="#928" id="928">928</a>
-<a href="#929" id="929">929</a>
-<a href="#930" id="930">930</a>
-<a href="#931" id="931">931</a>
-<a href="#932" id="932">932</a>
-<a href="#933" id="933">933</a>
-<a href="#934" id="934">934</a>
-<a href="#935" id="935">935</a>
-<a href="#936" id="936">936</a>
-<a href="#937" id="937">937</a>
-<a href="#938" id="938">938</a>
-<a href="#939" id="939">939</a>
-<a href="#940" id="940">940</a>
-<a href="#941" id="941">941</a>
-<a href="#942" id="942">942</a>
-<a href="#943" id="943">943</a>
-<a href="#944" id="944">944</a>
-<a href="#945" id="945">945</a>
-<a href="#946" id="946">946</a>
-<a href="#947" id="947">947</a>
-<a href="#948" id="948">948</a>
-<a href="#949" id="949">949</a>
-<a href="#950" id="950">950</a>
-<a href="#951" id="951">951</a>
-<a href="#952" id="952">952</a>
-<a href="#953" id="953">953</a>
-<a href="#954" id="954">954</a>
-<a href="#955" id="955">955</a>
-<a href="#956" id="956">956</a>
-<a href="#957" id="957">957</a>
-<a href="#958" id="958">958</a>
-<a href="#959" id="959">959</a>
-<a href="#960" id="960">960</a>
-<a href="#961" id="961">961</a>
-<a href="#962" id="962">962</a>
-<a href="#963" id="963">963</a>
-<a href="#964" id="964">964</a>
-<a href="#965" id="965">965</a>
-<a href="#966" id="966">966</a>
-<a href="#967" id="967">967</a>
-<a href="#968" id="968">968</a>
-<a href="#969" id="969">969</a>
-<a href="#970" id="970">970</a>
-<a href="#971" id="971">971</a>
-<a href="#972" id="972">972</a>
-<a href="#973" id="973">973</a>
-<a href="#974" id="974">974</a>
-<a href="#975" id="975">975</a>
-<a href="#976" id="976">976</a>
-<a href="#977" id="977">977</a>
-<a href="#978" id="978">978</a>
-<a href="#979" id="979">979</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1139,9 +1084,6 @@
 
     <span class="doccomment">/// Tipset channel receiver
     </span>tipset_receiver: flume::Receiver&lt;Arc&lt;Tipset&gt;&gt;,
-
-    <span class="doccomment">/// When `stateless_mode` is true, forest connects to the P2P network but does not sync to HEAD.
-    </span>stateless_mode: bool,
 }
 
 <span class="kw">impl</span>&lt;DB, M&gt; ChainMuxer&lt;DB, M&gt;
@@ -1159,7 +1101,6 @@
         genesis: Arc&lt;Tipset&gt;,
         tipset_sender: flume::Sender&lt;Arc&lt;Tipset&gt;&gt;,
         tipset_receiver: flume::Receiver&lt;Arc&lt;Tipset&gt;&gt;,
-        stateless_mode: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, ChainMuxerError&gt; {
         <span class="kw">let </span>network =
             SyncNetworkContext::new(network_send, peer_manager, state_manager.blockstore_owned());
@@ -1175,7 +1116,6 @@
             tipset_sender,
             tipset_receiver,
             state_manager,
-            stateless_mode,
         })
     }
 
@@ -1237,11 +1177,11 @@
         peer_id: PeerId,
         genesis_block_cid: Cid,
     ) {
+        <span class="comment">// Query the heaviest TipSet from the store
+        </span><span class="kw">let </span>heaviest = chain_store.heaviest_tipset();
         <span class="kw">if </span>network.peer_manager().is_peer_new(<span class="kw-2">&amp;</span>peer_id).<span class="kw">await </span>{
             <span class="comment">// Since the peer is new, send them a hello request
-            // Query the heaviest TipSet from the store
-            </span><span class="kw">let </span>heaviest = chain_store.heaviest_tipset();
-            <span class="kw">let </span>request = HelloRequest {
+            </span><span class="kw">let </span>request = HelloRequest {
                 heaviest_tip_set: heaviest.cids(),
                 heaviest_tipset_height: heaviest.epoch(),
                 heaviest_tipset_weight: heaviest.weight().clone().into(),
@@ -1487,7 +1427,9 @@
 
         <span class="comment">// Store block messages in the block store
         </span><span class="kw">for </span>block <span class="kw">in </span>tipset.blocks() {
-            block.persist(<span class="kw-2">&amp;</span>chain_store.db)<span class="question-mark">?</span>;
+            <span class="kw">crate</span>::chain::persist_objects(<span class="kw-2">&amp;</span>chain_store.db, <span class="kw-2">&amp;</span>[block.header()])<span class="question-mark">?</span>;
+            <span class="kw">crate</span>::chain::persist_objects(<span class="kw-2">&amp;</span>chain_store.db, block.bls_msgs())<span class="question-mark">?</span>;
+            <span class="kw">crate</span>::chain::persist_objects(<span class="kw-2">&amp;</span>chain_store.db, block.secp_msgs())<span class="question-mark">?</span>;
         }
 
         <span class="comment">// Update the peer head
@@ -1500,48 +1442,6 @@
             .set(tipset.epoch());
 
         <span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>((tipset, source)))
-    }
-
-    <span class="kw">fn </span>stateless_node(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChainMuxerFuture&lt;(), ChainMuxerError&gt; {
-        <span class="kw">let </span>p2p_messages = <span class="self">self</span>.net_handler.clone();
-        <span class="kw">let </span>chain_store = <span class="self">self</span>.state_manager.chain_store().clone();
-        <span class="kw">let </span>network = <span class="self">self</span>.network.clone();
-        <span class="kw">let </span>genesis = <span class="self">self</span>.genesis.clone();
-        <span class="kw">let </span>bad_block_cache = <span class="self">self</span>.bad_blocks.clone();
-        <span class="kw">let </span>mem_pool = <span class="self">self</span>.mpool.clone();
-        <span class="kw">let </span>block_delay = <span class="self">self</span>.state_manager.chain_config().block_delay_secs <span class="kw">as </span>u64;
-
-        <span class="kw">let </span>future = <span class="kw">async move </span>{
-            <span class="kw">loop </span>{
-                <span class="kw">let </span>event = <span class="kw">match </span>p2p_messages.recv_async().<span class="kw">await </span>{
-                    <span class="prelude-val">Ok</span>(event) =&gt; event,
-                    <span class="prelude-val">Err</span>(why) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Receiving event from p2p event stream failed: {why}&quot;</span>);
-                        <span class="kw">return </span><span class="prelude-val">Err</span>(ChainMuxerError::P2PEventStreamReceive(why.to_string()));
-                    }
-                };
-
-                <span class="kw">match </span><span class="self">Self</span>::process_gossipsub_event(
-                    event,
-                    network.clone(),
-                    chain_store.clone(),
-                    bad_block_cache.clone(),
-                    mem_pool.clone(),
-                    genesis.clone(),
-                    PubsubMessageProcessingStrategy::DoNotProcess,
-                    block_delay,
-                )
-                .<span class="kw">await
-                </span>{
-                    <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {}
-                    <span class="prelude-val">Err</span>(why) =&gt; {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Processing GossipSub event failed: {why:?}&quot;</span>);
-                    }
-                };
-            }
-        };
-
-        Box::pin(future)
     }
 
     <span class="kw">fn </span>evaluate_network_head(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ChainMuxerFuture&lt;NetworkHeadEvaluation, ChainMuxerError&gt; {
@@ -1858,8 +1758,6 @@
     Connect(ChainMuxerFuture&lt;NetworkHeadEvaluation, ChainMuxerError&gt;),
     Bootstrap(ChainMuxerFuture&lt;(), ChainMuxerError&gt;),
     Follow(ChainMuxerFuture&lt;(), ChainMuxerError&gt;),
-    <span class="doccomment">/// In stateless mode, forest still connects to the P2P swarm but does not sync to HEAD.
-    </span>Stateless(ChainMuxerFuture&lt;(), ChainMuxerError&gt;),
 }
 
 <span class="kw">impl</span>&lt;DB, M&gt; Future <span class="kw">for </span>ChainMuxer&lt;DB, M&gt;
@@ -1873,10 +1771,7 @@
         <span class="kw">loop </span>{
             <span class="kw">match </span><span class="self">self</span>.state {
                 ChainMuxerState::Idle =&gt; {
-                    <span class="kw">if </span><span class="self">self</span>.stateless_mode {
-                        <span class="macro">info!</span>(<span class="string">&quot;Running chain muxer in stateless mode...&quot;</span>);
-                        <span class="self">self</span>.state = ChainMuxerState::Stateless(<span class="self">self</span>.stateless_node());
-                    } <span class="kw">else if </span><span class="self">self</span>.state_manager.sync_config().tipset_sample_size == <span class="number">0 </span>{
+                    <span class="kw">if </span><span class="self">self</span>.state_manager.sync_config().tipset_sample_size == <span class="number">0 </span>{
                         <span class="comment">// A standalone node might use this option to not be stuck waiting for P2P
                         // messages.
                         </span><span class="macro">info!</span>(<span class="string">&quot;Skip evaluating network head, assume in-sync.&quot;</span>);
@@ -1885,11 +1780,6 @@
                         <span class="comment">// Create the connect future and set the state to connect
                         </span><span class="macro">info!</span>(<span class="string">&quot;Evaluating network head...&quot;</span>);
                         <span class="self">self</span>.state = ChainMuxerState::Connect(<span class="self">self</span>.evaluate_network_head());
-                    }
-                }
-                ChainMuxerState::Stateless(<span class="kw-2">ref mut </span>future) =&gt; {
-                    <span class="kw">if let </span><span class="prelude-val">Err</span>(why) = <span class="macro">std::task::ready!</span>(future.as_mut().poll(cx)) {
-                        <span class="kw">return </span>Poll::Ready(why);
                     }
                 }
                 ChainMuxerState::Connect(<span class="kw-2">ref mut </span>connect) =&gt; <span class="kw">match </span>connect.as_mut().poll(cx) {

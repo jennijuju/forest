@@ -858,7 +858,6 @@
 <a href="#858" id="858">858</a>
 <a href="#859" id="859">859</a>
 <a href="#860" id="860">860</a>
-<a href="#861" id="861">861</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1565,46 +1564,45 @@
     </span>DB: Blockstore + Sync + Send + <span class="lifetime">&#39;static</span>,
 {
     <span class="kw">match </span>ce_event {
-        request_response::Event::Message { peer, message } =&gt; <span class="kw">match </span>message {
-            request_response::Message::Request {
-                request,
-                channel,
-                request_id,
-            } =&gt; {
-                <span class="macro">trace!</span>(
-                    <span class="string">&quot;Received chain_exchange request (request_id:{request_id}, peer_id: {peer:?})&quot;</span>,
-                );
-                emit_event(
-                    network_sender_out,
-                    NetworkEvent::ChainExchangeRequestInbound { request_id },
-                )
-                .<span class="kw">await</span>;
-
-                <span class="kw">let </span>db = db.clone();
-                tokio::task::spawn(<span class="kw">async move </span>{
-                    <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = cx_response_tx.send((
-                        request_id,
-                        channel,
-                        make_chain_exchange_response(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>request),
-                    )) {
-                        <span class="macro">debug!</span>(<span class="string">&quot;Failed to send ChainExchangeResponse: {e:?}&quot;</span>);
-                    }
-                });
-            }
-            request_response::Message::Response {
-                request_id,
-                response,
-            } =&gt; {
-                emit_event(
-                    network_sender_out,
-                    NetworkEvent::ChainExchangeResponseInbound { request_id },
-                )
-                .<span class="kw">await</span>;
-                chain_exchange
-                    .handle_inbound_response(<span class="kw-2">&amp;</span>request_id, response)
+        request_response::Event::Message { peer, message } =&gt; {
+            <span class="kw">match </span>message {
+                request_response::Message::Request {
+                    request,
+                    channel,
+                    request_id,
+                } =&gt; {
+                    <span class="macro">trace!</span>(<span class="string">&quot;Received chain_exchange request (request_id:{request_id}, peer_id: {peer:?})&quot;</span>,);
+                    emit_event(
+                        network_sender_out,
+                        NetworkEvent::ChainExchangeRequestInbound { request_id },
+                    )
                     .<span class="kw">await</span>;
+                    <span class="kw">let </span>db = db.clone();
+                    tokio::task::spawn(<span class="kw">async move </span>{
+                        <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = cx_response_tx.send((
+                            request_id,
+                            channel,
+                            make_chain_exchange_response(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>request),
+                        )) {
+                            <span class="macro">debug!</span>(<span class="string">&quot;Failed to send ChainExchangeResponse: {e:?}&quot;</span>);
+                        }
+                    });
+                }
+                request_response::Message::Response {
+                    request_id,
+                    response,
+                } =&gt; {
+                    emit_event(
+                        network_sender_out,
+                        NetworkEvent::ChainExchangeResponseInbound { request_id },
+                    )
+                    .<span class="kw">await</span>;
+                    chain_exchange
+                        .handle_inbound_response(<span class="kw-2">&amp;</span>request_id, response)
+                        .<span class="kw">await</span>;
+                }
             }
-        },
+        }
         request_response::Event::OutboundFailure {
             peer: <span class="kw">_</span>,
             request_id,

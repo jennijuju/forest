@@ -706,7 +706,6 @@
 <a href="#706" id="706">706</a>
 <a href="#707" id="707">707</a>
 <a href="#708" id="708">708</a>
-<a href="#709" id="709">709</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -1039,7 +1038,6 @@
         Arc::new(Tipset::from(genesis_header)),
         tipset_sink,
         tipset_stream,
-        opts.stateless,
     )<span class="question-mark">?</span>;
     <span class="kw">let </span>bad_blocks = chain_muxer.bad_blocks_cloned();
     <span class="kw">let </span>sync_state = chain_muxer.sync_state_cloned();
@@ -1102,7 +1100,7 @@
 
     <span class="comment">// Sets the latest snapshot if needed for downloading later
     </span><span class="kw">let </span><span class="kw-2">mut </span>config = config;
-    <span class="kw">if </span>config.client.snapshot_path.is_none() &amp;&amp; !opts.stateless {
+    <span class="kw">if </span>config.client.snapshot_path.is_none() {
         set_snapshot_path_if_needed(
             <span class="kw-2">&amp;mut </span>config,
             <span class="kw-2">&amp;</span>chain_config,
