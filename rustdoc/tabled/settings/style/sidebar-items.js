@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Offset"],"struct":["Border","BorderChar","BorderColor","BorderSpanCorrection","BorderText","HorizontalLine","HorizontalLineIter","Line","On","RawStyle","Style","VerticalLine","VerticalLineIter"]};

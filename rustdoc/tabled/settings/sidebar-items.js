@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Rotate"],"mod":["disable","format","formatting","height","highlight","locator","measurement","merge","object","panel","peaker","span","split","style","themes","width"],"struct":["Alignment","Color","Concat","Dup","EmptySettings","Extract","Margin","Modify","ModifyList","Padding","Settings","Shadow"],"trait":["CellOption","TableOption"]};

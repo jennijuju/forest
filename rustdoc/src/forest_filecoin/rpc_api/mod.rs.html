@@ -348,6 +348,10 @@
 <a href="#348" id="348">348</a>
 <a href="#349" id="349">349</a>
 <a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -539,6 +543,7 @@
     <span class="kw">pub const </span>CHAIN_GET_TIPSET: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetTipSet&quot;</span>;
     <span class="kw">pub const </span>CHAIN_SET_HEAD: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainSetHead&quot;</span>;
     <span class="kw">pub const </span>CHAIN_GET_MIN_BASE_FEE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetMinBaseFee&quot;</span>;
+    <span class="kw">pub const </span>CHAIN_GET_MESSAGES_IN_TIPSET: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.ChainGetMessagesInTipset&quot;</span>;
 }
 
 <span class="doccomment">/// Message Pool API
@@ -582,6 +587,7 @@
     <span class="kw">pub const </span>STATE_GET_RECEIPT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetReceipt&quot;</span>;
     <span class="kw">pub const </span>STATE_WAIT_MSG: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateWaitMsg&quot;</span>;
     <span class="kw">pub const </span>STATE_FETCH_ROOT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateFetchRoot&quot;</span>;
+    <span class="kw">pub const </span>STATE_MINOR_POWER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMinerPower&quot;</span>;
 }
 
 <span class="doccomment">/// Gas API
@@ -597,6 +603,8 @@
     <span class="kw">pub const </span>VERSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.Version&quot;</span>;
     <span class="kw">pub const </span>SHUTDOWN: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.Shutdown&quot;</span>;
     <span class="kw">pub const </span>START_TIME: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StartTime&quot;</span>;
+    <span class="kw">pub const </span>DISCOVER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.Discover&quot;</span>;
+    <span class="kw">pub const </span>SESSION: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.Session&quot;</span>;
 }
 
 <span class="doccomment">/// Net API

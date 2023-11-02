@@ -102,10 +102,16 @@
 <a href="#102" id="102">102</a>
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
+</span><span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::ApiMessage;
+<span class="kw">use </span><span class="kw">crate</span>::shim::message::Message;
 <span class="kw">use crate</span>::{
     blocks::{BlockHeader, Tipset, TipsetKeys},
     rpc_api::chain_api::<span class="kw-2">*</span>,
@@ -204,6 +210,10 @@
 
     <span class="kw">pub fn </span>chain_get_min_base_fee_req(basefee_lookback: u32) -&gt; RpcRequest&lt;String&gt; {
         RpcRequest::new(CHAIN_GET_MIN_BASE_FEE, (basefee_lookback,))
+    }
+
+    <span class="kw">pub fn </span>chain_get_messages_in_tipset_req(tsk: TipsetKeys) -&gt; RpcRequest&lt;Vec&lt;ApiMessage&gt;&gt; {
+        RpcRequest::new(CHAIN_GET_MESSAGES_IN_TIPSET, (tsk,))
     }
 }
 </code></pre></div></section></main></body></html>

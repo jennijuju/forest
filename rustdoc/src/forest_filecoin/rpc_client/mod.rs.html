@@ -271,6 +271,25 @@
 <a href="#271" id="271">271</a>
 <a href="#272" id="272">272</a>
 <a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -295,6 +314,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{Multiaddr, Protocol};
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::HasLotusJson;
 <span class="kw">use </span><span class="kw">crate</span>::utils::net::global_http_client;
+<span class="kw">use </span>http::StatusCode;
 <span class="kw">use </span>jsonrpc_v2::{Id, RequestObject, V2};
 <span class="kw">use </span>serde::Deserialize;
 <span class="kw">use </span>tracing::debug;
@@ -380,8 +400,11 @@
             <span class="kw">_ </span>=&gt; request,
         };
 
-        <span class="kw">let </span>rpc_res: JsonRpcResponse&lt;T::LotusJson&gt; =
-            request.send().<span class="kw">await</span><span class="question-mark">?</span>.error_for_status()<span class="question-mark">?</span>.json().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>response = request.send().<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">if </span>response.status() == StatusCode::NOT_FOUND {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(JsonRpcError::METHOD_NOT_FOUND);
+        }
+        <span class="kw">let </span>rpc_res: JsonRpcResponse&lt;T::LotusJson&gt; = response.json().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">match </span>rpc_res {
             JsonRpcResponse::Result { result, .. } =&gt; <span class="prelude-val">Ok</span>(HasLotusJson::from_lotus_json(result)),
@@ -406,7 +429,22 @@
     // -32602 	Invalid params 	Invalid method parameter(s).
     // -32603 	Internal error 	Internal JSON-RPC error.
     // -32000 to -32099 	Server error 	Reserved for implementation-defined server-errors.
-    </span><span class="kw">pub const </span>INVALID_PARAMS: JsonRpcError = JsonRpcError {
+    </span><span class="kw">pub const </span>PARSE_ERROR: JsonRpcError = JsonRpcError {
+        code: -<span class="number">32700</span>,
+        message: Cow::Borrowed(
+            <span class="string">&quot;Invalid JSON was received by the server. \
+             An error occurred on the server while parsing the JSON text.&quot;</span>,
+        ),
+    };
+    <span class="kw">pub const </span>INVALID_REQUEST: JsonRpcError = JsonRpcError {
+        code: -<span class="number">32600</span>,
+        message: Cow::Borrowed(<span class="string">&quot;The JSON sent is not a valid Request object.&quot;</span>),
+    };
+    <span class="kw">pub const </span>METHOD_NOT_FOUND: JsonRpcError = JsonRpcError {
+        code: -<span class="number">32601</span>,
+        message: Cow::Borrowed(<span class="string">&quot;The method does not exist / is not available.&quot;</span>),
+    };
+    <span class="kw">pub const </span>INVALID_PARAMS: JsonRpcError = JsonRpcError {
         code: -<span class="number">32602</span>,
         message: Cow::Borrowed(<span class="string">&quot;Invalid method parameter(s).&quot;</span>),
     };

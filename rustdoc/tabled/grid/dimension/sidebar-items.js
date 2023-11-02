@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ConstSize","DimensionPriority","DimensionValue"],"struct":["CompactGridDimension","CompleteDimension","CompleteDimensionVecRecords","ConstDimension","PeekableDimension","PoolTableDimension","SpannedGridDimension","SpannedVecRecordsDimension","StaticDimension"],"trait":["Dimension","Estimate"]};

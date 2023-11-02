@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AlignmentHorizontal","AlignmentVertical","Entity","Offset"],"struct":["Border","Borders","ColorMap","ColoredConfig","CompactConfig","CompactMultilineConfig","EntityIterator","EntityMap","Formatting","Indent","Line","Sides","SpannedConfig"],"type":["HorizontalLine","Position","VerticalLine"]};

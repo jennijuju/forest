@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Offset"],"struct":["EntityMap","Formatting","SpannedConfig"],"type":["HorizontalLine","VerticalLine"]};

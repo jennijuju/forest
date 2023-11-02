@@ -76,10 +76,16 @@
 <a href="#76" id="76">76</a>
 <a href="#77" id="77">77</a>
 <a href="#78" id="78">78</a>
+<a href="#79" id="79">79</a>
+<a href="#80" id="80">80</a>
+<a href="#81" id="81">81</a>
+<a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">pub mod </span>archive_cmd;
+</span><span class="kw">pub mod </span>api_cmd;
+<span class="kw">pub mod </span>archive_cmd;
 <span class="kw">pub mod </span>benchmark_cmd;
 <span class="kw">pub mod </span>car_cmd;
 <span class="kw">pub mod </span>db_cmd;
@@ -133,6 +139,10 @@
     <span class="doccomment">/// Utilities for manipulating CAR files
     </span><span class="attr">#[command(subcommand)]
     </span>Car(car_cmd::CarCommands),
+
+    <span class="doccomment">/// API tooling
+    </span><span class="attr">#[command(subcommand)]
+    </span>Api(api_cmd::ApiCommands),
 }
 
 <span class="kw">fn </span>read_config(
