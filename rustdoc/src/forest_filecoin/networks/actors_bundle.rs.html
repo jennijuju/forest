@@ -216,6 +216,14 @@
 <a href="#216" id="216">216</a>
 <a href="#217" id="217">217</a>
 <a href="#218" id="218">218</a>
+<a href="#219" id="219">219</a>
+<a href="#220" id="220">220</a>
+<a href="#221" id="221">221</a>
+<a href="#222" id="222">222</a>
+<a href="#223" id="223">223</a>
+<a href="#224" id="224">224</a>
+<a href="#225" id="225">225</a>
+<a href="#226" id="226">226</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -236,6 +244,10 @@
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::{CarStream, CarWriter};
 <span class="kw">use </span><span class="kw">crate</span>::utils::net::http_get;
 
+<span class="kw">use </span>std::str::FromStr;
+
+<span class="kw">use </span><span class="kw">super</span>::NetworkChain;
+
 <span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>ActorBundleInfo {
     <span class="kw">pub </span>manifest: Cid,
@@ -244,6 +256,7 @@
     /// Note that we host the bundles and so we need to update the bucket
     /// ourselves when a new bundle is released.
     </span><span class="kw">pub </span>alt_url: Url,
+    <span class="kw">pub </span>network: NetworkChain,
 }
 
 <span class="macro">macro_rules! </span>actor_bundle_info {
@@ -265,7 +278,8 @@
                             <span class="string">&quot;/builtin-actors-&quot;</span>,
                             <span class="macro-nonterminal">$network</span>,
                             <span class="string">&quot;.car&quot;
-                        </span>).parse().unwrap()
+                        </span>).parse().unwrap(),
+                    network: NetworkChain::from_str(<span class="macro-nonterminal">$network</span>).unwrap(),
                 },
             )*
         ]
@@ -294,6 +308,7 @@
              manifest: root,
              url,
              alt_url,
+             network: <span class="kw">_</span>,
          }| <span class="kw">async move </span>{
             <span class="kw">let </span>response = <span class="kw">if let </span><span class="prelude-val">Ok</span>(response) = http_get(url).<span class="kw">await </span>{
                 response
@@ -367,6 +382,7 @@
                  manifest,
                  url,
                  alt_url,
+                 network: <span class="kw">_</span>,
              }| <span class="kw">async move </span>{
                 <span class="kw">let </span>(primary, alt) = <span class="kw">match </span>(http_get(url).<span class="kw">await</span>, http_get(alt_url).<span class="kw">await</span>) {
                     (<span class="prelude-val">Ok</span>(primary), <span class="prelude-val">Ok</span>(alt)) =&gt; (primary, alt),

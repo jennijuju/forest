@@ -1128,7 +1128,7 @@
     <span class="kw">let </span>last_epoch = ts.epoch() - epochs <span class="kw">as </span>i64;
 
     <span class="comment">// Bundles are required when doing state migrations.
-    </span>load_actor_bundles(<span class="kw-2">&amp;</span>db).<span class="kw">await</span><span class="question-mark">?</span>;
+    </span>load_actor_bundles(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>network).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="comment">// Set proof parameter data dir and make sure the proofs are available
     </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::set_proofs_parameter_cache_dir_env(

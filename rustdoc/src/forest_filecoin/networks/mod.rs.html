@@ -387,7 +387,7 @@
     <span class="kw">fn </span>from_str(s: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Err&gt; {
         <span class="kw">match </span>s {
             <span class="string">&quot;mainnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Mainnet),
-            <span class="string">&quot;calibnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Calibnet),
+            <span class="string">&quot;calibnet&quot; </span>| <span class="string">&quot;calibrationnet&quot; </span>=&gt; <span class="prelude-val">Ok</span>(NetworkChain::Calibnet),
             name =&gt; <span class="prelude-val">Ok</span>(NetworkChain::Devnet(name.to_owned())),
         }
     }
