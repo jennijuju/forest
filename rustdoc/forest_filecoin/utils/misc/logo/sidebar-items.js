@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["reveal_five_trees"]};
+window.SIDEBAR_ITEMS = {"fn":["reveal_three_trees"]};

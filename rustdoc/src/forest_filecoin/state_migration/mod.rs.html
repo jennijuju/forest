@@ -97,7 +97,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::state_tree::StateRoot;
-<span class="kw">use </span><span class="kw">crate</span>::utils::misc::reveal_five_trees;
+<span class="kw">use </span><span class="kw">crate</span>::utils::misc::reveal_three_trees;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>fvm_ipld_encoding::CborStore;
@@ -159,7 +159,7 @@
                 .map(|sr| <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, sr.actors))
                 .unwrap_or_default();
             <span class="kw">if </span>new_state != <span class="kw-2">*</span>parent_state {
-                reveal_five_trees();
+                reveal_three_trees();
                 <span class="macro">tracing::info!</span>(<span class="string">&quot;State migration at height {height}(epoch {epoch}) was successful, Previous state: {parent_state}, new state: {new_state}, new state actors: {new_state_actors}. Took: {elapsed}s.&quot;</span>);
             } <span class="kw">else </span>{
                 anyhow:: <span class="macro">bail!</span>(<span class="string">&quot;State post migration at height {height} must not match. Previous state: {parent_state}, new state: {new_state}, new state actors: {new_state_actors}. Took {elapsed}s.&quot;</span>);
