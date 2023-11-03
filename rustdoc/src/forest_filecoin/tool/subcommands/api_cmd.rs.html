@@ -344,11 +344,29 @@
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
 <a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
+<a href="#348" id="348">348</a>
+<a href="#349" id="349">349</a>
+<a href="#350" id="350">350</a>
+<a href="#351" id="351">351</a>
+<a href="#352" id="352">352</a>
+<a href="#353" id="353">353</a>
+<a href="#354" id="354">354</a>
+<a href="#355" id="355">355</a>
+<a href="#356" id="356">356</a>
+<a href="#357" id="357">357</a>
+<a href="#358" id="358">358</a>
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>clap::Subcommand;
+<span class="kw">use </span>fil_actors_shared::v10::runtime::DomainSeparationTag;
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>std::path::PathBuf;
 <span class="kw">use </span>std::str::FromStr;
@@ -552,6 +570,7 @@
         RpcTest::identity(ApiInfo::chain_get_messages_in_tipset_req(
             shared_tipset.key().clone(),
         )),
+        RpcTest::identity(ApiInfo::chain_get_parent_messages_req(<span class="kw-2">*</span>shared_block.cid())),
     ]
 }
 
@@ -578,10 +597,25 @@
 }
 
 <span class="kw">fn </span>state_tests(shared_tipset: <span class="kw-2">&amp;</span>Tipset) -&gt; Vec&lt;RpcTest&gt; {
+    <span class="kw">let </span>shared_block = shared_tipset.min_ticket_block();
     <span class="macro">vec!</span>[
         RpcTest::identity(ApiInfo::state_network_name_req()),
         RpcTest::identity(ApiInfo::state_get_actor_req(
             Address::SYSTEM_ACTOR,
+            shared_tipset.key().clone(),
+        )),
+        RpcTest::identity(ApiInfo::state_get_randomness_from_beacon_req(
+            shared_tipset.key().clone(),
+            DomainSeparationTag::ElectionProofProduction,
+            shared_tipset.epoch(),
+            <span class="string">&quot;dead beef&quot;</span>.as_bytes().to_vec(),
+        )),
+        RpcTest::identity(ApiInfo::state_read_state_req(
+            Address::SYSTEM_ACTOR,
+            shared_tipset.key().clone(),
+        )),
+        RpcTest::identity(ApiInfo::state_miner_active_sectors_req(
+            <span class="kw-2">*</span>shared_block.miner_address(),
             shared_tipset.key().clone(),
         )),
     ]
