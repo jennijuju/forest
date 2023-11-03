@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DiscoveryEvent"],"struct":["DiscoveryBehaviour","DiscoveryConfig"],"type":["KademliaBehaviour"]};
+window.SIDEBAR_ITEMS = {"enum":["DerivedDiscoveryBehaviourEvent","DiscoveryEvent"],"struct":["DerivedDiscoveryBehaviour","DiscoveryBehaviour","DiscoveryConfig"]};

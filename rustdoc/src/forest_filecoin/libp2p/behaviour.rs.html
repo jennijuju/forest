@@ -155,8 +155,6 @@
 <a href="#155" id="155">155</a>
 <a href="#156" id="156">156</a>
 <a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -169,7 +167,6 @@
         <span class="self">self</span>, IdentTopic <span class="kw">as </span>Topic, MessageAuthenticity, MessageId, PublishError, SubscriptionError,
         ValidationMode,
     },
-    identify,
     identity::{Keypair, PeerId},
     kad::QueryId,
     metrics::{Metrics, Recorder},
@@ -187,6 +184,8 @@
     hello::HelloBehaviour,
 };
 
+<span class="kw">use </span><span class="kw">super</span>::discovery::DiscoveryEvent;
+
 <span class="doccomment">/// Libp2p behavior for the Forest node. This handles all sub protocols needed
 /// for a Filecoin node.
 </span><span class="attr">#[derive(NetworkBehaviour)]
@@ -194,7 +193,6 @@
     gossipsub: gossipsub::Behaviour,
     discovery: DiscoveryBehaviour,
     ping: ping::Behaviour,
-    identify: identify::Behaviour,
     connection_limits: connection_limits::Behaviour,
     <span class="kw">pub</span>(<span class="kw">super</span>) blocked_peers: allow_block_list::Behaviour&lt;allow_block_list::BlockedPeers&gt;,
     <span class="kw">pub</span>(<span class="kw">super</span>) hello: HelloBehaviour,
@@ -207,7 +205,9 @@
         <span class="kw">match </span>event {
             ForestBehaviourEvent::Gossipsub(e) =&gt; <span class="self">self</span>.record(e),
             ForestBehaviourEvent::Ping(ping_event) =&gt; <span class="self">self</span>.record(ping_event),
-            ForestBehaviourEvent::Identify(id_event) =&gt; <span class="self">self</span>.record(id_event),
+            ForestBehaviourEvent::Discovery(DiscoveryEvent::Identify(id_event)) =&gt; {
+                <span class="self">self</span>.record(id_event.as_ref())
+            }
             <span class="kw">_ </span>=&gt; {}
         }
     }
@@ -254,12 +254,12 @@
             <span class="macro">warn!</span>(<span class="string">&quot;Fail to register prometheus metrics for libp2p_bitswap: {err}&quot;</span>);
         }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>discovery_config = DiscoveryConfig::new(local_key.public(), network_name);
-        discovery_config
+        <span class="kw">let </span>discovery = DiscoveryConfig::new(local_key.public(), network_name)
             .with_mdns(config.mdns)
             .with_kademlia(config.kademlia)
-            .with_user_defined(config.bootstrap_peers.clone())
-            .target_peer_count(config.target_peer_count <span class="kw">as </span>u64);
+            .with_user_defined(config.bootstrap_peers.clone())<span class="question-mark">?
+            </span>.target_peer_count(config.target_peer_count <span class="kw">as </span>u64)
+            .finish()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>connection_limits = connection_limits::Behaviour::new(
             connection_limits::ConnectionLimits::default()
@@ -273,12 +273,8 @@
         <span class="macro">warn!</span>(<span class="string">&quot;libp2p Forest version: {}&quot;</span>, FOREST_VERSION_STRING.as_str());
         <span class="prelude-val">Ok</span>(ForestBehaviour {
             gossipsub,
-            discovery: discovery_config.finish()<span class="question-mark">?</span>,
+            discovery,
             ping: Default::default(),
-            identify: identify::Behaviour::new(
-                identify::Config::new(<span class="string">&quot;ipfs/0.1.0&quot;</span>.into(), local_key.public())
-                    .with_agent_version(<span class="macro">format!</span>(<span class="string">&quot;forest-{}&quot;</span>, FOREST_VERSION_STRING.as_str())),
-            ),
             connection_limits,
             blocked_peers: Default::default(),
             bitswap,

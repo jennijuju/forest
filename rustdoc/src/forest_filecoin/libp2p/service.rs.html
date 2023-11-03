@@ -1370,6 +1370,7 @@
             <span class="macro">debug!</span>(<span class="string">&quot;Peer disconnected, {:?}&quot;</span>, peer_id);
             emit_event(network_sender_out, NetworkEvent::PeerDisconnected(peer_id)).<span class="kw">await</span>;
         }
+        DiscoveryEvent::Identify(<span class="kw">_</span>) =&gt; {}
     }
 }
 
@@ -1676,7 +1677,6 @@
             }
         }
         ForestBehaviourEvent::Ping(ping_event) =&gt; handle_ping_event(ping_event, peer_manager).<span class="kw">await</span>,
-        ForestBehaviourEvent::Identify(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::ConnectionLimits(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::BlockedPeers(<span class="kw">_</span>) =&gt; {}
         ForestBehaviourEvent::ChainExchange(ce_event) =&gt; {
