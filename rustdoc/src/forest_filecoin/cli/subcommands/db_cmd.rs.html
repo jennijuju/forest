@@ -61,18 +61,6 @@
 <a href="#61" id="61">61</a>
 <a href="#62" id="62">62</a>
 <a href="#63" id="63">63</a>
-<a href="#64" id="64">64</a>
-<a href="#65" id="65">65</a>
-<a href="#66" id="66">66</a>
-<a href="#67" id="67">67</a>
-<a href="#68" id="68">68</a>
-<a href="#69" id="69">69</a>
-<a href="#70" id="70">70</a>
-<a href="#71" id="71">71</a>
-<a href="#72" id="72">72</a>
-<a href="#73" id="73">73</a>
-<a href="#74" id="74">74</a>
-<a href="#75" id="75">75</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -84,26 +72,15 @@
 <span class="kw">use </span>chrono::Utc;
 <span class="kw">use </span>clap::Subcommand;
 
-<span class="kw">use </span><span class="kw">crate</span>::utils::bail_moved_cmd;
-
 <span class="attr">#[derive(Debug, Subcommand)]
 </span><span class="kw">pub enum </span>DBCommands {
     <span class="doccomment">/// Run DB garbage collection
     </span>GC,
-    <span class="comment">// Those subcommands are hidden and only here to help users migrating to forest-tool
-    </span><span class="attr">#[command(hide = <span class="bool-val">true</span>)]
-    </span>Stats,
-    <span class="attr">#[command(hide = <span class="bool-val">true</span>)]
-    </span>Clean {
-        <span class="attr">#[arg(long)]
-        </span>force: bool,
-    },
 }
 
 <span class="kw">impl </span>DBCommands {
     <span class="kw">pub async fn </span>run(<span class="self">self</span>, api: ApiInfo) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">match </span><span class="self">self </span>{
-            <span class="self">Self</span>::Stats =&gt; bail_moved_cmd(<span class="string">&quot;db stats&quot;</span>, <span class="string">&quot;forest-tool db stats&quot;</span>),
             <span class="self">Self</span>::GC =&gt; {
                 <span class="kw">let </span>start = Utc::now();
 
@@ -144,7 +121,6 @@
 
                 <span class="prelude-val">Ok</span>(())
             }
-            <span class="self">Self</span>::Clean { .. } =&gt; bail_moved_cmd(<span class="string">&quot;db clean&quot;</span>, <span class="string">&quot;forest-tool db destroy&quot;</span>),
         }
     }
 }

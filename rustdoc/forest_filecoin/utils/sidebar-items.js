@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["RetryError"],"fn":["bail_moved_cmd","retry"],"mod":["cid","db","encoding","io","misc","monitoring","net","proofs_api","reqwest_resume","stream","version"],"struct":["RetryArgs"]};
+window.SIDEBAR_ITEMS = {"enum":["RetryError"],"fn":["retry"],"mod":["cid","db","encoding","io","misc","monitoring","net","proofs_api","reqwest_resume","stream","version"],"struct":["RetryArgs"]};

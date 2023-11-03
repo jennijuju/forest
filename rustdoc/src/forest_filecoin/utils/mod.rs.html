@@ -133,17 +133,6 @@
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
-<a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -166,17 +155,6 @@
 <span class="kw">use </span>std::{pin::Pin, time::Duration};
 <span class="kw">use </span>tokio::time::sleep;
 <span class="kw">use </span>tracing::error;
-
-<span class="comment">// TODO(elmattic): https://github.com/ChainSafe/forest/issues/3363
-//                 Remove this function and hidden commands
-</span><span class="doccomment">/// Function used to bail on usage of migrated commands
-</span><span class="kw">pub fn </span>bail_moved_cmd(subcommand: <span class="kw-2">&amp;</span>str, command: <span class="kw-2">&amp;</span>str) -&gt; anyhow::Result&lt;()&gt; {
-    <span class="macro">anyhow::bail!</span>(
-        <span class="string">&quot;Invalid subcommand: forest-cli {}. It has been moved to {}.&quot;</span>,
-        subcommand,
-        command
-    )
-}
 
 <span class="doccomment">/// Keep running the future created by `make_fut` until the timeout or retry
 /// limit in `args` is reached.
