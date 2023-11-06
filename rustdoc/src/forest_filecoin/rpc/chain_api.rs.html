@@ -250,6 +250,38 @@
 <a href="#250" id="250">250</a>
 <a href="#251" id="251">251</a>
 <a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="attr">#![allow(clippy::unused_async)]
@@ -260,6 +292,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::index::ResolveNullTipset;
 <span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
+<span class="kw">use </span><span class="kw">crate</span>::rpc_api::data_types::ApiMessage;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
     chain_api::<span class="kw-2">*</span>,
     data_types::{BlockMessages, RPCState},
@@ -286,6 +319,37 @@
         .get_cbor(<span class="kw-2">&amp;</span>msg_cid)<span class="question-mark">?
         </span>.ok_or(<span class="string">&quot;can&#39;t find message with that cid&quot;</span>)<span class="question-mark">?</span>;
     <span class="prelude-val">Ok</span>(LotusJson(ret))
+}
+
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>chain_get_messages_in_tipset&lt;DB: Blockstore&gt;(
+    data: Data&lt;RPCState&lt;DB&gt;&gt;,
+    Params(LotusJson((tsk,))): Params&lt;LotusJson&lt;(TipsetKeys,)&gt;&gt;,
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Vec&lt;ApiMessage&gt;&gt;, JsonRpcError&gt; {
+    <span class="kw">let </span>store = data.chain_store.blockstore();
+    <span class="kw">let </span>tipset = Tipset::load_required(store, <span class="kw-2">&amp;</span>tsk)<span class="question-mark">?</span>;
+    <span class="kw">let </span>full_tipset = tipset
+        .fill_from_blockstore(store)
+        .ok_or_else(|| <span class="macro">anyhow::anyhow!</span>(<span class="string">&quot;Failed to load full tipset&quot;</span>))<span class="question-mark">?</span>;
+    <span class="kw">let </span>blocks = full_tipset.into_blocks();
+    <span class="kw">let </span><span class="kw-2">mut </span>messages = <span class="macro">vec!</span>[];
+    <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
+    <span class="kw">for </span>block <span class="kw">in </span>blocks {
+        <span class="kw">for </span>msg <span class="kw">in </span>block.bls_msgs() {
+            <span class="kw">let </span>cid = msg.cid()<span class="question-mark">?</span>;
+            <span class="kw">if </span>seen.insert(cid) {
+                messages.push(ApiMessage::new(cid, msg.clone()));
+            }
+        }
+
+        <span class="kw">for </span>msg <span class="kw">in </span>block.secp_msgs() {
+            <span class="kw">let </span>cid = msg.cid()<span class="question-mark">?</span>;
+            <span class="kw">if </span>seen.insert(cid) {
+                messages.push(ApiMessage::new(cid, msg.message.clone()));
+            }
+        }
+    }
+
+    <span class="prelude-val">Ok</span>(LotusJson(messages))
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_export&lt;DB&gt;(

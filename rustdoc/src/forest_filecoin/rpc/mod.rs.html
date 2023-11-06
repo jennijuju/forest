@@ -150,6 +150,10 @@
 <a href="#150" id="150">150</a>
 <a href="#151" id="151">151</a>
 <a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -233,6 +237,10 @@
             .with_method(
                 CHAIN_GET_MIN_BASE_FEE,
                 chain_api::chain_get_min_base_fee::&lt;DB&gt;,
+            )
+            .with_method(
+                CHAIN_GET_MESSAGES_IN_TIPSET,
+                chain_api::chain_get_messages_in_tipset::&lt;DB&gt;,
             )
             <span class="comment">// Message Pool API
             </span>.with_method(MPOOL_PENDING, mpool_pending::&lt;DB&gt;)
