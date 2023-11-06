@@ -171,6 +171,14 @@
 <a href="#171" id="171">171</a>
 <a href="#172" id="172">172</a>
 <a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -203,7 +211,7 @@
 </span><span class="kw">pub const </span>ETH_CHAIN_ID: u64 = <span class="number">314159</span>;
 
 <span class="doccomment">/// Height epochs.
-</span><span class="kw">pub static </span>HEIGHT_INFOS: Lazy&lt;[HeightInfo; <span class="number">22</span>]&gt; = Lazy::new(|| {
+</span><span class="kw">pub static </span>HEIGHT_INFOS: Lazy&lt;[HeightInfo; <span class="number">23</span>]&gt; = Lazy::new(|| {
     [
         HeightInfo {
             height: Height::Breeze,
@@ -324,6 +332,14 @@
             epoch: <span class="number">1013134</span>,
             bundle: <span class="prelude-val">Some</span>(
                 Cid::try_from(<span class="string">&quot;bafy2bzacedrunxfqta5skb7q7x32lnp4efz2oq7fn226ffm7fu5iqs62jkmvs&quot;</span>)
+                    .unwrap(),
+            ),
+        },
+        HeightInfo {
+            height: Height::WatermelonFix,
+            epoch: <span class="number">1_070_494</span>,
+            bundle: <span class="prelude-val">Some</span>(
+                Cid::try_from(<span class="string">&quot;bafy2bzacebl4w5ptfvuw6746w7ev562idkbf5ppq72e6zub22435ws2rukzru&quot;</span>)
                     .unwrap(),
             ),
         },

@@ -141,6 +141,23 @@
 <a href="#141" id="141">141</a>
 <a href="#142" id="142">142</a>
 <a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
+<a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -152,6 +169,7 @@
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 
+<span class="kw">use </span><span class="kw">super</span>::PostMigrationCheckArc;
 <span class="kw">use super</span>::{verifier::MigrationVerifier, Migrator, PostMigratorArc};
 <span class="kw">use </span><span class="kw">crate</span>::state_migration::common::migration_job::{MigrationJob, MigrationJobOutput};
 
@@ -165,6 +183,8 @@
     </span>verifier: <span class="prelude-ty">Option</span>&lt;MigrationVerifier&lt;BS&gt;&gt;,
     <span class="doccomment">/// Post migrator(s). This may include new actor creation.
     </span>post_migrators: Vec&lt;PostMigratorArc&lt;BS&gt;&gt;,
+    <span class="doccomment">/// Post migration checks. This is used to verify the correctness of the migration.
+    </span>post_migration_checks: Vec&lt;PostMigrationCheckArc&lt;BS&gt;&gt;,
 }
 
 <span class="kw">impl</span>&lt;BS: Blockstore&gt; StateMigration&lt;BS&gt; {
@@ -173,6 +193,7 @@
             migrations: CidHashMap::new(),
             verifier,
             post_migrators: Default::default(),
+            post_migration_checks: Default::default(),
         }
     }
 
@@ -191,6 +212,14 @@
         post_migrator: PostMigratorArc&lt;BS&gt;,
     ) {
         <span class="self">self</span>.post_migrators.push(post_migrator);
+    }
+
+    <span class="doccomment">/// Inserts a new post migration check into the post migration checks specification.
+    </span><span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::state_migration) <span class="kw">fn </span>add_post_migration_check(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        post_migration_check: PostMigrationCheckArc&lt;BS&gt;,
+    ) {
+        <span class="self">self</span>.post_migration_checks.push(post_migration_check);
     }
 }
 
@@ -279,6 +308,11 @@
         <span class="comment">// execute post migration actions, e.g., create new actors
         </span><span class="kw">for </span>post_migrator <span class="kw">in </span><span class="self">self</span>.post_migrators.iter() {
             post_migrator.post_migrate_state(store, <span class="kw-2">&amp;mut </span>actors_out)<span class="question-mark">?</span>;
+        }
+
+        <span class="comment">// execute post migration checks
+        </span><span class="kw">for </span>post_migration_check <span class="kw">in </span><span class="self">self</span>.post_migration_checks.iter() {
+            post_migration_check.post_migrate_check(store, <span class="kw-2">&amp;</span>actors_out)<span class="question-mark">?</span>;
         }
 
         actors_out.flush()

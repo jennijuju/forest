@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Error","Sha256"],"struct":["BytesKey","Config"],"trait":["Hash","HashAlgorithm"],"type":["Hamt","Hamtv0"]};
+window.SIDEBAR_ITEMS = {"enum":["Error","Sha256"],"struct":["BytesKey","Config"],"trait":["Hash","HashAlgorithm"],"type":["Hamt","Hamtv0","Iter","Iterv0"]};
