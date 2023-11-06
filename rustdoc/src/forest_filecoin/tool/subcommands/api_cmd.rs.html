@@ -361,6 +361,26 @@
 <a href="#361" id="361">361</a>
 <a href="#362" id="362">362</a>
 <a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+<a href="#375" id="375">375</a>
+<a href="#376" id="376">376</a>
+<a href="#377" id="377">377</a>
+<a href="#378" id="378">378</a>
+<a href="#379" id="379">379</a>
+<a href="#380" id="380">380</a>
+<a href="#381" id="381">381</a>
+<a href="#382" id="382">382</a>
+<a href="#383" id="383">383</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -392,6 +412,12 @@
         <span class="doccomment">/// Snapshot input paths. Supports `.car`, `.car.zst`, and `.forest.car.zst`.
         </span><span class="attr">#[arg()]
         </span>snapshot_files: Vec&lt;PathBuf&gt;,
+        <span class="doccomment">/// Filter which tests to run according to method name. Case sensitive.
+        </span><span class="attr">#[arg(long, default_value = <span class="string">&quot;&quot;</span>)]
+        </span>filter: String,
+        <span class="doccomment">/// Cancel test run on the first failure
+        </span><span class="attr">#[arg(long)]
+        </span>fail_fast: bool,
     },
 }
 
@@ -402,13 +428,15 @@
                 forest,
                 lotus,
                 snapshot_files,
-            } =&gt; compare_apis(forest, lotus, snapshot_files).<span class="kw">await</span><span class="question-mark">?</span>,
+                filter,
+                fail_fast,
+            } =&gt; compare_apis(forest, lotus, snapshot_files, filter, fail_fast).<span class="kw">await</span><span class="question-mark">?</span>,
         }
         <span class="prelude-val">Ok</span>(())
     }
 }
 
-<span class="attr">#[derive(Debug, Clone, PartialOrd, Ord, PartialEq, Eq, Hash)]
+<span class="attr">#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash)]
 </span><span class="kw">enum </span>EndpointStatus {
     <span class="comment">// RPC method is missing
     </span>MissingMethod,
@@ -673,6 +701,8 @@
     forest: ApiInfo,
     lotus: ApiInfo,
     snapshot_files: Vec&lt;PathBuf&gt;,
+    filter: String,
+    fail_fast: bool,
 ) -&gt; anyhow::Result&lt;()&gt; {
     <span class="kw">let </span><span class="kw-2">mut </span>tests = <span class="macro">vec!</span>[];
 
@@ -688,14 +718,24 @@
         tests.extend(snapshot_tests(<span class="kw-2">&amp;</span>store)<span class="question-mark">?</span>);
     }
 
+    tests.sort_by_key(|test| test.request.method_name);
+
     <span class="kw">let </span><span class="kw-2">mut </span>results = HashMap::default();
 
     <span class="kw">for </span>test <span class="kw">in </span>tests.into_iter() {
+        <span class="kw">if </span>!test.request.method_name.contains(<span class="kw-2">&amp;</span>filter) {
+            <span class="kw">continue</span>;
+        }
         <span class="kw">let </span>(forest_status, lotus_status) = test.run(<span class="kw-2">&amp;</span>forest, <span class="kw-2">&amp;</span>lotus).<span class="kw">await</span>;
         results
             .entry((test.request.method_name, forest_status, lotus_status))
             .and_modify(|v| <span class="kw-2">*</span>v += <span class="number">1</span>)
             .or_insert(<span class="number">1u32</span>);
+        <span class="kw">if </span>(forest_status != EndpointStatus::Valid || lotus_status != EndpointStatus::Valid)
+            &amp;&amp; fail_fast
+        {
+            <span class="kw">break</span>;
+        }
     }
 
     <span class="kw">let </span><span class="kw-2">mut </span>results = results.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
