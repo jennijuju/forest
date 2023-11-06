@@ -3188,7 +3188,6 @@ dependencies = [
  "url",
  "uuid",
  "walkdir",
- "zerocopy",
  "zstd",
 ]
 
@@ -9972,7 +9971,6 @@ version = "0.7.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4c19fae0c8a9efc6a8281f2e623db8af1db9e57852e04cde3e754dd2dc29340f"
 dependencies = [
- "byteorder",
  "zerocopy-derive",
 ]
 
