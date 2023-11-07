@@ -1593,7 +1593,6 @@
 <a href="#1593" id="1593">1593</a>
 <a href="#1594" id="1594">1594</a>
 <a href="#1595" id="1595">1595</a>
-<a href="#1596" id="1596">1596</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -2369,7 +2368,6 @@
         tracker.write().error(why.to_string());
         <span class="kw">return </span><span class="prelude-val">Err</span>(why);
     };
-    tracker.write().set_stage(SyncStage::Complete);
 
     <span class="comment">// At this point the head is synced and it can be set in the store as the
     // heaviest
