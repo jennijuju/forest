@@ -176,7 +176,7 @@
     swarm::NetworkBehaviour,
     Multiaddr,
 };
-<span class="kw">use </span>tracing::warn;
+<span class="kw">use </span>tracing::{info, warn};
 
 <span class="kw">use </span><span class="kw">crate</span>::libp2p::{
     chain_exchange::ChainExchangeBehaviour,
@@ -274,7 +274,7 @@
                 .with_max_established_per_peer(<span class="prelude-val">Some</span>(<span class="number">5</span>)),
         );
 
-        <span class="macro">warn!</span>(<span class="string">&quot;libp2p Forest version: {}&quot;</span>, FOREST_VERSION_STRING.as_str());
+        <span class="macro">info!</span>(<span class="string">&quot;libp2p Forest version: {}&quot;</span>, FOREST_VERSION_STRING.as_str());
         <span class="prelude-val">Ok</span>(ForestBehaviour {
             gossipsub,
             discovery,
