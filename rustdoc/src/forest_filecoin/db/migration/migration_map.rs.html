@@ -470,8 +470,6 @@
 <a href="#470" id="470">470</a>
 <a href="#471" id="471">471</a>
 <a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -481,7 +479,6 @@
     sync::Arc,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::db::migration::v0_14_0::Migration0_15_2_0_16_0;
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>itertools::Itertools;
@@ -551,11 +548,10 @@
 <span class="macro">create_migrations!</span>(
     <span class="string">&quot;0.12.1&quot; </span>-&gt; <span class="string">&quot;0.13.0&quot; </span>@ Migration0_12_1_0_13_0,
     <span class="string">&quot;0.13.0&quot; </span>-&gt; <span class="string">&quot;0.14.0&quot; </span>@ MigrationVoid,
-    <span class="string">&quot;0.14.0&quot; </span>-&gt; <span class="string">&quot;0.14.1&quot; </span>@ MigrationVoid,
+    <span class="string">&quot;0.14.0&quot; </span>-&gt; <span class="string">&quot;0.15.0&quot; </span>@ MigrationVoid,
     <span class="string">&quot;0.14.1&quot; </span>-&gt; <span class="string">&quot;0.15.0&quot; </span>@ MigrationVoid,
     <span class="string">&quot;0.15.0&quot; </span>-&gt; <span class="string">&quot;0.15.1&quot; </span>@ MigrationVoid,
     <span class="string">&quot;0.15.1&quot; </span>-&gt; <span class="string">&quot;0.15.2&quot; </span>@ MigrationVoid,
-    <span class="string">&quot;0.15.2&quot; </span>-&gt; <span class="string">&quot;0.16.0&quot; </span>@ Migration0_15_2_0_16_0,
 );
 
 <span class="kw">pub struct </span>Migration {

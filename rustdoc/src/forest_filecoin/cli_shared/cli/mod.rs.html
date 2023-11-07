@@ -429,6 +429,14 @@
 <a href="#429" id="429">429</a>
 <a href="#430" id="430">430</a>
 <a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -442,7 +450,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::networks::NetworkChain;
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
-    io::{read_file_to_string, read_toml},
+    io::{read_file_to_string, read_toml, ProgressBarVisibility},
     misc::LoggingColor,
 };
 <span class="kw">use </span>ahash::HashSet;
@@ -549,6 +557,10 @@ OPTIONS:
     <span class="doccomment">/// Enable or disable colored logging in `stdout`
     </span><span class="attr">#[arg(long, default_value = <span class="string">&quot;auto&quot;</span>)]
     </span><span class="kw">pub </span>color: LoggingColor,
+    <span class="doccomment">/// Display progress bars mode [always, never, auto]. Auto will display if
+    /// TTY.
+    </span><span class="attr">#[arg(long)]
+    </span><span class="kw">pub </span>show_progress_bars: <span class="prelude-ty">Option</span>&lt;ProgressBarVisibility&gt;,
     <span class="doccomment">/// Turn on tokio-console support for debugging
     </span><span class="attr">#[arg(long)]
     </span><span class="kw">pub </span>tokio_console: bool,
@@ -648,6 +660,10 @@ OPTIONS:
         cfg.client.snapshot_head = <span class="self">self</span>.head.map(|head| head <span class="kw">as </span>i64);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(skip_load) = <span class="self">self</span>.skip_load {
             cfg.client.skip_load = skip_load;
+        }
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(show_progress_bars) = <span class="self">self</span>.show_progress_bars {
+            cfg.client.show_progress_bars = show_progress_bars;
         }
 
         cfg.network.kademlia = <span class="self">self</span>.kademlia.unwrap_or(cfg.network.kademlia);

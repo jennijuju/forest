@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["truncated_hash"],"mod":["car","db_engine","db_mode","gc","memory","migration","parity_db","parity_db_config","setting_keys"],"trait":["DBStatistics","GarbageCollectable","SettingsStore","SettingsStoreExt"]};
+window.SIDEBAR_ITEMS = {"mod":["car","db_engine","db_mode","memory","migration","parity_db","parity_db_config","rolling","setting_keys"],"trait":["DBStatistics","SettingsStore","SettingsStoreExt"]};

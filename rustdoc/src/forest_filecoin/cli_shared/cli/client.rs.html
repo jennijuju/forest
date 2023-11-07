@@ -100,6 +100,10 @@
 <a href="#100" id="100">100</a>
 <a href="#101" id="101">101</a>
 <a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
+<a href="#104" id="104">104</a>
+<a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -110,6 +114,7 @@
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::DEFAULT_PORT;
+<span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBarVisibility;
 <span class="kw">use </span>chrono::Duration;
 <span class="kw">use </span>directories::ProjectDirs;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
@@ -173,6 +178,8 @@
         |g| Duration::milliseconds(i64::arbitrary(g))
     )))]
     </span><span class="kw">pub </span>token_exp: Duration,
+    <span class="doccomment">/// Display progress bars mode. Auto will display if TTY.
+    </span><span class="kw">pub </span>show_progress_bars: ProgressBarVisibility,
     <span class="doccomment">/// Load actors from the bundle file (possibly generating it if it doesn&#39;t exist)
     </span><span class="kw">pub </span>load_actors: bool,
 }
@@ -198,7 +205,8 @@
             metrics_address: FromStr::from_str(<span class="string">&quot;0.0.0.0:6116&quot;</span>).unwrap(),
             rpc_address: SocketAddr::new(IpAddr::V4(Ipv4Addr::LOCALHOST), DEFAULT_PORT),
             token_exp: Duration::seconds(<span class="number">5184000</span>), <span class="comment">// 60 Days = 5184000 Seconds
-            </span>load_actors: <span class="bool-val">true</span>,
+            </span>show_progress_bars: Default::default(),
+            load_actors: <span class="bool-val">true</span>,
         }
     }
 }

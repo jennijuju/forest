@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["db_migration","migration_map","v0_12_1","v0_14_0","void_migration"]};
+window.SIDEBAR_ITEMS = {"mod":["db_migration","migration_map","v0_12_1","void_migration"]};

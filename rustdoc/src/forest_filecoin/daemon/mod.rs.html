@@ -703,6 +703,9 @@
 <a href="#703" id="703">703</a>
 <a href="#704" id="704">704</a>
 <a href="#705" id="705">705</a>
+<a href="#706" id="706">706</a>
+<a href="#707" id="707">707</a>
+<a href="#708" id="708">708</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -722,8 +725,8 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::daemon::db_util::{import_chain_as_forest_car, load_all_forest_cars};
 <span class="kw">use </span><span class="kw">crate</span>::db::car::ManyCar;
-<span class="kw">use </span><span class="kw">crate</span>::db::db_engine::{db_root, open_db};
-<span class="kw">use </span><span class="kw">crate</span>::db::MarkAndSweep;
+<span class="kw">use </span><span class="kw">crate</span>::db::db_engine::{db_root, open_proxy_db};
+<span class="kw">use </span><span class="kw">crate</span>::db::rolling::DbGarbageCollector;
 <span class="kw">use </span><span class="kw">crate</span>::genesis::{get_network_name_from_genesis, read_genesis_header};
 <span class="kw">use </span><span class="kw">crate</span>::key_management::{
     KeyStore, KeyStoreConfig, ENCRYPTED_KEYSTORE_NAME, FOREST_KEYSTORE_PHRASE_ENV,
@@ -750,8 +753,7 @@
 <span class="kw">use </span>raw_sync_2::events::{Event, EventInit <span class="kw">as _</span>, EventState};
 <span class="kw">use </span>shared_memory::ShmemConf;
 <span class="kw">use </span>std::path::Path;
-<span class="kw">use </span>std::time::Duration;
-<span class="kw">use </span>std::{cell::RefCell, cmp, net::TcpListener, path::PathBuf, sync::Arc};
+<span class="kw">use </span>std::{cell::RefCell, net::TcpListener, path::PathBuf, sync::Arc};
 <span class="kw">use </span>tempfile::{Builder, TempPath};
 <span class="kw">use </span>tokio::{
     signal::{
@@ -837,9 +839,6 @@
     result
 }
 
-<span class="comment">// Garbage collection interval, currently set at 10 hours.
-</span><span class="kw">const </span>GC_INTERVAL: Duration = Duration::from_secs(<span class="number">60 </span>* <span class="number">60 </span>* <span class="number">10</span>);
-
 <span class="doccomment">/// Starts daemon process
 </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">async fn </span>start(
     opts: CliOpts,
@@ -881,8 +880,10 @@
     }
 
     <span class="kw">let </span>db_root_dir = db_root(<span class="kw-2">&amp;</span>chain_data_path)<span class="question-mark">?</span>;
-    <span class="kw">let </span>db_writer = Arc::new(open_db(db_root_dir.clone(), config.db_config().clone())<span class="question-mark">?</span>);
-    <span class="kw">let </span>db = Arc::new(ManyCar::new(db_writer.clone()));
+    <span class="kw">let </span>db = Arc::new(ManyCar::new(Arc::new(open_proxy_db(
+        db_root_dir.clone(),
+        config.db_config().clone(),
+    )<span class="question-mark">?</span>)));
     <span class="kw">let </span>forest_car_db_dir = db_root_dir.join(<span class="string">&quot;car_db&quot;</span>);
     load_all_forest_cars(<span class="kw-2">&amp;</span>db, <span class="kw-2">&amp;</span>forest_car_db_dir)<span class="question-mark">?</span>;
 
@@ -936,25 +937,28 @@
         genesis_header.clone(),
     )<span class="question-mark">?</span>);
 
+    <span class="kw">let </span>db_garbage_collector = {
+        <span class="kw">let </span>db = db.clone();
+        <span class="kw">let </span>chain_store = chain_store.clone();
+        <span class="kw">let </span>get_tipset = <span class="kw">move </span>|| chain_store.heaviest_tipset().as_ref().clone();
+        Arc::new(DbGarbageCollector::new(
+            db,
+            chain_config.policy.chain_finality,
+            config.sync.recent_state_roots,
+            get_tipset,
+        ))
+    };
+
     <span class="kw">if </span>!opts.no_gc {
-        <span class="kw">let </span><span class="kw-2">mut </span>db_garbage_collector = {
-            <span class="kw">let </span>chain_store = chain_store.clone();
-            <span class="kw">let </span>depth = cmp::max(
-                chain_config.policy.chain_finality * <span class="number">2</span>,
-                config.sync.recent_state_roots,
-            );
-
-            <span class="kw">let </span>get_heaviest_tipset = Box::new(<span class="kw">move </span>|| chain_store.heaviest_tipset());
-
-            MarkAndSweep::new(
-                db_writer,
-                get_heaviest_tipset,
-                depth,
-                Duration::from_secs(chain_config.block_delay_secs <span class="kw">as </span>u64),
-            )
-        };
-        services.spawn(<span class="kw">async move </span>{ db_garbage_collector.gc_loop(GC_INTERVAL).<span class="kw">await </span>});
+        services.spawn({
+            <span class="kw">let </span>db_garbage_collector = db_garbage_collector.clone();
+            <span class="kw">async move </span>{ db_garbage_collector.collect_loop_passive().<span class="kw">await </span>}
+        });
     }
+    services.spawn({
+        <span class="kw">let </span>db_garbage_collector = db_garbage_collector.clone();
+        <span class="kw">async move </span>{ db_garbage_collector.collect_loop_event().<span class="kw">await </span>}
+    });
 
     <span class="kw">let </span>publisher = chain_store.publisher();
 
@@ -1051,6 +1055,7 @@
         <span class="kw">let </span>rpc_state_manager = Arc::clone(<span class="kw-2">&amp;</span>state_manager);
         <span class="kw">let </span>rpc_chain_store = Arc::clone(<span class="kw-2">&amp;</span>chain_store);
 
+        <span class="kw">let </span>gc_event_tx = db_garbage_collector.get_tx();
         services.spawn(<span class="kw">async move </span>{
             <span class="macro">info!</span>(<span class="string">&quot;JSON-RPC endpoint started at {}&quot;</span>, config.client.rpc_address);
             <span class="kw">let </span>beacon = Arc::new(
@@ -1070,6 +1075,7 @@
                     start_time,
                     beacon,
                     chain_store: rpc_chain_store,
+                    gc_event_tx,
                 }),
                 rpc_listen,
                 FOREST_VERSION_STRING.as_str(),

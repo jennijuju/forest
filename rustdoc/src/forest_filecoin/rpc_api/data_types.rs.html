@@ -369,6 +369,7 @@
 <a href="#369" id="369">369</a>
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -429,6 +430,7 @@
     <span class="kw">pub </span>network_name: String,
     <span class="kw">pub </span>start_time: chrono::DateTime&lt;Utc&gt;,
     <span class="kw">pub </span>beacon: Arc&lt;BeaconSchedule&gt;,
+    <span class="kw">pub </span>gc_event_tx: flume::Sender&lt;flume::Sender&lt;anyhow::Result&lt;()&gt;&gt;&gt;,
 }
 
 <span class="attr">#[derive(Debug, Serialize, Deserialize)]

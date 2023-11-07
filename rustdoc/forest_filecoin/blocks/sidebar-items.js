@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["block","election_proof","errors","gossip_block","header","ticket","tipset","vrf_proof"]};
+window.SIDEBAR_ITEMS = {"mod":["block","election_proof","errors","gossip_block","header","persistence","ticket","tipset","vrf_proof"]};

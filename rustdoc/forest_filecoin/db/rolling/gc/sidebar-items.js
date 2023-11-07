@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["gc_trigger_factor"],"struct":["DbGarbageCollector"]};

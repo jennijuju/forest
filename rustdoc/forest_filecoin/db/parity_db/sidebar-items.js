@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["DbColumn"],"struct":["DbColumnIter","ParityDb"],"type":["Op"]};
+window.SIDEBAR_ITEMS = {"enum":["DbColumn"],"struct":["DbColumnIter","ParityDb"]};
