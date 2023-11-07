@@ -543,6 +543,8 @@
 <a href="#543" id="543">543</a>
 <a href="#544" id="544">544</a>
 <a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -582,7 +584,7 @@
     <span class="doccomment">/// Discovers nodes on the local network.
     </span>mdns: Toggle&lt;Mdns&gt;,
     <span class="doccomment">/// [`identify::Behaviour`] needs to be manually hooked up with [`kad::Behaviour`] to make discovery work. See &lt;https://docs.rs/libp2p/latest/libp2p/kad/index.html#important-discrepancies&gt;
-    </span>idenfity: identify::Behaviour,
+    </span>identify: identify::Behaviour,
     <span class="doccomment">/// For details see &lt;https://github.com/libp2p/specs/blob/master/autonat/README.md&gt;
     </span>autonat: autonat::Behaviour,
 }
@@ -598,8 +600,8 @@
     /// peer id.
     </span>PeerDisconnected(PeerId),
 
-    <span class="doccomment">/// Identify event
-    </span>Identify(Box&lt;identify::Event&gt;),
+    <span class="doccomment">/// Discovery event
+    </span>Discovery(Box&lt;DerivedDiscoveryBehaviourEvent&gt;),
 }
 
 <span class="doccomment">/// `DiscoveryBehaviour` configuration.
@@ -717,7 +719,7 @@
             discovery: DerivedDiscoveryBehaviour {
                 kademlia: kademlia_opt.into(),
                 mdns: mdns_opt.into(),
-                idenfity: identify::Behaviour::new(
+                identify: identify::Behaviour::new(
                     identify::Config::new(<span class="string">&quot;ipfs/0.1.0&quot;</span>.into(), local_public_key)
                         .with_agent_version(<span class="macro">format!</span>(<span class="string">&quot;forest-{}&quot;</span>, FOREST_VERSION_STRING.as_str()))
                         .with_push_listen_addr_updates(<span class="bool-val">true</span>),
@@ -938,50 +940,52 @@
         <span class="comment">// Poll discovery events.
         </span><span class="kw">while let </span>Poll::Ready(ev) = <span class="self">self</span>.discovery.poll(cx, params) {
             <span class="kw">match </span>ev {
-                ToSwarm::GenerateEvent(ev) =&gt; <span class="kw">match </span>ev {
-                    DerivedDiscoveryBehaviourEvent::Idenfity(ev) =&gt; {
-                        <span class="kw">if let </span>identify::Event::Received { peer_id, info } = <span class="kw-2">&amp;</span>ev {
-                            <span class="kw">if let </span><span class="prelude-val">Some</span>(kademlia) = <span class="self">self</span>.discovery.kademlia.as_mut() {
-                                <span class="kw">for </span>address <span class="kw">in </span><span class="kw-2">&amp;</span>info.listen_addrs {
-                                    kademlia.add_address(peer_id, address.clone());
+                ToSwarm::GenerateEvent(ev) =&gt; {
+                    <span class="kw">match </span><span class="kw-2">&amp;</span>ev {
+                        DerivedDiscoveryBehaviourEvent::Identify(ev) =&gt; {
+                            <span class="kw">if let </span>identify::Event::Received { peer_id, info } = ev {
+                                <span class="kw">if let </span><span class="prelude-val">Some</span>(kademlia) = <span class="self">self</span>.discovery.kademlia.as_mut() {
+                                    <span class="kw">for </span>address <span class="kw">in </span><span class="kw-2">&amp;</span>info.listen_addrs {
+                                        kademlia.add_address(peer_id, address.clone());
+                                    }
                                 }
                             }
                         }
-                        <span class="self">self</span>.pending_events
-                            .push_back(DiscoveryEvent::Identify(Box::new(ev)));
-                    }
-                    DerivedDiscoveryBehaviourEvent::Autonat(<span class="kw">_</span>) =&gt; {}
-                    DerivedDiscoveryBehaviourEvent::Kademlia(ev) =&gt; <span class="kw">match </span>ev {
-                        <span class="comment">// Adding to Kademlia buckets is automatic with our config,
-                        // no need to do manually.
-                        </span>kad::Event::RoutingUpdated { .. } =&gt; {}
-                        kad::Event::RoutablePeer { .. } =&gt; {}
-                        kad::Event::PendingRoutablePeer { .. } =&gt; {
-                            <span class="comment">// Intentionally ignore
-                        </span>}
-                        other =&gt; {
-                            <span class="macro">trace!</span>(<span class="string">&quot;Libp2p =&gt; Unhandled Kademlia event: {:?}&quot;</span>, other)
-                        }
-                    },
-                    DerivedDiscoveryBehaviourEvent::Mdns(ev) =&gt; <span class="kw">match </span>ev {
-                        MdnsEvent::Discovered(list) =&gt; {
-                            <span class="kw">if </span><span class="self">self</span>.n_node_connected &gt;= <span class="self">self</span>.target_peer_count {
-                                <span class="comment">// Already over discovery max, don&#39;t add discovered peers.
-                                // We could potentially buffer these addresses to be added later,
-                                // but mdns is not an important use case and may be removed in future.
-                                </span><span class="kw">continue</span>;
+                        DerivedDiscoveryBehaviourEvent::Autonat(<span class="kw">_</span>) =&gt; {}
+                        DerivedDiscoveryBehaviourEvent::Kademlia(ev) =&gt; <span class="kw">match </span>ev {
+                            <span class="comment">// Adding to Kademlia buckets is automatic with our config,
+                            // no need to do manually.
+                            </span>kad::Event::RoutingUpdated { .. } =&gt; {}
+                            kad::Event::RoutablePeer { .. } =&gt; {}
+                            kad::Event::PendingRoutablePeer { .. } =&gt; {
+                                <span class="comment">// Intentionally ignore
+                            </span>}
+                            other =&gt; {
+                                <span class="macro">trace!</span>(<span class="string">&quot;Libp2p =&gt; Unhandled Kademlia event: {:?}&quot;</span>, other)
                             }
+                        },
+                        DerivedDiscoveryBehaviourEvent::Mdns(ev) =&gt; <span class="kw">match </span>ev {
+                            MdnsEvent::Discovered(list) =&gt; {
+                                <span class="kw">if </span><span class="self">self</span>.n_node_connected &gt;= <span class="self">self</span>.target_peer_count {
+                                    <span class="comment">// Already over discovery max, don&#39;t add discovered peers.
+                                    // We could potentially buffer these addresses to be added later,
+                                    // but mdns is not an important use case and may be removed in future.
+                                    </span><span class="kw">continue</span>;
+                                }
 
-                            <span class="comment">// Add any discovered peers to Kademlia
-                            </span><span class="kw">for </span>(peer_id, multiaddr) <span class="kw">in </span>list {
-                                <span class="kw">if let </span><span class="prelude-val">Some</span>(kad) = <span class="self">self</span>.discovery.kademlia.as_mut() {
-                                    kad.add_address(<span class="kw-2">&amp;</span>peer_id, multiaddr);
+                                <span class="comment">// Add any discovered peers to Kademlia
+                                </span><span class="kw">for </span>(peer_id, multiaddr) <span class="kw">in </span>list {
+                                    <span class="kw">if let </span><span class="prelude-val">Some</span>(kad) = <span class="self">self</span>.discovery.kademlia.as_mut() {
+                                        kad.add_address(peer_id, multiaddr.clone());
+                                    }
                                 }
                             }
-                        }
-                        MdnsEvent::Expired(<span class="kw">_</span>) =&gt; {}
-                    },
-                },
+                            MdnsEvent::Expired(<span class="kw">_</span>) =&gt; {}
+                        },
+                    }
+                    <span class="self">self</span>.pending_events
+                        .push_back(DiscoveryEvent::Discovery(Box::new(ev)));
+                }
                 ToSwarm::Dial { opts } =&gt; {
                     <span class="kw">return </span>Poll::Ready(ToSwarm::Dial { opts });
                 }
