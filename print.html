@@ -1378,8 +1378,9 @@ Add additional, detailed notes with <code>Generate release notes</code> button.<
 assets are automatically generated and should show up after 30 minutes to an
 hour).</li>
 <li>Verify that the new release is available in the GitHub Container Registry. Use
-<code>docker pull ghcr.io/chainsafe/forest:&lt;version&gt;</code> and ensure that it is present
-in the <a href="https://github.com/ChainSafe/forest/pkgs/container/forest">packages</a> list with the <code>latest</code> tag.</li>
+<code>docker pull ghcr.io/chainsafe/forest:&lt;version&gt;</code>. If it's a new stable release
+(and not a backport), tag the image as <code>latest</code> with a <link to come> action.
+Verify the tags in the <a href="https://github.com/ChainSafe/forest/pkgs/container/forest">packages</a> list.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><p>It's unclear how we can support migrations without adding a lot of code
 complexity. This document is meant to shed light on the matter and illuminate a
