@@ -230,8 +230,8 @@ This means API compatiblity testing has to be done with a local node rather than
 1234 and Forest listens to port 2345, run the API compatibility tests through
 reverse proxies:</p>
 <ol>
-<li><code>mitmproxy --node reverse:http://localhost:2345 --listen-port 8080</code></li>
-<li><code>mitmproxy --node reverse:http://localhost:1234 --listen-port 8081</code></li>
+<li><code>mitmproxy --mode reverse:http://localhost:2345 --listen-port 8080</code></li>
+<li><code>mitmproxy --mode reverse:http://localhost:1234 --listen-port 8081</code></li>
 <li><code>forest-tool api compare --forest /ip4/127.0.0.1/tcp/8080/http --lotus /ip4/127.0.0.1/tcp/8081/http</code></li>
 </ol>
 <p>Request / Response pairs will show up in the <code>mitmproxy</code> windows.</p>
