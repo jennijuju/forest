@@ -59,8 +59,6 @@
 <a href="#59" id="59">59</a>
 <a href="#60" id="60">60</a>
 <a href="#61" id="61">61</a>
-<a href="#62" id="62">62</a>
-<a href="#63" id="63">63</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -88,9 +86,7 @@
             <span class="kw">use </span><span class="macro-nonterminal">$crate::state_migration::common</span>::<span class="kw-2">*</span>;
             <span class="kw">use </span><span class="macro-nonterminal">$crate::utils::db::CborStoreExt</span>;
 
-            <span class="attr">#[allow(dead_code)] </span><span class="comment">// There are cases where it&#39;s not needed in a migration.
-                                // See `nv21fix` migration.
-            </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>system_migrator&lt;BS: Blockstore&gt;(
+            <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>system_migrator&lt;BS: Blockstore&gt;(
                 new_manifest: <span class="kw-2">&amp;</span>BuiltinActorManifest,
             ) -&gt; Arc&lt;<span class="kw">dyn </span>ActorMigration&lt;BS&gt; + Send + Sync&gt; {
                 Arc::new(SystemMigrator {
