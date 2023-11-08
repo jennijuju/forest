@@ -369,6 +369,8 @@
 <a href="#369" id="369">369</a>
 <a href="#370" id="370">370</a>
 <a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -443,7 +445,7 @@
 <span class="kw">pub type </span>JsonRpcServerState = Arc&lt;JsonRpcServer&lt;JsonRpcMapRouter&gt;&gt;;
 
 <span class="comment">// Chain API
-</span><span class="attr">#[derive(Serialize, Deserialize)]
+</span><span class="attr">#[derive(Clone, PartialEq, Serialize, Deserialize)]
 </span><span class="kw">pub struct </span>BlockMessages {
     <span class="attr">#[serde(rename = <span class="string">&quot;BlsMessages&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>bls_msg: Vec&lt;Message&gt;,
@@ -452,6 +454,8 @@
     <span class="attr">#[serde(rename = <span class="string">&quot;Cids&quot;</span>, with = <span class="string">&quot;crate::lotus_json&quot;</span>)]
     </span><span class="kw">pub </span>cids: Vec&lt;Cid&gt;,
 }
+
+<span class="macro">lotus_json_with_self!</span>(BlockMessages);
 
 <span class="attr">#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = <span class="string">&quot;PascalCase&quot;</span>)]

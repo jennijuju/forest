@@ -382,6 +382,7 @@
 <a href="#382" id="382">382</a>
 <a href="#383" id="383">383</a>
 <a href="#384" id="384">384</a>
+<a href="#385" id="385">385</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -591,6 +592,7 @@
 
     <span class="macro">vec!</span>[
         RpcTest::identity(ApiInfo::chain_get_block_req(<span class="kw-2">*</span>shared_block.cid())),
+        RpcTest::identity(ApiInfo::chain_get_block_messages_req(<span class="kw-2">*</span>shared_block.cid())),
         RpcTest::identity(ApiInfo::chain_get_tipset_by_height_req(
             shared_tipset.epoch(),
             TipsetKeys::default(),
