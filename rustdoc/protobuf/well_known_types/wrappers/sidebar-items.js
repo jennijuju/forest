@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["file_descriptor"],"struct":["BoolValue","BytesValue","DoubleValue","FloatValue","Int32Value","Int64Value","StringValue","UInt32Value","UInt64Value"]};

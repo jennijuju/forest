@@ -116,19 +116,25 @@
 <a href="#116" id="116">116</a>
 <a href="#117" id="117">117</a>
 <a href="#118" id="118">118</a>
-<a href="#119" id="119">119</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>async_trait::async_trait;
-<span class="kw">use </span>libp2p::{core::upgrade, request_response};
-<span class="kw">use </span>pb::bitswap_pb;
-<span class="kw">use </span>protobuf::Message;
+<span class="kw">use </span>asynchronous_codec::{FramedRead, FramedWrite};
+<span class="kw">use </span>futures::{
+    io::{AsyncRead, AsyncWrite},
+    SinkExt, StreamExt,
+};
+<span class="kw">use </span>libp2p::request_response;
 
-<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{prefix::Prefix, <span class="kw-2">*</span>};
+<span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{bitswap_pb::mod_Message::BlockPresenceType, prefix::Prefix, <span class="kw-2">*</span>};
 
 <span class="comment">// 2MB Block Size according to the specs at https://github.com/ipfs/specs/blob/main/BITSWAP.md
 </span><span class="kw">const </span>MAX_BUF_SIZE: usize = <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">2</span>;
+
+<span class="kw">fn </span>codec() -&gt; quick_protobuf_codec::Codec&lt;bitswap_pb::Message&gt; {
+    quick_protobuf_codec::Codec::&lt;bitswap_pb::Message&gt;::new(MAX_BUF_SIZE)
+}
 
 <span class="attr">#[derive(Default, Debug, Clone)]
 </span><span class="kw">pub struct </span>BitswapRequestResponseCodec;
@@ -143,29 +149,24 @@
     <span class="kw">where
         </span>T: AsyncRead + Send + Unpin,
     {
-        <span class="kw">let </span>data = upgrade::read_length_prefixed(io, MAX_BUF_SIZE).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let </span>pb_msg: bitswap_pb::Message = FramedRead::new(io, codec())
+            .next()
+            .<span class="kw">await
+            </span>.ok_or(std::io::ErrorKind::UnexpectedEof)<span class="question-mark">??</span>;
 
         metrics::inbound_stream_count().inc();
-        metrics::inbound_bytes().inc_by(data.len() <span class="kw">as _</span>);
 
-        <span class="kw">let </span>pb_msg = bitswap_pb::Message::parse_from_bytes(data.as_slice()).map_err(map_io_err)<span class="question-mark">?</span>;
         <span class="kw">let </span><span class="kw-2">mut </span>parts = <span class="macro">vec!</span>[];
         <span class="kw">for </span>entry <span class="kw">in </span>pb_msg.wantlist.unwrap_or_default().entries {
             <span class="kw">let </span>cid = Cid::try_from(entry.block).map_err(map_io_err)<span class="question-mark">?</span>;
-            <span class="kw">let </span>ty = <span class="kw">match </span>entry.wantType.try_into() {
-                <span class="prelude-val">Ok</span>(ty) =&gt; ty,
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">tracing::error!</span>(<span class="string">&quot;Skipping invalid request type: {e}&quot;</span>);
-                    <span class="kw">continue</span>;
-                }
-            };
             parts.push(BitswapMessage::Request(BitswapRequest {
-                ty,
+                ty: entry.wantType.into(),
                 cid,
                 send_dont_have: entry.sendDontHave,
                 cancel: entry.cancel,
             }));
         }
+
         <span class="kw">for </span>payload <span class="kw">in </span>pb_msg.payload {
             <span class="kw">let </span>prefix = Prefix::new(<span class="kw-2">&amp;</span>payload.prefix).map_err(map_io_err)<span class="question-mark">?</span>;
             <span class="kw">let </span>cid = prefix.to_cid(<span class="kw-2">&amp;</span>payload.data).map_err(map_io_err)<span class="question-mark">?</span>;
@@ -174,18 +175,13 @@
                 BitswapResponse::Block(payload.data.to_vec()),
             ));
         }
+
         <span class="kw">for </span>presence <span class="kw">in </span>pb_msg.blockPresences {
             <span class="kw">let </span>cid = Cid::try_from(presence.cid).map_err(map_io_err)<span class="question-mark">?</span>;
-            <span class="kw">let </span>have = <span class="kw">match </span>presence.type_.enum_value() {
-                <span class="prelude-val">Ok</span>(bitswap_pb::message::BlockPresenceType::Have) =&gt; <span class="bool-val">true</span>,
-                <span class="prelude-val">Ok</span>(bitswap_pb::message::BlockPresenceType::DontHave) =&gt; <span class="bool-val">false</span>,
-                <span class="prelude-val">Err</span>(e) =&gt; {
-                    <span class="macro">error!</span>(<span class="string">&quot;Skipping invalid block presence type {e}&quot;</span>);
-                    <span class="kw">continue</span>;
-                }
-            };
+            <span class="kw">let </span>have = presence.type_pb == BlockPresenceType::Have;
             parts.push(BitswapMessage::Response(cid, BitswapResponse::Have(have)));
         }
+
         <span class="prelude-val">Ok</span>(parts)
     }
 
@@ -204,7 +200,7 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         <span class="kw">_</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>::Protocol,
         io: <span class="kw-2">&amp;mut </span>T,
-        messages: <span class="self">Self</span>::Request,
+        <span class="kw-2">mut </span>messages: <span class="self">Self</span>::Request,
     ) -&gt; IOResult&lt;()&gt;
     <span class="kw">where
         </span>T: AsyncWrite + Send + Unpin,
@@ -215,13 +211,15 @@
             <span class="string">&quot;It&#39;s only supported to send a single message&quot; </span><span class="comment">// libp2p-bitswap doesn&#39;t support batch sending
         </span>);
 
-        <span class="kw">let </span>bytes = messages[<span class="number">0</span>].to_bytes()<span class="question-mark">?</span>;
+        <span class="kw">let </span>data = messages.swap_remove(<span class="number">0</span>).into_proto()<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>framed = FramedWrite::new(io, codec());
+        framed.send(data).<span class="kw">await</span><span class="question-mark">?</span>;
+        framed.close().<span class="kw">await</span><span class="question-mark">?</span>;
 
         metrics::outbound_stream_count().inc();
-        metrics::outbound_bytes().inc_by(bytes.len() <span class="kw">as _</span>);
 
-        upgrade::write_length_prefixed(io, bytes).<span class="kw">await
-    </span>}
+        <span class="prelude-val">Ok</span>(())
+    }
 
     <span class="comment">// Sending `FIN` header and close the stream
     </span><span class="kw">async fn </span>write_response&lt;T&gt;(

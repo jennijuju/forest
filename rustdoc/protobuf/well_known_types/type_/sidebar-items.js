@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Syntax"],"fn":["file_descriptor"],"mod":["field"],"struct":["Enum","EnumValue","Field","Option","Type"]};

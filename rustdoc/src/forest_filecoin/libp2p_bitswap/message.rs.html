@@ -134,34 +134,10 @@
 <a href="#134" id="134">134</a>
 <a href="#135" id="135">135</a>
 <a href="#136" id="136">136</a>
-<a href="#137" id="137">137</a>
-<a href="#138" id="138">138</a>
-<a href="#139" id="139">139</a>
-<a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
-<a href="#143" id="143">143</a>
-<a href="#144" id="144">144</a>
-<a href="#145" id="145">145</a>
-<a href="#146" id="146">146</a>
-<a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
-<a href="#157" id="157">157</a>
-<a href="#158" id="158">158</a>
-<a href="#159" id="159">159</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>pb::bitswap_pb;
-<span class="kw">use </span>protobuf::{EnumOrUnknown, Message};
+</span><span class="kw">use </span><span class="kw">super</span>::bitswap_pb::mod_Message::{mod_Wantlist::WantType, BlockPresenceType, Wantlist};
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span><span class="kw">crate</span>::libp2p_bitswap::{prefix::Prefix, <span class="kw-2">*</span>};
@@ -173,38 +149,21 @@
     Block,
 }
 
-<span class="kw">impl </span>From&lt;bitswap_pb::message::wantlist::WantType&gt; <span class="kw">for </span>RequestType {
-    <span class="kw">fn </span>from(value: bitswap_pb::message::wantlist::WantType) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;WantType&gt; <span class="kw">for </span>RequestType {
+    <span class="kw">fn </span>from(value: WantType) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span>value {
-            bitswap_pb::message::wantlist::WantType::Have =&gt; RequestType::Have,
-            bitswap_pb::message::wantlist::WantType::Block =&gt; RequestType::Block,
+            WantType::Have =&gt; RequestType::Have,
+            WantType::Block =&gt; RequestType::Block,
         }
     }
 }
 
-<span class="kw">impl </span>TryFrom&lt;EnumOrUnknown&lt;bitswap_pb::message::wantlist::WantType&gt;&gt; <span class="kw">for </span>RequestType {
-    <span class="kw">type </span>Error = i32;
-
-    <span class="kw">fn </span>try_from(
-        value: EnumOrUnknown&lt;bitswap_pb::message::wantlist::WantType&gt;,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>, <span class="self">Self</span>::Error&gt; {
-        value.enum_value().map(Into::into)
-    }
-}
-
-<span class="kw">impl </span>From&lt;RequestType&gt; <span class="kw">for </span>bitswap_pb::message::wantlist::WantType {
+<span class="kw">impl </span>From&lt;RequestType&gt; <span class="kw">for </span>WantType {
     <span class="kw">fn </span>from(value: RequestType) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span>value {
-            RequestType::Have =&gt; bitswap_pb::message::wantlist::WantType::Have,
-            RequestType::Block =&gt; bitswap_pb::message::wantlist::WantType::Block,
+            RequestType::Have =&gt; WantType::Have,
+            RequestType::Block =&gt; WantType::Block,
         }
-    }
-}
-
-<span class="kw">impl </span>From&lt;RequestType&gt; <span class="kw">for </span>EnumOrUnknown&lt;bitswap_pb::message::wantlist::WantType&gt; {
-    <span class="kw">fn </span>from(value: RequestType) -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>want_type: bitswap_pb::message::wantlist::WantType = value.into();
-        want_type.into()
     }
 }
 
@@ -268,8 +227,8 @@
 }
 
 <span class="kw">impl </span>BitswapMessage {
-    <span class="kw">pub fn </span>to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; IOResult&lt;Vec&lt;u8&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>msg = bitswap_pb::Message::new();
+    <span class="kw">pub fn </span>into_proto(<span class="self">self</span>) -&gt; IOResult&lt;bitswap_pb::Message&gt; {
+        <span class="kw">let </span><span class="kw-2">mut </span>msg = bitswap_pb::Message::default();
         <span class="kw">match </span><span class="self">self </span>{
             <span class="self">Self</span>::Request(BitswapRequest {
                 ty,
@@ -277,43 +236,38 @@
                 send_dont_have,
                 cancel,
             }) =&gt; {
-                <span class="kw">let </span><span class="kw-2">mut </span>wantlist = bitswap_pb::message::Wantlist::new();
+                <span class="kw">let </span>wantlist = Wantlist {
+                    entries: <span class="macro">vec!</span>[bitswap_pb::mod_Message::mod_Wantlist::Entry {
+                        block: cid.to_bytes(),
+                        wantType: ty.into(),
+                        sendDontHave: send_dont_have,
+                        cancel,
+                        priority: <span class="number">1</span>,
+                    }],
+                    ..Default::default()
+                };
 
-                wantlist.entries.push({
-                    <span class="kw">let </span><span class="kw-2">mut </span>entry = bitswap_pb::message::wantlist::Entry::new();
-                    entry.block = cid.to_bytes();
-                    entry.wantType = (<span class="kw-2">*</span>ty).into();
-                    entry.sendDontHave = <span class="kw-2">*</span>send_dont_have;
-                    entry.cancel = <span class="kw-2">*</span>cancel;
-                    entry.priority = <span class="number">1</span>;
-                    entry
-                });
-
-                msg.wantlist = <span class="prelude-val">Some</span>(wantlist).into();
+                msg.wantlist = <span class="prelude-val">Some</span>(wantlist);
             }
             <span class="self">Self</span>::Response(cid, BitswapResponse::Have(have)) =&gt; {
-                <span class="kw">let </span><span class="kw-2">mut </span>block_presence = bitswap_pb::message::BlockPresence::new();
-
-                block_presence.cid = cid.to_bytes();
-                block_presence.type_ = <span class="kw">if </span><span class="kw-2">*</span>have {
-                    bitswap_pb::message::BlockPresenceType::Have
-                } <span class="kw">else </span>{
-                    bitswap_pb::message::BlockPresenceType::DontHave
-                }
-                .into();
-
-                msg.blockPresences.push(block_presence);
+                msg.blockPresences
+                    .push(bitswap_pb::mod_Message::BlockPresence {
+                        cid: cid.to_bytes(),
+                        type_pb: <span class="kw">if </span>have {
+                            BlockPresenceType::Have
+                        } <span class="kw">else </span>{
+                            BlockPresenceType::DontHave
+                        },
+                    });
             }
             <span class="self">Self</span>::Response(cid, BitswapResponse::Block(bytes)) =&gt; {
-                <span class="kw">let </span><span class="kw-2">mut </span>payload = bitswap_pb::message::Block::new();
-
-                payload.prefix = Prefix::from(cid).to_bytes();
-                payload.data = bytes.to_vec();
-
-                msg.payload.push(payload);
+                msg.payload.push(bitswap_pb::mod_Message::Block {
+                    prefix: Prefix::from(<span class="kw-2">&amp;</span>cid).to_bytes(),
+                    data: bytes,
+                });
             }
         }
-        msg.write_to_bytes().map_err(map_io_err)
+        <span class="prelude-val">Ok</span>(msg)
     }
 }
 </code></pre></div></section></main></body></html>

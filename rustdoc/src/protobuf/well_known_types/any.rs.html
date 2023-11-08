@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-3.3.0/src/well_known_types/any.rs`."><title>any.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../protobuf/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-2.28.0/src/well_known_types/any.rs`."><title>any.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../protobuf/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -356,8 +356,23 @@
 <a href="#356" id="356">356</a>
 <a href="#357" id="357">357</a>
 <a href="#358" id="358">358</a>
-</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 3.3.0-pre. Do not edit
-// .proto file is parsed by protoc --rust-out=...
+<a href="#359" id="359">359</a>
+<a href="#360" id="360">360</a>
+<a href="#361" id="361">361</a>
+<a href="#362" id="362">362</a>
+<a href="#363" id="363">363</a>
+<a href="#364" id="364">364</a>
+<a href="#365" id="365">365</a>
+<a href="#366" id="366">366</a>
+<a href="#367" id="367">367</a>
+<a href="#368" id="368">368</a>
+<a href="#369" id="369">369</a>
+<a href="#370" id="370">370</a>
+<a href="#371" id="371">371</a>
+<a href="#372" id="372">372</a>
+<a href="#373" id="373">373</a>
+<a href="#374" id="374">374</a>
+</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 2.27.1. Do not edit
 // @generated
 
 // https://github.com/rust-lang/rust-clippy/issues/702
@@ -374,51 +389,21 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 #![allow(trivial_casts)]
+#![allow(unused_imports)]
 #![allow(unused_results)]
-#![allow(unused_mut)]
-
 </span><span class="doccomment">//! Generated file from `google/protobuf/any.proto`
 
-</span><span class="comment">// @@protoc_insertion_point(message:google.protobuf.Any)
-</span><span class="attr">#[derive(PartialEq,Clone,Default,Debug)]
+</span><span class="attr">#[derive(PartialEq,Clone,Default)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
 </span><span class="kw">pub struct </span>Any {
     <span class="comment">// message fields
-    </span><span class="doccomment">///  A URL/resource name that uniquely identifies the type of the serialized
-    ///  protocol buffer message. This string must contain at least
-    ///  one &quot;/&quot; character. The last segment of the URL&#39;s path must represent
-    ///  the fully qualified name of the type (as in
-    ///  `path/google.protobuf.Duration`). The name should be in a canonical form
-    ///  (e.g., leading &quot;.&quot; is not accepted).
-    ///
-    ///  In practice, teams usually precompile into the binary all types that they
-    ///  expect it to use in the context of Any. However, for URLs which use the
-    ///  scheme `http`, `https`, or no scheme, one can optionally set up a type
-    ///  server that maps type URLs to message definitions as follows:
-    ///
-    ///  * If no scheme is provided, `https` is assumed.
-    ///  * An HTTP GET on the URL must yield a [google.protobuf.Type][]
-    ///    value in binary format, or produce an error.
-    ///  * Applications are allowed to cache lookup results based on the
-    ///    URL, or have them precompiled into a binary to avoid any
-    ///    lookup. Therefore, binary compatibility needs to be preserved
-    ///    on changes to types. (Use versioned type names to manage
-    ///    breaking changes.)
-    ///
-    ///  Note: this functionality is not currently available in the official
-    ///  protobuf release, and it is not used for type URLs beginning with
-    ///  type.googleapis.com.
-    ///
-    ///  Schemes other than `http`, `https` (or the empty scheme) might be
-    ///  used with implementation specific semantics.
-    ///
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.Any.type_url)
     </span><span class="kw">pub </span>type_url: ::std::string::String,
-    <span class="doccomment">///  Must be a valid serialized protocol buffer of the above specified type.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.Any.value)
-    </span><span class="kw">pub </span>value: ::std::vec::Vec&lt;u8&gt;,
+    <span class="kw">pub </span>value: ::std::vec::Vec&lt;u8&gt;,
     <span class="comment">// special fields
-    // @@protoc_insertion_point(special_field:google.protobuf.Any.special_fields)
-    </span><span class="kw">pub </span>special_fields: <span class="kw">crate</span>::SpecialFields,
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>unknown_fields: <span class="kw">crate</span>::UnknownFields,
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>cached_size: <span class="kw">crate</span>::CachedSize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Any {
@@ -432,45 +417,76 @@
         ::std::default::Default::default()
     }
 
-    <span class="kw">fn </span>generated_message_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData {
-        <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::with_capacity(<span class="number">2</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>oneofs = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_simpler_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;type_url&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Any| { <span class="kw-2">&amp;</span>m.type_url },
-            |m: <span class="kw-2">&amp;mut </span>Any| { <span class="kw-2">&amp;mut </span>m.type_url },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_simpler_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;value&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Any| { <span class="kw-2">&amp;</span>m.value },
-            |m: <span class="kw-2">&amp;mut </span>Any| { <span class="kw-2">&amp;mut </span>m.value },
-        ));
-        <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData::new_2::&lt;Any&gt;(
-            <span class="string">&quot;Any&quot;</span>,
-            fields,
-            oneofs,
-        )
+    <span class="comment">// string type_url = 1;
+
+
+    </span><span class="kw">pub fn </span>get_type_url(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.type_url
+    }
+    <span class="kw">pub fn </span>clear_type_url(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.type_url.clear();
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_type_url(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
+        <span class="self">self</span>.type_url = v;
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_type_url(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.type_url
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_type_url(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
+        ::std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.type_url, ::std::string::String::new())
+    }
+
+    <span class="comment">// bytes value = 2;
+
+
+    </span><span class="kw">pub fn </span>get_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[u8] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.value
+    }
+    <span class="kw">pub fn </span>clear_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.value.clear();
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::vec::Vec&lt;u8&gt;) {
+        <span class="self">self</span>.value = v;
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::vec::Vec&lt;u8&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.value
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::vec::Vec&lt;u8&gt; {
+        ::std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.value, ::std::vec::Vec::new())
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>Any {
-    <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;Any&quot;</span>;
-
     <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(tag) = is.read_raw_tag_or_eof()<span class="question-mark">? </span>{
-            <span class="kw">match </span>tag {
-                <span class="number">10 </span>=&gt; {
-                    <span class="self">self</span>.type_url = is.read_string()<span class="question-mark">?</span>;
+    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">while </span>!is.eof()<span class="question-mark">? </span>{
+            <span class="kw">let </span>(field_number, wire_type) = is.read_tag_unpack()<span class="question-mark">?</span>;
+            <span class="kw">match </span>field_number {
+                <span class="number">1 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_proto3_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.type_url)<span class="question-mark">?</span>;
                 },
-                <span class="number">18 </span>=&gt; {
-                    <span class="self">self</span>.value = is.read_bytes()<span class="question-mark">?</span>;
+                <span class="number">2 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_proto3_bytes_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.value)<span class="question-mark">?</span>;
                 },
-                tag =&gt; {
-                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(tag, is, <span class="self">self</span>.special_fields.mut_unknown_fields())<span class="question-mark">?</span>;
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(field_number, wire_type, is, <span class="self">self</span>.mut_unknown_fields())<span class="question-mark">?</span>;
                 },
             };
         }
@@ -479,7 +495,7 @@
 
     <span class="comment">// Compute sizes of nested messages
     </span><span class="attr">#[allow(unused_variables)]
-    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
         <span class="kw">if </span>!<span class="self">self</span>.type_url.is_empty() {
             my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.type_url);
@@ -487,65 +503,98 @@
         <span class="kw">if </span>!<span class="self">self</span>.value.is_empty() {
             my_size += <span class="kw">crate</span>::rt::bytes_size(<span class="number">2</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.value);
         }
-        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.special_fields.unknown_fields());
-        <span class="self">self</span>.special_fields.cached_size().set(my_size <span class="kw">as </span>u32);
+        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.get_unknown_fields());
+        <span class="self">self</span>.cached_size.set(my_size);
         my_size
     }
 
-    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.type_url.is_empty() {
             os.write_string(<span class="number">1</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.type_url)<span class="question-mark">?</span>;
         }
         <span class="kw">if </span>!<span class="self">self</span>.value.is_empty() {
             os.write_bytes(<span class="number">2</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.value)<span class="question-mark">?</span>;
         }
-        os.write_unknown_fields(<span class="self">self</span>.special_fields.unknown_fields())<span class="question-mark">?</span>;
+        os.write_unknown_fields(<span class="self">self</span>.get_unknown_fields())<span class="question-mark">?</span>;
         ::std::result::Result::Ok(())
     }
 
-    <span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.cached_size.get()
     }
 
-    <span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>into_any(<span class="self">self</span>: ::std::boxed::Box&lt;<span class="self">Self</span>&gt;) -&gt; ::std::boxed::Box&lt;<span class="kw">dyn </span>(::std::any::Any)&gt; {
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="self">Self</span>::descriptor_static()
     }
 
     <span class="kw">fn </span>new() -&gt; Any {
         Any::new()
     }
 
-    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.type_url.clear();
-        <span class="self">self</span>.value.clear();
-        <span class="self">self</span>.special_fields.clear();
+    <span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::new();
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_simple_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
+                <span class="string">&quot;type_url&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Any| { <span class="kw-2">&amp;</span>m.type_url },
+                |m: <span class="kw-2">&amp;mut </span>Any| { <span class="kw-2">&amp;mut </span>m.type_url },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_simple_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeBytes&gt;(
+                <span class="string">&quot;value&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Any| { <span class="kw-2">&amp;</span>m.value },
+                |m: <span class="kw-2">&amp;mut </span>Any| { <span class="kw-2">&amp;mut </span>m.value },
+            ));
+            <span class="kw">crate</span>::reflect::MessageDescriptor::new_pb_name::&lt;Any&gt;(
+                <span class="string">&quot;Any&quot;</span>,
+                fields,
+                file_descriptor_proto()
+            )
+        })
     }
 
     <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>Any {
-        <span class="kw">static </span>instance: Any = Any {
-            type_url: ::std::string::String::new(),
-            value: ::std::vec::Vec::new(),
-            special_fields: <span class="kw">crate</span>::SpecialFields::new(),
-        };
-        <span class="kw-2">&amp;</span>instance
+        <span class="kw">static </span>instance: <span class="kw">crate</span>::rt::LazyV2&lt;Any&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        instance.get(Any::new)
     }
 }
 
-<span class="kw">impl </span><span class="kw">crate</span>::MessageFull <span class="kw">for </span>Any {
-    <span class="kw">fn </span>descriptor() -&gt; <span class="kw">crate</span>::reflect::MessageDescriptor {
-        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name(<span class="string">&quot;Any&quot;</span>).unwrap()).clone()
+<span class="kw">impl </span><span class="kw">crate</span>::Clear <span class="kw">for </span>Any {
+    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.type_url.clear();
+        <span class="self">self</span>.value.clear();
+        <span class="self">self</span>.unknown_fields.clear();
     }
 }
 
-<span class="kw">impl </span>::std::fmt::Display <span class="kw">for </span>Any {
+<span class="kw">impl </span>::std::fmt::Debug <span class="kw">for </span>Any {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
         <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>Any {
-    <span class="kw">type </span>RuntimeType = <span class="kw">crate</span>::reflect::rt::RuntimeTypeMessage&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Message(<span class="self">self</span>)
+    }
 }
 
 <span class="kw">static </span>file_descriptor_proto_data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8] = <span class="string">b&quot;\
@@ -686,32 +735,15 @@
     \x05\x04\0\x02\x01\x03\x12\x04\x9c\x01\x10\x11b\x06proto3\
 &quot;</span>;
 
-<span class="doccomment">/// `FileDescriptorProto` object which was a source for this generated file
-</span><span class="kw">fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
-    <span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor_proto_lazy.get(|| {
-        <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
-    })
+<span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+
+<span class="kw">fn </span>parse_descriptor_proto() -&gt; <span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
 }
 
-<span class="doccomment">/// `FileDescriptor` object which allows dynamic access to files
-</span><span class="kw">pub fn </span>file_descriptor() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::FileDescriptor {
-    <span class="kw">static </span>generated_file_descriptor_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::GeneratedFileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    <span class="kw">static </span>file_descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::FileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor.get(|| {
-        <span class="kw">let </span>generated_file_descriptor = generated_file_descriptor_lazy.get(|| {
-            <span class="kw">let </span><span class="kw-2">mut </span>deps = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>messages = ::std::vec::Vec::with_capacity(<span class="number">1</span>);
-            messages.push(Any::generated_message_descriptor_data());
-            <span class="kw">let </span><span class="kw-2">mut </span>enums = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            <span class="kw">crate</span>::reflect::GeneratedFileDescriptor::new_generated(
-                file_descriptor_proto(),
-                deps,
-                messages,
-                enums,
-            )
-        });
-        <span class="kw">crate</span>::reflect::FileDescriptor::new_generated_2(generated_file_descriptor)
+<span class="kw">pub fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    file_descriptor_proto_lazy.get(|| {
+        parse_descriptor_proto()
     })
 }
 </code></pre></div></section></main></body></html>

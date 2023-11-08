@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["MAX_BUF_SIZE"],"struct":["BitswapRequestResponseCodec"]};
+window.SIDEBAR_ITEMS = {"constant":["MAX_BUF_SIZE"],"fn":["codec"],"struct":["BitswapRequestResponseCodec"]};

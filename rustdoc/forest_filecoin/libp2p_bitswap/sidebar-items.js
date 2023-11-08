@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["behaviour","internals","message","metrics","pb","request_manager","store","task"]};
+window.SIDEBAR_ITEMS = {"mod":["behaviour","bitswap_pb","internals","message","metrics","request_manager","store","task"]};

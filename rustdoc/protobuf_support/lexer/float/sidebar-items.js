@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["PROTOBUF_INF","PROTOBUF_NAN"],"enum":["ProtobufFloatParseError"],"fn":["format_protobuf_float","parse_protobuf_float"],"type":["ProtobufFloatParseResult"]};

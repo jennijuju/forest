@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-3.3.0/src/rustproto.rs`."><title>rustproto.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../protobuf/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-2.28.0/src/rustproto.rs`."><title>rustproto.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../protobuf/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -168,8 +168,40 @@
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
 <a href="#170" id="170">170</a>
-</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 3.3.0-pre. Do not edit
-// .proto file is parsed by protoc --rust-out=...
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
+<a href="#179" id="179">179</a>
+<a href="#180" id="180">180</a>
+<a href="#181" id="181">181</a>
+<a href="#182" id="182">182</a>
+<a href="#183" id="183">183</a>
+<a href="#184" id="184">184</a>
+<a href="#185" id="185">185</a>
+<a href="#186" id="186">186</a>
+<a href="#187" id="187">187</a>
+<a href="#188" id="188">188</a>
+<a href="#189" id="189">189</a>
+<a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
+<a href="#196" id="196">196</a>
+<a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
+<a href="#201" id="201">201</a>
+<a href="#202" id="202">202</a>
+<a href="#203" id="203">203</a>
+</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 2.27.1. Do not edit
 // @generated
 
 // https://github.com/rust-lang/rust-clippy/issues/702
@@ -186,156 +218,190 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 #![allow(trivial_casts)]
+#![allow(unused_imports)]
 #![allow(unused_results)]
-#![allow(unused_mut)]
-
 </span><span class="doccomment">//! Generated file from `rustproto.proto`
 
 /// Extension fields
 </span><span class="kw">pub mod </span>exts {
 
-    <span class="kw">pub const </span>generate_accessors_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17004</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>expose_oneof_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17001</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>generate_getter_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17005</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>expose_fields_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17003</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>tokio_bytes_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17011</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>generate_accessors_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17004</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>tokio_bytes_for_string_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17012</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>carllerche_bytes_for_bytes_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17011</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>lite_runtime_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17035</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>carllerche_bytes_for_string_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17012</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>generate_accessors: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17004</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>serde_derive_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17030</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>generate_getter: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17005</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>serde_derive_cfg_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeString&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17031</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>tokio_bytes: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17011</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>lite_runtime_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FileOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17035</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>tokio_bytes_for_string: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17012</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>expose_oneof: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17001</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>generate_accessors_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17004</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>expose_fields: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17003</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>generate_getter_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17005</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>generate_accessors: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17004</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>tokio_bytes_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17011</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>carllerche_bytes_for_bytes: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17011</span>, phantom: ::std::marker::PhantomData };
 
-    <span class="kw">pub const </span>tokio_bytes_for_string_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, bool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional::new(<span class="number">17012</span>, <span class="kw">crate</span>::descriptor::field_descriptor_proto::Type::TYPE_BOOL);
+    <span class="kw">pub const </span>carllerche_bytes_for_string: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17012</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>serde_derive: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17030</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>serde_derive_cfg: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::MessageOptions, <span class="kw">crate</span>::types::ProtobufTypeString&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17031</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>expose_fields_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17003</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>generate_accessors_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17004</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>carllerche_bytes_for_bytes_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17011</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>carllerche_bytes_for_string_field: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::FieldOptions, <span class="kw">crate</span>::types::ProtobufTypeBool&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17012</span>, phantom: ::std::marker::PhantomData };
+
+    <span class="kw">pub const </span>serde_rename_all: <span class="kw">crate</span>::ext::ExtFieldOptional&lt;<span class="kw">crate</span>::descriptor::EnumOptions, <span class="kw">crate</span>::types::ProtobufTypeString&gt; = <span class="kw">crate</span>::ext::ExtFieldOptional { field_number: <span class="number">17032</span>, phantom: ::std::marker::PhantomData };
 }
 
 <span class="kw">static </span>file_descriptor_proto_data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8] = <span class="string">b&quot;\
     \n\x0frustproto.proto\x12\trustproto\x1a\x20google/protobuf/descriptor.p\
-    roto:T\n\x16generate_accessors_all\x18\xec\x84\x01\x20\x01(\x08\x12\x1c.\
-    google.protobuf.FileOptionsR\x14generateAccessorsAll:N\n\x13generate_get\
-    ter_all\x18\xed\x84\x01\x20\x01(\x08\x12\x1c.google.protobuf.FileOptions\
-    R\x11generateGetterAll:F\n\x0ftokio_bytes_all\x18\xf3\x84\x01\x20\x01(\
-    \x08\x12\x1c.google.protobuf.FileOptionsR\rtokioBytesAll:Z\n\x1atokio_by\
-    tes_for_string_all\x18\xf4\x84\x01\x20\x01(\x08\x12\x1c.google.protobuf.\
-    FileOptionsR\x16tokioBytesForStringAll:H\n\x10lite_runtime_all\x18\x8b\
-    \x85\x01\x20\x01(\x08\x12\x1c.google.protobuf.FileOptionsR\x0eliteRuntim\
-    eAll:P\n\x12generate_accessors\x18\xec\x84\x01\x20\x01(\x08\x12\x1f.goog\
-    le.protobuf.MessageOptionsR\x11generateAccessors:J\n\x0fgenerate_getter\
-    \x18\xed\x84\x01\x20\x01(\x08\x12\x1f.google.protobuf.MessageOptionsR\
-    \x0egenerateGetter:B\n\x0btokio_bytes\x18\xf3\x84\x01\x20\x01(\x08\x12\
-    \x1f.google.protobuf.MessageOptionsR\ntokioBytes:V\n\x16tokio_bytes_for_\
-    string\x18\xf4\x84\x01\x20\x01(\x08\x12\x1f.google.protobuf.MessageOptio\
-    nsR\x13tokioBytesForString:Y\n\x18generate_accessors_field\x18\xec\x84\
-    \x01\x20\x01(\x08\x12\x1d.google.protobuf.FieldOptionsR\x16generateAcces\
-    sorsField:S\n\x15generate_getter_field\x18\xed\x84\x01\x20\x01(\x08\x12\
-    \x1d.google.protobuf.FieldOptionsR\x13generateGetterField:K\n\x11tokio_b\
-    ytes_field\x18\xf3\x84\x01\x20\x01(\x08\x12\x1d.google.protobuf.FieldOpt\
-    ionsR\x0ftokioBytesField:_\n\x1ctokio_bytes_for_string_field\x18\xf4\x84\
-    \x01\x20\x01(\x08\x12\x1d.google.protobuf.FieldOptionsR\x18tokioBytesFor\
-    StringFieldJ\x9d\x0f\n\x06\x12\x04\0\0.\x01\n\x08\n\x01\x0c\x12\x03\0\0\
-    \x12\n\t\n\x02\x03\0\x12\x03\x02\0*\n\xe5\x01\n\x01\x02\x12\x03\n\0\x122\
-    ^\x20see\x20https://github.com/gogo/protobuf/blob/master/gogoproto/gogo.\
-    proto\n\x20for\x20the\x20original\x20idea\n2{\x20Generated\x20files\x20c\
-    an\x20be\x20customized\x20using\x20this\x20proto\n\x20or\x20using\x20`Cu\
-    stomize`\x20struct\x20when\x20codegen\x20is\x20invoked\x20programmatical\
-    ly.\n\n\t\n\x01\x07\x12\x04\x0c\0\x18\x01\nP\n\x02\x07\0\x12\x03\x0e\x04\
-    1\x1aE\x20When\x20false,\x20`get_`,\x20`set_`,\x20`mut_`\x20etc.\x20acce\
-    ssors\x20are\x20not\x20generated\n\n\n\n\x03\x07\0\x02\x12\x03\x0c\x07\&quot;\
-    \n\n\n\x03\x07\0\x04\x12\x03\x0e\x04\x0c\n\n\n\x03\x07\0\x05\x12\x03\x0e\
-    \r\x11\n\n\n\x03\x07\0\x01\x12\x03\x0e\x12(\n\n\n\x03\x07\0\x03\x12\x03\
-    \x0e+0\nL\n\x02\x07\x01\x12\x03\x10\x04.\x1aA\x20When\x20false,\x20`get_\
-    `\x20is\x20not\x20generated\x20even\x20if\x20`syntax\x20=\x20\&quot;proto2\&quot;`\
-    \n\n\n\n\x03\x07\x01\x02\x12\x03\x0c\x07\&quot;\n\n\n\x03\x07\x01\x04\x12\x03\
-    \x10\x04\x0c\n\n\n\x03\x07\x01\x05\x12\x03\x10\r\x11\n\n\n\x03\x07\x01\
-    \x01\x12\x03\x10\x12%\n\n\n\x03\x07\x01\x03\x12\x03\x10(-\n2\n\x02\x07\
-    \x02\x12\x03\x12\x04*\x1a&#39;\x20Use\x20`bytes::Bytes`\x20for\x20`bytes`\
-    \x20fields\n\n\n\n\x03\x07\x02\x02\x12\x03\x0c\x07\&quot;\n\n\n\x03\x07\x02\
-    \x04\x12\x03\x12\x04\x0c\n\n\n\x03\x07\x02\x05\x12\x03\x12\r\x11\n\n\n\
-    \x03\x07\x02\x01\x12\x03\x12\x12!\n\n\n\x03\x07\x02\x03\x12\x03\x12$)\n3\
-    \n\x02\x07\x03\x12\x03\x14\x045\x1a(\x20Use\x20`bytes::Bytes`\x20for\x20\
-    `string`\x20fields\n\n\n\n\x03\x07\x03\x02\x12\x03\x0c\x07\&quot;\n\n\n\x03\
-    \x07\x03\x04\x12\x03\x14\x04\x0c\n\n\n\x03\x07\x03\x05\x12\x03\x14\r\x11\
-    \n\n\n\x03\x07\x03\x01\x12\x03\x14\x12,\n\n\n\x03\x07\x03\x03\x12\x03\
-    \x14/4\nN\n\x02\x07\x04\x12\x03\x17\x04+\x1aC\x20When\x20true,\x20will\
-    \x20only\x20generate\x20codes\x20that\x20works\x20with\x20lite\x20runtim\
-    e.\n\n\n\n\x03\x07\x04\x02\x12\x03\x0c\x07\&quot;\n\n\n\x03\x07\x04\x04\x12\
-    \x03\x17\x04\x0c\n\n\n\x03\x07\x04\x05\x12\x03\x17\r\x11\n\n\n\x03\x07\
-    \x04\x01\x12\x03\x17\x12\&quot;\n\n\n\x03\x07\x04\x03\x12\x03\x17%*\n\t\n\x01\
-    \x07\x12\x04\x1a\0#\x01\nP\n\x02\x07\x05\x12\x03\x1c\x04-\x1aE\x20When\
-    \x20false,\x20`get_`,\x20`set_`,\x20`mut_`\x20etc.\x20accessors\x20are\
-    \x20not\x20generated\n\n\n\n\x03\x07\x05\x02\x12\x03\x1a\x07%\n\n\n\x03\
-    \x07\x05\x04\x12\x03\x1c\x04\x0c\n\n\n\x03\x07\x05\x05\x12\x03\x1c\r\x11\
-    \n\n\n\x03\x07\x05\x01\x12\x03\x1c\x12$\n\n\n\x03\x07\x05\x03\x12\x03\
-    \x1c&#39;,\nL\n\x02\x07\x06\x12\x03\x1e\x04*\x1aA\x20When\x20false,\x20`get_\
-    `\x20is\x20not\x20generated\x20even\x20if\x20`syntax\x20=\x20\&quot;proto2\&quot;`\
-    \n\n\n\n\x03\x07\x06\x02\x12\x03\x1a\x07%\n\n\n\x03\x07\x06\x04\x12\x03\
-    \x1e\x04\x0c\n\n\n\x03\x07\x06\x05\x12\x03\x1e\r\x11\n\n\n\x03\x07\x06\
-    \x01\x12\x03\x1e\x12!\n\n\n\x03\x07\x06\x03\x12\x03\x1e$)\n2\n\x02\x07\
-    \x07\x12\x03\x20\x04&amp;\x1a&#39;\x20Use\x20`bytes::Bytes`\x20for\x20`bytes`\
-    \x20fields\n\n\n\n\x03\x07\x07\x02\x12\x03\x1a\x07%\n\n\n\x03\x07\x07\
-    \x04\x12\x03\x20\x04\x0c\n\n\n\x03\x07\x07\x05\x12\x03\x20\r\x11\n\n\n\
-    \x03\x07\x07\x01\x12\x03\x20\x12\x1d\n\n\n\x03\x07\x07\x03\x12\x03\x20\
-    \x20%\n3\n\x02\x07\x08\x12\x03\&quot;\x041\x1a(\x20Use\x20`bytes::Bytes`\x20f\
-    or\x20`string`\x20fields\n\n\n\n\x03\x07\x08\x02\x12\x03\x1a\x07%\n\n\n\
-    \x03\x07\x08\x04\x12\x03\&quot;\x04\x0c\n\n\n\x03\x07\x08\x05\x12\x03\&quot;\r\x11\
-    \n\n\n\x03\x07\x08\x01\x12\x03\&quot;\x12(\n\n\n\x03\x07\x08\x03\x12\x03\&quot;+0\
-    \n\t\n\x01\x07\x12\x04%\0.\x01\nP\n\x02\x07\t\x12\x03&#39;\x043\x1aE\x20When\
-    \x20false,\x20`get_`,\x20`set_`,\x20`mut_`\x20etc.\x20accessors\x20are\
-    \x20not\x20generated\n\n\n\n\x03\x07\t\x02\x12\x03%\x07#\n\n\n\x03\x07\t\
-    \x04\x12\x03&#39;\x04\x0c\n\n\n\x03\x07\t\x05\x12\x03&#39;\r\x11\n\n\n\x03\x07\t\
-    \x01\x12\x03&#39;\x12*\n\n\n\x03\x07\t\x03\x12\x03&#39;-2\nL\n\x02\x07\n\x12\x03\
-    )\x040\x1aA\x20When\x20false,\x20`get_`\x20is\x20not\x20generated\x20eve\
-    n\x20if\x20`syntax\x20=\x20\&quot;proto2\&quot;`\n\n\n\n\x03\x07\n\x02\x12\x03%\
-    \x07#\n\n\n\x03\x07\n\x04\x12\x03)\x04\x0c\n\n\n\x03\x07\n\x05\x12\x03)\
-    \r\x11\n\n\n\x03\x07\n\x01\x12\x03)\x12&#39;\n\n\n\x03\x07\n\x03\x12\x03)*/\
-    \n2\n\x02\x07\x0b\x12\x03+\x04,\x1a&#39;\x20Use\x20`bytes::Bytes`\x20for\x20\
-    `bytes`\x20fields\n\n\n\n\x03\x07\x0b\x02\x12\x03%\x07#\n\n\n\x03\x07\
-    \x0b\x04\x12\x03+\x04\x0c\n\n\n\x03\x07\x0b\x05\x12\x03+\r\x11\n\n\n\x03\
-    \x07\x0b\x01\x12\x03+\x12#\n\n\n\x03\x07\x0b\x03\x12\x03+&amp;+\n3\n\x02\x07\
-    \x0c\x12\x03-\x047\x1a(\x20Use\x20`bytes::Bytes`\x20for\x20`string`\x20f\
-    ields\n\n\n\n\x03\x07\x0c\x02\x12\x03%\x07#\n\n\n\x03\x07\x0c\x04\x12\
-    \x03-\x04\x0c\n\n\n\x03\x07\x0c\x05\x12\x03-\r\x11\n\n\n\x03\x07\x0c\x01\
-    \x12\x03-\x12.\n\n\n\x03\x07\x0c\x03\x12\x03-16\
+    roto:H\n\x10expose_oneof_all\x18\xe9\x84\x01\x20\x01(\x08\x12\x1c.google\
+    .protobuf.FileOptionsR\x0eexposeOneofAll:J\n\x11expose_fields_all\x18\
+    \xeb\x84\x01\x20\x01(\x08\x12\x1c.google.protobuf.FileOptionsR\x0fexpose\
+    FieldsAll:T\n\x16generate_accessors_all\x18\xec\x84\x01\x20\x01(\x08\x12\
+    \x1c.google.protobuf.FileOptionsR\x14generateAccessorsAll:b\n\x1ecarller\
+    che_bytes_for_bytes_all\x18\xf3\x84\x01\x20\x01(\x08\x12\x1c.google.prot\
+    obuf.FileOptionsR\x1acarllercheBytesForBytesAll:d\n\x1fcarllerche_bytes_\
+    for_string_all\x18\xf4\x84\x01\x20\x01(\x08\x12\x1c.google.protobuf.File\
+    OptionsR\x1bcarllercheBytesForStringAll:H\n\x10serde_derive_all\x18\x86\
+    \x85\x01\x20\x01(\x08\x12\x1c.google.protobuf.FileOptionsR\x0eserdeDeriv\
+    eAll:O\n\x14serde_derive_cfg_all\x18\x87\x85\x01\x20\x01(\t\x12\x1c.goog\
+    le.protobuf.FileOptionsR\x11serdeDeriveCfgAll:H\n\x10lite_runtime_all\
+    \x18\x8b\x85\x01\x20\x01(\x08\x12\x1c.google.protobuf.FileOptionsR\x0eli\
+    teRuntimeAll:D\n\x0cexpose_oneof\x18\xe9\x84\x01\x20\x01(\x08\x12\x1f.go\
+    ogle.protobuf.MessageOptionsR\x0bexposeOneof:F\n\rexpose_fields\x18\xeb\
+    \x84\x01\x20\x01(\x08\x12\x1f.google.protobuf.MessageOptionsR\x0cexposeF\
+    ields:P\n\x12generate_accessors\x18\xec\x84\x01\x20\x01(\x08\x12\x1f.goo\
+    gle.protobuf.MessageOptionsR\x11generateAccessors:^\n\x1acarllerche_byte\
+    s_for_bytes\x18\xf3\x84\x01\x20\x01(\x08\x12\x1f.google.protobuf.Message\
+    OptionsR\x17carllercheBytesForBytes:`\n\x1bcarllerche_bytes_for_string\
+    \x18\xf4\x84\x01\x20\x01(\x08\x12\x1f.google.protobuf.MessageOptionsR\
+    \x18carllercheBytesForString:D\n\x0cserde_derive\x18\x86\x85\x01\x20\x01\
+    (\x08\x12\x1f.google.protobuf.MessageOptionsR\x0bserdeDerive:K\n\x10serd\
+    e_derive_cfg\x18\x87\x85\x01\x20\x01(\t\x12\x1f.google.protobuf.MessageO\
+    ptionsR\x0eserdeDeriveCfg:O\n\x13expose_fields_field\x18\xeb\x84\x01\x20\
+    \x01(\x08\x12\x1d.google.protobuf.FieldOptionsR\x11exposeFieldsField:Y\n\
+    \x18generate_accessors_field\x18\xec\x84\x01\x20\x01(\x08\x12\x1d.google\
+    .protobuf.FieldOptionsR\x16generateAccessorsField:g\n\x20carllerche_byte\
+    s_for_bytes_field\x18\xf3\x84\x01\x20\x01(\x08\x12\x1d.google.protobuf.F\
+    ieldOptionsR\x1ccarllercheBytesForBytesField:i\n!carllerche_bytes_for_st\
+    ring_field\x18\xf4\x84\x01\x20\x01(\x08\x12\x1d.google.protobuf.FieldOpt\
+    ionsR\x1dcarllercheBytesForStringField:H\n\x10serde_rename_all\x18\x88\
+    \x85\x01\x20\x01(\t\x12\x1c.google.protobuf.EnumOptionsR\x0eserdeRenameA\
+    llJ\xea\x14\n\x06\x12\x04\0\0&lt;\x01\n\x08\n\x01\x0c\x12\x03\0\0\x12\n\t\n\
+    \x02\x03\0\x12\x03\x02\0*\nh\n\x01\x02\x12\x03\x07\0\x122^\x20see\x20htt\
+    ps://github.com/gogo/protobuf/blob/master/gogoproto/gogo.proto\n\x20for\
+    \x20the\x20original\x20idea\n\n\t\n\x01\x07\x12\x04\t\0\x1b\x01\n7\n\x02\
+    \x07\0\x12\x03\x0b\x04+\x1a,\x20When\x20true,\x20oneof\x20field\x20is\
+    \x20generated\x20public\n\n\n\n\x03\x07\0\x02\x12\x03\t\x07\&quot;\n\n\n\x03\
+    \x07\0\x04\x12\x03\x0b\x04\x0c\n\n\n\x03\x07\0\x05\x12\x03\x0b\r\x11\n\n\
+    \n\x03\x07\0\x01\x12\x03\x0b\x12\&quot;\n\n\n\x03\x07\0\x03\x12\x03\x0b%*\nI\
+    \n\x02\x07\x01\x12\x03\r\x04,\x1a&gt;\x20When\x20true\x20all\x20fields\x20a\
+    re\x20public,\x20and\x20not\x20accessors\x20generated\n\n\n\n\x03\x07\
+    \x01\x02\x12\x03\t\x07\&quot;\n\n\n\x03\x07\x01\x04\x12\x03\r\x04\x0c\n\n\n\
+    \x03\x07\x01\x05\x12\x03\r\r\x11\n\n\n\x03\x07\x01\x01\x12\x03\r\x12#\n\
+    \n\n\x03\x07\x01\x03\x12\x03\r&amp;+\nP\n\x02\x07\x02\x12\x03\x0f\x041\x1aE\
+    \x20When\x20false,\x20`get_`,\x20`set_`,\x20`mut_`\x20etc.\x20accessors\
+    \x20are\x20not\x20generated\n\n\n\n\x03\x07\x02\x02\x12\x03\t\x07\&quot;\n\n\
+    \n\x03\x07\x02\x04\x12\x03\x0f\x04\x0c\n\n\n\x03\x07\x02\x05\x12\x03\x0f\
+    \r\x11\n\n\n\x03\x07\x02\x01\x12\x03\x0f\x12(\n\n\n\x03\x07\x02\x03\x12\
+    \x03\x0f+0\n2\n\x02\x07\x03\x12\x03\x11\x049\x1a&#39;\x20Use\x20`bytes::Byte\
+    s`\x20for\x20`bytes`\x20fields\n\n\n\n\x03\x07\x03\x02\x12\x03\t\x07\&quot;\n\
+    \n\n\x03\x07\x03\x04\x12\x03\x11\x04\x0c\n\n\n\x03\x07\x03\x05\x12\x03\
+    \x11\r\x11\n\n\n\x03\x07\x03\x01\x12\x03\x11\x120\n\n\n\x03\x07\x03\x03\
+    \x12\x03\x1138\n3\n\x02\x07\x04\x12\x03\x13\x04:\x1a(\x20Use\x20`bytes::\
+    Bytes`\x20for\x20`string`\x20fields\n\n\n\n\x03\x07\x04\x02\x12\x03\t\
+    \x07\&quot;\n\n\n\x03\x07\x04\x04\x12\x03\x13\x04\x0c\n\n\n\x03\x07\x04\x05\
+    \x12\x03\x13\r\x11\n\n\n\x03\x07\x04\x01\x12\x03\x13\x121\n\n\n\x03\x07\
+    \x04\x03\x12\x03\x1349\nJ\n\x02\x07\x05\x12\x03\x15\x04+\x1a?\x20Use\x20\
+    `serde_derive`\x20to\x20implement\x20`Serialize`\x20and\x20`Deserialize`\
+    \n\n\n\n\x03\x07\x05\x02\x12\x03\t\x07\&quot;\n\n\n\x03\x07\x05\x04\x12\x03\
+    \x15\x04\x0c\n\n\n\x03\x07\x05\x05\x12\x03\x15\r\x11\n\n\n\x03\x07\x05\
+    \x01\x12\x03\x15\x12\&quot;\n\n\n\x03\x07\x05\x03\x12\x03\x15%*\n3\n\x02\x07\
+    \x06\x12\x03\x17\x041\x1a(\x20Guard\x20serde\x20annotations\x20with\x20c\
+    fg\x20attr.\n\n\n\n\x03\x07\x06\x02\x12\x03\t\x07\&quot;\n\n\n\x03\x07\x06\
+    \x04\x12\x03\x17\x04\x0c\n\n\n\x03\x07\x06\x05\x12\x03\x17\r\x13\n\n\n\
+    \x03\x07\x06\x01\x12\x03\x17\x14(\n\n\n\x03\x07\x06\x03\x12\x03\x17+0\nN\
+    \n\x02\x07\x07\x12\x03\x1a\x04+\x1aC\x20When\x20true,\x20will\x20only\
+    \x20generate\x20codes\x20that\x20works\x20with\x20lite\x20runtime.\n\n\n\
+    \n\x03\x07\x07\x02\x12\x03\t\x07\&quot;\n\n\n\x03\x07\x07\x04\x12\x03\x1a\x04\
+    \x0c\n\n\n\x03\x07\x07\x05\x12\x03\x1a\r\x11\n\n\n\x03\x07\x07\x01\x12\
+    \x03\x1a\x12\&quot;\n\n\n\x03\x07\x07\x03\x12\x03\x1a%*\n\t\n\x01\x07\x12\x04\
+    \x1d\0,\x01\n7\n\x02\x07\x08\x12\x03\x1f\x04&#39;\x1a,\x20When\x20true,\x20o\
+    neof\x20field\x20is\x20generated\x20public\n\n\n\n\x03\x07\x08\x02\x12\
+    \x03\x1d\x07%\n\n\n\x03\x07\x08\x04\x12\x03\x1f\x04\x0c\n\n\n\x03\x07\
+    \x08\x05\x12\x03\x1f\r\x11\n\n\n\x03\x07\x08\x01\x12\x03\x1f\x12\x1e\n\n\
+    \n\x03\x07\x08\x03\x12\x03\x1f!&amp;\nI\n\x02\x07\t\x12\x03!\x04(\x1a&gt;\x20Wh\
+    en\x20true\x20all\x20fields\x20are\x20public,\x20and\x20not\x20accessors\
+    \x20generated\n\n\n\n\x03\x07\t\x02\x12\x03\x1d\x07%\n\n\n\x03\x07\t\x04\
+    \x12\x03!\x04\x0c\n\n\n\x03\x07\t\x05\x12\x03!\r\x11\n\n\n\x03\x07\t\x01\
+    \x12\x03!\x12\x1f\n\n\n\x03\x07\t\x03\x12\x03!\&quot;&#39;\nP\n\x02\x07\n\x12\x03\
+    #\x04-\x1aE\x20When\x20false,\x20`get_`,\x20`set_`,\x20`mut_`\x20etc.\
+    \x20accessors\x20are\x20not\x20generated\n\n\n\n\x03\x07\n\x02\x12\x03\
+    \x1d\x07%\n\n\n\x03\x07\n\x04\x12\x03#\x04\x0c\n\n\n\x03\x07\n\x05\x12\
+    \x03#\r\x11\n\n\n\x03\x07\n\x01\x12\x03#\x12$\n\n\n\x03\x07\n\x03\x12\
+    \x03#&#39;,\n2\n\x02\x07\x0b\x12\x03%\x045\x1a&#39;\x20Use\x20`bytes::Bytes`\x20\
+    for\x20`bytes`\x20fields\n\n\n\n\x03\x07\x0b\x02\x12\x03\x1d\x07%\n\n\n\
+    \x03\x07\x0b\x04\x12\x03%\x04\x0c\n\n\n\x03\x07\x0b\x05\x12\x03%\r\x11\n\
+    \n\n\x03\x07\x0b\x01\x12\x03%\x12,\n\n\n\x03\x07\x0b\x03\x12\x03%/4\n3\n\
+    \x02\x07\x0c\x12\x03&#39;\x046\x1a(\x20Use\x20`bytes::Bytes`\x20for\x20`stri\
+    ng`\x20fields\n\n\n\n\x03\x07\x0c\x02\x12\x03\x1d\x07%\n\n\n\x03\x07\x0c\
+    \x04\x12\x03&#39;\x04\x0c\n\n\n\x03\x07\x0c\x05\x12\x03&#39;\r\x11\n\n\n\x03\x07\
+    \x0c\x01\x12\x03&#39;\x12-\n\n\n\x03\x07\x0c\x03\x12\x03&#39;05\nJ\n\x02\x07\r\
+    \x12\x03)\x04&#39;\x1a?\x20Use\x20`serde_derive`\x20to\x20implement\x20`Seri\
+    alize`\x20and\x20`Deserialize`\n\n\n\n\x03\x07\r\x02\x12\x03\x1d\x07%\n\
+    \n\n\x03\x07\r\x04\x12\x03)\x04\x0c\n\n\n\x03\x07\r\x05\x12\x03)\r\x11\n\
+    \n\n\x03\x07\r\x01\x12\x03)\x12\x1e\n\n\n\x03\x07\r\x03\x12\x03)!&amp;\n3\n\
+    \x02\x07\x0e\x12\x03+\x04-\x1a(\x20Guard\x20serde\x20annotations\x20with\
+    \x20cfg\x20attr.\n\n\n\n\x03\x07\x0e\x02\x12\x03\x1d\x07%\n\n\n\x03\x07\
+    \x0e\x04\x12\x03+\x04\x0c\n\n\n\x03\x07\x0e\x05\x12\x03+\r\x13\n\n\n\x03\
+    \x07\x0e\x01\x12\x03+\x14$\n\n\n\x03\x07\x0e\x03\x12\x03+&#39;,\n\t\n\x01\
+    \x07\x12\x04.\07\x01\nI\n\x02\x07\x0f\x12\x030\x04.\x1a&gt;\x20When\x20true\
+    \x20all\x20fields\x20are\x20public,\x20and\x20not\x20accessors\x20genera\
+    ted\n\n\n\n\x03\x07\x0f\x02\x12\x03.\x07#\n\n\n\x03\x07\x0f\x04\x12\x030\
+    \x04\x0c\n\n\n\x03\x07\x0f\x05\x12\x030\r\x11\n\n\n\x03\x07\x0f\x01\x12\
+    \x030\x12%\n\n\n\x03\x07\x0f\x03\x12\x030(-\nP\n\x02\x07\x10\x12\x032\
+    \x043\x1aE\x20When\x20false,\x20`get_`,\x20`set_`,\x20`mut_`\x20etc.\x20\
+    accessors\x20are\x20not\x20generated\n\n\n\n\x03\x07\x10\x02\x12\x03.\
+    \x07#\n\n\n\x03\x07\x10\x04\x12\x032\x04\x0c\n\n\n\x03\x07\x10\x05\x12\
+    \x032\r\x11\n\n\n\x03\x07\x10\x01\x12\x032\x12*\n\n\n\x03\x07\x10\x03\
+    \x12\x032-2\n2\n\x02\x07\x11\x12\x034\x04;\x1a&#39;\x20Use\x20`bytes::Bytes`\
+    \x20for\x20`bytes`\x20fields\n\n\n\n\x03\x07\x11\x02\x12\x03.\x07#\n\n\n\
+    \x03\x07\x11\x04\x12\x034\x04\x0c\n\n\n\x03\x07\x11\x05\x12\x034\r\x11\n\
+    \n\n\x03\x07\x11\x01\x12\x034\x122\n\n\n\x03\x07\x11\x03\x12\x0345:\n3\n\
+    \x02\x07\x12\x12\x036\x04&lt;\x1a(\x20Use\x20`bytes::Bytes`\x20for\x20`stri\
+    ng`\x20fields\n\n\n\n\x03\x07\x12\x02\x12\x03.\x07#\n\n\n\x03\x07\x12\
+    \x04\x12\x036\x04\x0c\n\n\n\x03\x07\x12\x05\x12\x036\r\x11\n\n\n\x03\x07\
+    \x12\x01\x12\x036\x123\n\n\n\x03\x07\x12\x03\x12\x0366;\n\t\n\x01\x07\
+    \x12\x049\0&lt;\x01\n/\n\x02\x07\x13\x12\x03;\x04-\x1a$\x20use\x20rename_al\
+    l\x20attribute\x20for\x20serde\n\n\n\n\x03\x07\x13\x02\x12\x039\x07\&quot;\n\
+    \n\n\x03\x07\x13\x04\x12\x03;\x04\x0c\n\n\n\x03\x07\x13\x05\x12\x03;\r\
+    \x13\n\n\n\x03\x07\x13\x01\x12\x03;\x14$\n\n\n\x03\x07\x13\x03\x12\x03;&#39;\
+    ,\
 &quot;</span>;
 
-<span class="doccomment">/// `FileDescriptorProto` object which was a source for this generated file
-</span><span class="kw">fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
-    <span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor_proto_lazy.get(|| {
-        <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
-    })
+<span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+
+<span class="kw">fn </span>parse_descriptor_proto() -&gt; <span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
 }
 
-<span class="doccomment">/// `FileDescriptor` object which allows dynamic access to files
-</span><span class="kw">pub fn </span>file_descriptor() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::FileDescriptor {
-    <span class="kw">static </span>generated_file_descriptor_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::GeneratedFileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    <span class="kw">static </span>file_descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::FileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor.get(|| {
-        <span class="kw">let </span>generated_file_descriptor = generated_file_descriptor_lazy.get(|| {
-            <span class="kw">let </span><span class="kw-2">mut </span>deps = ::std::vec::Vec::with_capacity(<span class="number">1</span>);
-            deps.push(<span class="kw">crate</span>::descriptor::file_descriptor().clone());
-            <span class="kw">let </span><span class="kw-2">mut </span>messages = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>enums = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            <span class="kw">crate</span>::reflect::GeneratedFileDescriptor::new_generated(
-                file_descriptor_proto(),
-                deps,
-                messages,
-                enums,
-            )
-        });
-        <span class="kw">crate</span>::reflect::FileDescriptor::new_generated_2(generated_file_descriptor)
+<span class="kw">pub fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    file_descriptor_proto_lazy.get(|| {
+        parse_descriptor_proto()
     })
 }
 </code></pre></div></section></main></body></html>

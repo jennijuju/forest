@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-3.3.0/src/message.rs`."><title>message.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../protobuf/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-2.28.0/src/message.rs`."><title>message.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../protobuf/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -226,39 +226,129 @@
 <a href="#226" id="226">226</a>
 <a href="#227" id="227">227</a>
 <a href="#228" id="228">228</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::io::Read;
+<a href="#229" id="229">229</a>
+<a href="#230" id="230">230</a>
+<a href="#231" id="231">231</a>
+<a href="#232" id="232">232</a>
+<a href="#233" id="233">233</a>
+<a href="#234" id="234">234</a>
+<a href="#235" id="235">235</a>
+<a href="#236" id="236">236</a>
+<a href="#237" id="237">237</a>
+<a href="#238" id="238">238</a>
+<a href="#239" id="239">239</a>
+<a href="#240" id="240">240</a>
+<a href="#241" id="241">241</a>
+<a href="#242" id="242">242</a>
+<a href="#243" id="243">243</a>
+<a href="#244" id="244">244</a>
+<a href="#245" id="245">245</a>
+<a href="#246" id="246">246</a>
+<a href="#247" id="247">247</a>
+<a href="#248" id="248">248</a>
+<a href="#249" id="249">249</a>
+<a href="#250" id="250">250</a>
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::any::Any;
+<span class="kw">use </span>std::any::TypeId;
+<span class="kw">use </span>std::fmt;
+<span class="kw">use </span>std::io::Read;
 <span class="kw">use </span>std::io::Write;
 
-<span class="kw">use </span><span class="kw">crate</span>::coded_output_stream::with::WithCodedOutputStream;
-<span class="kw">use </span><span class="kw">crate</span>::error::ProtobufError;
-<span class="kw">use </span><span class="kw">crate</span>::wire_format::check_message_size;
-<span class="kw">use </span><span class="kw">crate</span>::CodedInputStream;
-<span class="kw">use </span><span class="kw">crate</span>::CodedOutputStream;
-<span class="kw">use </span><span class="kw">crate</span>::SpecialFields;
-<span class="kw">use </span><span class="kw">crate</span>::UnknownFields;
+<span class="attr">#[cfg(feature = <span class="string">&quot;bytes&quot;</span>)]
+</span><span class="kw">use </span>bytes::Bytes;
 
-<span class="doccomment">/// Trait which is implemented by all generated message.
+<span class="kw">use </span><span class="kw">crate</span>::clear::Clear;
+<span class="kw">use </span><span class="kw">crate</span>::coded_input_stream::CodedInputStream;
+<span class="kw">use </span><span class="kw">crate</span>::coded_input_stream::WithCodedInputStream;
+<span class="kw">use </span><span class="kw">crate</span>::coded_output_stream::with_coded_output_stream_to_bytes;
+<span class="kw">use </span><span class="kw">crate</span>::coded_output_stream::CodedOutputStream;
+<span class="kw">use </span><span class="kw">crate</span>::coded_output_stream::WithCodedOutputStream;
+<span class="kw">use </span><span class="kw">crate</span>::error::ProtobufError;
+<span class="kw">use </span><span class="kw">crate</span>::error::ProtobufResult;
+<span class="kw">use </span><span class="kw">crate</span>::reflect::MessageDescriptor;
+<span class="kw">use </span><span class="kw">crate</span>::unknown::UnknownFields;
+
+<span class="doccomment">/// Trait implemented for all generated structs for protobuf messages.
 ///
-/// Note, by default all generated messages also implement [`MessageFull`](crate::MessageFull)
-/// trait which provides access to reflection and features which depend on reflection
-/// (text format and JSON serialization).
-</span><span class="kw">pub trait </span>Message: Default + Clone + Send + Sync + Sized + PartialEq + <span class="lifetime">&#39;static </span>{
-    <span class="doccomment">/// Message name as specified in `.proto` file.
-    ///
-    /// Message name can be accessed using
-    /// [`MessageFull::descriptor`](crate::MessageFull::descriptor),
-    /// but when lite runtime is requested, this field can be used.
-    </span><span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str;
+/// Also, generated messages implement `Clone + Default + PartialEq`
+</span><span class="kw">pub trait </span>Message: fmt::Debug + Clear + Any + Send + Sync {
+    <span class="doccomment">/// Message descriptor for this message, used for reflection.
+    </span><span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>MessageDescriptor;
 
     <span class="doccomment">/// True iff all required fields are initialized.
     /// Always returns `true` for protobuf 3.
     </span><span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool;
 
     <span class="doccomment">/// Update this message object with fields read from given stream.
-    </span><span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span>CodedInputStream) -&gt; <span class="kw">crate</span>::Result&lt;()&gt;;
+    </span><span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span>CodedInputStream) -&gt; ProtobufResult&lt;()&gt;;
 
     <span class="doccomment">/// Parse message from stream.
-    </span><span class="kw">fn </span>parse_from(is: <span class="kw-2">&amp;mut </span>CodedInputStream) -&gt; <span class="kw">crate</span>::Result&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>parse_from(is: <span class="kw-2">&amp;mut </span>CodedInputStream) -&gt; ProtobufResult&lt;<span class="self">Self</span>&gt;
+    <span class="kw">where
+        </span><span class="self">Self</span>: Sized,
+    {
         <span class="kw">let </span><span class="kw-2">mut </span>r: <span class="self">Self </span>= Message::new();
         r.merge_from(is)<span class="question-mark">?</span>;
         r.check_initialized()<span class="question-mark">?</span>;
@@ -269,64 +359,43 @@
     ///
     /// Sizes of this messages and nested messages must be cached
     /// by calling `compute_size` prior to this call.
-    </span><span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span>CodedOutputStream) -&gt; <span class="kw">crate</span>::Result&lt;()&gt;;
+    </span><span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span>CodedOutputStream) -&gt; ProtobufResult&lt;()&gt;;
 
-    <span class="doccomment">/// Compute and cache size of this message and all nested messages.
-    ///
-    /// Note if the computation overflows u32, the cached size is stored truncated.
-    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64;
+    <span class="doccomment">/// Compute and cache size of this message and all nested messages
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32;
 
     <span class="doccomment">/// Get size previously computed by `compute_size`.
-    ///
-    /// Note if message size exceeds u32, the cached size is stored truncated.
-    </span><span class="kw">fn </span>cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
-        <span class="self">self</span>.special_fields().cached_size().get()
-    }
+    </span><span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32;
 
     <span class="doccomment">/// Write the message to the stream.
     ///
     /// Results in error if message is not fully initialized.
-    </span><span class="kw">fn </span>write_to(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span>CodedOutputStream) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_to(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span>CodedOutputStream) -&gt; ProtobufResult&lt;()&gt; {
         <span class="self">self</span>.check_initialized()<span class="question-mark">?</span>;
 
         <span class="comment">// cache sizes
-        </span><span class="kw">let </span>size = <span class="self">self</span>.compute_size();
-        <span class="kw">let </span>size = check_message_size(size)<span class="question-mark">?</span>;
-        os.reserve_additional(size <span class="kw">as </span>u32, <span class="self">Self</span>::NAME)<span class="question-mark">?</span>;
-        <span class="self">self</span>.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
+        </span><span class="self">self</span>.compute_size();
+        <span class="comment">// TODO: reserve additional
+        </span><span class="self">self</span>.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
 
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write the message to the stream prepending the message with message length
     /// encoded as varint.
-    </span><span class="kw">fn </span>write_length_delimited_to(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span>CodedOutputStream) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_length_delimited_to(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span>CodedOutputStream) -&gt; ProtobufResult&lt;()&gt; {
         <span class="kw">let </span>size = <span class="self">self</span>.compute_size();
-        <span class="kw">let </span>size = check_message_size(size)<span class="question-mark">?</span>;
-
-        os.reserve_additional_for_length_delimited(size, <span class="self">Self</span>::NAME)<span class="question-mark">?</span>;
-
         os.write_raw_varint32(size)<span class="question-mark">?</span>;
-
-        <span class="kw">let </span>written = os.total_bytes_written();
-
         <span class="self">self</span>.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
 
-        <span class="comment">// Self-check.
-        </span><span class="macro">assert_eq!</span>(
-            written + size <span class="kw">as </span>u64,
-            os.total_bytes_written(),
-            <span class="string">&quot;Expected to write {}, actually wrote {}&quot;</span>,
-            size,
-            os.total_bytes_written() - written
-        );
+        <span class="comment">// TODO: assert we&#39;ve written same number of bytes as computed
 
-        <span class="prelude-val">Ok</span>(())
+        </span><span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Write the message to the vec, prepend the message with message length
     /// encoded as varint.
-    </span><span class="kw">fn </span>write_length_delimited_to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>, vec: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_length_delimited_to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>, vec: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; ProtobufResult&lt;()&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>os = CodedOutputStream::vec(vec);
         <span class="self">self</span>.write_length_delimited_to(<span class="kw-2">&amp;mut </span>os)<span class="question-mark">?</span>;
         os.flush()<span class="question-mark">?</span>;
@@ -334,14 +403,17 @@
     }
 
     <span class="doccomment">/// Update this message object with fields read from given stream.
-    </span><span class="kw">fn </span>merge_from_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>merge_from_bytes(<span class="kw-2">&amp;mut </span><span class="self">self</span>, bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; ProtobufResult&lt;()&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>is = CodedInputStream::from_bytes(bytes);
         <span class="self">self</span>.merge_from(<span class="kw-2">&amp;mut </span>is)
     }
 
     <span class="doccomment">/// Parse message from reader.
     /// Parse stops on EOF or when error encountered.
-    </span><span class="kw">fn </span>parse_from_reader(reader: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Read) -&gt; <span class="kw">crate</span>::Result&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>parse_from_reader(reader: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Read) -&gt; ProtobufResult&lt;<span class="self">Self</span>&gt;
+    <span class="kw">where
+        </span><span class="self">Self</span>: Sized,
+    {
         <span class="kw">let </span><span class="kw-2">mut </span>is = CodedInputStream::new(reader);
         <span class="kw">let </span>r = Message::parse_from(<span class="kw-2">&amp;mut </span>is)<span class="question-mark">?</span>;
         is.check_eof()<span class="question-mark">?</span>;
@@ -349,7 +421,10 @@
     }
 
     <span class="doccomment">/// Parse message from byte array.
-    </span><span class="kw">fn </span>parse_from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; <span class="kw">crate</span>::Result&lt;<span class="self">Self</span>&gt; {
+    </span><span class="kw">fn </span>parse_from_bytes(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; ProtobufResult&lt;<span class="self">Self</span>&gt;
+    <span class="kw">where
+        </span><span class="self">Self</span>: Sized,
+    {
         <span class="kw">let </span><span class="kw-2">mut </span>is = CodedInputStream::from_bytes(bytes);
         <span class="kw">let </span>r = Message::parse_from(<span class="kw-2">&amp;mut </span>is)<span class="question-mark">?</span>;
         is.check_eof()<span class="question-mark">?</span>;
@@ -359,99 +434,192 @@
     <span class="doccomment">/// Parse message from `Bytes` object.
     /// Resulting message may share references to the passed bytes object.
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;bytes&quot;</span>)]
-    </span><span class="kw">fn </span>parse_from_tokio_bytes(bytes: <span class="kw-2">&amp;</span>bytes::Bytes) -&gt; <span class="kw">crate</span>::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>is = CodedInputStream::from_tokio_bytes(bytes);
+    </span><span class="kw">fn </span>parse_from_carllerche_bytes(bytes: <span class="kw-2">&amp;</span>Bytes) -&gt; ProtobufResult&lt;<span class="self">Self</span>&gt;
+    <span class="kw">where
+        </span><span class="self">Self</span>: Sized,
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>is = CodedInputStream::from_carllerche_bytes(bytes);
         <span class="kw">let </span>r = <span class="self">Self</span>::parse_from(<span class="kw-2">&amp;mut </span>is)<span class="question-mark">?</span>;
         is.check_eof()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(r)
     }
 
     <span class="doccomment">/// Check if all required fields of this object are initialized.
-    </span><span class="kw">fn </span>check_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>check_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ProtobufResult&lt;()&gt; {
         <span class="kw">if </span>!<span class="self">self</span>.is_initialized() {
-            <span class="prelude-val">Err</span>(ProtobufError::MessageNotInitialized(<span class="self">Self</span>::NAME.to_owned()).into())
+            <span class="prelude-val">Err</span>(ProtobufError::message_not_initialized(
+                <span class="self">self</span>.descriptor().name(),
+            ))
         } <span class="kw">else </span>{
             <span class="prelude-val">Ok</span>(())
         }
     }
 
     <span class="doccomment">/// Write the message to the writer.
-    </span><span class="kw">fn </span>write_to_writer(<span class="kw-2">&amp;</span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_to_writer(<span class="kw-2">&amp;</span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write) -&gt; ProtobufResult&lt;()&gt; {
         w.with_coded_output_stream(|os| <span class="self">self</span>.write_to(os))
     }
 
     <span class="doccomment">/// Write the message to bytes vec.
-    </span><span class="kw">fn </span>write_to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>, v: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_to_vec(<span class="kw-2">&amp;</span><span class="self">self</span>, v: <span class="kw-2">&amp;mut </span>Vec&lt;u8&gt;) -&gt; ProtobufResult&lt;()&gt; {
         v.with_coded_output_stream(|os| <span class="self">self</span>.write_to(os))
     }
 
     <span class="doccomment">/// Write the message to bytes vec.
-    ///
-    /// &gt; **Note**: You can use [`Message::parse_from_bytes`]
-    /// to do the reverse.
-    </span><span class="kw">fn </span>write_to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::Result&lt;Vec&lt;u8&gt;&gt; {
+    </span><span class="kw">fn </span>write_to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ProtobufResult&lt;Vec&lt;u8&gt;&gt; {
         <span class="self">self</span>.check_initialized()<span class="question-mark">?</span>;
 
         <span class="kw">let </span>size = <span class="self">self</span>.compute_size() <span class="kw">as </span>usize;
         <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::with_capacity(size);
-        <span class="kw">let </span><span class="kw-2">mut </span>os = CodedOutputStream::vec(<span class="kw-2">&amp;mut </span>v);
-        <span class="self">self</span>.write_to_with_cached_sizes(<span class="kw-2">&amp;mut </span>os)<span class="question-mark">?</span>;
-        os.flush()<span class="question-mark">?</span>;
-        drop(os);
+        <span class="comment">// skip zerofill
+        </span><span class="kw">unsafe </span>{
+            v.set_len(size);
+        }
+        {
+            <span class="kw">let </span><span class="kw-2">mut </span>os = CodedOutputStream::bytes(<span class="kw-2">&amp;mut </span>v);
+            <span class="self">self</span>.write_to_with_cached_sizes(<span class="kw-2">&amp;mut </span>os)<span class="question-mark">?</span>;
+            os.check_eof();
+        }
         <span class="prelude-val">Ok</span>(v)
     }
 
     <span class="doccomment">/// Write the message to the writer, prepend the message with message length
     /// encoded as varint.
-    </span><span class="kw">fn </span>write_length_delimited_to_writer(<span class="kw-2">&amp;</span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    </span><span class="kw">fn </span>write_length_delimited_to_writer(<span class="kw-2">&amp;</span><span class="self">self</span>, w: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Write) -&gt; ProtobufResult&lt;()&gt; {
         w.with_coded_output_stream(|os| <span class="self">self</span>.write_length_delimited_to(os))
     }
 
     <span class="doccomment">/// Write the message to the bytes vec, prepend the message with message length
     /// encoded as varint.
-    </span><span class="kw">fn </span>write_length_delimited_to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::Result&lt;Vec&lt;u8&gt;&gt; {
-        <span class="kw">let </span><span class="kw-2">mut </span>v = Vec::new();
-        v.with_coded_output_stream(|os| <span class="self">self</span>.write_length_delimited_to(os))<span class="question-mark">?</span>;
-        <span class="prelude-val">Ok</span>(v)
+    </span><span class="kw">fn </span>write_length_delimited_to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; ProtobufResult&lt;Vec&lt;u8&gt;&gt; {
+        with_coded_output_stream_to_bytes(|os| <span class="self">self</span>.write_length_delimited_to(os))
     }
-
-    <span class="doccomment">/// Special fields (unknown fields and cached size).
-    </span><span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>SpecialFields;
-    <span class="doccomment">/// Special fields (unknown fields and cached size).
-    </span><span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>SpecialFields;
 
     <span class="doccomment">/// Get a reference to unknown fields.
-    </span><span class="kw">fn </span>unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>UnknownFields {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields().unknown_fields()
-    }
+    </span><span class="kw">fn </span>get_unknown_fields&lt;<span class="lifetime">&#39;s</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;s </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;s </span>UnknownFields;
     <span class="doccomment">/// Get a mutable reference to unknown fields.
-    </span><span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>UnknownFields {
-        <span class="self">self</span>.mut_special_fields().mut_unknown_fields()
+    </span><span class="kw">fn </span>mut_unknown_fields&lt;<span class="lifetime">&#39;s</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;s </span><span class="kw-2">mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;s </span><span class="kw-2">mut </span>UnknownFields;
+
+    <span class="doccomment">/// Get type id for downcasting.
+    </span><span class="kw">fn </span>type_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; TypeId {
+        TypeId::of::&lt;<span class="self">Self</span>&gt;()
     }
 
-    <span class="doccomment">/// Create an empty message object.
+    <span class="doccomment">/// View self as `Any`.
+    </span><span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>Any;
+
+    <span class="doccomment">/// View self as mutable `Any`.
+    </span><span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Any {
+        <span class="macro">panic!</span>()
+    }
+
+    <span class="doccomment">/// Convert boxed self to boxed `Any`.
+    </span><span class="kw">fn </span>into_any(<span class="self">self</span>: Box&lt;<span class="self">Self</span>&gt;) -&gt; Box&lt;<span class="kw">dyn </span>Any&gt; {
+        <span class="macro">panic!</span>()
+    }
+
+    <span class="comment">// Rust does not allow implementation of trait for trait:
+    // impl&lt;M : Message&gt; fmt::Debug for M {
+    // ...
+    // }
+
+    </span><span class="doccomment">/// Create an empty message object.
+    ///
     ///
     /// ```
-    /// # use protobuf::MessageFull;
-    /// # fn foo&lt;MyMessage: MessageFull&gt;() {
+    /// # use protobuf::Message;
+    /// # fn foo&lt;MyMessage: Message&gt;() {
     /// let m = MyMessage::new();
     /// # }
     /// ```
-    </span><span class="kw">fn </span>new() -&gt; <span class="self">Self</span>;
+    </span><span class="kw">fn </span>new() -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span><span class="self">Self</span>: Sized;
 
-    <span class="doccomment">/// Reset all fields.
-    </span><span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw-2">*</span><span class="self">self </span>= <span class="self">Self</span>::new();
+    <span class="doccomment">/// Get message descriptor for message type.
+    ///
+    /// ```
+    /// # use protobuf::Message;
+    /// # fn foo&lt;MyMessage: Message&gt;() {
+    /// let descriptor = MyMessage::descriptor_static();
+    /// assert_eq!(&quot;MyMessage&quot;, descriptor.name());
+    /// # }
+    /// ```
+    </span><span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>MessageDescriptor
+    <span class="kw">where
+        </span><span class="self">Self</span>: Sized,
+    {
+        <span class="macro">panic!</span>(
+            <span class="string">&quot;descriptor_static is not implemented for message, \
+             LITE_RUNTIME must be used&quot;
+        </span>);
     }
 
     <span class="doccomment">/// Return a pointer to default immutable message with static lifetime.
     ///
     /// ```
-    /// # use protobuf::MessageFull;
-    /// # fn foo&lt;MyMessage: MessageFull&gt;() {
+    /// # use protobuf::Message;
+    /// # fn foo&lt;MyMessage: Message&gt;() {
     /// let m: &amp;MyMessage = MyMessage::default_instance();
     /// # }
     /// ```
-    </span><span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="self">Self</span>;
+    </span><span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="self">Self
+    </span><span class="kw">where
+        </span><span class="self">Self</span>: Sized;
+}
+
+<span class="kw">pub fn </span>message_down_cast&lt;<span class="lifetime">&#39;a</span>, M: Message + <span class="lifetime">&#39;a</span>&gt;(m: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="kw">dyn </span>Message) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>M {
+    m.as_any().downcast_ref::&lt;M&gt;().unwrap()
+}
+
+<span class="doccomment">/// Parse message from reader.
+/// Parse stops on EOF or when error encountered.
+</span><span class="attr">#[deprecated(since = <span class="string">&quot;2.19&quot;</span>, note = <span class="string">&quot;Use Message::parse_from_reader instead&quot;</span>)]
+</span><span class="kw">pub fn </span>parse_from_reader&lt;M: Message&gt;(reader: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Read) -&gt; ProtobufResult&lt;M&gt; {
+    M::parse_from_reader(reader)
+}
+
+<span class="doccomment">/// Parse message from byte array.
+</span><span class="attr">#[deprecated(since = <span class="string">&quot;2.19&quot;</span>, note = <span class="string">&quot;Use Message::parse_from_bytes instead&quot;</span>)]
+</span><span class="kw">pub fn </span>parse_from_bytes&lt;M: Message&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; ProtobufResult&lt;M&gt; {
+    M::parse_from_bytes(bytes)
+}
+
+<span class="doccomment">/// Parse message from `Bytes` object.
+/// Resulting message may share references to the passed bytes object.
+</span><span class="attr">#[cfg(feature = <span class="string">&quot;bytes&quot;</span>)]
+#[deprecated(
+    since = <span class="string">&quot;2.19&quot;</span>,
+    note = <span class="string">&quot;Use Message::parse_from_carllerche_bytes instead&quot;
+</span>)]
+</span><span class="kw">pub fn </span>parse_from_carllerche_bytes&lt;M: Message&gt;(bytes: <span class="kw-2">&amp;</span>Bytes) -&gt; ProtobufResult&lt;M&gt; {
+    M::parse_from_carllerche_bytes(bytes)
+}
+
+<span class="doccomment">/// Parse length-delimited message from stream.
+///
+/// Read varint length first, and read messages of that length then.
+///
+/// This function is deprecated and will be removed in the next major release.
+</span><span class="attr">#[deprecated]
+</span><span class="kw">pub fn </span>parse_length_delimited_from&lt;M: Message&gt;(is: <span class="kw-2">&amp;mut </span>CodedInputStream) -&gt; ProtobufResult&lt;M&gt; {
+    is.read_message::&lt;M&gt;()
+}
+
+<span class="doccomment">/// Parse length-delimited message from `Read`.
+///
+/// This function is deprecated and will be removed in the next major release.
+</span><span class="attr">#[deprecated]
+</span><span class="kw">pub fn </span>parse_length_delimited_from_reader&lt;M: Message&gt;(r: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>Read) -&gt; ProtobufResult&lt;M&gt; {
+    <span class="comment">// TODO: wrong: we may read length first, and then read exact number of bytes needed
+    </span>r.with_coded_input_stream(|is| is.read_message::&lt;M&gt;())
+}
+
+<span class="doccomment">/// Parse length-delimited message from bytes.
+///
+/// This function is deprecated and will be removed in the next major release.
+</span><span class="attr">#[deprecated]
+</span><span class="kw">pub fn </span>parse_length_delimited_from_bytes&lt;M: Message&gt;(bytes: <span class="kw-2">&amp;</span>[u8]) -&gt; ProtobufResult&lt;M&gt; {
+    bytes.with_coded_input_stream(|is| is.read_message::&lt;M&gt;())
 }
 </code></pre></div></section></main></body></html>

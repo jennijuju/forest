@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"constant":["FIRST_COL","FIRST_LINE"],"struct":["Loc"]};

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"fn":["file_descriptor"],"mod":["exts"]};
+window.SIDEBAR_ITEMS = {"fn":["file_descriptor_proto"],"mod":["exts"]};

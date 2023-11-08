@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["mod_Message"],"struct":["Message"]};

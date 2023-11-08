@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-3.3.0/src/well_known_types/duration.rs`."><title>duration.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../protobuf/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-2.28.0/src/well_known_types/duration.rs`."><title>duration.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../protobuf/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -314,8 +314,29 @@
 <a href="#314" id="314">314</a>
 <a href="#315" id="315">315</a>
 <a href="#316" id="316">316</a>
-</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 3.3.0-pre. Do not edit
-// .proto file is parsed by protoc --rust-out=...
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 2.27.1. Do not edit
 // @generated
 
 // https://github.com/rust-lang/rust-clippy/issues/702
@@ -332,31 +353,21 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 #![allow(trivial_casts)]
+#![allow(unused_imports)]
 #![allow(unused_results)]
-#![allow(unused_mut)]
-
 </span><span class="doccomment">//! Generated file from `google/protobuf/duration.proto`
 
-</span><span class="comment">// @@protoc_insertion_point(message:google.protobuf.Duration)
-</span><span class="attr">#[derive(PartialEq,Clone,Default,Debug)]
+</span><span class="attr">#[derive(PartialEq,Clone,Default)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
 </span><span class="kw">pub struct </span>Duration {
     <span class="comment">// message fields
-    </span><span class="doccomment">///  Signed seconds of the span of time. Must be from -315,576,000,000
-    ///  to +315,576,000,000 inclusive. Note: these bounds are computed from:
-    ///  60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.Duration.seconds)
     </span><span class="kw">pub </span>seconds: i64,
-    <span class="doccomment">///  Signed fractions of a second at nanosecond resolution of the span
-    ///  of time. Durations less than one second are represented with a 0
-    ///  `seconds` field and a positive or negative `nanos` field. For durations
-    ///  of one second or more, a non-zero value for the `nanos` field must be
-    ///  of the same sign as the `seconds` field. Must be from -999,999,999
-    ///  to +999,999,999 inclusive.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.Duration.nanos)
-    </span><span class="kw">pub </span>nanos: i32,
+    <span class="kw">pub </span>nanos: i32,
     <span class="comment">// special fields
-    // @@protoc_insertion_point(special_field:google.protobuf.Duration.special_fields)
-    </span><span class="kw">pub </span>special_fields: <span class="kw">crate</span>::SpecialFields,
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>unknown_fields: <span class="kw">crate</span>::UnknownFields,
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>cached_size: <span class="kw">crate</span>::CachedSize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Duration {
@@ -370,45 +381,62 @@
         ::std::default::Default::default()
     }
 
-    <span class="kw">fn </span>generated_message_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData {
-        <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::with_capacity(<span class="number">2</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>oneofs = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_simpler_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;seconds&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Duration| { <span class="kw-2">&amp;</span>m.seconds },
-            |m: <span class="kw-2">&amp;mut </span>Duration| { <span class="kw-2">&amp;mut </span>m.seconds },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_simpler_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;nanos&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Duration| { <span class="kw-2">&amp;</span>m.nanos },
-            |m: <span class="kw-2">&amp;mut </span>Duration| { <span class="kw-2">&amp;mut </span>m.nanos },
-        ));
-        <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData::new_2::&lt;Duration&gt;(
-            <span class="string">&quot;Duration&quot;</span>,
-            fields,
-            oneofs,
-        )
+    <span class="comment">// int64 seconds = 1;
+
+
+    </span><span class="kw">pub fn </span>get_seconds(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i64 {
+        <span class="self">self</span>.seconds
+    }
+    <span class="kw">pub fn </span>clear_seconds(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.seconds = <span class="number">0</span>;
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_seconds(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: i64) {
+        <span class="self">self</span>.seconds = v;
+    }
+
+    <span class="comment">// int32 nanos = 2;
+
+
+    </span><span class="kw">pub fn </span>get_nanos(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
+        <span class="self">self</span>.nanos
+    }
+    <span class="kw">pub fn </span>clear_nanos(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.nanos = <span class="number">0</span>;
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_nanos(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: i32) {
+        <span class="self">self</span>.nanos = v;
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>Duration {
-    <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;Duration&quot;</span>;
-
     <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(tag) = is.read_raw_tag_or_eof()<span class="question-mark">? </span>{
-            <span class="kw">match </span>tag {
-                <span class="number">8 </span>=&gt; {
-                    <span class="self">self</span>.seconds = is.read_int64()<span class="question-mark">?</span>;
+    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">while </span>!is.eof()<span class="question-mark">? </span>{
+            <span class="kw">let </span>(field_number, wire_type) = is.read_tag_unpack()<span class="question-mark">?</span>;
+            <span class="kw">match </span>field_number {
+                <span class="number">1 </span>=&gt; {
+                    <span class="kw">if </span>wire_type != <span class="kw">crate</span>::wire_format::WireTypeVarint {
+                        <span class="kw">return </span>::std::result::Result::Err(<span class="kw">crate</span>::rt::unexpected_wire_type(wire_type));
+                    }
+                    <span class="kw">let </span>tmp = is.read_int64()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.seconds = tmp;
                 },
-                <span class="number">16 </span>=&gt; {
-                    <span class="self">self</span>.nanos = is.read_int32()<span class="question-mark">?</span>;
+                <span class="number">2 </span>=&gt; {
+                    <span class="kw">if </span>wire_type != <span class="kw">crate</span>::wire_format::WireTypeVarint {
+                        <span class="kw">return </span>::std::result::Result::Err(<span class="kw">crate</span>::rt::unexpected_wire_type(wire_type));
+                    }
+                    <span class="kw">let </span>tmp = is.read_int32()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.nanos = tmp;
                 },
-                tag =&gt; {
-                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(tag, is, <span class="self">self</span>.special_fields.mut_unknown_fields())<span class="question-mark">?</span>;
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(field_number, wire_type, is, <span class="self">self</span>.mut_unknown_fields())<span class="question-mark">?</span>;
                 },
             };
         }
@@ -417,73 +445,106 @@
 
     <span class="comment">// Compute sizes of nested messages
     </span><span class="attr">#[allow(unused_variables)]
-    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
         <span class="kw">if </span><span class="self">self</span>.seconds != <span class="number">0 </span>{
-            my_size += <span class="kw">crate</span>::rt::int64_size(<span class="number">1</span>, <span class="self">self</span>.seconds);
+            my_size += <span class="kw">crate</span>::rt::value_size(<span class="number">1</span>, <span class="self">self</span>.seconds, <span class="kw">crate</span>::wire_format::WireTypeVarint);
         }
         <span class="kw">if </span><span class="self">self</span>.nanos != <span class="number">0 </span>{
-            my_size += <span class="kw">crate</span>::rt::int32_size(<span class="number">2</span>, <span class="self">self</span>.nanos);
+            my_size += <span class="kw">crate</span>::rt::value_size(<span class="number">2</span>, <span class="self">self</span>.nanos, <span class="kw">crate</span>::wire_format::WireTypeVarint);
         }
-        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.special_fields.unknown_fields());
-        <span class="self">self</span>.special_fields.cached_size().set(my_size <span class="kw">as </span>u32);
+        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.get_unknown_fields());
+        <span class="self">self</span>.cached_size.set(my_size);
         my_size
     }
 
-    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
         <span class="kw">if </span><span class="self">self</span>.seconds != <span class="number">0 </span>{
             os.write_int64(<span class="number">1</span>, <span class="self">self</span>.seconds)<span class="question-mark">?</span>;
         }
         <span class="kw">if </span><span class="self">self</span>.nanos != <span class="number">0 </span>{
             os.write_int32(<span class="number">2</span>, <span class="self">self</span>.nanos)<span class="question-mark">?</span>;
         }
-        os.write_unknown_fields(<span class="self">self</span>.special_fields.unknown_fields())<span class="question-mark">?</span>;
+        os.write_unknown_fields(<span class="self">self</span>.get_unknown_fields())<span class="question-mark">?</span>;
         ::std::result::Result::Ok(())
     }
 
-    <span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.cached_size.get()
     }
 
-    <span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>into_any(<span class="self">self</span>: ::std::boxed::Box&lt;<span class="self">Self</span>&gt;) -&gt; ::std::boxed::Box&lt;<span class="kw">dyn </span>(::std::any::Any)&gt; {
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="self">Self</span>::descriptor_static()
     }
 
     <span class="kw">fn </span>new() -&gt; Duration {
         Duration::new()
     }
 
-    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.seconds = <span class="number">0</span>;
-        <span class="self">self</span>.nanos = <span class="number">0</span>;
-        <span class="self">self</span>.special_fields.clear();
+    <span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::new();
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_simple_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeInt64&gt;(
+                <span class="string">&quot;seconds&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Duration| { <span class="kw-2">&amp;</span>m.seconds },
+                |m: <span class="kw-2">&amp;mut </span>Duration| { <span class="kw-2">&amp;mut </span>m.seconds },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_simple_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeInt32&gt;(
+                <span class="string">&quot;nanos&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Duration| { <span class="kw-2">&amp;</span>m.nanos },
+                |m: <span class="kw-2">&amp;mut </span>Duration| { <span class="kw-2">&amp;mut </span>m.nanos },
+            ));
+            <span class="kw">crate</span>::reflect::MessageDescriptor::new_pb_name::&lt;Duration&gt;(
+                <span class="string">&quot;Duration&quot;</span>,
+                fields,
+                file_descriptor_proto()
+            )
+        })
     }
 
     <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>Duration {
-        <span class="kw">static </span>instance: Duration = Duration {
-            seconds: <span class="number">0</span>,
-            nanos: <span class="number">0</span>,
-            special_fields: <span class="kw">crate</span>::SpecialFields::new(),
-        };
-        <span class="kw-2">&amp;</span>instance
+        <span class="kw">static </span>instance: <span class="kw">crate</span>::rt::LazyV2&lt;Duration&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        instance.get(Duration::new)
     }
 }
 
-<span class="kw">impl </span><span class="kw">crate</span>::MessageFull <span class="kw">for </span>Duration {
-    <span class="kw">fn </span>descriptor() -&gt; <span class="kw">crate</span>::reflect::MessageDescriptor {
-        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name(<span class="string">&quot;Duration&quot;</span>).unwrap()).clone()
+<span class="kw">impl </span><span class="kw">crate</span>::Clear <span class="kw">for </span>Duration {
+    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.seconds = <span class="number">0</span>;
+        <span class="self">self</span>.nanos = <span class="number">0</span>;
+        <span class="self">self</span>.unknown_fields.clear();
     }
 }
 
-<span class="kw">impl </span>::std::fmt::Display <span class="kw">for </span>Duration {
+<span class="kw">impl </span>::std::fmt::Debug <span class="kw">for </span>Duration {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
         <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>Duration {
-    <span class="kw">type </span>RuntimeType = <span class="kw">crate</span>::reflect::rt::RuntimeTypeMessage&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Message(<span class="self">self</span>)
+    }
 }
 
 <span class="kw">static </span>file_descriptor_proto_data: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[u8] = <span class="string">b&quot;\
@@ -602,32 +663,15 @@
     3\
 &quot;</span>;
 
-<span class="doccomment">/// `FileDescriptorProto` object which was a source for this generated file
-</span><span class="kw">fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
-    <span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor_proto_lazy.get(|| {
-        <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
-    })
+<span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+
+<span class="kw">fn </span>parse_descriptor_proto() -&gt; <span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
 }
 
-<span class="doccomment">/// `FileDescriptor` object which allows dynamic access to files
-</span><span class="kw">pub fn </span>file_descriptor() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::FileDescriptor {
-    <span class="kw">static </span>generated_file_descriptor_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::GeneratedFileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    <span class="kw">static </span>file_descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::FileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor.get(|| {
-        <span class="kw">let </span>generated_file_descriptor = generated_file_descriptor_lazy.get(|| {
-            <span class="kw">let </span><span class="kw-2">mut </span>deps = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>messages = ::std::vec::Vec::with_capacity(<span class="number">1</span>);
-            messages.push(Duration::generated_message_descriptor_data());
-            <span class="kw">let </span><span class="kw-2">mut </span>enums = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            <span class="kw">crate</span>::reflect::GeneratedFileDescriptor::new_generated(
-                file_descriptor_proto(),
-                deps,
-                messages,
-                enums,
-            )
-        });
-        <span class="kw">crate</span>::reflect::FileDescriptor::new_generated_2(generated_file_descriptor)
+<span class="kw">pub fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    file_descriptor_proto_lazy.get(|| {
+        parse_descriptor_proto()
     })
 }
 </code></pre></div></section></main></body></html>

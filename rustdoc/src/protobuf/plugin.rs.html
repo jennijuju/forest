@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-3.3.0/src/plugin.rs`."><title>plugin.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../protobuf/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/protobuf-2.28.0/src/plugin.rs`."><title>plugin.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="protobuf" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../protobuf/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1443,8 +1443,90 @@
 <a href="#1443" id="1443">1443</a>
 <a href="#1444" id="1444">1444</a>
 <a href="#1445" id="1445">1445</a>
-</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 3.3.0-pre. Do not edit
-// .proto file is parsed by protoc --rust-out=...
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
+<a href="#1460" id="1460">1460</a>
+<a href="#1461" id="1461">1461</a>
+<a href="#1462" id="1462">1462</a>
+<a href="#1463" id="1463">1463</a>
+<a href="#1464" id="1464">1464</a>
+<a href="#1465" id="1465">1465</a>
+<a href="#1466" id="1466">1466</a>
+<a href="#1467" id="1467">1467</a>
+<a href="#1468" id="1468">1468</a>
+<a href="#1469" id="1469">1469</a>
+<a href="#1470" id="1470">1470</a>
+<a href="#1471" id="1471">1471</a>
+<a href="#1472" id="1472">1472</a>
+<a href="#1473" id="1473">1473</a>
+<a href="#1474" id="1474">1474</a>
+<a href="#1475" id="1475">1475</a>
+<a href="#1476" id="1476">1476</a>
+<a href="#1477" id="1477">1477</a>
+<a href="#1478" id="1478">1478</a>
+<a href="#1479" id="1479">1479</a>
+<a href="#1480" id="1480">1480</a>
+<a href="#1481" id="1481">1481</a>
+<a href="#1482" id="1482">1482</a>
+<a href="#1483" id="1483">1483</a>
+<a href="#1484" id="1484">1484</a>
+<a href="#1485" id="1485">1485</a>
+<a href="#1486" id="1486">1486</a>
+<a href="#1487" id="1487">1487</a>
+<a href="#1488" id="1488">1488</a>
+<a href="#1489" id="1489">1489</a>
+<a href="#1490" id="1490">1490</a>
+<a href="#1491" id="1491">1491</a>
+<a href="#1492" id="1492">1492</a>
+<a href="#1493" id="1493">1493</a>
+<a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
+<a href="#1520" id="1520">1520</a>
+<a href="#1521" id="1521">1521</a>
+<a href="#1522" id="1522">1522</a>
+<a href="#1523" id="1523">1523</a>
+<a href="#1524" id="1524">1524</a>
+<a href="#1525" id="1525">1525</a>
+<a href="#1526" id="1526">1526</a>
+<a href="#1527" id="1527">1527</a>
+<a href="#1528" id="1528">1528</a>
+</pre></div><pre class="rust"><code><span class="comment">// This file is generated by rust-protobuf 2.27.1. Do not edit
 // @generated
 
 // https://github.com/rust-lang/rust-clippy/issues/702
@@ -1461,29 +1543,23 @@
 #![allow(non_snake_case)]
 #![allow(non_upper_case_globals)]
 #![allow(trivial_casts)]
+#![allow(unused_imports)]
 #![allow(unused_results)]
-#![allow(unused_mut)]
-
 </span><span class="doccomment">//! Generated file from `google/protobuf/compiler/plugin.proto`
 
-///  The version number of protocol compiler.
-</span><span class="comment">// @@protoc_insertion_point(message:google.protobuf.compiler.Version)
-</span><span class="attr">#[derive(PartialEq,Clone,Default,Debug)]
+</span><span class="attr">#[derive(PartialEq,Clone,Default)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
 </span><span class="kw">pub struct </span>Version {
     <span class="comment">// message fields
-    // @@protoc_insertion_point(field:google.protobuf.compiler.Version.major)
-    </span><span class="kw">pub </span>major: ::std::option::Option&lt;i32&gt;,
-    <span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.Version.minor)
-    </span><span class="kw">pub </span>minor: ::std::option::Option&lt;i32&gt;,
-    <span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.Version.patch)
-    </span><span class="kw">pub </span>patch: ::std::option::Option&lt;i32&gt;,
-    <span class="doccomment">///  A suffix for alpha, beta or rc release, e.g., &quot;alpha-1&quot;, &quot;rc2&quot;. It should
-    ///  be empty for mainline stable releases.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.Version.suffix)
-    </span><span class="kw">pub </span>suffix: ::std::option::Option&lt;::std::string::String&gt;,
+    </span>major: ::std::option::Option&lt;i32&gt;,
+    minor: ::std::option::Option&lt;i32&gt;,
+    patch: ::std::option::Option&lt;i32&gt;,
+    suffix: <span class="kw">crate</span>::SingularField&lt;::std::string::String&gt;,
     <span class="comment">// special fields
-    // @@protoc_insertion_point(special_field:google.protobuf.compiler.Version.special_fields)
-    </span><span class="kw">pub </span>special_fields: <span class="kw">crate</span>::SpecialFields,
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>unknown_fields: <span class="kw">crate</span>::UnknownFields,
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>cached_size: <span class="kw">crate</span>::CachedSize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Version {
@@ -1499,10 +1575,10 @@
 
     <span class="comment">// optional int32 major = 1;
 
-    </span><span class="kw">pub fn </span>major(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
+
+    </span><span class="kw">pub fn </span>get_major(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
         <span class="self">self</span>.major.unwrap_or(<span class="number">0</span>)
     }
-
     <span class="kw">pub fn </span>clear_major(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.major = ::std::option::Option::None;
     }
@@ -1518,10 +1594,10 @@
 
     <span class="comment">// optional int32 minor = 2;
 
-    </span><span class="kw">pub fn </span>minor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
+
+    </span><span class="kw">pub fn </span>get_minor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
         <span class="self">self</span>.minor.unwrap_or(<span class="number">0</span>)
     }
-
     <span class="kw">pub fn </span>clear_minor(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.minor = ::std::option::Option::None;
     }
@@ -1537,10 +1613,10 @@
 
     <span class="comment">// optional int32 patch = 3;
 
-    </span><span class="kw">pub fn </span>patch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
+
+    </span><span class="kw">pub fn </span>get_patch(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
         <span class="self">self</span>.patch.unwrap_or(<span class="number">0</span>)
     }
-
     <span class="kw">pub fn </span>clear_patch(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.patch = ::std::option::Option::None;
     }
@@ -1556,15 +1632,15 @@
 
     <span class="comment">// optional string suffix = 4;
 
-    </span><span class="kw">pub fn </span>suffix(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+
+    </span><span class="kw">pub fn </span>get_suffix(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
         <span class="kw">match </span><span class="self">self</span>.suffix.as_ref() {
-            <span class="prelude-val">Some</span>(v) =&gt; v,
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="kw-2">&amp;</span>v,
             <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
         }
     }
-
     <span class="kw">pub fn </span>clear_suffix(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.suffix = ::std::option::Option::None;
+        <span class="self">self</span>.suffix.clear();
     }
 
     <span class="kw">pub fn </span>has_suffix(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -1573,14 +1649,14 @@
 
     <span class="comment">// Param is passed by value, moved
     </span><span class="kw">pub fn </span>set_suffix(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
-        <span class="self">self</span>.suffix = ::std::option::Option::Some(v);
+        <span class="self">self</span>.suffix = <span class="kw">crate</span>::SingularField::some(v);
     }
 
     <span class="comment">// Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
     </span><span class="kw">pub fn </span>mut_suffix(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
         <span class="kw">if </span><span class="self">self</span>.suffix.is_none() {
-            <span class="self">self</span>.suffix = ::std::option::Option::Some(::std::string::String::new());
+            <span class="self">self</span>.suffix.set_default();
         }
         <span class="self">self</span>.suffix.as_mut().unwrap()
     }
@@ -1589,62 +1665,43 @@
     </span><span class="kw">pub fn </span>take_suffix(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
         <span class="self">self</span>.suffix.take().unwrap_or_else(|| ::std::string::String::new())
     }
-
-    <span class="kw">fn </span>generated_message_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData {
-        <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::with_capacity(<span class="number">4</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>oneofs = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;major&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.major },
-            |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.major },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;minor&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.minor },
-            |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.minor },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;patch&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.patch },
-            |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.patch },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;suffix&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.suffix },
-            |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.suffix },
-        ));
-        <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData::new_2::&lt;Version&gt;(
-            <span class="string">&quot;Version&quot;</span>,
-            fields,
-            oneofs,
-        )
-    }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>Version {
-    <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;Version&quot;</span>;
-
     <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(tag) = is.read_raw_tag_or_eof()<span class="question-mark">? </span>{
-            <span class="kw">match </span>tag {
-                <span class="number">8 </span>=&gt; {
-                    <span class="self">self</span>.major = ::std::option::Option::Some(is.read_int32()<span class="question-mark">?</span>);
+    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">while </span>!is.eof()<span class="question-mark">? </span>{
+            <span class="kw">let </span>(field_number, wire_type) = is.read_tag_unpack()<span class="question-mark">?</span>;
+            <span class="kw">match </span>field_number {
+                <span class="number">1 </span>=&gt; {
+                    <span class="kw">if </span>wire_type != <span class="kw">crate</span>::wire_format::WireTypeVarint {
+                        <span class="kw">return </span>::std::result::Result::Err(<span class="kw">crate</span>::rt::unexpected_wire_type(wire_type));
+                    }
+                    <span class="kw">let </span>tmp = is.read_int32()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.major = ::std::option::Option::Some(tmp);
                 },
-                <span class="number">16 </span>=&gt; {
-                    <span class="self">self</span>.minor = ::std::option::Option::Some(is.read_int32()<span class="question-mark">?</span>);
+                <span class="number">2 </span>=&gt; {
+                    <span class="kw">if </span>wire_type != <span class="kw">crate</span>::wire_format::WireTypeVarint {
+                        <span class="kw">return </span>::std::result::Result::Err(<span class="kw">crate</span>::rt::unexpected_wire_type(wire_type));
+                    }
+                    <span class="kw">let </span>tmp = is.read_int32()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.minor = ::std::option::Option::Some(tmp);
                 },
-                <span class="number">24 </span>=&gt; {
-                    <span class="self">self</span>.patch = ::std::option::Option::Some(is.read_int32()<span class="question-mark">?</span>);
+                <span class="number">3 </span>=&gt; {
+                    <span class="kw">if </span>wire_type != <span class="kw">crate</span>::wire_format::WireTypeVarint {
+                        <span class="kw">return </span>::std::result::Result::Err(<span class="kw">crate</span>::rt::unexpected_wire_type(wire_type));
+                    }
+                    <span class="kw">let </span>tmp = is.read_int32()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.patch = ::std::option::Option::Some(tmp);
                 },
-                <span class="number">34 </span>=&gt; {
-                    <span class="self">self</span>.suffix = ::std::option::Option::Some(is.read_string()<span class="question-mark">?</span>);
+                <span class="number">4 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.suffix)<span class="question-mark">?</span>;
                 },
-                tag =&gt; {
-                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(tag, is, <span class="self">self</span>.special_fields.mut_unknown_fields())<span class="question-mark">?</span>;
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(field_number, wire_type, is, <span class="self">self</span>.mut_unknown_fields())<span class="question-mark">?</span>;
                 },
             };
         }
@@ -1653,26 +1710,26 @@
 
     <span class="comment">// Compute sizes of nested messages
     </span><span class="attr">#[allow(unused_variables)]
-    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.major {
-            my_size += <span class="kw">crate</span>::rt::int32_size(<span class="number">1</span>, v);
+            my_size += <span class="kw">crate</span>::rt::value_size(<span class="number">1</span>, v, <span class="kw">crate</span>::wire_format::WireTypeVarint);
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.minor {
-            my_size += <span class="kw">crate</span>::rt::int32_size(<span class="number">2</span>, v);
+            my_size += <span class="kw">crate</span>::rt::value_size(<span class="number">2</span>, v, <span class="kw">crate</span>::wire_format::WireTypeVarint);
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.patch {
-            my_size += <span class="kw">crate</span>::rt::int32_size(<span class="number">3</span>, v);
+            my_size += <span class="kw">crate</span>::rt::value_size(<span class="number">3</span>, v, <span class="kw">crate</span>::wire_format::WireTypeVarint);
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.suffix.as_ref() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.suffix.as_ref() {
             my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">4</span>, <span class="kw-2">&amp;</span>v);
         }
-        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.special_fields.unknown_fields());
-        <span class="self">self</span>.special_fields.cached_size().set(my_size <span class="kw">as </span>u32);
+        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.get_unknown_fields());
+        <span class="self">self</span>.cached_size.set(my_size);
         my_size
     }
 
-    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.major {
             os.write_int32(<span class="number">1</span>, v)<span class="question-mark">?</span>;
         }
@@ -1682,97 +1739,116 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.patch {
             os.write_int32(<span class="number">3</span>, v)<span class="question-mark">?</span>;
         }
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.suffix.as_ref() {
-            os.write_string(<span class="number">4</span>, v)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.suffix.as_ref() {
+            os.write_string(<span class="number">4</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         }
-        os.write_unknown_fields(<span class="self">self</span>.special_fields.unknown_fields())<span class="question-mark">?</span>;
+        os.write_unknown_fields(<span class="self">self</span>.get_unknown_fields())<span class="question-mark">?</span>;
         ::std::result::Result::Ok(())
     }
 
-    <span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.cached_size.get()
     }
 
-    <span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>into_any(<span class="self">self</span>: ::std::boxed::Box&lt;<span class="self">Self</span>&gt;) -&gt; ::std::boxed::Box&lt;<span class="kw">dyn </span>(::std::any::Any)&gt; {
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="self">Self</span>::descriptor_static()
     }
 
     <span class="kw">fn </span>new() -&gt; Version {
         Version::new()
     }
 
+    <span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::new();
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeInt32&gt;(
+                <span class="string">&quot;major&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.major },
+                |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.major },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeInt32&gt;(
+                <span class="string">&quot;minor&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.minor },
+                |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.minor },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeInt32&gt;(
+                <span class="string">&quot;patch&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.patch },
+                |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.patch },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
+                <span class="string">&quot;suffix&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>Version| { <span class="kw-2">&amp;</span>m.suffix },
+                |m: <span class="kw-2">&amp;mut </span>Version| { <span class="kw-2">&amp;mut </span>m.suffix },
+            ));
+            <span class="kw">crate</span>::reflect::MessageDescriptor::new_pb_name::&lt;Version&gt;(
+                <span class="string">&quot;Version&quot;</span>,
+                fields,
+                file_descriptor_proto()
+            )
+        })
+    }
+
+    <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>Version {
+        <span class="kw">static </span>instance: <span class="kw">crate</span>::rt::LazyV2&lt;Version&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        instance.get(Version::new)
+    }
+}
+
+<span class="kw">impl </span><span class="kw">crate</span>::Clear <span class="kw">for </span>Version {
     <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.major = ::std::option::Option::None;
         <span class="self">self</span>.minor = ::std::option::Option::None;
         <span class="self">self</span>.patch = ::std::option::Option::None;
-        <span class="self">self</span>.suffix = ::std::option::Option::None;
-        <span class="self">self</span>.special_fields.clear();
-    }
-
-    <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>Version {
-        <span class="kw">static </span>instance: Version = Version {
-            major: ::std::option::Option::None,
-            minor: ::std::option::Option::None,
-            patch: ::std::option::Option::None,
-            suffix: ::std::option::Option::None,
-            special_fields: <span class="kw">crate</span>::SpecialFields::new(),
-        };
-        <span class="kw-2">&amp;</span>instance
+        <span class="self">self</span>.suffix.clear();
+        <span class="self">self</span>.unknown_fields.clear();
     }
 }
 
-<span class="kw">impl </span><span class="kw">crate</span>::MessageFull <span class="kw">for </span>Version {
-    <span class="kw">fn </span>descriptor() -&gt; <span class="kw">crate</span>::reflect::MessageDescriptor {
-        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name(<span class="string">&quot;Version&quot;</span>).unwrap()).clone()
-    }
-}
-
-<span class="kw">impl </span>::std::fmt::Display <span class="kw">for </span>Version {
+<span class="kw">impl </span>::std::fmt::Debug <span class="kw">for </span>Version {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
         <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>Version {
-    <span class="kw">type </span>RuntimeType = <span class="kw">crate</span>::reflect::rt::RuntimeTypeMessage&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Message(<span class="self">self</span>)
+    }
 }
 
-<span class="doccomment">///  An encoded CodeGeneratorRequest is written to the plugin&#39;s stdin.
-</span><span class="comment">// @@protoc_insertion_point(message:google.protobuf.compiler.CodeGeneratorRequest)
-</span><span class="attr">#[derive(PartialEq,Clone,Default,Debug)]
+<span class="attr">#[derive(PartialEq,Clone,Default)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
 </span><span class="kw">pub struct </span>CodeGeneratorRequest {
     <span class="comment">// message fields
-    </span><span class="doccomment">///  The .proto files that were explicitly listed on the command-line.  The
-    ///  code generator should generate code only for these files.  Each file&#39;s
-    ///  descriptor will be included in proto_file, below.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorRequest.file_to_generate)
-    </span><span class="kw">pub </span>file_to_generate: ::std::vec::Vec&lt;::std::string::String&gt;,
-    <span class="doccomment">///  The generator parameter passed on the command-line.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorRequest.parameter)
-    </span><span class="kw">pub </span>parameter: ::std::option::Option&lt;::std::string::String&gt;,
-    <span class="doccomment">///  FileDescriptorProtos for all files in files_to_generate and everything
-    ///  they import.  The files will appear in topological order, so each file
-    ///  appears before any file that imports it.
-    ///
-    ///  protoc guarantees that all proto_files will be written after
-    ///  the fields above, even though this is not technically guaranteed by the
-    ///  protobuf wire format.  This theoretically could allow a plugin to stream
-    ///  in the FileDescriptorProtos and handle them one by one rather than read
-    ///  the entire set into memory at once.  However, as of this writing, this
-    ///  is not similarly optimized on protoc&#39;s end -- it will store all fields in
-    ///  memory at once before sending them to the plugin.
-    ///
-    ///  Type names of fields and extensions in the FileDescriptorProto are always
-    ///  fully qualified.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorRequest.proto_file)
-    </span><span class="kw">pub </span>proto_file: ::std::vec::Vec&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt;,
-    <span class="doccomment">///  The version number of protocol compiler.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorRequest.compiler_version)
-    </span><span class="kw">pub </span>compiler_version: <span class="kw">crate</span>::MessageField&lt;Version&gt;,
+    </span><span class="kw">pub </span>file_to_generate: <span class="kw">crate</span>::RepeatedField&lt;::std::string::String&gt;,
+    parameter: <span class="kw">crate</span>::SingularField&lt;::std::string::String&gt;,
+    <span class="kw">pub </span>proto_file: <span class="kw">crate</span>::RepeatedField&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt;,
+    <span class="kw">pub </span>compiler_version: <span class="kw">crate</span>::SingularPtrField&lt;Version&gt;,
     <span class="comment">// special fields
-    // @@protoc_insertion_point(special_field:google.protobuf.compiler.CodeGeneratorRequest.special_fields)
-    </span><span class="kw">pub </span>special_fields: <span class="kw">crate</span>::SpecialFields,
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>unknown_fields: <span class="kw">crate</span>::UnknownFields,
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>cached_size: <span class="kw">crate</span>::CachedSize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>CodeGeneratorRequest {
@@ -1786,17 +1862,42 @@
         ::std::default::Default::default()
     }
 
+    <span class="comment">// repeated string file_to_generate = 1;
+
+
+    </span><span class="kw">pub fn </span>get_file_to_generate(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[::std::string::String] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.file_to_generate
+    }
+    <span class="kw">pub fn </span>clear_file_to_generate(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.file_to_generate.clear();
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_file_to_generate(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: <span class="kw">crate</span>::RepeatedField&lt;::std::string::String&gt;) {
+        <span class="self">self</span>.file_to_generate = v;
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    </span><span class="kw">pub fn </span>mut_file_to_generate(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::RepeatedField&lt;::std::string::String&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.file_to_generate
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_file_to_generate(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::RepeatedField&lt;::std::string::String&gt; {
+        ::std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.file_to_generate, <span class="kw">crate</span>::RepeatedField::new())
+    }
+
     <span class="comment">// optional string parameter = 2;
 
-    </span><span class="kw">pub fn </span>parameter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+
+    </span><span class="kw">pub fn </span>get_parameter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
         <span class="kw">match </span><span class="self">self</span>.parameter.as_ref() {
-            <span class="prelude-val">Some</span>(v) =&gt; v,
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="kw-2">&amp;</span>v,
             <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
         }
     }
-
     <span class="kw">pub fn </span>clear_parameter(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.parameter = ::std::option::Option::None;
+        <span class="self">self</span>.parameter.clear();
     }
 
     <span class="kw">pub fn </span>has_parameter(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -1805,14 +1906,14 @@
 
     <span class="comment">// Param is passed by value, moved
     </span><span class="kw">pub fn </span>set_parameter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
-        <span class="self">self</span>.parameter = ::std::option::Option::Some(v);
+        <span class="self">self</span>.parameter = <span class="kw">crate</span>::SingularField::some(v);
     }
 
     <span class="comment">// Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
     </span><span class="kw">pub fn </span>mut_parameter(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
         <span class="kw">if </span><span class="self">self</span>.parameter.is_none() {
-            <span class="self">self</span>.parameter = ::std::option::Option::Some(::std::string::String::new());
+            <span class="self">self</span>.parameter.set_default();
         }
         <span class="self">self</span>.parameter.as_mut().unwrap()
     }
@@ -1822,40 +1923,66 @@
         <span class="self">self</span>.parameter.take().unwrap_or_else(|| ::std::string::String::new())
     }
 
-    <span class="kw">fn </span>generated_message_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData {
-        <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::with_capacity(<span class="number">4</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>oneofs = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_vec_simpler_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;file_to_generate&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.file_to_generate },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.file_to_generate },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;parameter&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.parameter },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.parameter },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_vec_simpler_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;proto_file&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.proto_file },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.proto_file },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_message_field_accessor::&lt;<span class="kw">_</span>, Version&gt;(
-            <span class="string">&quot;compiler_version&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.compiler_version },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.compiler_version },
-        ));
-        <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData::new_2::&lt;CodeGeneratorRequest&gt;(
-            <span class="string">&quot;CodeGeneratorRequest&quot;</span>,
-            fields,
-            oneofs,
-        )
+    <span class="comment">// repeated .google.protobuf.FileDescriptorProto proto_file = 15;
+
+
+    </span><span class="kw">pub fn </span>get_proto_file(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[<span class="kw">crate</span>::descriptor::FileDescriptorProto] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.proto_file
+    }
+    <span class="kw">pub fn </span>clear_proto_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.proto_file.clear();
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_proto_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: <span class="kw">crate</span>::RepeatedField&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt;) {
+        <span class="self">self</span>.proto_file = v;
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    </span><span class="kw">pub fn </span>mut_proto_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::RepeatedField&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.proto_file
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_proto_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::RepeatedField&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; {
+        ::std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.proto_file, <span class="kw">crate</span>::RepeatedField::new())
+    }
+
+    <span class="comment">// optional .google.protobuf.compiler.Version compiler_version = 3;
+
+
+    </span><span class="kw">pub fn </span>get_compiler_version(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>Version {
+        <span class="self">self</span>.compiler_version.as_ref().unwrap_or_else(|| &lt;Version <span class="kw">as </span><span class="kw">crate</span>::Message&gt;::default_instance())
+    }
+    <span class="kw">pub fn </span>clear_compiler_version(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.compiler_version.clear();
+    }
+
+    <span class="kw">pub fn </span>has_compiler_version(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.compiler_version.is_some()
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_compiler_version(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: Version) {
+        <span class="self">self</span>.compiler_version = <span class="kw">crate</span>::SingularPtrField::some(v);
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_compiler_version(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>Version {
+        <span class="kw">if </span><span class="self">self</span>.compiler_version.is_none() {
+            <span class="self">self</span>.compiler_version.set_default();
+        }
+        <span class="self">self</span>.compiler_version.as_mut().unwrap()
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_compiler_version(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; Version {
+        <span class="self">self</span>.compiler_version.take().unwrap_or_else(|| Version::new())
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>CodeGeneratorRequest {
-    <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;CodeGeneratorRequest&quot;</span>;
-
     <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.proto_file {
             <span class="kw">if </span>!v.is_initialized() {
@@ -1870,23 +1997,24 @@
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(tag) = is.read_raw_tag_or_eof()<span class="question-mark">? </span>{
-            <span class="kw">match </span>tag {
-                <span class="number">10 </span>=&gt; {
-                    <span class="self">self</span>.file_to_generate.push(is.read_string()<span class="question-mark">?</span>);
+    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">while </span>!is.eof()<span class="question-mark">? </span>{
+            <span class="kw">let </span>(field_number, wire_type) = is.read_tag_unpack()<span class="question-mark">?</span>;
+            <span class="kw">match </span>field_number {
+                <span class="number">1 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_repeated_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.file_to_generate)<span class="question-mark">?</span>;
                 },
-                <span class="number">18 </span>=&gt; {
-                    <span class="self">self</span>.parameter = ::std::option::Option::Some(is.read_string()<span class="question-mark">?</span>);
+                <span class="number">2 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.parameter)<span class="question-mark">?</span>;
                 },
-                <span class="number">122 </span>=&gt; {
-                    <span class="self">self</span>.proto_file.push(is.read_message()<span class="question-mark">?</span>);
+                <span class="number">15 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_repeated_message_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.proto_file)<span class="question-mark">?</span>;
                 },
-                <span class="number">26 </span>=&gt; {
-                    <span class="kw">crate</span>::rt::read_singular_message_into_field(is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.compiler_version)<span class="question-mark">?</span>;
+                <span class="number">3 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_message_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.compiler_version)<span class="question-mark">?</span>;
                 },
-                tag =&gt; {
-                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(tag, is, <span class="self">self</span>.special_fields.mut_unknown_fields())<span class="question-mark">?</span>;
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(field_number, wire_type, is, <span class="self">self</span>.mut_unknown_fields())<span class="question-mark">?</span>;
                 },
             };
         }
@@ -1895,117 +2023,150 @@
 
     <span class="comment">// Compute sizes of nested messages
     </span><span class="attr">#[allow(unused_variables)]
-    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
         <span class="kw">for </span>value <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file_to_generate {
             my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">1</span>, <span class="kw-2">&amp;</span>value);
         };
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.parameter.as_ref() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.parameter.as_ref() {
             my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">2</span>, <span class="kw-2">&amp;</span>v);
         }
         <span class="kw">for </span>value <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.proto_file {
             <span class="kw">let </span>len = value.compute_size();
-            my_size += <span class="number">1 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint64_size(len) + len;
+            my_size += <span class="number">1 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint32_size(len) + len;
         };
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.compiler_version.as_ref() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.compiler_version.as_ref() {
             <span class="kw">let </span>len = v.compute_size();
-            my_size += <span class="number">1 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint64_size(len) + len;
+            my_size += <span class="number">1 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint32_size(len) + len;
         }
-        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.special_fields.unknown_fields());
-        <span class="self">self</span>.special_fields.cached_size().set(my_size <span class="kw">as </span>u32);
+        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.get_unknown_fields());
+        <span class="self">self</span>.cached_size.set(my_size);
         my_size
     }
 
-    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
+    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
         <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file_to_generate {
             os.write_string(<span class="number">1</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         };
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.parameter.as_ref() {
-            os.write_string(<span class="number">2</span>, v)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.parameter.as_ref() {
+            os.write_string(<span class="number">2</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         }
         <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.proto_file {
-            <span class="kw">crate</span>::rt::write_message_field_with_cached_size(<span class="number">15</span>, v, os)<span class="question-mark">?</span>;
+            os.write_tag(<span class="number">15</span>, <span class="kw">crate</span>::wire_format::WireTypeLengthDelimited)<span class="question-mark">?</span>;
+            os.write_raw_varint32(v.get_cached_size())<span class="question-mark">?</span>;
+            v.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
         };
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.compiler_version.as_ref() {
-            <span class="kw">crate</span>::rt::write_message_field_with_cached_size(<span class="number">3</span>, v, os)<span class="question-mark">?</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.compiler_version.as_ref() {
+            os.write_tag(<span class="number">3</span>, <span class="kw">crate</span>::wire_format::WireTypeLengthDelimited)<span class="question-mark">?</span>;
+            os.write_raw_varint32(v.get_cached_size())<span class="question-mark">?</span>;
+            v.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
         }
-        os.write_unknown_fields(<span class="self">self</span>.special_fields.unknown_fields())<span class="question-mark">?</span>;
+        os.write_unknown_fields(<span class="self">self</span>.get_unknown_fields())<span class="question-mark">?</span>;
         ::std::result::Result::Ok(())
     }
 
-    <span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.cached_size.get()
     }
 
-    <span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>into_any(<span class="self">self</span>: ::std::boxed::Box&lt;<span class="self">Self</span>&gt;) -&gt; ::std::boxed::Box&lt;<span class="kw">dyn </span>(::std::any::Any)&gt; {
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="self">Self</span>::descriptor_static()
     }
 
     <span class="kw">fn </span>new() -&gt; CodeGeneratorRequest {
         CodeGeneratorRequest::new()
     }
 
-    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.file_to_generate.clear();
-        <span class="self">self</span>.parameter = ::std::option::Option::None;
-        <span class="self">self</span>.proto_file.clear();
-        <span class="self">self</span>.compiler_version.clear();
-        <span class="self">self</span>.special_fields.clear();
+    <span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::new();
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_repeated_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
+                <span class="string">&quot;file_to_generate&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.file_to_generate },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.file_to_generate },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
+                <span class="string">&quot;parameter&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.parameter },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.parameter },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_repeated_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeMessage&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt;&gt;(
+                <span class="string">&quot;proto_file&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.proto_file },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.proto_file },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_ptr_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeMessage&lt;Version&gt;&gt;(
+                <span class="string">&quot;compiler_version&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorRequest| { <span class="kw-2">&amp;</span>m.compiler_version },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorRequest| { <span class="kw-2">&amp;mut </span>m.compiler_version },
+            ));
+            <span class="kw">crate</span>::reflect::MessageDescriptor::new_pb_name::&lt;CodeGeneratorRequest&gt;(
+                <span class="string">&quot;CodeGeneratorRequest&quot;</span>,
+                fields,
+                file_descriptor_proto()
+            )
+        })
     }
 
     <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>CodeGeneratorRequest {
-        <span class="kw">static </span>instance: CodeGeneratorRequest = CodeGeneratorRequest {
-            file_to_generate: ::std::vec::Vec::new(),
-            parameter: ::std::option::Option::None,
-            proto_file: ::std::vec::Vec::new(),
-            compiler_version: <span class="kw">crate</span>::MessageField::none(),
-            special_fields: <span class="kw">crate</span>::SpecialFields::new(),
-        };
-        <span class="kw-2">&amp;</span>instance
+        <span class="kw">static </span>instance: <span class="kw">crate</span>::rt::LazyV2&lt;CodeGeneratorRequest&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        instance.get(CodeGeneratorRequest::new)
     }
 }
 
-<span class="kw">impl </span><span class="kw">crate</span>::MessageFull <span class="kw">for </span>CodeGeneratorRequest {
-    <span class="kw">fn </span>descriptor() -&gt; <span class="kw">crate</span>::reflect::MessageDescriptor {
-        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name(<span class="string">&quot;CodeGeneratorRequest&quot;</span>).unwrap()).clone()
+<span class="kw">impl </span><span class="kw">crate</span>::Clear <span class="kw">for </span>CodeGeneratorRequest {
+    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.file_to_generate.clear();
+        <span class="self">self</span>.parameter.clear();
+        <span class="self">self</span>.proto_file.clear();
+        <span class="self">self</span>.compiler_version.clear();
+        <span class="self">self</span>.unknown_fields.clear();
     }
 }
 
-<span class="kw">impl </span>::std::fmt::Display <span class="kw">for </span>CodeGeneratorRequest {
+<span class="kw">impl </span>::std::fmt::Debug <span class="kw">for </span>CodeGeneratorRequest {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
         <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>CodeGeneratorRequest {
-    <span class="kw">type </span>RuntimeType = <span class="kw">crate</span>::reflect::rt::RuntimeTypeMessage&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Message(<span class="self">self</span>)
+    }
 }
 
-<span class="doccomment">///  The plugin writes an encoded CodeGeneratorResponse to stdout.
-</span><span class="comment">// @@protoc_insertion_point(message:google.protobuf.compiler.CodeGeneratorResponse)
-</span><span class="attr">#[derive(PartialEq,Clone,Default,Debug)]
+<span class="attr">#[derive(PartialEq,Clone,Default)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
 </span><span class="kw">pub struct </span>CodeGeneratorResponse {
     <span class="comment">// message fields
-    </span><span class="doccomment">///  Error message.  If non-empty, code generation failed.  The plugin process
-    ///  should exit with status code zero even if it reports an error in this way.
-    ///
-    ///  This should be used to indicate errors in .proto files which prevent the
-    ///  code generator from generating correct code.  Errors which indicate a
-    ///  problem in protoc itself -- such as the input CodeGeneratorRequest being
-    ///  unparseable -- should be reported by writing a message to stderr and
-    ///  exiting with a non-zero status code.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.error)
-    </span><span class="kw">pub </span>error: ::std::option::Option&lt;::std::string::String&gt;,
-    <span class="doccomment">///  A bitmask of supported features that the code generator supports.
-    ///  This is a bitwise &quot;or&quot; of values from the Feature enum.
-    </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.supported_features)
-    </span><span class="kw">pub </span>supported_features: ::std::option::Option&lt;u64&gt;,
-    <span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.file)
-    </span><span class="kw">pub </span>file: ::std::vec::Vec&lt;code_generator_response::File&gt;,
+    </span>error: <span class="kw">crate</span>::SingularField&lt;::std::string::String&gt;,
+    supported_features: ::std::option::Option&lt;u64&gt;,
+    <span class="kw">pub </span>file: <span class="kw">crate</span>::RepeatedField&lt;CodeGeneratorResponse_File&gt;,
     <span class="comment">// special fields
-    // @@protoc_insertion_point(special_field:google.protobuf.compiler.CodeGeneratorResponse.special_fields)
-    </span><span class="kw">pub </span>special_fields: <span class="kw">crate</span>::SpecialFields,
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>unknown_fields: <span class="kw">crate</span>::UnknownFields,
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>cached_size: <span class="kw">crate</span>::CachedSize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>CodeGeneratorResponse {
@@ -2021,15 +2182,15 @@
 
     <span class="comment">// optional string error = 1;
 
-    </span><span class="kw">pub fn </span>error(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+
+    </span><span class="kw">pub fn </span>get_error(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
         <span class="kw">match </span><span class="self">self</span>.error.as_ref() {
-            <span class="prelude-val">Some</span>(v) =&gt; v,
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="kw-2">&amp;</span>v,
             <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
         }
     }
-
     <span class="kw">pub fn </span>clear_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.error = ::std::option::Option::None;
+        <span class="self">self</span>.error.clear();
     }
 
     <span class="kw">pub fn </span>has_error(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
@@ -2038,14 +2199,14 @@
 
     <span class="comment">// Param is passed by value, moved
     </span><span class="kw">pub fn </span>set_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
-        <span class="self">self</span>.error = ::std::option::Option::Some(v);
+        <span class="self">self</span>.error = <span class="kw">crate</span>::SingularField::some(v);
     }
 
     <span class="comment">// Mutable pointer to the field.
     // If field is not initialized, it is initialized with default value first.
     </span><span class="kw">pub fn </span>mut_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
         <span class="kw">if </span><span class="self">self</span>.error.is_none() {
-            <span class="self">self</span>.error = ::std::option::Option::Some(::std::string::String::new());
+            <span class="self">self</span>.error.set_default();
         }
         <span class="self">self</span>.error.as_mut().unwrap()
     }
@@ -2057,10 +2218,10 @@
 
     <span class="comment">// optional uint64 supported_features = 2;
 
-    </span><span class="kw">pub fn </span>supported_features(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+
+    </span><span class="kw">pub fn </span>get_supported_features(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
         <span class="self">self</span>.supported_features.unwrap_or(<span class="number">0</span>)
     }
-
     <span class="kw">pub fn </span>clear_supported_features(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="self">self</span>.supported_features = ::std::option::Option::None;
     }
@@ -2074,53 +2235,61 @@
         <span class="self">self</span>.supported_features = ::std::option::Option::Some(v);
     }
 
-    <span class="kw">fn </span>generated_message_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData {
-        <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::with_capacity(<span class="number">3</span>);
-        <span class="kw">let </span><span class="kw-2">mut </span>oneofs = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;error&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse| { <span class="kw-2">&amp;</span>m.error },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse| { <span class="kw-2">&amp;mut </span>m.error },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;supported_features&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse| { <span class="kw-2">&amp;</span>m.supported_features },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse| { <span class="kw-2">&amp;mut </span>m.supported_features },
-        ));
-        fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_vec_simpler_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
-            <span class="string">&quot;file&quot;</span>,
-            |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse| { <span class="kw-2">&amp;</span>m.file },
-            |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse| { <span class="kw-2">&amp;mut </span>m.file },
-        ));
-        <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData::new_2::&lt;CodeGeneratorResponse&gt;(
-            <span class="string">&quot;CodeGeneratorResponse&quot;</span>,
-            fields,
-            oneofs,
-        )
+    <span class="comment">// repeated .google.protobuf.compiler.CodeGeneratorResponse.File file = 15;
+
+
+    </span><span class="kw">pub fn </span>get_file(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[CodeGeneratorResponse_File] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.file
+    }
+    <span class="kw">pub fn </span>clear_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.file.clear();
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: <span class="kw">crate</span>::RepeatedField&lt;CodeGeneratorResponse_File&gt;) {
+        <span class="self">self</span>.file = v;
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    </span><span class="kw">pub fn </span>mut_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::RepeatedField&lt;CodeGeneratorResponse_File&gt; {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.file
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_file(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::RepeatedField&lt;CodeGeneratorResponse_File&gt; {
+        ::std::mem::replace(<span class="kw-2">&amp;mut </span><span class="self">self</span>.file, <span class="kw">crate</span>::RepeatedField::new())
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>CodeGeneratorResponse {
-    <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;CodeGeneratorResponse&quot;</span>;
-
     <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file {
+            <span class="kw">if </span>!v.is_initialized() {
+                <span class="kw">return </span><span class="bool-val">false</span>;
+            }
+        };
         <span class="bool-val">true
     </span>}
 
-    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-        <span class="kw">while let </span><span class="prelude-val">Some</span>(tag) = is.read_raw_tag_or_eof()<span class="question-mark">? </span>{
-            <span class="kw">match </span>tag {
-                <span class="number">10 </span>=&gt; {
-                    <span class="self">self</span>.error = ::std::option::Option::Some(is.read_string()<span class="question-mark">?</span>);
+    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">while </span>!is.eof()<span class="question-mark">? </span>{
+            <span class="kw">let </span>(field_number, wire_type) = is.read_tag_unpack()<span class="question-mark">?</span>;
+            <span class="kw">match </span>field_number {
+                <span class="number">1 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.error)<span class="question-mark">?</span>;
                 },
-                <span class="number">16 </span>=&gt; {
-                    <span class="self">self</span>.supported_features = ::std::option::Option::Some(is.read_uint64()<span class="question-mark">?</span>);
+                <span class="number">2 </span>=&gt; {
+                    <span class="kw">if </span>wire_type != <span class="kw">crate</span>::wire_format::WireTypeVarint {
+                        <span class="kw">return </span>::std::result::Result::Err(<span class="kw">crate</span>::rt::unexpected_wire_type(wire_type));
+                    }
+                    <span class="kw">let </span>tmp = is.read_uint64()<span class="question-mark">?</span>;
+                    <span class="self">self</span>.supported_features = ::std::option::Option::Some(tmp);
                 },
-                <span class="number">122 </span>=&gt; {
-                    <span class="self">self</span>.file.push(is.read_message()<span class="question-mark">?</span>);
+                <span class="number">15 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_repeated_message_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.file)<span class="question-mark">?</span>;
                 },
-                tag =&gt; {
-                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(tag, is, <span class="self">self</span>.special_fields.mut_unknown_fields())<span class="question-mark">?</span>;
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(field_number, wire_type, is, <span class="self">self</span>.mut_unknown_fields())<span class="question-mark">?</span>;
                 },
             };
         }
@@ -2129,485 +2298,504 @@
 
     <span class="comment">// Compute sizes of nested messages
     </span><span class="attr">#[allow(unused_variables)]
-    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
         <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.error.as_ref() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.error.as_ref() {
             my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">1</span>, <span class="kw-2">&amp;</span>v);
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.supported_features {
-            my_size += <span class="kw">crate</span>::rt::uint64_size(<span class="number">2</span>, v);
+            my_size += <span class="kw">crate</span>::rt::value_size(<span class="number">2</span>, v, <span class="kw">crate</span>::wire_format::WireTypeVarint);
         }
         <span class="kw">for </span>value <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file {
             <span class="kw">let </span>len = value.compute_size();
-            my_size += <span class="number">1 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint64_size(len) + len;
+            my_size += <span class="number">1 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint32_size(len) + len;
         };
-        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.special_fields.unknown_fields());
-        <span class="self">self</span>.special_fields.cached_size().set(my_size <span class="kw">as </span>u32);
+        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.get_unknown_fields());
+        <span class="self">self</span>.cached_size.set(my_size);
         my_size
     }
 
-    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.error.as_ref() {
-            os.write_string(<span class="number">1</span>, v)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.error.as_ref() {
+            os.write_string(<span class="number">1</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.supported_features {
             os.write_uint64(<span class="number">2</span>, v)<span class="question-mark">?</span>;
         }
         <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.file {
-            <span class="kw">crate</span>::rt::write_message_field_with_cached_size(<span class="number">15</span>, v, os)<span class="question-mark">?</span>;
+            os.write_tag(<span class="number">15</span>, <span class="kw">crate</span>::wire_format::WireTypeLengthDelimited)<span class="question-mark">?</span>;
+            os.write_raw_varint32(v.get_cached_size())<span class="question-mark">?</span>;
+            v.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
         };
-        os.write_unknown_fields(<span class="self">self</span>.special_fields.unknown_fields())<span class="question-mark">?</span>;
+        os.write_unknown_fields(<span class="self">self</span>.get_unknown_fields())<span class="question-mark">?</span>;
         ::std::result::Result::Ok(())
     }
 
-    <span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.cached_size.get()
     }
 
-    <span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::SpecialFields {
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>.special_fields
+    <span class="kw">fn </span>get_unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.unknown_fields
+    }
+
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>into_any(<span class="self">self</span>: ::std::boxed::Box&lt;<span class="self">Self</span>&gt;) -&gt; ::std::boxed::Box&lt;<span class="kw">dyn </span>(::std::any::Any)&gt; {
+        <span class="self">self
+    </span>}
+
+    <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="self">Self</span>::descriptor_static()
     }
 
     <span class="kw">fn </span>new() -&gt; CodeGeneratorResponse {
         CodeGeneratorResponse::new()
     }
 
-    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.error = ::std::option::Option::None;
-        <span class="self">self</span>.supported_features = ::std::option::Option::None;
-        <span class="self">self</span>.file.clear();
-        <span class="self">self</span>.special_fields.clear();
+    <span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::new();
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
+                <span class="string">&quot;error&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse| { <span class="kw-2">&amp;</span>m.error },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse| { <span class="kw-2">&amp;mut </span>m.error },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeUint64&gt;(
+                <span class="string">&quot;supported_features&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse| { <span class="kw-2">&amp;</span>m.supported_features },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse| { <span class="kw-2">&amp;mut </span>m.supported_features },
+            ));
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_repeated_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeMessage&lt;CodeGeneratorResponse_File&gt;&gt;(
+                <span class="string">&quot;file&quot;</span>,
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse| { <span class="kw-2">&amp;</span>m.file },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse| { <span class="kw-2">&amp;mut </span>m.file },
+            ));
+            <span class="kw">crate</span>::reflect::MessageDescriptor::new_pb_name::&lt;CodeGeneratorResponse&gt;(
+                <span class="string">&quot;CodeGeneratorResponse&quot;</span>,
+                fields,
+                file_descriptor_proto()
+            )
+        })
     }
 
     <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>CodeGeneratorResponse {
-        <span class="kw">static </span>instance: CodeGeneratorResponse = CodeGeneratorResponse {
-            error: ::std::option::Option::None,
-            supported_features: ::std::option::Option::None,
-            file: ::std::vec::Vec::new(),
-            special_fields: <span class="kw">crate</span>::SpecialFields::new(),
-        };
-        <span class="kw-2">&amp;</span>instance
+        <span class="kw">static </span>instance: <span class="kw">crate</span>::rt::LazyV2&lt;CodeGeneratorResponse&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        instance.get(CodeGeneratorResponse::new)
     }
 }
 
-<span class="kw">impl </span><span class="kw">crate</span>::MessageFull <span class="kw">for </span>CodeGeneratorResponse {
-    <span class="kw">fn </span>descriptor() -&gt; <span class="kw">crate</span>::reflect::MessageDescriptor {
-        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-        descriptor.get(|| file_descriptor().message_by_package_relative_name(<span class="string">&quot;CodeGeneratorResponse&quot;</span>).unwrap()).clone()
+<span class="kw">impl </span><span class="kw">crate</span>::Clear <span class="kw">for </span>CodeGeneratorResponse {
+    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.error.clear();
+        <span class="self">self</span>.supported_features = ::std::option::Option::None;
+        <span class="self">self</span>.file.clear();
+        <span class="self">self</span>.unknown_fields.clear();
     }
 }
 
-<span class="kw">impl </span>::std::fmt::Display <span class="kw">for </span>CodeGeneratorResponse {
+<span class="kw">impl </span>::std::fmt::Debug <span class="kw">for </span>CodeGeneratorResponse {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
         <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
     }
 }
 
 <span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>CodeGeneratorResponse {
-    <span class="kw">type </span>RuntimeType = <span class="kw">crate</span>::reflect::rt::RuntimeTypeMessage&lt;<span class="self">Self</span>&gt;;
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Message(<span class="self">self</span>)
+    }
 }
 
-<span class="doccomment">/// Nested message and enums of message `CodeGeneratorResponse`
-</span><span class="kw">pub mod </span>code_generator_response {
-    <span class="doccomment">///  Represents a single generated file.
-    </span><span class="comment">// @@protoc_insertion_point(message:google.protobuf.compiler.CodeGeneratorResponse.File)
-    </span><span class="attr">#[derive(PartialEq,Clone,Default,Debug)]
-    </span><span class="kw">pub struct </span>File {
-        <span class="comment">// message fields
-        </span><span class="doccomment">///  The file name, relative to the output directory.  The name must not
-        ///  contain &quot;.&quot; or &quot;..&quot; components and must be relative, not be absolute (so,
-        ///  the file cannot lie outside the output directory).  &quot;/&quot; must be used as
-        ///  the path separator, not &quot;\&quot;.
-        ///
-        ///  If the name is omitted, the content will be appended to the previous
-        ///  file.  This allows the generator to break large files into small chunks,
-        ///  and allows the generated text to be streamed back to protoc so that large
-        ///  files need not reside completely in memory at one time.  Note that as of
-        ///  this writing protoc does not optimize for this -- it will read the entire
-        ///  CodeGeneratorResponse before writing files to disk.
-        </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.File.name)
-        </span><span class="kw">pub </span>name: ::std::option::Option&lt;::std::string::String&gt;,
-        <span class="doccomment">///  If non-empty, indicates that the named file should already exist, and the
-        ///  content here is to be inserted into that file at a defined insertion
-        ///  point.  This feature allows a code generator to extend the output
-        ///  produced by another code generator.  The original generator may provide
-        ///  insertion points by placing special annotations in the file that look
-        ///  like:
-        ///    @@protoc_insertion_point(NAME)
-        ///  The annotation can have arbitrary text before and after it on the line,
-        ///  which allows it to be placed in a comment.  NAME should be replaced with
-        ///  an identifier naming the point -- this is what other generators will use
-        ///  as the insertion_point.  Code inserted at this point will be placed
-        ///  immediately above the line containing the insertion point (thus multiple
-        ///  insertions to the same point will come out in the order they were added).
-        ///  The double-@ is intended to make it unlikely that the generated code
-        ///  could contain things that look like insertion points by accident.
-        ///
-        ///  For example, the C++ code generator places the following line in the
-        ///  .pb.h files that it generates:
-        ///    // @@protoc_insertion_point(namespace_scope)
-        ///  This line appears within the scope of the file&#39;s package namespace, but
-        ///  outside of any particular class.  Another plugin can then specify the
-        ///  insertion_point &quot;namespace_scope&quot; to generate additional classes or
-        ///  other declarations that should be placed in this scope.
-        ///
-        ///  Note that if the line containing the insertion point begins with
-        ///  whitespace, the same whitespace will be added to every line of the
-        ///  inserted text.  This is useful for languages like Python, where
-        ///  indentation matters.  In these languages, the insertion point comment
-        ///  should be indented the same amount as any inserted code will need to be
-        ///  in order to work correctly in that context.
-        ///
-        ///  The code generator that generates the initial file and the one which
-        ///  inserts into it must both run as part of a single invocation of protoc.
-        ///  Code generators are executed in the order in which they appear on the
-        ///  command line.
-        ///
-        ///  If |insertion_point| is present, |name| must also be present.
-        </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.File.insertion_point)
-        </span><span class="kw">pub </span>insertion_point: ::std::option::Option&lt;::std::string::String&gt;,
-        <span class="doccomment">///  The file contents.
-        </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.File.content)
-        </span><span class="kw">pub </span>content: ::std::option::Option&lt;::std::string::String&gt;,
-        <span class="doccomment">///  Information describing the file content being inserted. If an insertion
-        ///  point is used, this information will be appropriately offset and inserted
-        ///  into the code generation metadata for the generated files.
-        </span><span class="comment">// @@protoc_insertion_point(field:google.protobuf.compiler.CodeGeneratorResponse.File.generated_code_info)
-        </span><span class="kw">pub </span>generated_code_info: <span class="kw">crate</span>::MessageField&lt;<span class="kw">crate</span>::descriptor::GeneratedCodeInfo&gt;,
-        <span class="comment">// special fields
-        // @@protoc_insertion_point(special_field:google.protobuf.compiler.CodeGeneratorResponse.File.special_fields)
-        </span><span class="kw">pub </span>special_fields: <span class="kw">crate</span>::SpecialFields,
+<span class="attr">#[derive(PartialEq,Clone,Default)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
+</span><span class="kw">pub struct </span>CodeGeneratorResponse_File {
+    <span class="comment">// message fields
+    </span>name: <span class="kw">crate</span>::SingularField&lt;::std::string::String&gt;,
+    insertion_point: <span class="kw">crate</span>::SingularField&lt;::std::string::String&gt;,
+    content: <span class="kw">crate</span>::SingularField&lt;::std::string::String&gt;,
+    <span class="kw">pub </span>generated_code_info: <span class="kw">crate</span>::SingularPtrField&lt;<span class="kw">crate</span>::descriptor::GeneratedCodeInfo&gt;,
+    <span class="comment">// special fields
+    </span><span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>unknown_fields: <span class="kw">crate</span>::UnknownFields,
+    <span class="attr">#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, serde(skip))]
+    </span><span class="kw">pub </span>cached_size: <span class="kw">crate</span>::CachedSize,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>CodeGeneratorResponse_File {
+    <span class="kw">fn </span>default() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>CodeGeneratorResponse_File {
+        &lt;CodeGeneratorResponse_File <span class="kw">as </span><span class="kw">crate</span>::Message&gt;::default_instance()
+    }
+}
+
+<span class="kw">impl </span>CodeGeneratorResponse_File {
+    <span class="kw">pub fn </span>new() -&gt; CodeGeneratorResponse_File {
+        ::std::default::Default::default()
     }
 
-    <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; ::std::default::Default <span class="kw">for </span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>File {
-        <span class="kw">fn </span>default() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>File {
-            &lt;File <span class="kw">as </span><span class="kw">crate</span>::Message&gt;::default_instance()
+    <span class="comment">// optional string name = 1;
+
+
+    </span><span class="kw">pub fn </span>get_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw">match </span><span class="self">self</span>.name.as_ref() {
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="kw-2">&amp;</span>v,
+            <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
         }
     }
+    <span class="kw">pub fn </span>clear_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.name.clear();
+    }
 
-    <span class="kw">impl </span>File {
-        <span class="kw">pub fn </span>new() -&gt; File {
-            ::std::default::Default::default()
+    <span class="kw">pub fn </span>has_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.name.is_some()
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
+        <span class="self">self</span>.name = <span class="kw">crate</span>::SingularField::some(v);
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
+        <span class="kw">if </span><span class="self">self</span>.name.is_none() {
+            <span class="self">self</span>.name.set_default();
         }
+        <span class="self">self</span>.name.as_mut().unwrap()
+    }
 
-        <span class="comment">// optional string name = 1;
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
+        <span class="self">self</span>.name.take().unwrap_or_else(|| ::std::string::String::new())
+    }
 
-        </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-            <span class="kw">match </span><span class="self">self</span>.name.as_ref() {
-                <span class="prelude-val">Some</span>(v) =&gt; v,
-                <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
+    <span class="comment">// optional string insertion_point = 2;
+
+
+    </span><span class="kw">pub fn </span>get_insertion_point(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw">match </span><span class="self">self</span>.insertion_point.as_ref() {
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="kw-2">&amp;</span>v,
+            <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
+        }
+    }
+    <span class="kw">pub fn </span>clear_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.insertion_point.clear();
+    }
+
+    <span class="kw">pub fn </span>has_insertion_point(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.insertion_point.is_some()
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
+        <span class="self">self</span>.insertion_point = <span class="kw">crate</span>::SingularField::some(v);
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
+        <span class="kw">if </span><span class="self">self</span>.insertion_point.is_none() {
+            <span class="self">self</span>.insertion_point.set_default();
+        }
+        <span class="self">self</span>.insertion_point.as_mut().unwrap()
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
+        <span class="self">self</span>.insertion_point.take().unwrap_or_else(|| ::std::string::String::new())
+    }
+
+    <span class="comment">// optional string content = 15;
+
+
+    </span><span class="kw">pub fn </span>get_content(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw">match </span><span class="self">self</span>.content.as_ref() {
+            <span class="prelude-val">Some</span>(v) =&gt; <span class="kw-2">&amp;</span>v,
+            <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
+        }
+    }
+    <span class="kw">pub fn </span>clear_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.content.clear();
+    }
+
+    <span class="kw">pub fn </span>has_content(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.content.is_some()
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
+        <span class="self">self</span>.content = <span class="kw">crate</span>::SingularField::some(v);
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
+        <span class="kw">if </span><span class="self">self</span>.content.is_none() {
+            <span class="self">self</span>.content.set_default();
+        }
+        <span class="self">self</span>.content.as_mut().unwrap()
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
+        <span class="self">self</span>.content.take().unwrap_or_else(|| ::std::string::String::new())
+    }
+
+    <span class="comment">// optional .google.protobuf.GeneratedCodeInfo generated_code_info = 16;
+
+
+    </span><span class="kw">pub fn </span>get_generated_code_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::descriptor::GeneratedCodeInfo {
+        <span class="self">self</span>.generated_code_info.as_ref().unwrap_or_else(|| &lt;<span class="kw">crate</span>::descriptor::GeneratedCodeInfo <span class="kw">as </span><span class="kw">crate</span>::Message&gt;::default_instance())
+    }
+    <span class="kw">pub fn </span>clear_generated_code_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.generated_code_info.clear();
+    }
+
+    <span class="kw">pub fn </span>has_generated_code_info(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.generated_code_info.is_some()
+    }
+
+    <span class="comment">// Param is passed by value, moved
+    </span><span class="kw">pub fn </span>set_generated_code_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: <span class="kw">crate</span>::descriptor::GeneratedCodeInfo) {
+        <span class="self">self</span>.generated_code_info = <span class="kw">crate</span>::SingularPtrField::some(v);
+    }
+
+    <span class="comment">// Mutable pointer to the field.
+    // If field is not initialized, it is initialized with default value first.
+    </span><span class="kw">pub fn </span>mut_generated_code_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::descriptor::GeneratedCodeInfo {
+        <span class="kw">if </span><span class="self">self</span>.generated_code_info.is_none() {
+            <span class="self">self</span>.generated_code_info.set_default();
+        }
+        <span class="self">self</span>.generated_code_info.as_mut().unwrap()
+    }
+
+    <span class="comment">// Take field
+    </span><span class="kw">pub fn </span>take_generated_code_info(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::descriptor::GeneratedCodeInfo {
+        <span class="self">self</span>.generated_code_info.take().unwrap_or_else(|| <span class="kw">crate</span>::descriptor::GeneratedCodeInfo::new())
+    }
+}
+
+<span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>CodeGeneratorResponse_File {
+    <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">for </span>v <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.generated_code_info {
+            <span class="kw">if </span>!v.is_initialized() {
+                <span class="kw">return </span><span class="bool-val">false</span>;
             }
+        };
+        <span class="bool-val">true
+    </span>}
+
+    <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">while </span>!is.eof()<span class="question-mark">? </span>{
+            <span class="kw">let </span>(field_number, wire_type) = is.read_tag_unpack()<span class="question-mark">?</span>;
+            <span class="kw">match </span>field_number {
+                <span class="number">1 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.name)<span class="question-mark">?</span>;
+                },
+                <span class="number">2 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.insertion_point)<span class="question-mark">?</span>;
+                },
+                <span class="number">15 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_string_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.content)<span class="question-mark">?</span>;
+                },
+                <span class="number">16 </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_singular_message_into(wire_type, is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.generated_code_info)<span class="question-mark">?</span>;
+                },
+                <span class="kw">_ </span>=&gt; {
+                    <span class="kw">crate</span>::rt::read_unknown_or_skip_group(field_number, wire_type, is, <span class="self">self</span>.mut_unknown_fields())<span class="question-mark">?</span>;
+                },
+            };
         }
+        ::std::result::Result::Ok(())
+    }
 
-        <span class="kw">pub fn </span>clear_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-            <span class="self">self</span>.name = ::std::option::Option::None;
+    <span class="comment">// Compute sizes of nested messages
+    </span><span class="attr">#[allow(unused_variables)]
+    </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.name.as_ref() {
+            my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">1</span>, <span class="kw-2">&amp;</span>v);
         }
-
-        <span class="kw">pub fn </span>has_name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-            <span class="self">self</span>.name.is_some()
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.insertion_point.as_ref() {
+            my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">2</span>, <span class="kw-2">&amp;</span>v);
         }
-
-        <span class="comment">// Param is passed by value, moved
-        </span><span class="kw">pub fn </span>set_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
-            <span class="self">self</span>.name = ::std::option::Option::Some(v);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.content.as_ref() {
+            my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">15</span>, <span class="kw-2">&amp;</span>v);
         }
-
-        <span class="comment">// Mutable pointer to the field.
-        // If field is not initialized, it is initialized with default value first.
-        </span><span class="kw">pub fn </span>mut_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
-            <span class="kw">if </span><span class="self">self</span>.name.is_none() {
-                <span class="self">self</span>.name = ::std::option::Option::Some(::std::string::String::new());
-            }
-            <span class="self">self</span>.name.as_mut().unwrap()
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.generated_code_info.as_ref() {
+            <span class="kw">let </span>len = v.compute_size();
+            my_size += <span class="number">2 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint32_size(len) + len;
         }
+        my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.get_unknown_fields());
+        <span class="self">self</span>.cached_size.set(my_size);
+        my_size
+    }
 
-        <span class="comment">// Take field
-        </span><span class="kw">pub fn </span>take_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
-            <span class="self">self</span>.name.take().unwrap_or_else(|| ::std::string::String::new())
+    <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::ProtobufResult&lt;()&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.name.as_ref() {
+            os.write_string(<span class="number">1</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         }
-
-        <span class="comment">// optional string insertion_point = 2;
-
-        </span><span class="kw">pub fn </span>insertion_point(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-            <span class="kw">match </span><span class="self">self</span>.insertion_point.as_ref() {
-                <span class="prelude-val">Some</span>(v) =&gt; v,
-                <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
-            }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.insertion_point.as_ref() {
+            os.write_string(<span class="number">2</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         }
-
-        <span class="kw">pub fn </span>clear_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-            <span class="self">self</span>.insertion_point = ::std::option::Option::None;
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.content.as_ref() {
+            os.write_string(<span class="number">15</span>, <span class="kw-2">&amp;</span>v)<span class="question-mark">?</span>;
         }
-
-        <span class="kw">pub fn </span>has_insertion_point(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-            <span class="self">self</span>.insertion_point.is_some()
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>v) = <span class="self">self</span>.generated_code_info.as_ref() {
+            os.write_tag(<span class="number">16</span>, <span class="kw">crate</span>::wire_format::WireTypeLengthDelimited)<span class="question-mark">?</span>;
+            os.write_raw_varint32(v.get_cached_size())<span class="question-mark">?</span>;
+            v.write_to_with_cached_sizes(os)<span class="question-mark">?</span>;
         }
+        os.write_unknown_fields(<span class="self">self</span>.get_unknown_fields())<span class="question-mark">?</span>;
+        ::std::result::Result::Ok(())
+    }
 
-        <span class="comment">// Param is passed by value, moved
-        </span><span class="kw">pub fn </span>set_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
-            <span class="self">self</span>.insertion_point = ::std::option::Option::Some(v);
-        }
+    <span class="kw">fn </span>get_cached_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.cached_size.get()
+    }
 
-        <span class="comment">// Mutable pointer to the field.
-        // If field is not initialized, it is initialized with default value first.
-        </span><span class="kw">pub fn </span>mut_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
-            <span class="kw">if </span><span class="self">self</span>.insertion_point.is_none() {
-                <span class="self">self</span>.insertion_point = ::std::option::Option::Some(::std::string::String::new());
-            }
-            <span class="self">self</span>.insertion_point.as_mut().unwrap()
-        }
+    <span class="kw">fn </span>get_unknown_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.unknown_fields
+    }
 
-        <span class="comment">// Take field
-        </span><span class="kw">pub fn </span>take_insertion_point(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
-            <span class="self">self</span>.insertion_point.take().unwrap_or_else(|| ::std::string::String::new())
-        }
+    <span class="kw">fn </span>mut_unknown_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::UnknownFields {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.unknown_fields
+    }
 
-        <span class="comment">// optional string content = 15;
+    <span class="kw">fn </span>as_any(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>as_any_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any) {
+        <span class="self">self </span><span class="kw">as </span><span class="kw-2">&amp;mut </span><span class="kw">dyn </span>(::std::any::Any)
+    }
+    <span class="kw">fn </span>into_any(<span class="self">self</span>: ::std::boxed::Box&lt;<span class="self">Self</span>&gt;) -&gt; ::std::boxed::Box&lt;<span class="kw">dyn </span>(::std::any::Any)&gt; {
+        <span class="self">self
+    </span>}
 
-        </span><span class="kw">pub fn </span>content(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
-            <span class="kw">match </span><span class="self">self</span>.content.as_ref() {
-                <span class="prelude-val">Some</span>(v) =&gt; v,
-                <span class="prelude-val">None </span>=&gt; <span class="string">&quot;&quot;</span>,
-            }
-        }
+    <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="self">Self</span>::descriptor_static()
+    }
 
-        <span class="kw">pub fn </span>clear_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-            <span class="self">self</span>.content = ::std::option::Option::None;
-        }
+    <span class="kw">fn </span>new() -&gt; CodeGeneratorResponse_File {
+        CodeGeneratorResponse_File::new()
+    }
 
-        <span class="kw">pub fn </span>has_content(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-            <span class="self">self</span>.content.is_some()
-        }
-
-        <span class="comment">// Param is passed by value, moved
-        </span><span class="kw">pub fn </span>set_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: ::std::string::String) {
-            <span class="self">self</span>.content = ::std::option::Option::Some(v);
-        }
-
-        <span class="comment">// Mutable pointer to the field.
-        // If field is not initialized, it is initialized with default value first.
-        </span><span class="kw">pub fn </span>mut_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>::std::string::String {
-            <span class="kw">if </span><span class="self">self</span>.content.is_none() {
-                <span class="self">self</span>.content = ::std::option::Option::Some(::std::string::String::new());
-            }
-            <span class="self">self</span>.content.as_mut().unwrap()
-        }
-
-        <span class="comment">// Take field
-        </span><span class="kw">pub fn </span>take_content(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; ::std::string::String {
-            <span class="self">self</span>.content.take().unwrap_or_else(|| ::std::string::String::new())
-        }
-
-        <span class="kw">pub</span>(<span class="kw">in super</span>) <span class="kw">fn </span>generated_message_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData {
-            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::with_capacity(<span class="number">4</span>);
-            <span class="kw">let </span><span class="kw-2">mut </span>oneofs = ::std::vec::Vec::with_capacity(<span class="number">0</span>);
-            fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
+    <span class="kw">fn </span>descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::MessageDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">let </span><span class="kw-2">mut </span>fields = ::std::vec::Vec::new();
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
                 <span class="string">&quot;name&quot;</span>,
-                |m: <span class="kw-2">&amp;</span>File| { <span class="kw-2">&amp;</span>m.name },
-                |m: <span class="kw-2">&amp;mut </span>File| { <span class="kw-2">&amp;mut </span>m.name },
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;</span>m.name },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;mut </span>m.name },
             ));
-            fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
                 <span class="string">&quot;insertion_point&quot;</span>,
-                |m: <span class="kw-2">&amp;</span>File| { <span class="kw-2">&amp;</span>m.insertion_point },
-                |m: <span class="kw-2">&amp;mut </span>File| { <span class="kw-2">&amp;mut </span>m.insertion_point },
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;</span>m.insertion_point },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;mut </span>m.insertion_point },
             ));
-            fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_option_accessor::&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt;(
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeString&gt;(
                 <span class="string">&quot;content&quot;</span>,
-                |m: <span class="kw-2">&amp;</span>File| { <span class="kw-2">&amp;</span>m.content },
-                |m: <span class="kw-2">&amp;mut </span>File| { <span class="kw-2">&amp;mut </span>m.content },
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;</span>m.content },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;mut </span>m.content },
             ));
-            fields.push(<span class="kw">crate</span>::reflect::rt::v2::make_message_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::descriptor::GeneratedCodeInfo&gt;(
+            fields.push(<span class="kw">crate</span>::reflect::accessor::make_singular_ptr_field_accessor::&lt;<span class="kw">_</span>, <span class="kw">crate</span>::types::ProtobufTypeMessage&lt;<span class="kw">crate</span>::descriptor::GeneratedCodeInfo&gt;&gt;(
                 <span class="string">&quot;generated_code_info&quot;</span>,
-                |m: <span class="kw-2">&amp;</span>File| { <span class="kw-2">&amp;</span>m.generated_code_info },
-                |m: <span class="kw-2">&amp;mut </span>File| { <span class="kw-2">&amp;mut </span>m.generated_code_info },
+                |m: <span class="kw-2">&amp;</span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;</span>m.generated_code_info },
+                |m: <span class="kw-2">&amp;mut </span>CodeGeneratorResponse_File| { <span class="kw-2">&amp;mut </span>m.generated_code_info },
             ));
-            <span class="kw">crate</span>::reflect::GeneratedMessageDescriptorData::new_2::&lt;File&gt;(
+            <span class="kw">crate</span>::reflect::MessageDescriptor::new_pb_name::&lt;CodeGeneratorResponse_File&gt;(
                 <span class="string">&quot;CodeGeneratorResponse.File&quot;</span>,
                 fields,
-                oneofs,
+                file_descriptor_proto()
             )
+        })
+    }
+
+    <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>CodeGeneratorResponse_File {
+        <span class="kw">static </span>instance: <span class="kw">crate</span>::rt::LazyV2&lt;CodeGeneratorResponse_File&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        instance.get(CodeGeneratorResponse_File::new)
+    }
+}
+
+<span class="kw">impl </span><span class="kw">crate</span>::Clear <span class="kw">for </span>CodeGeneratorResponse_File {
+    <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.name.clear();
+        <span class="self">self</span>.insertion_point.clear();
+        <span class="self">self</span>.content.clear();
+        <span class="self">self</span>.generated_code_info.clear();
+        <span class="self">self</span>.unknown_fields.clear();
+    }
+}
+
+<span class="kw">impl </span>::std::fmt::Debug <span class="kw">for </span>CodeGeneratorResponse_File {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
+        <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
+    }
+}
+
+<span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>CodeGeneratorResponse_File {
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Message(<span class="self">self</span>)
+    }
+}
+
+<span class="attr">#[derive(Clone,PartialEq,Eq,Debug,Hash)]
+#[cfg_attr(feature = <span class="string">&quot;with-serde&quot;</span>, derive(::serde::Serialize, ::serde::Deserialize))]
+</span><span class="kw">pub enum </span>CodeGeneratorResponse_Feature {
+    FEATURE_NONE = <span class="number">0</span>,
+    FEATURE_PROTO3_OPTIONAL = <span class="number">1</span>,
+}
+
+<span class="kw">impl </span><span class="kw">crate</span>::ProtobufEnum <span class="kw">for </span>CodeGeneratorResponse_Feature {
+    <span class="kw">fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
+        <span class="kw-2">*</span><span class="self">self </span><span class="kw">as </span>i32
+    }
+
+    <span class="kw">fn </span>from_i32(value: i32) -&gt; ::std::option::Option&lt;CodeGeneratorResponse_Feature&gt; {
+        <span class="kw">match </span>value {
+            <span class="number">0 </span>=&gt; ::std::option::Option::Some(CodeGeneratorResponse_Feature::FEATURE_NONE),
+            <span class="number">1 </span>=&gt; ::std::option::Option::Some(CodeGeneratorResponse_Feature::FEATURE_PROTO3_OPTIONAL),
+            <span class="kw">_ </span>=&gt; ::std::option::Option::None
         }
     }
 
-    <span class="kw">impl </span><span class="kw">crate</span>::Message <span class="kw">for </span>File {
-        <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;File&quot;</span>;
-
-        <span class="kw">fn </span>is_initialized(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-            <span class="bool-val">true
-        </span>}
-
-        <span class="kw">fn </span>merge_from(<span class="kw-2">&amp;mut </span><span class="self">self</span>, is: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedInputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-            <span class="kw">while let </span><span class="prelude-val">Some</span>(tag) = is.read_raw_tag_or_eof()<span class="question-mark">? </span>{
-                <span class="kw">match </span>tag {
-                    <span class="number">10 </span>=&gt; {
-                        <span class="self">self</span>.name = ::std::option::Option::Some(is.read_string()<span class="question-mark">?</span>);
-                    },
-                    <span class="number">18 </span>=&gt; {
-                        <span class="self">self</span>.insertion_point = ::std::option::Option::Some(is.read_string()<span class="question-mark">?</span>);
-                    },
-                    <span class="number">122 </span>=&gt; {
-                        <span class="self">self</span>.content = ::std::option::Option::Some(is.read_string()<span class="question-mark">?</span>);
-                    },
-                    <span class="number">130 </span>=&gt; {
-                        <span class="kw">crate</span>::rt::read_singular_message_into_field(is, <span class="kw-2">&amp;mut </span><span class="self">self</span>.generated_code_info)<span class="question-mark">?</span>;
-                    },
-                    tag =&gt; {
-                        <span class="kw">crate</span>::rt::read_unknown_or_skip_group(tag, is, <span class="self">self</span>.special_fields.mut_unknown_fields())<span class="question-mark">?</span>;
-                    },
-                };
-            }
-            ::std::result::Result::Ok(())
-        }
-
-        <span class="comment">// Compute sizes of nested messages
-        </span><span class="attr">#[allow(unused_variables)]
-        </span><span class="kw">fn </span>compute_size(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
-            <span class="kw">let </span><span class="kw-2">mut </span>my_size = <span class="number">0</span>;
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.name.as_ref() {
-                my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">1</span>, <span class="kw-2">&amp;</span>v);
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.insertion_point.as_ref() {
-                my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">2</span>, <span class="kw-2">&amp;</span>v);
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.content.as_ref() {
-                my_size += <span class="kw">crate</span>::rt::string_size(<span class="number">15</span>, <span class="kw-2">&amp;</span>v);
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.generated_code_info.as_ref() {
-                <span class="kw">let </span>len = v.compute_size();
-                my_size += <span class="number">2 </span>+ <span class="kw">crate</span>::rt::compute_raw_varint64_size(len) + len;
-            }
-            my_size += <span class="kw">crate</span>::rt::unknown_fields_size(<span class="self">self</span>.special_fields.unknown_fields());
-            <span class="self">self</span>.special_fields.cached_size().set(my_size <span class="kw">as </span>u32);
-            my_size
-        }
-
-        <span class="kw">fn </span>write_to_with_cached_sizes(<span class="kw-2">&amp;</span><span class="self">self</span>, os: <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::CodedOutputStream&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="kw">crate</span>::Result&lt;()&gt; {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.name.as_ref() {
-                os.write_string(<span class="number">1</span>, v)<span class="question-mark">?</span>;
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.insertion_point.as_ref() {
-                os.write_string(<span class="number">2</span>, v)<span class="question-mark">?</span>;
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.content.as_ref() {
-                os.write_string(<span class="number">15</span>, v)<span class="question-mark">?</span>;
-            }
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(v) = <span class="self">self</span>.generated_code_info.as_ref() {
-                <span class="kw">crate</span>::rt::write_message_field_with_cached_size(<span class="number">16</span>, v, os)<span class="question-mark">?</span>;
-            }
-            os.write_unknown_fields(<span class="self">self</span>.special_fields.unknown_fields())<span class="question-mark">?</span>;
-            ::std::result::Result::Ok(())
-        }
-
-        <span class="kw">fn </span>special_fields(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="kw">crate</span>::SpecialFields {
-            <span class="kw-2">&amp;</span><span class="self">self</span>.special_fields
-        }
-
-        <span class="kw">fn </span>mut_special_fields(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span><span class="kw">crate</span>::SpecialFields {
-            <span class="kw-2">&amp;mut </span><span class="self">self</span>.special_fields
-        }
-
-        <span class="kw">fn </span>new() -&gt; File {
-            File::new()
-        }
-
-        <span class="kw">fn </span>clear(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-            <span class="self">self</span>.name = ::std::option::Option::None;
-            <span class="self">self</span>.insertion_point = ::std::option::Option::None;
-            <span class="self">self</span>.content = ::std::option::Option::None;
-            <span class="self">self</span>.generated_code_info.clear();
-            <span class="self">self</span>.special_fields.clear();
-        }
-
-        <span class="kw">fn </span>default_instance() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>File {
-            <span class="kw">static </span>instance: File = File {
-                name: ::std::option::Option::None,
-                insertion_point: ::std::option::Option::None,
-                content: ::std::option::Option::None,
-                generated_code_info: <span class="kw">crate</span>::MessageField::none(),
-                special_fields: <span class="kw">crate</span>::SpecialFields::new(),
-            };
-            <span class="kw-2">&amp;</span>instance
-        }
-    }
-
-    <span class="kw">impl </span><span class="kw">crate</span>::MessageFull <span class="kw">for </span>File {
-        <span class="kw">fn </span>descriptor() -&gt; <span class="kw">crate</span>::reflect::MessageDescriptor {
-            <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::MessageDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-            descriptor.get(|| <span class="kw">super</span>::file_descriptor().message_by_package_relative_name(<span class="string">&quot;CodeGeneratorResponse.File&quot;</span>).unwrap()).clone()
-        }
-    }
-
-    <span class="kw">impl </span>::std::fmt::Display <span class="kw">for </span>File {
-        <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::std::fmt::Result {
-            <span class="kw">crate</span>::text_format::fmt(<span class="self">self</span>, f)
-        }
-    }
-
-    <span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>File {
-        <span class="kw">type </span>RuntimeType = <span class="kw">crate</span>::reflect::rt::RuntimeTypeMessage&lt;<span class="self">Self</span>&gt;;
-    }
-
-    <span class="doccomment">///  Sync with code_generator.h.
-    </span><span class="attr">#[derive(Clone,Copy,PartialEq,Eq,Debug,Hash)]
-    </span><span class="comment">// @@protoc_insertion_point(enum:google.protobuf.compiler.CodeGeneratorResponse.Feature)
-    </span><span class="kw">pub enum </span>Feature {
-        <span class="comment">// @@protoc_insertion_point(enum_value:google.protobuf.compiler.CodeGeneratorResponse.Feature.FEATURE_NONE)
-        </span>FEATURE_NONE = <span class="number">0</span>,
-        <span class="comment">// @@protoc_insertion_point(enum_value:google.protobuf.compiler.CodeGeneratorResponse.Feature.FEATURE_PROTO3_OPTIONAL)
-        </span>FEATURE_PROTO3_OPTIONAL = <span class="number">1</span>,
-    }
-
-    <span class="kw">impl </span><span class="kw">crate</span>::Enum <span class="kw">for </span>Feature {
-        <span class="kw">const </span>NAME: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str = <span class="string">&quot;Feature&quot;</span>;
-
-        <span class="kw">fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; i32 {
-            <span class="kw-2">*</span><span class="self">self </span><span class="kw">as </span>i32
-        }
-
-        <span class="kw">fn </span>from_i32(value: i32) -&gt; ::std::option::Option&lt;Feature&gt; {
-            <span class="kw">match </span>value {
-                <span class="number">0 </span>=&gt; ::std::option::Option::Some(Feature::FEATURE_NONE),
-                <span class="number">1 </span>=&gt; ::std::option::Option::Some(Feature::FEATURE_PROTO3_OPTIONAL),
-                <span class="kw">_ </span>=&gt; ::std::option::Option::None
-            }
-        }
-
-        <span class="kw">fn </span>from_str(str: <span class="kw-2">&amp;</span>str) -&gt; ::std::option::Option&lt;Feature&gt; {
-            <span class="kw">match </span>str {
-                <span class="string">&quot;FEATURE_NONE&quot; </span>=&gt; ::std::option::Option::Some(Feature::FEATURE_NONE),
-                <span class="string">&quot;FEATURE_PROTO3_OPTIONAL&quot; </span>=&gt; ::std::option::Option::Some(Feature::FEATURE_PROTO3_OPTIONAL),
-                <span class="kw">_ </span>=&gt; ::std::option::Option::None
-            }
-        }
-
-        <span class="kw">const </span>VALUES: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[Feature] = <span class="kw-2">&amp;</span>[
-            Feature::FEATURE_NONE,
-            Feature::FEATURE_PROTO3_OPTIONAL,
+    <span class="kw">fn </span>values() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[<span class="self">Self</span>] {
+        <span class="kw">static </span>values: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>[CodeGeneratorResponse_Feature] = <span class="kw-2">&amp;</span>[
+            CodeGeneratorResponse_Feature::FEATURE_NONE,
+            CodeGeneratorResponse_Feature::FEATURE_PROTO3_OPTIONAL,
         ];
+        values
     }
 
-    <span class="kw">impl </span><span class="kw">crate</span>::EnumFull <span class="kw">for </span>Feature {
-        <span class="kw">fn </span>enum_descriptor() -&gt; <span class="kw">crate</span>::reflect::EnumDescriptor {
-            <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::EnumDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-            descriptor.get(|| <span class="kw">super</span>::file_descriptor().enum_by_package_relative_name(<span class="string">&quot;CodeGeneratorResponse.Feature&quot;</span>).unwrap()).clone()
-        }
-
-        <span class="kw">fn </span>descriptor(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::EnumValueDescriptor {
-            <span class="kw">let </span>index = <span class="kw-2">*</span><span class="self">self </span><span class="kw">as </span>usize;
-            <span class="self">Self</span>::enum_descriptor().value_by_index(index)
-        }
+    <span class="kw">fn </span>enum_descriptor_static() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::EnumDescriptor {
+        <span class="kw">static </span>descriptor: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::reflect::EnumDescriptor&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+        descriptor.get(|| {
+            <span class="kw">crate</span>::reflect::EnumDescriptor::new_pb_name::&lt;CodeGeneratorResponse_Feature&gt;(<span class="string">&quot;CodeGeneratorResponse.Feature&quot;</span>, file_descriptor_proto())
+        })
     }
+}
 
-    <span class="kw">impl </span>::std::default::Default <span class="kw">for </span>Feature {
-        <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
-            Feature::FEATURE_NONE
-        }
+<span class="kw">impl </span>::std::marker::Copy <span class="kw">for </span>CodeGeneratorResponse_Feature {
+}
+
+<span class="kw">impl </span>::std::default::Default <span class="kw">for </span>CodeGeneratorResponse_Feature {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        CodeGeneratorResponse_Feature::FEATURE_NONE
     }
+}
 
-    <span class="kw">impl </span>Feature {
-        <span class="kw">pub</span>(<span class="kw">in super</span>) <span class="kw">fn </span>generated_enum_descriptor_data() -&gt; <span class="kw">crate</span>::reflect::GeneratedEnumDescriptorData {
-            <span class="kw">crate</span>::reflect::GeneratedEnumDescriptorData::new::&lt;Feature&gt;(<span class="string">&quot;CodeGeneratorResponse.Feature&quot;</span>)
-        }
+<span class="kw">impl </span><span class="kw">crate</span>::reflect::ProtobufValue <span class="kw">for </span>CodeGeneratorResponse_Feature {
+    <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw">crate</span>::reflect::ReflectValueRef {
+        <span class="kw">crate</span>::reflect::ReflectValueRef::Enum(<span class="kw">crate</span>::ProtobufEnum::descriptor(<span class="self">self</span>))
     }
 }
 
@@ -2855,37 +3043,15 @@
     \x14\n\r\n\x05\x04\x02\x02\x02\x03\x12\x04\xb5\x01\x17\x19\
 &quot;</span>;
 
-<span class="doccomment">/// `FileDescriptorProto` object which was a source for this generated file
-</span><span class="kw">fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
-    <span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor_proto_lazy.get(|| {
-        <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
-    })
+<span class="kw">static </span>file_descriptor_proto_lazy: <span class="kw">crate</span>::rt::LazyV2&lt;<span class="kw">crate</span>::descriptor::FileDescriptorProto&gt; = <span class="kw">crate</span>::rt::LazyV2::INIT;
+
+<span class="kw">fn </span>parse_descriptor_proto() -&gt; <span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    <span class="kw">crate</span>::Message::parse_from_bytes(file_descriptor_proto_data).unwrap()
 }
 
-<span class="doccomment">/// `FileDescriptor` object which allows dynamic access to files
-</span><span class="kw">pub fn </span>file_descriptor() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::reflect::FileDescriptor {
-    <span class="kw">static </span>generated_file_descriptor_lazy: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::GeneratedFileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    <span class="kw">static </span>file_descriptor: <span class="kw">crate</span>::rt::Lazy&lt;<span class="kw">crate</span>::reflect::FileDescriptor&gt; = <span class="kw">crate</span>::rt::Lazy::new();
-    file_descriptor.get(|| {
-        <span class="kw">let </span>generated_file_descriptor = generated_file_descriptor_lazy.get(|| {
-            <span class="kw">let </span><span class="kw-2">mut </span>deps = ::std::vec::Vec::with_capacity(<span class="number">1</span>);
-            deps.push(<span class="kw">crate</span>::descriptor::file_descriptor().clone());
-            <span class="kw">let </span><span class="kw-2">mut </span>messages = ::std::vec::Vec::with_capacity(<span class="number">4</span>);
-            messages.push(Version::generated_message_descriptor_data());
-            messages.push(CodeGeneratorRequest::generated_message_descriptor_data());
-            messages.push(CodeGeneratorResponse::generated_message_descriptor_data());
-            messages.push(code_generator_response::File::generated_message_descriptor_data());
-            <span class="kw">let </span><span class="kw-2">mut </span>enums = ::std::vec::Vec::with_capacity(<span class="number">1</span>);
-            enums.push(code_generator_response::Feature::generated_enum_descriptor_data());
-            <span class="kw">crate</span>::reflect::GeneratedFileDescriptor::new_generated(
-                file_descriptor_proto(),
-                deps,
-                messages,
-                enums,
-            )
-        });
-        <span class="kw">crate</span>::reflect::FileDescriptor::new_generated_2(generated_file_descriptor)
+<span class="kw">pub fn </span>file_descriptor_proto() -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span><span class="kw">crate</span>::descriptor::FileDescriptorProto {
+    file_descriptor_proto_lazy.get(|| {
+        parse_descriptor_proto()
     })
 }
 </code></pre></div></section></main></body></html>
