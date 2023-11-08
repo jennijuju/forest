@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DB_KEY_BYTES"],"mod":["car_index","car_stream","car_util","file_backed_obj"],"trait":["BlockstoreBufferedWriteExt","BlockstoreExt","CborStoreExt"]};
+window.SIDEBAR_ITEMS = {"mod":["car_index","car_stream","car_util"],"trait":["BlockstoreExt","CborStoreExt"]};

@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["delete_db","load_dbs"]};

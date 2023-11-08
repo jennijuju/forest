@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"struct":["ChainMeta","FileBacked"],"trait":["FileBackedObject"]};

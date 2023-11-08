@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["ProgressBarVisibility","Units"],"static":["PROGRESS_BAR_VISIBILITY"],"struct":["ProgressBar"]};

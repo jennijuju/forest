@@ -611,126 +611,23 @@
 <a href="#611" id="611">611</a>
 <a href="#612" id="612">612</a>
 <a href="#613" id="613">613</a>
-<a href="#614" id="614">614</a>
-<a href="#615" id="615">615</a>
-<a href="#616" id="616">616</a>
-<a href="#617" id="617">617</a>
-<a href="#618" id="618">618</a>
-<a href="#619" id="619">619</a>
-<a href="#620" id="620">620</a>
-<a href="#621" id="621">621</a>
-<a href="#622" id="622">622</a>
-<a href="#623" id="623">623</a>
-<a href="#624" id="624">624</a>
-<a href="#625" id="625">625</a>
-<a href="#626" id="626">626</a>
-<a href="#627" id="627">627</a>
-<a href="#628" id="628">628</a>
-<a href="#629" id="629">629</a>
-<a href="#630" id="630">630</a>
-<a href="#631" id="631">631</a>
-<a href="#632" id="632">632</a>
-<a href="#633" id="633">633</a>
-<a href="#634" id="634">634</a>
-<a href="#635" id="635">635</a>
-<a href="#636" id="636">636</a>
-<a href="#637" id="637">637</a>
-<a href="#638" id="638">638</a>
-<a href="#639" id="639">639</a>
-<a href="#640" id="640">640</a>
-<a href="#641" id="641">641</a>
-<a href="#642" id="642">642</a>
-<a href="#643" id="643">643</a>
-<a href="#644" id="644">644</a>
-<a href="#645" id="645">645</a>
-<a href="#646" id="646">646</a>
-<a href="#647" id="647">647</a>
-<a href="#648" id="648">648</a>
-<a href="#649" id="649">649</a>
-<a href="#650" id="650">650</a>
-<a href="#651" id="651">651</a>
-<a href="#652" id="652">652</a>
-<a href="#653" id="653">653</a>
-<a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
-<a href="#671" id="671">671</a>
-<a href="#672" id="672">672</a>
-<a href="#673" id="673">673</a>
-<a href="#674" id="674">674</a>
-<a href="#675" id="675">675</a>
-<a href="#676" id="676">676</a>
-<a href="#677" id="677">677</a>
-<a href="#678" id="678">678</a>
-<a href="#679" id="679">679</a>
-<a href="#680" id="680">680</a>
-<a href="#681" id="681">681</a>
-<a href="#682" id="682">682</a>
-<a href="#683" id="683">683</a>
-<a href="#684" id="684">684</a>
-<a href="#685" id="685">685</a>
-<a href="#686" id="686">686</a>
-<a href="#687" id="687">687</a>
-<a href="#688" id="688">688</a>
-<a href="#689" id="689">689</a>
-<a href="#690" id="690">690</a>
-<a href="#691" id="691">691</a>
-<a href="#692" id="692">692</a>
-<a href="#693" id="693">693</a>
-<a href="#694" id="694">694</a>
-<a href="#695" id="695">695</a>
-<a href="#696" id="696">696</a>
-<a href="#697" id="697">697</a>
-<a href="#698" id="698">698</a>
-<a href="#699" id="699">699</a>
-<a href="#700" id="700">700</a>
-<a href="#701" id="701">701</a>
-<a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-</span><span class="kw">use </span>std::{
-    collections::VecDeque,
-    future::Future,
-    sync::{
-        atomic::{<span class="self">self</span>, AtomicU64},
-        Arc,
-    },
-};
+</span><span class="kw">use </span>std::{collections::VecDeque, future::Future, sync::Arc};
 
 <span class="kw">use </span><span class="kw">crate</span>::cid_collections::CidHashSet;
 <span class="kw">use </span><span class="kw">crate</span>::ipld::Ipld;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::utils::db::car_stream::CarBlock;
 <span class="kw">use </span><span class="kw">crate</span>::utils::encoding::extract_cids;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::progress_log::WithProgressRaw;
-<span class="kw">use crate</span>::{
-    blocks::{BlockHeader, Tipset},
-    utils::encoding::from_slice_with_fallback,
-};
+<span class="kw">use crate</span>::{blocks::Tipset, utils::encoding::from_slice_with_fallback};
 <span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>futures::Stream;
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
 <span class="kw">use </span>kanal::{Receiver, Sender};
-<span class="kw">use </span>once_cell::sync::Lazy;
+
 <span class="kw">use </span>parking_lot::Mutex;
 <span class="kw">use </span>pin_project_lite::pin_project;
 <span class="kw">use </span>std::pin::Pin;
@@ -814,91 +711,6 @@
     traverse_ipld_links_hash(walked, load_block, <span class="kw-2">&amp;</span>ipld, on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="prelude-val">Ok</span>(())
-}
-
-<span class="kw">pub type </span>ProgressBarCurrentTotalPair = Arc&lt;(AtomicU64, AtomicU64)&gt;;
-
-<span class="kw">pub static </span>WALK_SNAPSHOT_PROGRESS_DB_GC: Lazy&lt;ProgressBarCurrentTotalPair&gt; =
-    Lazy::new(Default::default);
-
-<span class="doccomment">/// Walks over tipset and state data and loads all blocks not yet seen.
-/// This is tracked based on the callback function loading blocks.
-</span><span class="kw">pub async fn </span>walk_snapshot&lt;F, T&gt;(
-    tipset: <span class="kw-2">&amp;</span>Tipset,
-    recent_roots: i64,
-    <span class="kw-2">mut </span>load_block: F,
-    progress_bar_message: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt;,
-    progress_tracker: <span class="prelude-ty">Option</span>&lt;ProgressBarCurrentTotalPair&gt;,
-    estimated_total_records: <span class="prelude-ty">Option</span>&lt;u64&gt;,
-) -&gt; anyhow::Result&lt;usize&gt;
-<span class="kw">where
-    </span>F: FnMut(Cid) -&gt; T + Send,
-    T: Future&lt;Output = anyhow::Result&lt;Vec&lt;u8&gt;&gt;&gt; + Send,
-{
-    <span class="kw">let </span>estimated_total_records = estimated_total_records.unwrap_or_default();
-    <span class="kw">let </span>message = progress_bar_message.unwrap_or(<span class="string">&quot;Walking snapshot&quot;</span>);
-    <span class="attr">#[allow(deprecated)] </span><span class="comment">// Tracking issue: https://github.com/ChainSafe/forest/issues/3157
-    </span><span class="kw">let </span>wp = WithProgressRaw::new(message, estimated_total_records);
-
-    <span class="kw">let </span><span class="kw-2">mut </span>seen = CidHashSet::default();
-    <span class="kw">let </span><span class="kw-2">mut </span>blocks_to_walk: VecDeque&lt;Cid&gt; = tipset.cids().into();
-    <span class="kw">let </span><span class="kw-2">mut </span>current_min_height = tipset.epoch();
-    <span class="kw">let </span>incl_roots_epoch = tipset.epoch() - recent_roots;
-
-    <span class="kw">let </span>on_inserted = {
-        <span class="kw">let </span>wp = wp.clone();
-        <span class="kw">let </span>progress_tracker = progress_tracker.clone();
-        <span class="kw">move </span>|len: usize| {
-            <span class="kw">let </span>progress = len <span class="kw">as </span>u64;
-            <span class="kw">let </span>total = progress.max(estimated_total_records);
-            wp.set(progress);
-            wp.set_total(total);
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(progress_tracker) = <span class="kw-2">&amp;</span>progress_tracker {
-                progress_tracker
-                    .<span class="number">0
-                    </span>.store(progress, atomic::Ordering::Relaxed);
-                progress_tracker.<span class="number">1</span>.store(total, atomic::Ordering::Relaxed);
-            }
-        }
-    };
-
-    <span class="kw">while let </span><span class="prelude-val">Some</span>(next) = blocks_to_walk.pop_front() {
-        <span class="kw">if </span>!seen.insert(next) {
-            <span class="kw">continue</span>;
-        };
-        on_inserted(seen.len());
-
-        <span class="kw">if </span>!should_save_block_to_snapshot(next) {
-            <span class="kw">continue</span>;
-        }
-
-        <span class="kw">let </span>data = load_block(next).<span class="kw">await</span><span class="question-mark">?</span>;
-        <span class="kw">let </span>h = from_slice_with_fallback::&lt;BlockHeader&gt;(<span class="kw-2">&amp;</span>data)<span class="question-mark">?</span>;
-
-        <span class="kw">if </span>current_min_height &gt; h.epoch() {
-            current_min_height = h.epoch();
-        }
-
-        <span class="kw">if </span>h.epoch() &gt; incl_roots_epoch {
-            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.messages(), <span class="kw-2">&amp;mut </span>load_block, <span class="kw-2">&amp;</span>on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
-        }
-
-        <span class="kw">if </span>h.epoch() &gt; <span class="number">0 </span>{
-            <span class="kw">for </span>p <span class="kw">in </span>h.parents().cids.clone() {
-                blocks_to_walk.push_back(p);
-            }
-        } <span class="kw">else </span>{
-            <span class="kw">for </span>p <span class="kw">in </span>h.parents().cids.clone() {
-                load_block(p).<span class="kw">await</span><span class="question-mark">?</span>;
-            }
-        }
-
-        <span class="kw">if </span>h.epoch() == <span class="number">0 </span>|| h.epoch() &gt; incl_roots_epoch {
-            recurse_links_hash(<span class="kw-2">&amp;mut </span>seen, <span class="kw-2">*</span>h.state_root(), <span class="kw-2">&amp;mut </span>load_block, <span class="kw-2">&amp;</span>on_inserted).<span class="kw">await</span><span class="question-mark">?</span>;
-        }
-    }
-
-    <span class="prelude-val">Ok</span>(seen.len())
 }
 
 <span class="kw">fn </span>should_save_block_to_snapshot(cid: Cid) -&gt; bool {
@@ -1173,6 +985,10 @@
             <span class="prelude-val">Err</span>(v) =&gt; v.lock().clone(),
         }
     }
+
+    <span class="kw">pub async fn </span>join_workers(<span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
+        <span class="self">self</span>.worker_handle.<span class="kw">await</span><span class="question-mark">?
+    </span>}
 }
 
 <span class="doccomment">/// Stream all blocks that are reachable before the `stateroot_limit` epoch in an unordered fashion.

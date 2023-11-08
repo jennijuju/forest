@@ -145,15 +145,6 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
-<a href="#148" id="148">148</a>
-<a href="#149" id="149">149</a>
-<a href="#150" id="150">150</a>
-<a href="#151" id="151">151</a>
-<a href="#152" id="152">152</a>
-<a href="#153" id="153">153</a>
-<a href="#154" id="154">154</a>
-<a href="#155" id="155">155</a>
-<a href="#156" id="156">156</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -161,12 +152,10 @@
 <span class="kw">mod </span>beacon_api;
 <span class="kw">mod </span>chain_api;
 <span class="kw">mod </span>common_api;
-<span class="kw">mod </span>db_api;
 <span class="kw">mod </span>gas_api;
 <span class="kw">mod </span>mpool_api;
 <span class="kw">mod </span>net_api;
 <span class="kw">mod </span>node_api;
-<span class="kw">mod </span>progress_api;
 <span class="kw">mod </span>rpc_http_handler;
 <span class="kw">mod </span>rpc_util;
 <span class="kw">mod </span>rpc_ws_handler;
@@ -177,13 +166,12 @@
 <span class="kw">use </span>std::{net::TcpListener, sync::Arc};
 
 <span class="kw">use </span><span class="kw">crate</span>::rpc_api::{
-    auth_api::<span class="kw-2">*</span>, beacon_api::<span class="kw-2">*</span>, chain_api::<span class="kw-2">*</span>, common_api::<span class="kw-2">*</span>, data_types::RPCState, db_api::<span class="kw-2">*</span>,
-    gas_api::<span class="kw-2">*</span>, mpool_api::<span class="kw-2">*</span>, net_api::<span class="kw-2">*</span>, node_api::NODE_STATUS, progress_api::GET_PROGRESS,
-    state_api::<span class="kw-2">*</span>, sync_api::<span class="kw-2">*</span>, wallet_api::<span class="kw-2">*</span>,
+    auth_api::<span class="kw-2">*</span>, beacon_api::<span class="kw-2">*</span>, chain_api::<span class="kw-2">*</span>, common_api::<span class="kw-2">*</span>, data_types::RPCState, gas_api::<span class="kw-2">*</span>,
+    mpool_api::<span class="kw-2">*</span>, net_api::<span class="kw-2">*</span>, node_api::NODE_STATUS, state_api::<span class="kw-2">*</span>, sync_api::<span class="kw-2">*</span>, wallet_api::<span class="kw-2">*</span>,
 };
 <span class="kw">use </span>axum::routing::{get, post};
 <span class="kw">use </span>fvm_ipld_blockstore::Blockstore;
-<span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JSONRPCError, Params, Server};
+<span class="kw">use </span>jsonrpc_v2::{Data, Error <span class="kw">as </span>JSONRPCError, Server};
 <span class="kw">use </span>tokio::sync::mpsc::Sender;
 <span class="kw">use </span>tracing::info;
 
@@ -194,8 +182,6 @@
     rpc_ws_handler::rpc_ws_handler,
     state_api::<span class="kw-2">*</span>,
 };
-
-<span class="kw">pub type </span>RpcResult&lt;T&gt; = <span class="prelude-ty">Result</span>&lt;T, JSONRPCError&gt;;
 
 <span class="kw">pub async fn </span>start_rpc&lt;DB&gt;(
     state: Arc&lt;RPCState&lt;DB&gt;&gt;,
@@ -288,10 +274,6 @@
             .with_method(NET_INFO, net_api::net_info::&lt;DB&gt;)
             .with_method(NET_CONNECT, net_api::net_connect::&lt;DB&gt;)
             .with_method(NET_DISCONNECT, net_api::net_disconnect::&lt;DB&gt;)
-            <span class="comment">// DB API
-            </span>.with_method(DB_GC, db_api::db_gc::&lt;DB&gt;)
-            <span class="comment">// Progress API
-            </span>.with_method(GET_PROGRESS, progress_api::get_progress)
             <span class="comment">// Node API
             </span>.with_method(NODE_STATUS, node_api::node_status::&lt;DB&gt;)
             .finish_unwrapped(),

@@ -138,8 +138,6 @@
 <a href="#138" id="138">138</a>
 <a href="#139" id="139">139</a>
 <a href="#140" id="140">140</a>
-<a href="#141" id="141">141</a>
-<a href="#142" id="142">142</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -149,7 +147,6 @@
     logger,
 };
 <span class="kw">use </span><span class="kw">crate</span>::daemon::ipc_shmem_conf;
-<span class="kw">use </span><span class="kw">crate</span>::utils::io::ProgressBar;
 <span class="kw">use </span><span class="kw">crate</span>::utils::version::FOREST_VERSION_STRING;
 <span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
 <span class="kw">use </span>clap::Parser;
@@ -231,7 +228,6 @@
     // subcommand.
 
     </span><span class="kw">let </span>(loki_task, _chrome_flush_guard) = logger::setup_logger(<span class="kw-2">&amp;</span>opts);
-    ProgressBar::set_progress_bars_visibility(cfg.client.show_progress_bars);
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(path) = <span class="kw-2">&amp;</span>path {
         <span class="kw">match </span>path {

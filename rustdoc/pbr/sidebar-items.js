@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"enum":["Units"],"struct":["MultiBar","PbIter","Pipe","ProgressBar"]};

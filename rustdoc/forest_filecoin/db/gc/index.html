@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="The current implementation of the garbage collector is `concurrent mark-and-sweep`."><title>forest_filecoin::db::gc - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="forest_filecoin" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc mod"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="logo-container" href="../../../forest_filecoin/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2></h2></nav><nav class="sidebar"><a class="logo-container" href="../../../forest_filecoin/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><h2 class="location"><a href="#">Module gc</a></h2><div class="sidebar-elems"><section><ul class="block"><li><a href="#structs">Structs</a></li></ul></section></div></nav><main><div class="width-limiter"><nav class="sub"><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="main-heading"><h1>Module <a href="../../index.html">forest_filecoin</a>::<wbr><a href="../index.html">db</a>::<wbr><a class="mod" href="#">gc</a><button id="copy-path" title="Copy item path to clipboard"><img src="../../../static.files/clipboard-7571035ce49a181d.svg" width="19" height="18" alt="Copy item path"></button></h1><span class="out-of-band"><a class="src" href="../../../src/forest_filecoin/db/gc/mod.rs.html#4-433">source</a> · <button id="toggle-all-docs" title="collapse all docs">[<span>&#x2212;</span>]</button></span></div><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>The current implementation of the garbage collector is <code>concurrent mark-and-sweep</code>.</p>
+<h3 id="terminology"><a href="#terminology">Terminology</a></h3>
+<p><code>chain finality</code> - a number of epochs after which it becomes impossible to add or remove a block
+previously appended to the blockchain.</p>
+<h3 id="design-goals"><a href="#design-goals">Design goals</a></h3>
+<p>A correct GC algorithm that is simple and efficient for forest scenarios. This algorithm removes
+unreachable blocks that are older than <code>chain finality</code>, making sure to avoid removing something
+that could later become reachable as a result of a fork.</p>
+<p>Properties:</p>
+<ul>
+<li>No <code>BlockHeader</code> reachable from HEAD may be garbage collected.</li>
+<li>No data younger than <code>chain finality</code> epochs may be garbage collected.</li>
+<li>State-trees older than <code>depth</code> epochs should be garbage collected.</li>
+<li>Not all unreachable data has to be garbage collected. In other words, it’s
+acceptable for the garbage collector to be conservative.</li>
+<li>The garbage collector may not prevent access to the database.</li>
+</ul>
+<h3 id="gc-algorithm"><a href="#gc-algorithm">GC Algorithm</a></h3>
+<p>The <code>mark-and-sweep</code> algorithm was chosen due to it’s simplicity, efficiency and low memory
+footprint.</p>
+<h3 id="gc-workflow"><a href="#gc-workflow">GC Workflow</a></h3>
+<ol>
+<li>Mark: traverse all the blocks, generating integer hash representations for each identifier
+and storing those in a set.</li>
+<li>Wait at least <code>chain finality</code> blocks.</li>
+<li>Traverse reachable blocks starting at the current heaviest tipset and remove those from the
+marked set, leaving only unreachable entries that are older than <code>chain finality</code>.</li>
+<li>Sweep, removing all the remaining marked entries from the database.</li>
+</ol>
+<h3 id="correctness"><a href="#correctness">Correctness</a></h3>
+<p>This algorithm considers all the blocks that are visited during the <code>snapshot export</code> task
+reachable, making sure they are kept in the database after the run. It makes sure to retain the
+reachable graph as well as all the blocks for at least <code>chain finality</code> to account for potential
+forks. A snapshot can be used to bootstrap the node from scratch, thus the algorithm is
+considered correct when a valid snapshot can be exported using records available in the database
+after the run.</p>
+<h3 id="disk-usage"><a href="#disk-usage">Disk usage</a></h3>
+<p>The expected disk usage is slightly greater than the size of live data for three reasons:</p>
+<ol>
+<li>Unreachable data is not removed until it is at least 7.5 hours old (see <code>chain finality</code>).</li>
+<li>The garbage collector is conservative and is expected to leave a small (less than 1%) amount
+of unreachable data behind.</li>
+<li>The blockstore back-end may be fragmented, therefore not relinquishing the disk space back to
+the OS.</li>
+</ol>
+<h3 id="memory-usage"><a href="#memory-usage">Memory usage</a></h3>
+<p>During the <code>mark</code> and up to the <code>sweep</code> stage, the algorithm requires <code>4 bytes</code> of memory for
+each database record. Additionally, the seen cache while traversing the reachable graph
+executing the <code>filter</code> stage requires at least <code>32 bytes</code> of memory for each reachable block.
+For a typical mainnet snapshot of about 100 GiB that adds up to roughly 2.5 GiB.</p>
+<h3 id="scheduling"><a href="#scheduling">Scheduling</a></h3>
+<ol>
+<li>GC is triggered automatically and there have to be at least <code>chain finality</code> epochs stored
+for the <code>mark</code> step.</li>
+<li>The <code>filter</code> step is triggered after at least <code>chain finality</code> has passed since the <code>mark</code>
+step.</li>
+<li>Then, the <code>sweep</code> step happens.</li>
+<li>Finally, the algorithm waits for a configured amount of time to initiate the next run.</li>
+</ol>
+<h3 id="performance"><a href="#performance">Performance</a></h3>
+<p>The time complexity of mark and sweep steps is <code>O(n)</code>. The filter step is currently utilizing a
+depth-first search algorithm, with <code>O(V+E)</code> complexity, where V is the number of vertices and E
+is the number of edges.</p>
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2><ul class="item-table"><li><div class="item-name"><a class="struct" href="struct.MarkAndSweep.html" title="struct forest_filecoin::db::gc::MarkAndSweep">MarkAndSweep</a></div><div class="desc docblock-short"><a href="struct.MarkAndSweep.html" title="struct forest_filecoin::db::gc::MarkAndSweep"><code>MarkAndSweep</code></a> is a simple garbage collector implementation that traverses all the database
+keys writing them to a <a href="../../../ahash/type.HashSet.html" title="type ahash::HashSet"><code>HashSet</code></a>, then filters out those that need to be kept and schedules
+the rest for removal.</div></li></ul></section></div></main></body></html>

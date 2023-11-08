@@ -132,6 +132,30 @@
 <a href="#132" id="132">132</a>
 <a href="#133" id="133">133</a>
 <a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
+<a href="#137" id="137">137</a>
+<a href="#138" id="138">138</a>
+<a href="#139" id="139">139</a>
+<a href="#140" id="140">140</a>
+<a href="#141" id="141">141</a>
+<a href="#142" id="142">142</a>
+<a href="#143" id="143">143</a>
+<a href="#144" id="144">144</a>
+<a href="#145" id="145">145</a>
+<a href="#146" id="146">146</a>
+<a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
+<a href="#152" id="152">152</a>
+<a href="#153" id="153">153</a>
+<a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
+<a href="#158" id="158">158</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -139,11 +163,16 @@
 <span class="kw">mod </span>memory;
 <span class="kw">pub mod </span>parity_db;
 <span class="kw">pub mod </span>parity_db_config;
-<span class="kw">pub mod </span>rolling;
+
+<span class="kw">mod </span>gc;
+<span class="kw">pub use </span>gc::MarkAndSweep;
 <span class="kw">pub use </span>memory::MemoryDB;
 <span class="kw">mod </span>db_mode;
 <span class="kw">pub mod </span>migration;
+
+<span class="kw">use </span>ahash::HashSet;
 <span class="kw">use </span>anyhow::Context <span class="kw">as _</span>;
+<span class="kw">use </span>cid::multihash;
 <span class="kw">use </span>serde::de::DeserializeOwned;
 <span class="kw">use </span>serde::Serialize;
 <span class="kw">use </span>std::sync::Arc;
@@ -151,8 +180,6 @@
 <span class="kw">pub mod </span>setting_keys {
     <span class="doccomment">/// Key used to store the heaviest tipset in the settings store. This is expected to be a [`crate::blocks::TipsetKeys`]
     </span><span class="kw">pub const </span>HEAD_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;head&quot;</span>;
-    <span class="doccomment">/// Estimated number of IPLD records in the database. This is expected to be a `usize`
-    </span><span class="kw">pub const </span>ESTIMATED_RECORDS_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;estimated_reachable_records&quot;</span>;
     <span class="doccomment">/// Key used to store the memory pool configuration in the settings store.
     </span><span class="kw">pub const </span>MPOOL_CONFIG_KEY: <span class="kw-2">&amp;</span>str = <span class="string">&quot;/mpool/config&quot;</span>;
 }
@@ -236,10 +263,34 @@
     }
 }
 
+<span class="doccomment">/// A trait to facilitate mark-and-sweep garbage collection.
+///
+/// NOTE: Since there is no real need for generics here right now - the &#39;key&#39; type is specified to
+/// avoid wrapping it.
+</span><span class="kw">pub trait </span>GarbageCollectable {
+    <span class="doccomment">/// Gets all the keys currently in the database.
+    ///
+    /// NOTE: This might need to be further enhanced with some sort of limit to avoid taking up too
+    /// much time and memory.
+    </span><span class="kw">fn </span>get_keys(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;HashSet&lt;u32&gt;&gt;;
+
+    <span class="doccomment">/// Removes all the keys marked for deletion.
+    ///
+    /// # Arguments
+    ///
+    /// * `keys` - A set of keys to be removed from the database.
+    </span><span class="kw">fn </span>remove_keys(<span class="kw-2">&amp;</span><span class="self">self</span>, keys: HashSet&lt;u32&gt;) -&gt; anyhow::Result&lt;()&gt;;
+}
+
+<span class="doccomment">/// A function that converts a [`multihash::MultihashGeneric`] digest into a `u32` representation.
+/// We don&#39;t care about collisions here as main use-case is garbage collection.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>truncated_hash&lt;<span class="kw">const </span>S: usize&gt;(hash: <span class="kw-2">&amp;</span>multihash::MultihashGeneric&lt;S&gt;) -&gt; u32 {
+    <span class="kw">let </span>digest = hash.digest();
+    u32::from_le_bytes(digest[<span class="number">0</span>..<span class="number">4</span>].try_into().expect(<span class="string">&quot;shouldn&#39;t fail&quot;</span>))
+}
+
 <span class="kw">pub mod </span>db_engine {
     <span class="kw">use </span>std::path::{Path, PathBuf};
-
-    <span class="kw">use </span><span class="kw">crate</span>::db::rolling::<span class="kw-2">*</span>;
 
     <span class="kw">use </span><span class="kw">super</span>::db_mode::choose_db;
 
@@ -251,14 +302,11 @@
         choose_db(chain_data_root)
     }
 
-    <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::db) <span class="kw">fn </span>open_db(path: <span class="kw-2">&amp;</span>Path, config: <span class="kw-2">&amp;</span>DbConfig) -&gt; anyhow::Result&lt;Db&gt; {
-        Db::open(path, config).map_err(Into::into)
-    }
-
-    <span class="kw">pub fn </span>open_proxy_db(db_root: PathBuf, db_config: DbConfig) -&gt; anyhow::Result&lt;RollingDB&gt; {
-        RollingDB::load_or_create(db_root, db_config)
+    <span class="kw">pub fn </span>open_db(path: PathBuf, config: DbConfig) -&gt; anyhow::Result&lt;Db&gt; {
+        Db::open(path, <span class="kw-2">&amp;</span>config).map_err(Into::into)
     }
 }
+
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
     <span class="kw">pub mod </span>db_utils;
