@@ -80,6 +80,27 @@
 <a href="#80" id="80">80</a>
 <a href="#81" id="81">81</a>
 <a href="#82" id="82">82</a>
+<a href="#83" id="83">83</a>
+<a href="#84" id="84">84</a>
+<a href="#85" id="85">85</a>
+<a href="#86" id="86">86</a>
+<a href="#87" id="87">87</a>
+<a href="#88" id="88">88</a>
+<a href="#89" id="89">89</a>
+<a href="#90" id="90">90</a>
+<a href="#91" id="91">91</a>
+<a href="#92" id="92">92</a>
+<a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
+<a href="#96" id="96">96</a>
+<a href="#97" id="97">97</a>
+<a href="#98" id="98">98</a>
+<a href="#99" id="99">99</a>
+<a href="#100" id="100">100</a>
+<a href="#101" id="101">101</a>
+<a href="#102" id="102">102</a>
+<a href="#103" id="103">103</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -91,11 +112,15 @@
         data_types::{ApiActorState, SectorOnChainInfo},
         state_api::<span class="kw-2">*</span>,
     },
-    shim::{address::Address, clock::ChainEpoch, state_tree::ActorState},
+    shim::{
+        address::Address, clock::ChainEpoch, econ::TokenAmount, message::MethodNum,
+        state_tree::ActorState,
+    },
 };
 <span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>fil_actor_interface::miner::MinerPower;
 <span class="kw">use </span>fil_actors_shared::v10::runtime::DomainSeparationTag;
+<span class="kw">use </span>libipld_core::ipld::Ipld;
 
 <span class="kw">use super</span>::{ApiInfo, JsonRpcError, RpcRequest};
 
@@ -135,7 +160,7 @@
         RpcRequest::new(STATE_NETWORK_NAME, ())
     }
 
-    <span class="kw">pub fn </span>state_miner_power(miner: Address, tsk: TipsetKeys) -&gt; RpcRequest&lt;MinerPower&gt; {
+    <span class="kw">pub fn </span>state_miner_power_req(miner: Address, tsk: TipsetKeys) -&gt; RpcRequest&lt;MinerPower&gt; {
         RpcRequest::new(STATE_MINOR_POWER, (miner, tsk))
     }
 
@@ -160,6 +185,23 @@
         tsk: TipsetKeys,
     ) -&gt; RpcRequest&lt;Vec&lt;SectorOnChainInfo&gt;&gt; {
         RpcRequest::new(STATE_MINER_ACTIVE_SECTORS, (actor, tsk))
+    }
+
+    <span class="kw">pub fn </span>state_account_key_req(addr: Address, tsk: TipsetKeys) -&gt; RpcRequest&lt;Address&gt; {
+        RpcRequest::new(STATE_ACCOUNT_KEY, (addr, tsk))
+    }
+
+    <span class="kw">pub fn </span>state_circulating_supply_req(tsk: TipsetKeys) -&gt; RpcRequest&lt;TokenAmount&gt; {
+        RpcRequest::new(STATE_CIRCULATING_SUPPLY, (tsk,))
+    }
+
+    <span class="kw">pub fn </span>state_decode_params_req(
+        recipient: Address,
+        method_number: MethodNum,
+        params: Vec&lt;u8&gt;,
+        tsk: TipsetKeys,
+    ) -&gt; RpcRequest&lt;Ipld&gt; {
+        RpcRequest::new(STATE_DECODE_PARAMS, (recipient, method_number, params, tsk))
     }
 }
 </code></pre></div></section></main></body></html>
