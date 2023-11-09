@@ -94,8 +94,8 @@
 </span><span class="kw">use </span><span class="kw">crate</span>::shim::sector::SectorSize;
 <span class="kw">use </span><span class="kw">crate</span>::utils::proofs_api::paramfetch::{get_params_default, SectorSizeOpt};
 
-<span class="kw">use </span><span class="kw">super</span>::read_config;
 <span class="kw">use </span><span class="kw">crate</span>::cli::subcommands::cli_error_and_die;
+<span class="kw">use </span><span class="kw">crate</span>::cli_shared::read_config;
 
 <span class="attr">#[allow(missing_docs)]
 #[derive(Debug, clap::Args)]
@@ -118,7 +118,7 @@
 
 <span class="kw">impl </span>FetchCommands {
     <span class="kw">pub async fn </span>run(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
-        <span class="kw">let </span>config = read_config(<span class="kw-2">&amp;</span><span class="self">self</span>.config, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>(<span class="kw">_</span>, config) = read_config(<span class="kw-2">&amp;</span><span class="self">self</span>.config, <span class="kw-2">&amp;</span><span class="prelude-val">None</span>)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>sizes = <span class="kw">if </span><span class="self">self</span>.all {
             SectorSizeOpt::All
