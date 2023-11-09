@@ -419,13 +419,13 @@
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_read_obj&lt;DB: Blockstore&gt;(
     data: Data&lt;RPCState&lt;DB&gt;&gt;,
     Params(LotusJson((obj_cid,))): Params&lt;LotusJson&lt;(Cid,)&gt;&gt;,
-) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
-    <span class="kw">let </span>ret = data
+) -&gt; <span class="prelude-ty">Result</span>&lt;LotusJson&lt;Vec&lt;u8&gt;&gt;, JsonRpcError&gt; {
+    <span class="kw">let </span>bytes = data
         .state_manager
         .blockstore()
         .get(<span class="kw-2">&amp;</span>obj_cid)<span class="question-mark">?
         </span>.ok_or(<span class="string">&quot;can&#39;t find object with that cid&quot;</span>)<span class="question-mark">?</span>;
-    <span class="prelude-val">Ok</span>(hex::encode(ret))
+    <span class="prelude-val">Ok</span>(LotusJson(bytes))
 }
 
 <span class="kw">pub</span>(<span class="kw">in </span><span class="kw">crate</span>::rpc) <span class="kw">async fn </span>chain_has_obj&lt;DB: Blockstore&gt;(

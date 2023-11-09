@@ -214,11 +214,11 @@
         RpcRequest::new(CHAIN_GET_MESSAGE, (cid,))
     }
 
-    <span class="kw">pub async fn </span>chain_read_obj(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;String, JsonRpcError&gt; {
+    <span class="kw">pub async fn </span>chain_read_obj(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;Vec&lt;u8&gt;, JsonRpcError&gt; {
         <span class="self">self</span>.call(<span class="self">Self</span>::chain_read_obj_req(cid)).<span class="kw">await
     </span>}
 
-    <span class="kw">pub fn </span>chain_read_obj_req(cid: Cid) -&gt; RpcRequest&lt;String&gt; {
+    <span class="kw">pub fn </span>chain_read_obj_req(cid: Cid) -&gt; RpcRequest&lt;Vec&lt;u8&gt;&gt; {
         RpcRequest::new(CHAIN_READ_OBJ, (cid,))
     }
 
