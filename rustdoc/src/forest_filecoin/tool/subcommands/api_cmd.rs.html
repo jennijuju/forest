@@ -404,6 +404,11 @@
 <a href="#404" id="404">404</a>
 <a href="#405" id="405">405</a>
 <a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -614,17 +619,12 @@
 
     <span class="macro">vec!</span>[
         RpcTest::identity(ApiInfo::chain_get_block_req(<span class="kw-2">*</span>shared_block.cid())),
-        RpcTest::identity(ApiInfo::chain_get_block_messages_req(<span class="kw-2">*</span>shared_block.cid())),
         RpcTest::identity(ApiInfo::chain_get_tipset_by_height_req(
             shared_tipset.epoch(),
             TipsetKeys::default(),
         )),
         RpcTest::identity(ApiInfo::chain_get_tipset_req(shared_tipset.key().clone())),
         RpcTest::identity(ApiInfo::chain_read_obj_req(<span class="kw-2">*</span>shared_block.cid())),
-        RpcTest::identity(ApiInfo::chain_get_messages_in_tipset_req(
-            shared_tipset.key().clone(),
-        )),
-        RpcTest::identity(ApiInfo::chain_get_parent_messages_req(<span class="kw-2">*</span>shared_block.cid())),
     ]
 }
 
@@ -686,7 +686,17 @@
     tests.extend(state_tests(<span class="kw-2">&amp;</span>shared_tipset));
 
     <span class="kw">for </span>tipset <span class="kw">in </span>shared_tipset.chain(<span class="kw-2">&amp;</span>store).take(<span class="number">20</span>) {
+        tests.push(RpcTest::identity(
+            ApiInfo::chain_get_messages_in_tipset_req(tipset.key().clone()),
+        ));
         <span class="kw">for </span>block <span class="kw">in </span>tipset.blocks() {
+            tests.push(RpcTest::identity(ApiInfo::chain_get_block_messages_req(
+                <span class="kw-2">*</span>block.cid(),
+            )));
+            tests.push(RpcTest::identity(ApiInfo::chain_get_parent_messages_req(
+                <span class="kw-2">*</span>block.cid(),
+            )));
+
             <span class="kw">let </span>(bls_messages, secp_messages) = <span class="kw">crate</span>::chain::store::block_messages(<span class="kw-2">&amp;</span>store, block)<span class="question-mark">?</span>;
             <span class="kw">for </span>msg <span class="kw">in </span>bls_messages {
                 tests.push(RpcTest::identity(ApiInfo::chain_get_message_req(
