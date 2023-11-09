@@ -632,6 +632,16 @@
 <a href="#632" id="632">632</a>
 <a href="#633" id="633">633</a>
 <a href="#634" id="634">634</a>
+<a href="#635" id="635">635</a>
+<a href="#636" id="636">636</a>
+<a href="#637" id="637">637</a>
+<a href="#638" id="638">638</a>
+<a href="#639" id="639">639</a>
+<a href="#640" id="640">640</a>
+<a href="#641" id="641">641</a>
+<a href="#642" id="642">642</a>
+<a href="#643" id="643">643</a>
+<a href="#644" id="644">644</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -679,6 +689,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::state_manager::{apply_block_messages, NO_CALLBACK};
 <span class="kw">use </span>anyhow::{bail, Context <span class="kw">as _</span>};
 <span class="kw">use </span>chrono::NaiveDateTime;
+<span class="kw">use </span>cid::Cid;
 <span class="kw">use </span>clap::Subcommand;
 <span class="kw">use </span>dialoguer::{theme::ColorfulTheme, Confirm};
 <span class="kw">use </span>futures::TryStreamExt;
@@ -818,6 +829,7 @@
     epoch: ChainEpoch,
     tipsets: ChainEpoch,
     messages: ChainEpoch,
+    root: Tipset,
 }
 
 <span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>ArchiveInfo {
@@ -826,7 +838,14 @@
         <span class="macro">writeln!</span>(f, <span class="string">&quot;Network:       {}&quot;</span>, <span class="self">self</span>.network)<span class="question-mark">?</span>;
         <span class="macro">writeln!</span>(f, <span class="string">&quot;Epoch:         {}&quot;</span>, <span class="self">self</span>.epoch)<span class="question-mark">?</span>;
         <span class="macro">writeln!</span>(f, <span class="string">&quot;State-roots:   {}&quot;</span>, <span class="self">self</span>.epoch - <span class="self">self</span>.tipsets + <span class="number">1</span>)<span class="question-mark">?</span>;
-        <span class="macro">write!</span>(f, <span class="string">&quot;Messages sets: {}&quot;</span>, <span class="self">self</span>.epoch - <span class="self">self</span>.messages + <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="macro">writeln!</span>(f, <span class="string">&quot;Messages sets: {}&quot;</span>, <span class="self">self</span>.epoch - <span class="self">self</span>.messages + <span class="number">1</span>)<span class="question-mark">?</span>;
+        <span class="kw">let </span>root_cids_string = <span class="self">self
+            </span>.root
+            .cids()
+            .iter()
+            .map(Cid::to_string)
+            .join(<span class="string">&quot;\n               &quot;</span>);
+        <span class="macro">write!</span>(f, <span class="string">&quot;Root CIDs:     {root_cids_string}&quot;</span>,)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 }
@@ -850,7 +869,7 @@
 
         <span class="kw">let </span>tipsets = root.clone().chain(<span class="kw-2">&amp;</span>store);
 
-        <span class="kw">let </span>windowed = (std::iter::once(root).chain(tipsets)).tuple_windows();
+        <span class="kw">let </span>windowed = (std::iter::once(root.clone()).chain(tipsets)).tuple_windows();
 
         <span class="kw">let </span><span class="kw-2">mut </span>network: String = <span class="string">&quot;unknown&quot;</span>.into();
         <span class="kw">let </span><span class="kw-2">mut </span>lowest_stateroot_epoch = root_epoch;
@@ -913,6 +932,7 @@
             epoch: root_epoch,
             tipsets: lowest_stateroot_epoch,
             messages: lowest_message_epoch,
+            root,
         })
     }
 }
