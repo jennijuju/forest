@@ -124,6 +124,8 @@
 <a href="#124" id="124">124</a>
 <a href="#125" id="125">125</a>
 <a href="#126" id="126">126</a>
+<a href="#127" id="127">127</a>
+<a href="#128" id="128">128</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -186,7 +188,9 @@
             <span class="self">Self</span>::Block { cid } =&gt; print_pretty_json(api.chain_get_block(cid).<span class="kw">await</span><span class="question-mark">?</span>),
             <span class="self">Self</span>::Genesis =&gt; print_pretty_json(LotusJson(api.chain_get_genesis().<span class="kw">await</span><span class="question-mark">?</span>)),
             <span class="self">Self</span>::Head =&gt; print_rpc_res_cids(api.chain_head().<span class="kw">await</span><span class="question-mark">?</span>),
-            <span class="self">Self</span>::Message { cid } =&gt; print_pretty_json(api.chain_get_message(cid).<span class="kw">await</span><span class="question-mark">?</span>),
+            <span class="self">Self</span>::Message { cid } =&gt; {
+                print_pretty_json(LotusJson(api.chain_get_message(cid).<span class="kw">await</span><span class="question-mark">?</span>))
+            }
             <span class="self">Self</span>::ReadObj { cid } =&gt; {
                 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, hex::encode(api.chain_read_obj(cid).<span class="kw">await</span><span class="question-mark">?</span>));
                 <span class="prelude-val">Ok</span>(())
