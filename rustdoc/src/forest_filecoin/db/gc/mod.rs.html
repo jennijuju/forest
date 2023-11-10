@@ -431,6 +431,10 @@
 <a href="#431" id="431">431</a>
 <a href="#432" id="432">432</a>
 <a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -506,7 +510,7 @@
 <span class="kw">use </span><span class="kw">crate</span>::chain::ChainEpochDelta;
 
 <span class="kw">use </span><span class="kw">crate</span>::db::{truncated_hash, GarbageCollectable};
-<span class="kw">use </span><span class="kw">crate</span>::ipld::stream_graph;
+<span class="kw">use </span><span class="kw">crate</span>::ipld::unordered_stream_graph;
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span>ahash::{HashSet, HashSetExt};
 <span class="kw">use </span>futures::StreamExt;
@@ -532,7 +536,7 @@
     block_time: Duration,
 }
 
-<span class="kw">impl</span>&lt;DB: Blockstore + GarbageCollectable&gt; MarkAndSweep&lt;DB&gt; {
+<span class="kw">impl</span>&lt;DB: Blockstore + GarbageCollectable + Sync + Send + <span class="lifetime">&#39;static</span>&gt; MarkAndSweep&lt;DB&gt; {
     <span class="doccomment">/// Creates a new mark-and-sweep garbage collector.
     ///
     /// # Arguments
@@ -566,7 +570,11 @@
     // NOTE: One concern here is that this is going to consume a lot of CPU.
     </span><span class="kw">async fn </span>filter(<span class="kw-2">&amp;mut </span><span class="self">self</span>, tipset: Arc&lt;Tipset&gt;, depth: ChainEpochDelta) -&gt; anyhow::Result&lt;()&gt; {
         <span class="comment">// NOTE: We want to keep all the block headers from genesis to heaviest tipset epoch.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>stream = stream_graph(<span class="kw-2">&amp;</span><span class="self">self</span>.db, (<span class="kw-2">*</span>tipset).clone().chain(<span class="kw-2">&amp;</span><span class="self">self</span>.db), depth);
+        </span><span class="kw">let </span><span class="kw-2">mut </span>stream = unordered_stream_graph(
+            <span class="self">self</span>.db.clone(),
+            (<span class="kw-2">*</span>tipset).clone().chain(<span class="self">self</span>.db.clone()),
+            depth,
+        );
 
         <span class="kw">while let </span><span class="prelude-val">Some</span>(block) = stream.next().<span class="kw">await </span>{
             <span class="kw">let </span>block = block<span class="question-mark">?</span>;
