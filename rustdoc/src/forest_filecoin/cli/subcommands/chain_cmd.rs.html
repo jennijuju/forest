@@ -126,11 +126,20 @@
 <a href="#126" id="126">126</a>
 <a href="#127" id="127">127</a>
 <a href="#128" id="128">128</a>
+<a href="#129" id="129">129</a>
+<a href="#130" id="130">130</a>
+<a href="#131" id="131">131</a>
+<a href="#132" id="132">132</a>
+<a href="#133" id="133">133</a>
+<a href="#134" id="134">134</a>
+<a href="#135" id="135">135</a>
+<a href="#136" id="136">136</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span><span class="kw">crate</span>::blocks::{Tipset, TipsetKeys};
-<span class="kw">use </span><span class="kw">crate</span>::lotus_json::LotusJson;
+<span class="kw">use </span><span class="kw">crate</span>::lotus_json::{HasLotusJson, LotusJson};
+<span class="kw">use </span><span class="kw">crate</span>::message::ChainMessage;
 <span class="kw">use </span><span class="kw">crate</span>::rpc_client::{ApiInfo, JsonRpcError};
 <span class="kw">use </span>anyhow::bail;
 <span class="kw">use </span>cid::Cid;
@@ -189,7 +198,14 @@
             <span class="self">Self</span>::Genesis =&gt; print_pretty_json(LotusJson(api.chain_get_genesis().<span class="kw">await</span><span class="question-mark">?</span>)),
             <span class="self">Self</span>::Head =&gt; print_rpc_res_cids(api.chain_head().<span class="kw">await</span><span class="question-mark">?</span>),
             <span class="self">Self</span>::Message { cid } =&gt; {
-                print_pretty_json(LotusJson(api.chain_get_message(cid).<span class="kw">await</span><span class="question-mark">?</span>))
+                <span class="kw">let </span>bytes = api.chain_read_obj(cid).<span class="kw">await</span><span class="question-mark">?</span>;
+                <span class="kw">match </span>fvm_ipld_encoding::from_slice::&lt;ChainMessage&gt;(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">? </span>{
+                    ChainMessage::Unsigned(m) =&gt; print_pretty_json(LotusJson(m)),
+                    ChainMessage::Signed(m) =&gt; {
+                        <span class="kw">let </span>cid = m.cid()<span class="question-mark">?</span>;
+                        print_pretty_json(m.into_lotus_json().with_cid(cid))
+                    }
+                }
             }
             <span class="self">Self</span>::ReadObj { cid } =&gt; {
                 <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, hex::encode(api.chain_read_obj(cid).<span class="kw">await</span><span class="question-mark">?</span>));

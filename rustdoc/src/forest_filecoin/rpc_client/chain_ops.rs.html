@@ -120,6 +120,7 @@
 <a href="#120" id="120">120</a>
 <a href="#121" id="121">121</a>
 <a href="#122" id="122">122</a>
+<a href="#123" id="123">123</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -206,7 +207,8 @@
         RpcRequest::new(CHAIN_EXPORT, params)
     }
 
-    <span class="kw">pub async fn </span>chain_get_message(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;Message, JsonRpcError&gt; {
+    <span class="attr">#[allow(dead_code)]
+    </span><span class="kw">pub async fn </span>chain_get_message(<span class="kw-2">&amp;</span><span class="self">self</span>, cid: Cid) -&gt; <span class="prelude-ty">Result</span>&lt;Message, JsonRpcError&gt; {
         <span class="self">self</span>.call(<span class="self">Self</span>::chain_get_message_req(cid)).<span class="kw">await
     </span>}
 
