@@ -172,7 +172,7 @@
     ) -&gt; RpcRequest&lt;Vec&lt;u8&gt;&gt; {
         RpcRequest::new(
             STATE_GET_RANDOMNESS_FROM_BEACON,
-            (personalization <span class="kw">as </span>u32, rand_epoch, entropy, tsk),
+            (personalization <span class="kw">as </span>i64, rand_epoch, entropy, tsk),
         )
     }
 

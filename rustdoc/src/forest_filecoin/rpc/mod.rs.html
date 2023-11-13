@@ -145,6 +145,10 @@
 <a href="#145" id="145">145</a>
 <a href="#146" id="146">146</a>
 <a href="#147" id="147">147</a>
+<a href="#148" id="148">148</a>
+<a href="#149" id="149">149</a>
+<a href="#150" id="150">150</a>
+<a href="#151" id="151">151</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -259,6 +263,10 @@
             .with_method(STATE_GET_RECEIPT, state_get_receipt::&lt;DB&gt;)
             .with_method(STATE_WAIT_MSG, state_wait_msg::&lt;DB&gt;)
             .with_method(STATE_FETCH_ROOT, state_fetch_root::&lt;DB&gt;)
+            .with_method(
+                STATE_GET_RANDOMNESS_FROM_BEACON,
+                state_get_randomness_from_beacon::&lt;DB&gt;,
+            )
             <span class="comment">// Gas API
             </span>.with_method(GAS_ESTIMATE_FEE_CAP, gas_estimate_fee_cap::&lt;DB&gt;)
             .with_method(GAS_ESTIMATE_GAS_LIMIT, gas_estimate_gas_limit::&lt;DB&gt;)

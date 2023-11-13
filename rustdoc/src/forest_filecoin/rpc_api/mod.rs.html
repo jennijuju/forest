@@ -333,6 +333,7 @@
 <a href="#333" id="333">333</a>
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -419,6 +420,7 @@
     access.insert(state_api::STATE_NETWORK_NAME, Access::Read);
     access.insert(state_api::STATE_NETWORK_VERSION, Access::Read);
     access.insert(state_api::STATE_FETCH_ROOT, Access::Read);
+    access.insert(state_api::STATE_GET_RANDOMNESS_FROM_BEACON, Access::Read);
 
     <span class="comment">// Gas API
     </span>access.insert(gas_api::GAS_ESTIMATE_GAS_LIMIT, Access::Read);
