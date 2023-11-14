@@ -909,7 +909,7 @@
             .<span class="kw">await
             </span>.context(<span class="string">&quot;Failed to send hello request: receiver dropped&quot;</span>)<span class="question-mark">?</span>;
 
-        <span class="kw">const </span>HELLO_TIMEOUT: Duration = Duration::from_secs(<span class="number">5</span>);
+        <span class="kw">const </span>HELLO_TIMEOUT: Duration = Duration::from_secs(<span class="number">30</span>);
         <span class="kw">let </span>sent = SystemTime::now();
         <span class="kw">let </span>res = tokio::task::spawn_blocking(<span class="kw">move </span>|| rx.recv_timeout(HELLO_TIMEOUT))
             .<span class="kw">await</span><span class="question-mark">?
