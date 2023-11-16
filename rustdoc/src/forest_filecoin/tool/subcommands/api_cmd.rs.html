@@ -736,7 +736,7 @@
                     }
                 }
             }
-            tests.push(RpcTest::basic(ApiInfo::state_miner_power_req(
+            tests.push(RpcTest::identity(ApiInfo::state_miner_power_req(
                 <span class="kw-2">*</span>block.miner_address(),
                 tipset.key().clone(),
             )))

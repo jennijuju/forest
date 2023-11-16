@@ -334,6 +334,7 @@
 <a href="#334" id="334">334</a>
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -415,6 +416,7 @@
     access.insert(state_api::STATE_GET_ACTOR, Access::Read);
     access.insert(state_api::STATE_MARKET_BALANCE, Access::Read);
     access.insert(state_api::STATE_MARKET_DEALS, Access::Read);
+    access.insert(state_api::STATE_MINER_POWER, Access::Read);
     access.insert(state_api::STATE_GET_RECEIPT, Access::Read);
     access.insert(state_api::STATE_WAIT_MSG, Access::Read);
     access.insert(state_api::STATE_NETWORK_NAME, Access::Read);
@@ -564,10 +566,10 @@
     <span class="kw">pub const </span>STATE_GET_ACTOR: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetActor&quot;</span>;
     <span class="kw">pub const </span>STATE_MARKET_BALANCE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMarketBalance&quot;</span>;
     <span class="kw">pub const </span>STATE_MARKET_DEALS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMarketDeals&quot;</span>;
+    <span class="kw">pub const </span>STATE_MINER_POWER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMinerPower&quot;</span>;
     <span class="kw">pub const </span>STATE_GET_RECEIPT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetReceipt&quot;</span>;
     <span class="kw">pub const </span>STATE_WAIT_MSG: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateWaitMsg&quot;</span>;
     <span class="kw">pub const </span>STATE_FETCH_ROOT: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateFetchRoot&quot;</span>;
-    <span class="kw">pub const </span>STATE_MINOR_POWER: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMinerPower&quot;</span>;
     <span class="kw">pub const </span>STATE_GET_RANDOMNESS_FROM_BEACON: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateGetRandomnessFromBeacon&quot;</span>;
     <span class="kw">pub const </span>STATE_READ_STATE: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateReadState&quot;</span>;
     <span class="kw">pub const </span>STATE_MINER_ACTIVE_SECTORS: <span class="kw-2">&amp;</span>str = <span class="string">&quot;Filecoin.StateMinerActiveSectors&quot;</span>;

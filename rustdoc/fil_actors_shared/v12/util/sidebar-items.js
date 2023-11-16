@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"constant":["DEFAULT_HAMT_CONFIG"],"mod":["cbor"],"struct":["BatchReturn","BatchReturnGen","FailCode","Map2","MapMap","Multimap","Set","SetMultimap"],"trait":["ActorDowncast","MapKey"],"type":["Config"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_HAMT_CONFIG"],"struct":["BatchReturn","FailCode","Map2","MapMap","Multimap","Set","SetMultimap"],"trait":["ActorDowncast","MapKey"],"type":["Config"]};

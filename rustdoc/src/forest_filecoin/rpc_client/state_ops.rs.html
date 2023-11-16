@@ -161,7 +161,7 @@
     }
 
     <span class="kw">pub fn </span>state_miner_power_req(miner: Address, tsk: TipsetKeys) -&gt; RpcRequest&lt;MinerPower&gt; {
-        RpcRequest::new(STATE_MINOR_POWER, (miner, tsk))
+        RpcRequest::new(STATE_MINER_POWER, (miner, tsk))
     }
 
     <span class="kw">pub fn </span>state_get_randomness_from_beacon_req(

@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["BatchReturn","BatchReturnGen","FailCode","MapMap","Multimap","Set","SetMultimap"],"trait":["ActorDowncast"]};
+window.SIDEBAR_ITEMS = {"struct":["BatchReturn","FailCode","MapMap","Multimap","Set","SetMultimap"],"trait":["ActorDowncast"]};

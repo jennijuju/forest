@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fil_actors_shared-7.0.0-rc.3/src/v11/runtime/policy.rs`."><title>policy.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="fil_actors_shared" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../fil_actors_shared/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/fil_actors_shared-7.0.0-rc.4/src/v11/runtime/policy.rs`."><title>policy.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="fil_actors_shared" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../fil_actors_shared/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -426,60 +426,8 @@
 <a href="#426" id="426">426</a>
 <a href="#427" id="427">427</a>
 <a href="#428" id="428">428</a>
-<a href="#429" id="429">429</a>
-<a href="#430" id="430">430</a>
-<a href="#431" id="431">431</a>
-<a href="#432" id="432">432</a>
-<a href="#433" id="433">433</a>
-<a href="#434" id="434">434</a>
-<a href="#435" id="435">435</a>
-<a href="#436" id="436">436</a>
-<a href="#437" id="437">437</a>
-<a href="#438" id="438">438</a>
-<a href="#439" id="439">439</a>
-<a href="#440" id="440">440</a>
-<a href="#441" id="441">441</a>
-<a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
-<a href="#452" id="452">452</a>
-<a href="#453" id="453">453</a>
-<a href="#454" id="454">454</a>
-<a href="#455" id="455">455</a>
-<a href="#456" id="456">456</a>
-<a href="#457" id="457">457</a>
-<a href="#458" id="458">458</a>
-<a href="#459" id="459">459</a>
-<a href="#460" id="460">460</a>
-<a href="#461" id="461">461</a>
-<a href="#462" id="462">462</a>
-<a href="#463" id="463">463</a>
-<a href="#464" id="464">464</a>
-<a href="#465" id="465">465</a>
-<a href="#466" id="466">466</a>
-<a href="#467" id="467">467</a>
-<a href="#468" id="468">468</a>
-<a href="#469" id="469">469</a>
-<a href="#470" id="470">470</a>
-<a href="#471" id="471">471</a>
-<a href="#472" id="472">472</a>
-<a href="#473" id="473">473</a>
-<a href="#474" id="474">474</a>
-<a href="#475" id="475">475</a>
-<a href="#476" id="476">476</a>
-<a href="#477" id="477">477</a>
-<a href="#478" id="478">478</a>
-<a href="#479" id="479">479</a>
-<a href="#480" id="480">480</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>fvm_shared3::clock::ChainEpoch;
-<span class="kw">use </span>fvm_shared3::sector::StoragePower;
+<span class="kw">use </span>fvm_shared3::sector::{RegisteredPoStProof, RegisteredSealProof, StoragePower};
 <span class="kw">use </span>num_traits::FromPrimitive;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
@@ -796,10 +744,7 @@
 
     <span class="doccomment">/// Number of epochs between publishing the precommit and when the challenge for interactive PoRep is drawn
     /// used to ensure it is not predictable by miner.
-    </span><span class="attr">#[cfg(not(feature = <span class="string">&quot;short-precommit&quot;</span>))]
     </span><span class="kw">pub const </span>PRE_COMMIT_CHALLENGE_DELAY: ChainEpoch = <span class="number">150</span>;
-    <span class="attr">#[cfg(feature = <span class="string">&quot;short-precommit&quot;</span>)]
-    </span><span class="kw">pub const </span>PRE_COMMIT_CHALLENGE_DELAY: ChainEpoch = <span class="number">10</span>;
 
     <span class="doccomment">/// Lookback from the deadline&#39;s challenge window opening from which to sample chain randomness for the challenge seed.
 
@@ -852,10 +797,7 @@
     <span class="doccomment">/// The number of total possible types (enum variants) of RegisteredSealProof
     </span><span class="kw">pub const </span>REGISTERED_SEAL_PROOF_VARIANTS: usize = <span class="number">10</span>;
 
-    <span class="attr">#[cfg(not(feature = <span class="string">&quot;small-deals&quot;</span>))]
-    </span><span class="kw">pub const </span>MINIMUM_VERIFIED_ALLOCATION_SIZE: i32 = <span class="number">1 </span>&lt;&lt; <span class="number">20</span>;
-    <span class="attr">#[cfg(feature = <span class="string">&quot;small-deals&quot;</span>)]
-    </span><span class="kw">pub const </span>MINIMUM_VERIFIED_ALLOCATION_SIZE: i32 = <span class="number">256</span>;
+    <span class="kw">pub const </span>MINIMUM_VERIFIED_ALLOCATION_SIZE: i32 = <span class="number">1 </span>&lt;&lt; <span class="number">20</span>;
     <span class="kw">pub const </span>MINIMUM_VERIFIED_ALLOCATION_TERM: i64 = <span class="number">180 </span>* EPOCHS_IN_DAY;
     <span class="kw">pub const </span>MAXIMUM_VERIFIED_ALLOCATION_TERM: i64 = <span class="number">5 </span>* EPOCHS_IN_YEAR;
     <span class="kw">pub const </span>MAXIMUM_VERIFIED_ALLOCATION_EXPIRATION: i64 = <span class="number">60 </span>* EPOCHS_IN_DAY;
@@ -866,10 +808,7 @@
 
     <span class="doccomment">/// Numerator of the percentage of normalized cirulating
     /// supply that must be covered by provider collateral
-    </span><span class="attr">#[cfg(not(feature = <span class="string">&quot;no-provider-deal-collateral&quot;</span>))]
     </span><span class="kw">pub const </span>PROV_COLLATERAL_PERCENT_SUPPLY_NUM: i64 = <span class="number">1</span>;
-    <span class="attr">#[cfg(feature = <span class="string">&quot;no-provider-deal-collateral&quot;</span>)]
-    </span><span class="kw">pub const </span>PROV_COLLATERAL_PERCENT_SUPPLY_NUM: i64 = <span class="number">0</span>;
 
     <span class="doccomment">/// Denominator of the percentage of normalized cirulating
     /// supply that must be covered by provider collateral
@@ -890,59 +829,16 @@
 <span class="kw">impl </span>ProofSet {
     <span class="doccomment">/// Create a `ProofSet` for enabled `RegisteredPoStProof`s
     </span><span class="kw">pub fn </span>default_post_proofs() -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>proofs = <span class="macro">vec!</span>[<span class="bool-val">false</span>; policy_constants::REGISTERED_POST_PROOF_VARIANTS];
-        <span class="comment">// TODO: v12: cleanup https://github.com/filecoin-project/builtin-actors/issues/1260
-        </span><span class="attr">#[cfg(feature = <span class="string">&quot;sector-2k&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow2KiBV1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow2KiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-8m&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow8MiBV1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow8MiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-512m&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow512MiBV1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow512MiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-32g&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow32GiBV1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow32GiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-64g&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow64GiBV1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-            proofs[i64::from(RegisteredPoStProof::StackedDRGWindow64GiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
+        <span class="kw">let </span><span class="kw-2">mut </span>proofs = <span class="macro">vec!</span>[<span class="bool-val">false</span>; policy_constants::REGISTERED_POST_PROOF_VARIANTS];
+        proofs[i64::from(RegisteredPoStProof::StackedDRGWindow32GiBV1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
+        proofs[i64::from(RegisteredPoStProof::StackedDRGWindow32GiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         ProofSet(proofs)
     }
 
     <span class="doccomment">/// Create a `ProofSet` for enabled `RegisteredSealProof`s
     </span><span class="kw">pub fn </span>default_seal_proofs() -&gt; <span class="self">Self </span>{
-        <span class="kw">let </span>proofs = <span class="macro">vec!</span>[<span class="bool-val">false</span>; policy_constants::REGISTERED_SEAL_PROOF_VARIANTS];
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-2k&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredSealProof::StackedDRG2KiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-8m&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredSealProof::StackedDRG8MiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-512m&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredSealProof::StackedDRG512MiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-32g&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredSealProof::StackedDRG32GiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
-        <span class="attr">#[cfg(feature = <span class="string">&quot;sector-64g&quot;</span>)]
-        </span>{
-            proofs[i64::from(RegisteredSealProof::StackedDRG64GiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
-        }
+        <span class="kw">let </span><span class="kw-2">mut </span>proofs = <span class="macro">vec!</span>[<span class="bool-val">false</span>; policy_constants::REGISTERED_SEAL_PROOF_VARIANTS];
+        proofs[i64::from(RegisteredSealProof::StackedDRG32GiBV1P1) <span class="kw">as </span>usize] = <span class="bool-val">true</span>;
         ProofSet(proofs)
     }
 
