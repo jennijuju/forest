@@ -91,6 +91,8 @@
 <a href="#91" id="91">91</a>
 <a href="#92" id="92">92</a>
 <a href="#93" id="93">93</a>
+<a href="#94" id="94">94</a>
+<a href="#95" id="95">95</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -99,7 +101,7 @@
     Arc,
 };
 
-<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height, NetworkChain};
+<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
 <span class="kw">use </span><span class="kw">crate</span>::shim::clock::ChainEpoch;
 <span class="kw">use </span><span class="kw">crate</span>::shim::state_tree::StateRoot;
 <span class="kw">use </span><span class="kw">crate</span>::utils::misc::reveal_three_trees;
@@ -113,6 +115,7 @@
 <span class="kw">mod </span>nv19;
 <span class="kw">mod </span>nv21;
 <span class="kw">mod </span>nv21fix;
+<span class="kw">mod </span>nv21fix2;
 <span class="kw">mod </span>type_migrations;
 
 <span class="kw">type </span>RunMigration&lt;DB&gt; = <span class="kw">fn</span>(<span class="kw-2">&amp;</span>ChainConfig, <span class="kw-2">&amp;</span>Arc&lt;DB&gt;, <span class="kw-2">&amp;</span>Cid, ChainEpoch) -&gt; anyhow::Result&lt;Cid&gt;;
@@ -134,8 +137,9 @@
         (Height::Watermelon, nv21::run_migration::&lt;DB&gt;),
     ];
 
-    <span class="kw">if </span>chain_config.network == NetworkChain::Calibnet {
+    <span class="kw">if </span>chain_config.network.is_testnet() {
         mappings.push((Height::WatermelonFix, nv21fix::run_migration::&lt;DB&gt;));
+        mappings.push((Height::WatermelonFix2, nv21fix2::run_migration::&lt;DB&gt;));
     }
 
     <span class="comment">// Make sure bundle is defined.

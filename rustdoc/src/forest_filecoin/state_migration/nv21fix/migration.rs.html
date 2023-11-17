@@ -161,13 +161,12 @@
 <a href="#161" id="161">161</a>
 <a href="#162" id="162">162</a>
 <a href="#163" id="163">163</a>
-<a href="#164" id="164">164</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
-<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height, NetworkChain};
+<span class="kw">use </span><span class="kw">crate</span>::networks::{ChainConfig, Height};
 <span class="kw">use </span><span class="kw">crate</span>::shim::{
     address::Address,
     clock::ChainEpoch,
@@ -294,10 +293,9 @@
 <span class="kw">where
     </span>DB: Blockstore + Send + Sync,
 {
-    <span class="macro">assert_eq!</span>(
-        NetworkChain::Calibnet,
-        chain_config.network,
-        <span class="string">&quot;NV21 fix only applies to calibration network&quot;
+    <span class="macro">assert!</span>(
+        chain_config.network.is_testnet(),
+        <span class="string">&quot;NV21 fix only applies to test network&quot;
     </span>);
 
     <span class="kw">let </span>new_manifest_cid = chain_config

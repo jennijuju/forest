@@ -343,6 +343,8 @@
 <a href="#343" id="343">343</a>
 <a href="#344" id="344">344</a>
 <a href="#345" id="345">345</a>
+<a href="#346" id="346">346</a>
+<a href="#347" id="347">347</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -460,6 +462,7 @@
     Thunder,
     Watermelon,
     WatermelonFix,
+    WatermelonFix2,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>Height {
@@ -494,6 +497,7 @@
             Height::Thunder =&gt; NetworkVersion::V20,
             Height::Watermelon =&gt; NetworkVersion::V21,
             Height::WatermelonFix =&gt; NetworkVersion::V21,
+            Height::WatermelonFix2 =&gt; NetworkVersion::V21,
         }
     }
 }
