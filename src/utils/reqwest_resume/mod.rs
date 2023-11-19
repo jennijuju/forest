@@ -10,6 +10,7 @@
 //! Some modifications have been done to update the code regarding `tokio`,
 //! replace the `hyperx` dependency with `hyper` and add two unit tests.
 
+use crate::utils::net::global_http_client;
 use bytes::Bytes;
 use futures::{ready, FutureExt as _, Stream, TryFutureExt as _};
 use hyper::header::{self, HeaderMap, HeaderValue};
@@ -38,10 +39,8 @@ impl ClientExt for reqwest::Client {
 pub struct Client(reqwest::Client);
 impl Client {
     /// Constructs a new `Client`.
-    ///
-    /// See [`reqwest::Client::new()`].
     pub fn new() -> Self {
-        Self(reqwest::Client::new())
+        Self(global_http_client())
     }
     /// Convenience method to make a `GET` request to a URL.
     ///
