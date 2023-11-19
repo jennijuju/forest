@@ -146,7 +146,7 @@ impl Stream for Decoder {
                     let builder = builder.headers(headers);
                     // https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
                     self.decoder = Box::pin(
-                        sleep(Duration::from_secs(1))
+                        sleep(Duration::from_millis(1))
                             .then(|()| builder.send())
                             .map_ok(reqwest::Response::bytes_stream)
                             .try_flatten_stream(),
