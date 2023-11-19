@@ -66,7 +66,7 @@ impl RequestBuilder {
             let builder = client.request(method.clone(), url.clone());
             match builder.send().await {
                 Err(err) if !err.is_builder() && !err.is_redirect() && !err.is_status() => {
-                    sleep(Duration::from_secs(1)).await
+                    sleep(Duration::from_millis(1)).await
                 }
                 x => break x?,
             }
