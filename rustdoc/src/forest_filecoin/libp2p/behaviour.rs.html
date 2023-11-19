@@ -157,6 +157,23 @@
 <a href="#157" id="157">157</a>
 <a href="#158" id="158">158</a>
 <a href="#159" id="159">159</a>
+<a href="#160" id="160">160</a>
+<a href="#161" id="161">161</a>
+<a href="#162" id="162">162</a>
+<a href="#163" id="163">163</a>
+<a href="#164" id="164">164</a>
+<a href="#165" id="165">165</a>
+<a href="#166" id="166">166</a>
+<a href="#167" id="167">167</a>
+<a href="#168" id="168">168</a>
+<a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
+<a href="#173" id="173">173</a>
+<a href="#174" id="174">174</a>
+<a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -265,13 +282,30 @@
             </span>.target_peer_count(config.target_peer_count <span class="kw">as </span>u64)
             .finish()<span class="question-mark">?</span>;
 
+        <span class="kw">const </span>MAX_ESTABLISHED_PER_PEER: u32 = <span class="number">4</span>;
         <span class="kw">let </span>connection_limits = connection_limits::Behaviour::new(
             connection_limits::ConnectionLimits::default()
-                .with_max_pending_incoming(<span class="prelude-val">Some</span>(<span class="number">4096</span>))
-                .with_max_pending_outgoing(<span class="prelude-val">Some</span>(<span class="number">8192</span>))
-                .with_max_established_incoming(<span class="prelude-val">Some</span>(<span class="number">8192</span>))
-                .with_max_established_outgoing(<span class="prelude-val">Some</span>(<span class="number">8192</span>))
-                .with_max_established_per_peer(<span class="prelude-val">Some</span>(<span class="number">5</span>)),
+                .with_max_pending_incoming(<span class="prelude-val">Some</span>(
+                    config
+                        .target_peer_count
+                        .saturating_mul(MAX_ESTABLISHED_PER_PEER),
+                ))
+                .with_max_pending_outgoing(<span class="prelude-val">Some</span>(
+                    config
+                        .target_peer_count
+                        .saturating_mul(MAX_ESTABLISHED_PER_PEER),
+                ))
+                .with_max_established_incoming(<span class="prelude-val">Some</span>(
+                    config
+                        .target_peer_count
+                        .saturating_mul(MAX_ESTABLISHED_PER_PEER),
+                ))
+                .with_max_established_outgoing(<span class="prelude-val">Some</span>(
+                    config
+                        .target_peer_count
+                        .saturating_mul(MAX_ESTABLISHED_PER_PEER),
+                ))
+                .with_max_established_per_peer(<span class="prelude-val">Some</span>(MAX_ESTABLISHED_PER_PEER)),
         );
 
         <span class="macro">info!</span>(<span class="string">&quot;libp2p Forest version: {}&quot;</span>, FOREST_VERSION_STRING.as_str());
