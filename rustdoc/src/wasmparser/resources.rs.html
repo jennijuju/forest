@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.115.0/src/resources.rs`."><title>resources.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wasmparser/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.118.0/src/resources.rs`."><title>resources.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wasmparser/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -396,6 +396,16 @@
 <a href="#396" id="396">396</a>
 <a href="#397" id="397">397</a>
 <a href="#398" id="398">398</a>
+<a href="#399" id="399">399</a>
+<a href="#400" id="400">400</a>
+<a href="#401" id="401">401</a>
+<a href="#402" id="402">402</a>
+<a href="#403" id="403">403</a>
+<a href="#404" id="404">404</a>
+<a href="#405" id="405">405</a>
+<a href="#406" id="406">406</a>
+<a href="#407" id="407">407</a>
+<a href="#408" id="408">408</a>
 </pre></div><pre class="rust"><code><span class="comment">/* Copyright 2019 Mozilla Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -411,26 +421,34 @@
  * limitations under the License.
  */
 
-</span><span class="kw">use crate</span>::{
+</span><span class="kw">use </span><span class="kw">crate</span>::types::CoreTypeId;
+<span class="kw">use crate</span>::{
     BinaryReaderError, FuncType, GlobalType, HeapType, MemoryType, RefType, TableType, ValType,
     WasmFeatures,
 };
 <span class="kw">use </span>std::ops::Range;
 
 <span class="doccomment">/// Types that qualify as Wasm function types for validation purposes.
-</span><span class="kw">pub trait </span>WasmFuncType {
+</span><span class="kw">pub trait </span>WasmFuncType: Clone {
     <span class="doccomment">/// Returns the number of input types.
     </span><span class="kw">fn </span>len_inputs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
+
     <span class="doccomment">/// Returns the number of output types.
     </span><span class="kw">fn </span>len_outputs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize;
+
     <span class="doccomment">/// Returns the type at given index if any.
+    ///
+    /// The type must be canonicalized.
     ///
     /// # Note
     ///
     /// The returned type may be wrapped by the user crate and thus
     /// the actually returned type only has to be comparable to a Wasm type.
     </span><span class="kw">fn </span>input_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;ValType&gt;;
+
     <span class="doccomment">/// Returns the type at given index if any.
+    ///
+    /// The type must be canonicalized.
     ///
     /// # Note
     ///
@@ -443,9 +461,10 @@
     <span class="kw">where
         </span><span class="self">Self</span>: Sized,
     {
+        <span class="kw">let </span>range = <span class="number">0</span>..<span class="self">self</span>.len_inputs() <span class="kw">as </span>u32;
         WasmFuncTypeInputs {
             func_type: <span class="self">self</span>,
-            range: <span class="number">0</span>..<span class="self">self</span>.len_inputs() <span class="kw">as </span>u32,
+            range,
         }
     }
 
@@ -454,9 +473,10 @@
     <span class="kw">where
         </span><span class="self">Self</span>: Sized,
     {
+        <span class="kw">let </span>range = <span class="number">0</span>..<span class="self">self</span>.len_outputs() <span class="kw">as </span>u32;
         WasmFuncTypeOutputs {
             func_type: <span class="self">self</span>,
-            range: <span class="number">0</span>..<span class="self">self</span>.len_outputs() <span class="kw">as </span>u32,
+            range,
         }
     }
 }
@@ -480,6 +500,7 @@
 }
 
 <span class="doccomment">/// Iterator over the inputs of a Wasm function type.
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>WasmFuncTypeInputs&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     <span class="doccomment">/// The iterated-over function type.
     </span>func_type: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
@@ -524,16 +545,8 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Clone <span class="kw">for </span>WasmFuncTypeInputs&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WasmFuncTypeInputs&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-        WasmFuncTypeInputs {
-            func_type: <span class="self">self</span>.func_type,
-            range: <span class="self">self</span>.range.clone(),
-        }
-    }
-}
-
 <span class="doccomment">/// Iterator over the outputs of a Wasm function type.
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>WasmFuncTypeOutputs&lt;<span class="lifetime">&#39;a</span>, T&gt; {
     <span class="doccomment">/// The iterated-over function type.
     </span>func_type: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>T,
@@ -578,15 +591,6 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; Clone <span class="kw">for </span>WasmFuncTypeOutputs&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-    <span class="kw">fn </span>clone(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; WasmFuncTypeOutputs&lt;<span class="lifetime">&#39;a</span>, T&gt; {
-        WasmFuncTypeOutputs {
-            func_type: <span class="self">self</span>.func_type,
-            range: <span class="self">self</span>.range.clone(),
-        }
-    }
-}
-
 <span class="doccomment">/// Types that qualify as Wasm validation database.
 ///
 /// # Note
@@ -600,61 +604,87 @@
     </span><span class="kw">type </span>FuncType: WasmFuncType;
 
     <span class="doccomment">/// Returns the table at given index if any.
+    ///
+    /// The table element type must be canonicalized.
     </span><span class="kw">fn </span>table_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;TableType&gt;;
+
     <span class="doccomment">/// Returns the linear memory at given index.
     </span><span class="kw">fn </span>memory_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;MemoryType&gt;;
+
     <span class="doccomment">/// Returns the tag at given index.
+    ///
+    /// The tag&#39;s function type must be canonicalized.
     </span><span class="kw">fn </span>tag_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt;;
+
     <span class="doccomment">/// Returns the global variable at given index.
+    ///
+    /// The global&#39;s value type must be canonicalized.
     </span><span class="kw">fn </span>global_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;GlobalType&gt;;
+
     <span class="doccomment">/// Returns the `FuncType` associated with the given type index.
+    ///
+    /// The function type must be canonicalized.
     </span><span class="kw">fn </span>func_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, type_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt;;
-    <span class="doccomment">/// Returns the type index associated with the given function
-    /// index. type_of_function = func_type_at(type_index_of_function)
-    </span><span class="kw">fn </span>type_index_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt;;
+
+    <span class="doccomment">/// Returns the type id associated with the given function
+    /// index.
+    </span><span class="kw">fn </span>type_id_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt;;
+
     <span class="doccomment">/// Returns the `FuncType` associated with the given function index.
+    ///
+    /// The function type must be canonicalized.
     </span><span class="kw">fn </span>type_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt;;
+
     <span class="doccomment">/// Returns the element type at the given index.
+    ///
+    /// The `RefType` must be canonicalized.
     </span><span class="kw">fn </span>element_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;RefType&gt;;
-    <span class="doccomment">/// Under the function references proposal, returns whether t1 &lt;=
-    /// t2. Otherwise, returns whether t1 == t2
-    </span><span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, t1: ValType, t2: ValType) -&gt; bool;
-    <span class="doccomment">/// Check a value type. This requires using func_type_at to check references
+
+    <span class="doccomment">/// Is `a` a subtype of `b`?
+    </span><span class="kw">fn </span>is_subtype(<span class="kw-2">&amp;</span><span class="self">self</span>, a: ValType, b: ValType) -&gt; bool;
+
+    <span class="doccomment">/// Check and canonicalize a value type.
+    ///
+    /// This will validate that `t` is valid under the `features` provided and
+    /// then additionally validate the structure of `t`. For example any type
+    /// references that `t` makes are validated and canonicalized.
     </span><span class="kw">fn </span>check_value_type(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        t: ValType,
-        features: <span class="kw-2">&amp;</span>WasmFeatures,
-        offset: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt;;
-
-    <span class="doccomment">/// Checks that a `HeapType` is valid, notably its function index if one is
-    /// used.
-    </span><span class="kw">fn </span>check_heap_type(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        heap_type: HeapType,
+        t: <span class="kw-2">&amp;mut </span>ValType,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt; {
-        <span class="comment">// Delegate to the generic value type validation which will have the
-        // same validity checks.
-        </span><span class="self">self</span>.check_value_type(
-            RefType::new(<span class="bool-val">true</span>, heap_type)
-                .ok_or_else(|| {
-                    BinaryReaderError::new(
-                        <span class="string">&quot;heap type index beyond this crate&#39;s implementation limits&quot;</span>,
-                        offset,
-                    )
-                })<span class="question-mark">?
-                </span>.into(),
-            features,
-            offset,
-        )
+        features
+            .check_value_type(<span class="kw-2">*</span>t)
+            .map_err(|s| BinaryReaderError::new(s, offset))<span class="question-mark">?</span>;
+        <span class="kw">match </span>t {
+            ValType::Ref(r) =&gt; {
+                <span class="kw">let </span>nullable = r.is_nullable();
+                <span class="kw">let </span><span class="kw-2">mut </span>hty = r.heap_type();
+                <span class="self">self</span>.check_heap_type(<span class="kw-2">&amp;mut </span>hty, offset)<span class="question-mark">?</span>;
+                <span class="kw-2">*</span>r = RefType::new(nullable, hty).unwrap();
+                <span class="prelude-val">Ok</span>(())
+            }
+            ValType::I32 | ValType::I64 | ValType::F32 | ValType::F64 | ValType::V128 =&gt; <span class="prelude-val">Ok</span>(()),
+        }
     }
+
+    <span class="doccomment">/// Checks that a `HeapType` is valid and then additionally place it in its
+    /// canonical form.
+    ///
+    /// Similar to `check_value_type` but for heap types.
+    </span><span class="kw">fn </span>check_heap_type(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        heap_type: <span class="kw-2">&amp;mut </span>HeapType,
+        offset: usize,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt;;
 
     <span class="doccomment">/// Returns the number of elements.
     </span><span class="kw">fn </span>element_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32;
+
     <span class="doccomment">/// Returns the number of bytes in the Wasm data section.
     </span><span class="kw">fn </span>data_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt;;
+
     <span class="doccomment">/// Returns whether the function index is referenced in the module anywhere
     /// outside of the start/function sections.
     </span><span class="kw">fn </span>is_function_referenced(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: u32) -&gt; bool;
@@ -681,25 +711,20 @@
     <span class="kw">fn </span>func_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
         T::func_type_at(<span class="self">self</span>, at)
     }
-    <span class="kw">fn </span>type_index_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        T::type_index_of_function(<span class="self">self</span>, func_idx)
+    <span class="kw">fn </span>type_id_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt; {
+        T::type_id_of_function(<span class="self">self</span>, func_idx)
     }
     <span class="kw">fn </span>type_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
         T::type_of_function(<span class="self">self</span>, func_idx)
     }
-    <span class="kw">fn </span>check_value_type(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        t: ValType,
-        features: <span class="kw-2">&amp;</span>WasmFeatures,
-        offset: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt; {
-        T::check_value_type(<span class="self">self</span>, t, features, offset)
+    <span class="kw">fn </span>check_heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>, t: <span class="kw-2">&amp;mut </span>HeapType, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt; {
+        T::check_heap_type(<span class="self">self</span>, t, offset)
     }
     <span class="kw">fn </span>element_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;RefType&gt; {
         T::element_type_at(<span class="self">self</span>, at)
     }
-    <span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, t1: ValType, t2: ValType) -&gt; bool {
-        T::matches(<span class="self">self</span>, t1, t2)
+    <span class="kw">fn </span>is_subtype(<span class="kw-2">&amp;</span><span class="self">self</span>, a: ValType, b: ValType) -&gt; bool {
+        T::is_subtype(<span class="self">self</span>, a, b)
     }
 
     <span class="kw">fn </span>element_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
@@ -739,29 +764,24 @@
         T::func_type_at(<span class="self">self</span>, type_idx)
     }
 
-    <span class="kw">fn </span>type_index_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        T::type_index_of_function(<span class="self">self</span>, func_idx)
+    <span class="kw">fn </span>type_id_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt; {
+        T::type_id_of_function(<span class="self">self</span>, func_idx)
     }
 
     <span class="kw">fn </span>type_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, func_idx: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
         T::type_of_function(<span class="self">self</span>, func_idx)
     }
 
-    <span class="kw">fn </span>check_value_type(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        t: ValType,
-        features: <span class="kw-2">&amp;</span>WasmFeatures,
-        offset: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt; {
-        T::check_value_type(<span class="self">self</span>, t, features, offset)
+    <span class="kw">fn </span>check_heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>, t: <span class="kw-2">&amp;mut </span>HeapType, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;(), BinaryReaderError&gt; {
+        T::check_heap_type(<span class="self">self</span>, t, offset)
     }
 
     <span class="kw">fn </span>element_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;RefType&gt; {
         T::element_type_at(<span class="self">self</span>, at)
     }
 
-    <span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, t1: ValType, t2: ValType) -&gt; bool {
-        T::matches(<span class="self">self</span>, t1, t2)
+    <span class="kw">fn </span>is_subtype(<span class="kw-2">&amp;</span><span class="self">self</span>, a: ValType, b: ValType) -&gt; bool {
+        T::is_subtype(<span class="self">self</span>, a, b)
     }
 
     <span class="kw">fn </span>element_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {

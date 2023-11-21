@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-connection-limits-0.2.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_connection_limits" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_connection_limits/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-connection-limits-0.3.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_connection_limits" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_connection_limits/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -594,14 +594,6 @@
 <a href="#594" id="594">594</a>
 <a href="#595" id="595">595</a>
 <a href="#596" id="596">596</a>
-<a href="#597" id="597">597</a>
-<a href="#598" id="598">598</a>
-<a href="#599" id="599">599</a>
-<a href="#600" id="600">600</a>
-<a href="#601" id="601">601</a>
-<a href="#602" id="602">602</a>
-<a href="#603" id="603">603</a>
-<a href="#604" id="604">604</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 Protocol Labs.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -626,8 +618,8 @@
 <span class="kw">use </span>libp2p_identity::PeerId;
 <span class="kw">use </span>libp2p_swarm::{
     behaviour::{ConnectionEstablished, DialFailure, ListenFailure},
-    dummy, ConnectionClosed, ConnectionDenied, ConnectionId, FromSwarm, NetworkBehaviour,
-    PollParameters, THandler, THandlerInEvent, THandlerOutEvent, ToSwarm,
+    dummy, ConnectionClosed, ConnectionDenied, ConnectionId, FromSwarm, NetworkBehaviour, THandler,
+    THandlerInEvent, THandlerOutEvent, ToSwarm,
 };
 <span class="kw">use </span>std::collections::{HashMap, HashSet};
 <span class="kw">use </span>std::fmt;
@@ -641,7 +633,7 @@
 /// If a connection is denied due to a limit, either a [`SwarmEvent::IncomingConnectionError`](libp2p_swarm::SwarmEvent::IncomingConnectionError)
 /// or [`SwarmEvent::OutgoingConnectionError`](libp2p_swarm::SwarmEvent::OutgoingConnectionError) will be emitted.
 /// The [`ListenError::Denied`](libp2p_swarm::ListenError::Denied) and respectively the [`DialError::Denied`](libp2p_swarm::DialError::Denied) variant
-/// contain a [`ConnectionDenied`](libp2p_swarm::ConnectionDenied) type that can be downcast to [`Exceeded`] error if (and only if) **this**
+/// contain a [`ConnectionDenied`] type that can be downcast to [`Exceeded`] error if (and only if) **this**
 /// behaviour denied the connection.
 ///
 /// If you employ multiple [`NetworkBehaviour`]s that manage connections, it may also be a different error.
@@ -907,7 +899,7 @@
         <span class="prelude-val">Ok</span>(dummy::ConnectionHandler)
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="kw">match </span>event {
             FromSwarm::ConnectionClosed(ConnectionClosed {
                 peer_id,
@@ -944,18 +936,10 @@
             FromSwarm::DialFailure(DialFailure { connection_id, .. }) =&gt; {
                 <span class="self">self</span>.pending_outbound_connections.remove(<span class="kw-2">&amp;</span>connection_id);
             }
-            FromSwarm::AddressChange(<span class="kw">_</span>) =&gt; {}
             FromSwarm::ListenFailure(ListenFailure { connection_id, .. }) =&gt; {
                 <span class="self">self</span>.pending_inbound_connections.remove(<span class="kw-2">&amp;</span>connection_id);
             }
-            FromSwarm::NewListener(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::NewListenAddr(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ExpiredListenAddr(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ListenerError(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ListenerClosed(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::NewExternalAddrCandidate(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ExternalAddrExpired(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ExternalAddrConfirmed(<span class="kw">_</span>) =&gt; {}
+            <span class="kw">_ </span>=&gt; {}
         }
     }
 
@@ -968,11 +952,7 @@
         void::unreachable(event)
     }
 
-    <span class="kw">fn </span>poll(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        <span class="kw">_</span>: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
-    ) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
+    <span class="kw">fn </span>poll(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
         Poll::Pending
     }
 }
@@ -981,7 +961,8 @@
 </span><span class="kw">mod </span>tests {
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span>libp2p_swarm::{
-        behaviour::toggle::Toggle, dial_opts::DialOpts, DialError, ListenError, Swarm, SwarmEvent,
+        behaviour::toggle::Toggle, dial_opts::DialOpts, dial_opts::PeerCondition, DialError,
+        ListenError, Swarm, SwarmEvent,
     };
     <span class="kw">use </span>libp2p_swarm_test::SwarmExt;
     <span class="kw">use </span>quickcheck::<span class="kw-2">*</span>;
@@ -1005,6 +986,8 @@
             network
                 .dial(
                     DialOpts::peer_id(target)
+                        <span class="comment">// Dial always, even if already dialing or connected.
+                        </span>.condition(PeerCondition::Always)
                         .addresses(<span class="macro">vec!</span>[addr.clone()])
                         .build(),
                 )
@@ -1012,7 +995,12 @@
         }
 
         <span class="kw">match </span>network
-            .dial(DialOpts::peer_id(target).addresses(<span class="macro">vec!</span>[addr]).build())
+            .dial(
+                DialOpts::peer_id(target)
+                    .condition(PeerCondition::Always)
+                    .addresses(<span class="macro">vec!</span>[addr])
+                    .build(),
+            )
             .expect_err(<span class="string">&quot;Unexpected dialing success.&quot;</span>)
         {
             DialError::Denied { cause } =&gt; {
@@ -1048,7 +1036,7 @@
             });
 
             async_std::task::block_on(<span class="kw">async </span>{
-                <span class="kw">let </span>(listen_addr, <span class="kw">_</span>) = swarm1.listen().<span class="kw">await</span>;
+                <span class="kw">let </span>(listen_addr, <span class="kw">_</span>) = swarm1.listen().with_memory_addr_external().<span class="kw">await</span>;
 
                 <span class="kw">for _ in </span><span class="number">0</span>..limit {
                     swarm2.connect(<span class="kw-2">&amp;mut </span>swarm1).<span class="kw">await</span>;
@@ -1133,7 +1121,6 @@
     #[behaviour(prelude = <span class="string">&quot;libp2p_swarm::derive_prelude&quot;</span>)]
     </span><span class="kw">struct </span>Behaviour {
         limits: <span class="kw">super</span>::Behaviour,
-        keep_alive: libp2p_swarm::keep_alive::Behaviour,
         connection_denier: Toggle&lt;ConnectionDenier&gt;,
     }
 
@@ -1141,14 +1128,12 @@
         <span class="kw">fn </span>new(limits: ConnectionLimits) -&gt; <span class="self">Self </span>{
             <span class="self">Self </span>{
                 limits: <span class="kw">super</span>::Behaviour::new(limits),
-                keep_alive: libp2p_swarm::keep_alive::Behaviour,
                 connection_denier: <span class="prelude-val">None</span>.into(),
             }
         }
         <span class="kw">fn </span>new_with_connection_denier(limits: ConnectionLimits) -&gt; <span class="self">Self </span>{
             <span class="self">Self </span>{
                 limits: <span class="kw">super</span>::Behaviour::new(limits),
-                keep_alive: libp2p_swarm::keep_alive::Behaviour,
                 connection_denier: <span class="prelude-val">Some</span>(ConnectionDenier {}).into(),
             }
         }
@@ -1186,7 +1171,7 @@
             )))
         }
 
-        <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {}
+        <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, _event: FromSwarm) {}
 
         <span class="kw">fn </span>on_connection_handler_event(
             <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -1199,8 +1184,7 @@
 
         <span class="kw">fn </span>poll(
             <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-            _cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-            _params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
+            <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
         ) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
             Poll::Pending
         }

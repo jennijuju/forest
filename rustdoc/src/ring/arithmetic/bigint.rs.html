@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ring-0.17.4/src/arithmetic/bigint.rs`."><title>bigint.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="ring" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../ring/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ring-0.17.5/src/arithmetic/bigint.rs`."><title>bigint.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="ring" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../ring/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1035,6 +1035,11 @@
 <a href="#1035" id="1035">1035</a>
 <a href="#1036" id="1036">1036</a>
 <a href="#1037" id="1037">1037</a>
+<a href="#1038" id="1038">1038</a>
+<a href="#1039" id="1039">1039</a>
+<a href="#1040" id="1040">1040</a>
+<a href="#1041" id="1041">1041</a>
+<a href="#1042" id="1042">1042</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2015-2023 Brian Smith.
 //
 // Permission to use, copy, modify, and/or distribute this software for any
@@ -1599,66 +1604,25 @@
         table.split_at_mut(TABLE_ENTRIES * num_limbs)
     };
 
-    <span class="kw">fn </span>entry(table: <span class="kw-2">&amp;</span>[Limb], i: usize, num_limbs: usize) -&gt; <span class="kw-2">&amp;</span>[Limb] {
-        <span class="kw-2">&amp;</span>table[(i * num_limbs)..][..num_limbs]
-    }
-    <span class="kw">fn </span>entry_mut(table: <span class="kw-2">&amp;mut </span>[Limb], i: usize, num_limbs: usize) -&gt; <span class="kw-2">&amp;mut </span>[Limb] {
-        <span class="kw-2">&amp;mut </span>table[(i * num_limbs)..][..num_limbs]
-    }
-
-    <span class="kw">const </span>ACC: usize = <span class="number">0</span>; <span class="comment">// `tmp` in OpenSSL
-    </span><span class="kw">const </span>BASE: usize = ACC + <span class="number">1</span>; <span class="comment">// `am` in OpenSSL
-    </span><span class="kw">const </span>M: usize = BASE + <span class="number">1</span>; <span class="comment">// `np` in OpenSSL
-
-    </span>entry_mut(state, BASE, num_limbs).copy_from_slice(<span class="kw-2">&amp;</span>base.limbs);
-    entry_mut(state, M, num_limbs).copy_from_slice(m.limbs());
-
-    <span class="kw">fn </span>scatter(table: <span class="kw-2">&amp;mut </span>[Limb], state: <span class="kw-2">&amp;</span>[Limb], i: Window, num_limbs: usize) {
+    <span class="kw">fn </span>scatter(table: <span class="kw-2">&amp;mut </span>[Limb], acc: <span class="kw-2">&amp;</span>[Limb], i: Window, num_limbs: usize) {
         <span class="macro">prefixed_extern! </span>{
             <span class="kw">fn </span>bn_scatter5(a: <span class="kw-2">*const </span>Limb, a_len: c::size_t, table: <span class="kw-2">*mut </span>Limb, i: Window);
         }
-        <span class="kw">unsafe </span>{
-            bn_scatter5(
-                entry(state, ACC, num_limbs).as_ptr(),
-                num_limbs,
-                table.as_mut_ptr(),
-                i,
-            )
-        }
+        <span class="kw">unsafe </span>{ bn_scatter5(acc.as_ptr(), num_limbs, table.as_mut_ptr(), i) }
     }
 
-    <span class="kw">fn </span>gather(table: <span class="kw-2">&amp;</span>[Limb], state: <span class="kw-2">&amp;mut </span>[Limb], i: Window, num_limbs: usize) {
+    <span class="kw">fn </span>gather(table: <span class="kw-2">&amp;</span>[Limb], acc: <span class="kw-2">&amp;mut </span>[Limb], i: Window, num_limbs: usize) {
         <span class="macro">prefixed_extern! </span>{
             <span class="kw">fn </span>bn_gather5(r: <span class="kw-2">*mut </span>Limb, a_len: c::size_t, table: <span class="kw-2">*const </span>Limb, i: Window);
         }
-        <span class="kw">unsafe </span>{
-            bn_gather5(
-                entry_mut(state, ACC, num_limbs).as_mut_ptr(),
-                num_limbs,
-                table.as_ptr(),
-                i,
-            )
-        }
+        <span class="kw">unsafe </span>{ bn_gather5(acc.as_mut_ptr(), num_limbs, table.as_ptr(), i) }
     }
 
-    <span class="kw">fn </span>gather_square(
+    <span class="kw">fn </span>limbs_mul_mont_gather5_amm(
         table: <span class="kw-2">&amp;</span>[Limb],
-        state: <span class="kw-2">&amp;mut </span>[Limb],
-        n0: <span class="kw-2">&amp;</span>N0,
-        i: Window,
-        num_limbs: usize,
-        cpu_features: cpu::Features,
-    ) {
-        gather(table, state, i, num_limbs);
-        <span class="macro">assert_eq!</span>(ACC, <span class="number">0</span>);
-        <span class="kw">let </span>(acc, rest) = state.split_at_mut(num_limbs);
-        <span class="kw">let </span>m = entry(rest, M - <span class="number">1</span>, num_limbs);
-        limbs_mont_square(acc, m, n0, cpu_features);
-    }
-
-    <span class="kw">fn </span>gather_mul_base_amm(
-        table: <span class="kw-2">&amp;</span>[Limb],
-        state: <span class="kw-2">&amp;mut </span>[Limb],
+        acc: <span class="kw-2">&amp;mut </span>[Limb],
+        base: <span class="kw-2">&amp;</span>[Limb],
+        m: <span class="kw-2">&amp;</span>[Limb],
         n0: <span class="kw-2">&amp;</span>N0,
         i: Window,
         num_limbs: usize,
@@ -1676,10 +1640,10 @@
         }
         <span class="kw">unsafe </span>{
             bn_mul_mont_gather5(
-                entry_mut(state, ACC, num_limbs).as_mut_ptr(),
-                entry(state, BASE, num_limbs).as_ptr(),
+                acc.as_mut_ptr(),
+                base.as_ptr(),
                 table.as_ptr(),
-                entry(state, M, num_limbs).as_ptr(),
+                m.as_ptr(),
                 n0,
                 num_limbs,
                 i,
@@ -1687,7 +1651,14 @@
         }
     }
 
-    <span class="kw">fn </span>power_amm(table: <span class="kw-2">&amp;</span>[Limb], state: <span class="kw-2">&amp;mut </span>[Limb], n0: <span class="kw-2">&amp;</span>N0, i: Window, num_limbs: usize) {
+    <span class="kw">fn </span>power_amm(
+        table: <span class="kw-2">&amp;</span>[Limb],
+        acc: <span class="kw-2">&amp;mut </span>[Limb],
+        m_cached: <span class="kw-2">&amp;</span>[Limb],
+        n0: <span class="kw-2">&amp;</span>N0,
+        i: Window,
+        num_limbs: usize,
+    ) {
         <span class="macro">prefixed_extern! </span>{
             <span class="kw">fn </span>bn_power5(
                 r: <span class="kw-2">*mut </span>Limb,
@@ -1701,10 +1672,10 @@
         }
         <span class="kw">unsafe </span>{
             bn_power5(
-                entry_mut(state, ACC, num_limbs).as_mut_ptr(),
-                entry_mut(state, ACC, num_limbs).as_mut_ptr(),
+                acc.as_mut_ptr(),
+                acc.as_ptr(),
                 table.as_ptr(),
-                entry(state, M, num_limbs).as_ptr(),
+                m_cached.as_ptr(),
                 n0,
                 num_limbs,
                 i,
@@ -1712,42 +1683,81 @@
         }
     }
 
-    <span class="comment">// table[0] = base**0.
-    </span>{
-        <span class="kw">let </span>acc = entry_mut(state, ACC, num_limbs);
-        acc[<span class="number">0</span>] = <span class="number">1</span>;
-        limbs_mont_mul(acc, <span class="kw-2">&amp;</span>m.oneRR().<span class="number">0</span>.limbs, m.limbs(), m.n0(), cpu_features);
+    <span class="comment">// These are named `(tmp, am, np)` in BoringSSL.
+    </span><span class="kw">let </span>(acc, base_cached, m_cached): (<span class="kw-2">&amp;mut </span>[Limb], <span class="kw-2">&amp;</span>[Limb], <span class="kw-2">&amp;</span>[Limb]) = {
+        <span class="kw">let </span>(acc, rest) = state.split_at_mut(num_limbs);
+        <span class="kw">let </span>(base_cached, rest) = rest.split_at_mut(num_limbs);
+
+        <span class="comment">// Upstream, the input `base` is not Montgomery-encoded, so they compute a
+        // Montgomery-encoded copy and store it here.
+        </span>base_cached.copy_from_slice(<span class="kw-2">&amp;</span>base.limbs);
+
+        <span class="kw">let </span>m_cached = <span class="kw-2">&amp;mut </span>rest[..num_limbs];
+        <span class="comment">// &quot;To improve cache locality&quot; according to upstream.
+        </span>m_cached.copy_from_slice(m.limbs());
+
+        (acc, base_cached, m_cached)
+    };
+
+    <span class="kw">let </span>n0 = m.n0();
+
+    <span class="comment">// Fill in all the powers of 2 of `acc` into the table using only squaring and without any
+    // gathering, storing the last calculated power into `acc`.
+    </span><span class="kw">fn </span>scatter_powers_of_2(
+        table: <span class="kw-2">&amp;mut </span>[Limb],
+        acc: <span class="kw-2">&amp;mut </span>[Limb],
+        m_cached: <span class="kw-2">&amp;</span>[Limb],
+        n0: <span class="kw-2">&amp;</span>N0,
+        <span class="kw-2">mut </span>i: Window,
+        num_limbs: usize,
+        cpu_features: cpu::Features,
+    ) {
+        <span class="kw">loop </span>{
+            scatter(table, acc, i, num_limbs);
+            i <span class="kw-2">*</span>= <span class="number">2</span>;
+            <span class="kw">if </span>i &gt;= (TABLE_ENTRIES <span class="kw">as </span>Window) {
+                <span class="kw">break</span>;
+            }
+            limbs_mont_square(acc, m_cached, n0, cpu_features);
+        }
     }
-    scatter(table, state, <span class="number">0</span>, num_limbs);
 
-    <span class="comment">// table[1] = base**1.
-    </span>entry_mut(state, ACC, num_limbs).copy_from_slice(<span class="kw-2">&amp;</span>base.limbs);
-    scatter(table, state, <span class="number">1</span>, num_limbs);
+    <span class="comment">// All entries in `table` will be Montgomery encoded.
 
-    <span class="kw">for </span>i <span class="kw">in </span><span class="number">2</span>..(TABLE_ENTRIES <span class="kw">as </span>Window) {
-        <span class="kw">if </span>i % <span class="number">2 </span>== <span class="number">0 </span>{
-            <span class="comment">// TODO: Optimize this to avoid gathering
-            </span>gather_square(table, state, m.n0(), i / <span class="number">2</span>, num_limbs, cpu_features);
-        } <span class="kw">else </span>{
-            gather_mul_base_amm(table, state, m.n0(), i - <span class="number">1</span>, num_limbs)
-        };
-        scatter(table, state, i, num_limbs);
+    // acc = table[0] = base**0 (i.e. 1).
+    // `acc` was initialized to zero and hasn&#39;t changed. Change it to 1 and then Montgomery
+    // encode it.
+    </span><span class="macro">debug_assert!</span>(acc.iter().all(|<span class="kw-2">&amp;</span>value| value == <span class="number">0</span>));
+    acc[<span class="number">0</span>] = <span class="number">1</span>;
+    limbs_mont_mul(acc, <span class="kw-2">&amp;</span>m.oneRR().<span class="number">0</span>.limbs, m_cached, n0, cpu_features);
+    scatter(table, acc, <span class="number">0</span>, num_limbs);
+
+    <span class="comment">// acc = base**1 (i.e. base).
+    </span>acc.copy_from_slice(base_cached);
+
+    <span class="comment">// Fill in entries 1, 2, 4, 8, 16.
+    </span>scatter_powers_of_2(table, acc, m_cached, n0, <span class="number">1</span>, num_limbs, cpu_features);
+    <span class="comment">// Fill in entries 3, 6, 12, 24; 5, 10, 20, 30; 7, 14, 28; 9, 18; 11, 22; 13, 26; 15, 30;
+    // 17; 19; 21; 23; 25; 27; 29; 31.
+    </span><span class="kw">for </span>i <span class="kw">in </span>(<span class="number">3</span>..(TABLE_ENTRIES <span class="kw">as </span>Window)).step_by(<span class="number">2</span>) {
+        limbs_mul_mont_gather5_amm(table, acc, base_cached, m_cached, n0, i - <span class="number">1</span>, num_limbs);
+        scatter_powers_of_2(table, acc, m_cached, n0, i, num_limbs, cpu_features);
     }
 
-    <span class="kw">let </span>state = limb::fold_5_bit_windows(
+    <span class="kw">let </span>acc = limb::fold_5_bit_windows(
         exponent.limbs(),
         |initial_window| {
-            gather(table, state, initial_window, num_limbs);
-            state
+            gather(table, acc, initial_window, num_limbs);
+            acc
         },
-        |state, window| {
-            power_amm(table, state, m.n0(), window, num_limbs);
-            state
+        |acc, window| {
+            power_amm(table, acc, m_cached, n0, window, num_limbs);
+            acc
         },
     );
 
     <span class="kw">let </span><span class="kw-2">mut </span>r_amm = base.limbs;
-    r_amm.copy_from_slice(entry(state, ACC, num_limbs));
+    r_amm.copy_from_slice(acc);
 
     <span class="prelude-val">Ok</span>(from_montgomery_amm(r_amm, m))
 }

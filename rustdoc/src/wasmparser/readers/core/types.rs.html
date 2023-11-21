@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.115.0/src/readers/core/types.rs`."><title>types.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../wasmparser/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.118.0/src/readers/core/types.rs`."><title>types.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../wasmparser/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1228,6 +1228,296 @@
 <a href="#1228" id="1228">1228</a>
 <a href="#1229" id="1229">1229</a>
 <a href="#1230" id="1230">1230</a>
+<a href="#1231" id="1231">1231</a>
+<a href="#1232" id="1232">1232</a>
+<a href="#1233" id="1233">1233</a>
+<a href="#1234" id="1234">1234</a>
+<a href="#1235" id="1235">1235</a>
+<a href="#1236" id="1236">1236</a>
+<a href="#1237" id="1237">1237</a>
+<a href="#1238" id="1238">1238</a>
+<a href="#1239" id="1239">1239</a>
+<a href="#1240" id="1240">1240</a>
+<a href="#1241" id="1241">1241</a>
+<a href="#1242" id="1242">1242</a>
+<a href="#1243" id="1243">1243</a>
+<a href="#1244" id="1244">1244</a>
+<a href="#1245" id="1245">1245</a>
+<a href="#1246" id="1246">1246</a>
+<a href="#1247" id="1247">1247</a>
+<a href="#1248" id="1248">1248</a>
+<a href="#1249" id="1249">1249</a>
+<a href="#1250" id="1250">1250</a>
+<a href="#1251" id="1251">1251</a>
+<a href="#1252" id="1252">1252</a>
+<a href="#1253" id="1253">1253</a>
+<a href="#1254" id="1254">1254</a>
+<a href="#1255" id="1255">1255</a>
+<a href="#1256" id="1256">1256</a>
+<a href="#1257" id="1257">1257</a>
+<a href="#1258" id="1258">1258</a>
+<a href="#1259" id="1259">1259</a>
+<a href="#1260" id="1260">1260</a>
+<a href="#1261" id="1261">1261</a>
+<a href="#1262" id="1262">1262</a>
+<a href="#1263" id="1263">1263</a>
+<a href="#1264" id="1264">1264</a>
+<a href="#1265" id="1265">1265</a>
+<a href="#1266" id="1266">1266</a>
+<a href="#1267" id="1267">1267</a>
+<a href="#1268" id="1268">1268</a>
+<a href="#1269" id="1269">1269</a>
+<a href="#1270" id="1270">1270</a>
+<a href="#1271" id="1271">1271</a>
+<a href="#1272" id="1272">1272</a>
+<a href="#1273" id="1273">1273</a>
+<a href="#1274" id="1274">1274</a>
+<a href="#1275" id="1275">1275</a>
+<a href="#1276" id="1276">1276</a>
+<a href="#1277" id="1277">1277</a>
+<a href="#1278" id="1278">1278</a>
+<a href="#1279" id="1279">1279</a>
+<a href="#1280" id="1280">1280</a>
+<a href="#1281" id="1281">1281</a>
+<a href="#1282" id="1282">1282</a>
+<a href="#1283" id="1283">1283</a>
+<a href="#1284" id="1284">1284</a>
+<a href="#1285" id="1285">1285</a>
+<a href="#1286" id="1286">1286</a>
+<a href="#1287" id="1287">1287</a>
+<a href="#1288" id="1288">1288</a>
+<a href="#1289" id="1289">1289</a>
+<a href="#1290" id="1290">1290</a>
+<a href="#1291" id="1291">1291</a>
+<a href="#1292" id="1292">1292</a>
+<a href="#1293" id="1293">1293</a>
+<a href="#1294" id="1294">1294</a>
+<a href="#1295" id="1295">1295</a>
+<a href="#1296" id="1296">1296</a>
+<a href="#1297" id="1297">1297</a>
+<a href="#1298" id="1298">1298</a>
+<a href="#1299" id="1299">1299</a>
+<a href="#1300" id="1300">1300</a>
+<a href="#1301" id="1301">1301</a>
+<a href="#1302" id="1302">1302</a>
+<a href="#1303" id="1303">1303</a>
+<a href="#1304" id="1304">1304</a>
+<a href="#1305" id="1305">1305</a>
+<a href="#1306" id="1306">1306</a>
+<a href="#1307" id="1307">1307</a>
+<a href="#1308" id="1308">1308</a>
+<a href="#1309" id="1309">1309</a>
+<a href="#1310" id="1310">1310</a>
+<a href="#1311" id="1311">1311</a>
+<a href="#1312" id="1312">1312</a>
+<a href="#1313" id="1313">1313</a>
+<a href="#1314" id="1314">1314</a>
+<a href="#1315" id="1315">1315</a>
+<a href="#1316" id="1316">1316</a>
+<a href="#1317" id="1317">1317</a>
+<a href="#1318" id="1318">1318</a>
+<a href="#1319" id="1319">1319</a>
+<a href="#1320" id="1320">1320</a>
+<a href="#1321" id="1321">1321</a>
+<a href="#1322" id="1322">1322</a>
+<a href="#1323" id="1323">1323</a>
+<a href="#1324" id="1324">1324</a>
+<a href="#1325" id="1325">1325</a>
+<a href="#1326" id="1326">1326</a>
+<a href="#1327" id="1327">1327</a>
+<a href="#1328" id="1328">1328</a>
+<a href="#1329" id="1329">1329</a>
+<a href="#1330" id="1330">1330</a>
+<a href="#1331" id="1331">1331</a>
+<a href="#1332" id="1332">1332</a>
+<a href="#1333" id="1333">1333</a>
+<a href="#1334" id="1334">1334</a>
+<a href="#1335" id="1335">1335</a>
+<a href="#1336" id="1336">1336</a>
+<a href="#1337" id="1337">1337</a>
+<a href="#1338" id="1338">1338</a>
+<a href="#1339" id="1339">1339</a>
+<a href="#1340" id="1340">1340</a>
+<a href="#1341" id="1341">1341</a>
+<a href="#1342" id="1342">1342</a>
+<a href="#1343" id="1343">1343</a>
+<a href="#1344" id="1344">1344</a>
+<a href="#1345" id="1345">1345</a>
+<a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
+<a href="#1361" id="1361">1361</a>
+<a href="#1362" id="1362">1362</a>
+<a href="#1363" id="1363">1363</a>
+<a href="#1364" id="1364">1364</a>
+<a href="#1365" id="1365">1365</a>
+<a href="#1366" id="1366">1366</a>
+<a href="#1367" id="1367">1367</a>
+<a href="#1368" id="1368">1368</a>
+<a href="#1369" id="1369">1369</a>
+<a href="#1370" id="1370">1370</a>
+<a href="#1371" id="1371">1371</a>
+<a href="#1372" id="1372">1372</a>
+<a href="#1373" id="1373">1373</a>
+<a href="#1374" id="1374">1374</a>
+<a href="#1375" id="1375">1375</a>
+<a href="#1376" id="1376">1376</a>
+<a href="#1377" id="1377">1377</a>
+<a href="#1378" id="1378">1378</a>
+<a href="#1379" id="1379">1379</a>
+<a href="#1380" id="1380">1380</a>
+<a href="#1381" id="1381">1381</a>
+<a href="#1382" id="1382">1382</a>
+<a href="#1383" id="1383">1383</a>
+<a href="#1384" id="1384">1384</a>
+<a href="#1385" id="1385">1385</a>
+<a href="#1386" id="1386">1386</a>
+<a href="#1387" id="1387">1387</a>
+<a href="#1388" id="1388">1388</a>
+<a href="#1389" id="1389">1389</a>
+<a href="#1390" id="1390">1390</a>
+<a href="#1391" id="1391">1391</a>
+<a href="#1392" id="1392">1392</a>
+<a href="#1393" id="1393">1393</a>
+<a href="#1394" id="1394">1394</a>
+<a href="#1395" id="1395">1395</a>
+<a href="#1396" id="1396">1396</a>
+<a href="#1397" id="1397">1397</a>
+<a href="#1398" id="1398">1398</a>
+<a href="#1399" id="1399">1399</a>
+<a href="#1400" id="1400">1400</a>
+<a href="#1401" id="1401">1401</a>
+<a href="#1402" id="1402">1402</a>
+<a href="#1403" id="1403">1403</a>
+<a href="#1404" id="1404">1404</a>
+<a href="#1405" id="1405">1405</a>
+<a href="#1406" id="1406">1406</a>
+<a href="#1407" id="1407">1407</a>
+<a href="#1408" id="1408">1408</a>
+<a href="#1409" id="1409">1409</a>
+<a href="#1410" id="1410">1410</a>
+<a href="#1411" id="1411">1411</a>
+<a href="#1412" id="1412">1412</a>
+<a href="#1413" id="1413">1413</a>
+<a href="#1414" id="1414">1414</a>
+<a href="#1415" id="1415">1415</a>
+<a href="#1416" id="1416">1416</a>
+<a href="#1417" id="1417">1417</a>
+<a href="#1418" id="1418">1418</a>
+<a href="#1419" id="1419">1419</a>
+<a href="#1420" id="1420">1420</a>
+<a href="#1421" id="1421">1421</a>
+<a href="#1422" id="1422">1422</a>
+<a href="#1423" id="1423">1423</a>
+<a href="#1424" id="1424">1424</a>
+<a href="#1425" id="1425">1425</a>
+<a href="#1426" id="1426">1426</a>
+<a href="#1427" id="1427">1427</a>
+<a href="#1428" id="1428">1428</a>
+<a href="#1429" id="1429">1429</a>
+<a href="#1430" id="1430">1430</a>
+<a href="#1431" id="1431">1431</a>
+<a href="#1432" id="1432">1432</a>
+<a href="#1433" id="1433">1433</a>
+<a href="#1434" id="1434">1434</a>
+<a href="#1435" id="1435">1435</a>
+<a href="#1436" id="1436">1436</a>
+<a href="#1437" id="1437">1437</a>
+<a href="#1438" id="1438">1438</a>
+<a href="#1439" id="1439">1439</a>
+<a href="#1440" id="1440">1440</a>
+<a href="#1441" id="1441">1441</a>
+<a href="#1442" id="1442">1442</a>
+<a href="#1443" id="1443">1443</a>
+<a href="#1444" id="1444">1444</a>
+<a href="#1445" id="1445">1445</a>
+<a href="#1446" id="1446">1446</a>
+<a href="#1447" id="1447">1447</a>
+<a href="#1448" id="1448">1448</a>
+<a href="#1449" id="1449">1449</a>
+<a href="#1450" id="1450">1450</a>
+<a href="#1451" id="1451">1451</a>
+<a href="#1452" id="1452">1452</a>
+<a href="#1453" id="1453">1453</a>
+<a href="#1454" id="1454">1454</a>
+<a href="#1455" id="1455">1455</a>
+<a href="#1456" id="1456">1456</a>
+<a href="#1457" id="1457">1457</a>
+<a href="#1458" id="1458">1458</a>
+<a href="#1459" id="1459">1459</a>
+<a href="#1460" id="1460">1460</a>
+<a href="#1461" id="1461">1461</a>
+<a href="#1462" id="1462">1462</a>
+<a href="#1463" id="1463">1463</a>
+<a href="#1464" id="1464">1464</a>
+<a href="#1465" id="1465">1465</a>
+<a href="#1466" id="1466">1466</a>
+<a href="#1467" id="1467">1467</a>
+<a href="#1468" id="1468">1468</a>
+<a href="#1469" id="1469">1469</a>
+<a href="#1470" id="1470">1470</a>
+<a href="#1471" id="1471">1471</a>
+<a href="#1472" id="1472">1472</a>
+<a href="#1473" id="1473">1473</a>
+<a href="#1474" id="1474">1474</a>
+<a href="#1475" id="1475">1475</a>
+<a href="#1476" id="1476">1476</a>
+<a href="#1477" id="1477">1477</a>
+<a href="#1478" id="1478">1478</a>
+<a href="#1479" id="1479">1479</a>
+<a href="#1480" id="1480">1480</a>
+<a href="#1481" id="1481">1481</a>
+<a href="#1482" id="1482">1482</a>
+<a href="#1483" id="1483">1483</a>
+<a href="#1484" id="1484">1484</a>
+<a href="#1485" id="1485">1485</a>
+<a href="#1486" id="1486">1486</a>
+<a href="#1487" id="1487">1487</a>
+<a href="#1488" id="1488">1488</a>
+<a href="#1489" id="1489">1489</a>
+<a href="#1490" id="1490">1490</a>
+<a href="#1491" id="1491">1491</a>
+<a href="#1492" id="1492">1492</a>
+<a href="#1493" id="1493">1493</a>
+<a href="#1494" id="1494">1494</a>
+<a href="#1495" id="1495">1495</a>
+<a href="#1496" id="1496">1496</a>
+<a href="#1497" id="1497">1497</a>
+<a href="#1498" id="1498">1498</a>
+<a href="#1499" id="1499">1499</a>
+<a href="#1500" id="1500">1500</a>
+<a href="#1501" id="1501">1501</a>
+<a href="#1502" id="1502">1502</a>
+<a href="#1503" id="1503">1503</a>
+<a href="#1504" id="1504">1504</a>
+<a href="#1505" id="1505">1505</a>
+<a href="#1506" id="1506">1506</a>
+<a href="#1507" id="1507">1507</a>
+<a href="#1508" id="1508">1508</a>
+<a href="#1509" id="1509">1509</a>
+<a href="#1510" id="1510">1510</a>
+<a href="#1511" id="1511">1511</a>
+<a href="#1512" id="1512">1512</a>
+<a href="#1513" id="1513">1513</a>
+<a href="#1514" id="1514">1514</a>
+<a href="#1515" id="1515">1515</a>
+<a href="#1516" id="1516">1516</a>
+<a href="#1517" id="1517">1517</a>
+<a href="#1518" id="1518">1518</a>
+<a href="#1519" id="1519">1519</a>
+<a href="#1520" id="1520">1520</a>
 </pre></div><pre class="rust"><code><span class="comment">/* Copyright 2018 Mozilla Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -1243,14 +1533,628 @@
  * limitations under the License.
  */
 
-</span><span class="kw">use </span>std::fmt::{<span class="self">self</span>, Debug, Write};
-<span class="kw">use </span>std::slice;
-
-<span class="kw">use </span><span class="kw">crate</span>::limits::{
+</span><span class="kw">use </span><span class="kw">crate</span>::limits::{
     MAX_WASM_FUNCTION_PARAMS, MAX_WASM_FUNCTION_RETURNS, MAX_WASM_STRUCT_FIELDS,
     MAX_WASM_SUPERTYPES, MAX_WASM_TYPES,
 };
+<span class="kw">use </span><span class="kw">crate</span>::types::CoreTypeId;
 <span class="kw">use crate</span>::{BinaryReader, BinaryReaderError, FromReader, <span class="prelude-ty">Result</span>, SectionLimited};
+<span class="kw">use </span>std::fmt::{<span class="self">self</span>, Debug, Write};
+<span class="kw">use </span>std::hash::{Hash, Hasher};
+
+<span class="kw">mod </span>matches;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">use </span><span class="self">self</span>::matches::{Matches, WithRecGroup};
+
+<span class="doccomment">/// A packed representation of a type index.
+///
+/// This type is morally an `enum` of either:
+///
+/// 1. An index into a Wasm module&#39;s type space.
+///
+/// 2. A `CoreTypeId` identifier.
+///
+/// 3. An index into a recursion group&#39;s elements.
+///
+/// The latter two variants are *canonical* while the first is not. Reading raw
+/// types will produce (1), while working with types after validation will
+/// produce (2) and (3).
+</span><span class="comment">//
+// This is a bit-packed `u32` with the following layout:
+//
+//     [ unused:u10 kind:u2 index:u20 ]
+//
+// It must fit in 22 bits to keep `RefType` in 24 bits and `ValType` in 32 bits,
+// so the top ten bits are unused.
+//
+// The `index` field&#39;s interpretation depends on the `kind` field, which may be
+// one of the following:
+//
+// * `00`: The `index` is an index into the module&#39;s type space.
+//
+// * `01`: The `index` is an index into the containing type&#39;s recursion group.
+//
+// * `10`: The `index` is a `CoreTypeId`.
+</span><span class="attr">#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>PackedIndex(u32);
+
+<span class="comment">// Assert that we can fit indices up to `MAX_WASM_TYPES` inside `RefType`.
+</span><span class="attr">#[test]
+</span><span class="kw">fn </span>can_fit_max_wasm_types_in_packed_index() {
+    <span class="macro">assert!</span>(PackedIndex::can_represent_index(
+        <span class="kw">crate</span>::limits::MAX_WASM_TYPES <span class="kw">as </span>u32
+    ));
+    <span class="macro">assert!</span>(PackedIndex::can_represent_index(
+        <span class="number">0b00000000_00001111_00000000_00000000
+    </span>));
+    <span class="macro">assert!</span>(PackedIndex::can_represent_index(
+        <span class="number">0b00000000_00000000_11111111_00000000
+    </span>));
+    <span class="macro">assert!</span>(PackedIndex::can_represent_index(
+        <span class="number">0b00000000_00000000_00000000_11111111
+    </span>));
+    <span class="macro">assert!</span>(PackedIndex::can_represent_index(<span class="number">0</span>));
+}
+
+<span class="kw">impl </span>PackedIndex {
+    <span class="kw">const </span>UNUSED_MASK: u32 = u32::MAX &amp; !(<span class="self">Self</span>::KIND_MASK | <span class="self">Self</span>::INDEX_MASK);
+    <span class="kw">const </span>KIND_MASK: u32 = <span class="number">0b11 </span>&lt;&lt; <span class="number">20</span>;
+    <span class="kw">const </span>INDEX_MASK: u32 = (<span class="number">1 </span>&lt;&lt; <span class="number">20</span>) - <span class="number">1</span>;
+
+    <span class="kw">const </span>MODULE_KIND: u32 = <span class="number">0b00 </span>&lt;&lt; <span class="number">20</span>;
+    <span class="kw">const </span>REC_GROUP_KIND: u32 = <span class="number">0b01 </span>&lt;&lt; <span class="number">20</span>;
+    <span class="kw">const </span>ID_KIND: u32 = <span class="number">0b10 </span>&lt;&lt; <span class="number">20</span>;
+
+    <span class="attr">#[inline]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>unchecked_from_u32(x: u32) -&gt; <span class="self">Self </span>{
+        <span class="macro">debug_assert_eq!</span>(<span class="self">Self</span>::UNUSED_MASK &amp; x, <span class="number">0</span>);
+        <span class="self">Self</span>(x)
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>to_u32(id: <span class="self">Self</span>) -&gt; u32 {
+        <span class="kw">let </span>x = id.<span class="number">0</span>;
+        <span class="macro">debug_assert_eq!</span>(<span class="self">Self</span>::UNUSED_MASK &amp; x, <span class="number">0</span>);
+        x
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>can_represent_index(index: u32) -&gt; bool {
+        index &amp; <span class="self">Self</span>::INDEX_MASK == index
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>kind(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="self">Self</span>::KIND_MASK
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">self</span>.<span class="number">0 </span>&amp; <span class="self">Self</span>::INDEX_MASK
+    }
+
+    <span class="doccomment">/// Construct a `PackedIndex` from an index into a module&#39;s types space.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>from_module_index(index: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span>PackedIndex::can_represent_index(index) {
+            <span class="prelude-val">Some</span>(PackedIndex(PackedIndex::MODULE_KIND | index))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Construct a `PackedIndex` from an index into the index&#39;s containing
+    /// recursion group.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>from_rec_group_index(index: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">if </span>PackedIndex::can_represent_index(index) {
+            <span class="prelude-val">Some</span>(PackedIndex(PackedIndex::REC_GROUP_KIND | index))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Construct a `PackedIndex` from the given `CoreTypeId`.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>from_id(id: CoreTypeId) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>index = u32::try_from(<span class="kw">crate</span>::types::TypeIdentifier::index(<span class="kw-2">&amp;</span>id)).unwrap();
+        <span class="kw">if </span>PackedIndex::can_represent_index(index) {
+            <span class="prelude-val">Some</span>(PackedIndex(PackedIndex::ID_KIND | index))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Is this index in canonical form?
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>is_canonical(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="kw">match </span><span class="self">self</span>.kind() {
+            <span class="self">Self</span>::REC_GROUP_KIND | <span class="self">Self</span>::ID_KIND =&gt; <span class="bool-val">true</span>,
+            <span class="self">Self</span>::MODULE_KIND =&gt; <span class="bool-val">false</span>,
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+        }
+    }
+
+    <span class="doccomment">/// Uncompress this packed index into an actual `enum` that can be matched
+    /// on.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>unpack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; UnpackedIndex {
+        <span class="kw">match </span><span class="self">self</span>.kind() {
+            <span class="self">Self</span>::MODULE_KIND =&gt; UnpackedIndex::Module(<span class="self">self</span>.index()),
+            <span class="self">Self</span>::REC_GROUP_KIND =&gt; UnpackedIndex::RecGroup(<span class="self">self</span>.index()),
+            <span class="self">Self</span>::ID_KIND =&gt; UnpackedIndex::Id(
+                &lt;CoreTypeId <span class="kw">as </span><span class="kw">crate</span>::types::TypeIdentifier&gt;::from_index(<span class="self">self</span>.index()),
+            ),
+            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+        }
+    }
+
+    <span class="doccomment">/// Get the underlying index into a module&#39;s types space, if any.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_module_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="kw">if </span><span class="self">self</span>.kind() == <span class="self">Self</span>::MODULE_KIND {
+            <span class="prelude-val">Some</span>(<span class="self">self</span>.index())
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Get the underlying index into the containing recursion group, if any.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_rec_group_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="kw">if </span><span class="self">self</span>.kind() == <span class="self">Self</span>::REC_GROUP_KIND {
+            <span class="prelude-val">Some</span>(<span class="self">self</span>.index())
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Get the underlying `CoreTypeId`, if any.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_core_type_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt; {
+        <span class="kw">if </span><span class="self">self</span>.kind() == <span class="self">Self</span>::ID_KIND {
+            <span class="prelude-val">Some</span>(&lt;CoreTypeId <span class="kw">as </span><span class="kw">crate</span>::types::TypeIdentifier&gt;::from_index(
+                <span class="self">self</span>.index(),
+            ))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+}
+
+<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>PackedIndex {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">&quot;CoreTypeIndex&quot;</span>)
+            .field(
+                <span class="string">&quot;kind&quot;</span>,
+                <span class="kw">match </span><span class="self">self</span>.kind() {
+                    <span class="self">Self</span>::MODULE_KIND =&gt; <span class="kw-2">&amp;</span><span class="string">&quot;module&quot;</span>,
+                    <span class="self">Self</span>::REC_GROUP_KIND =&gt; <span class="kw-2">&amp;</span><span class="string">&quot;recgroup&quot;</span>,
+                    <span class="self">Self</span>::ID_KIND =&gt; <span class="kw-2">&amp;</span><span class="string">&quot;id&quot;</span>,
+                    <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+                },
+            )
+            .field(<span class="string">&quot;index&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.index())
+            .finish()
+    }
+}
+
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>PackedIndex {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        std::fmt::Display::fmt(<span class="kw-2">&amp;</span><span class="self">self</span>.unpack(), f)
+    }
+}
+
+<span class="doccomment">/// The uncompressed form of a `PackedIndex`.
+///
+/// Can be used for `match` statements.
+</span><span class="attr">#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
+</span><span class="kw">pub enum </span>UnpackedIndex {
+    <span class="doccomment">/// An index into a Wasm module&#39;s types space.
+    </span>Module(u32),
+
+    <span class="doccomment">/// An index into the containing recursion group&#39;s elements.
+    </span>RecGroup(u32),
+
+    <span class="doccomment">/// A type identifier.
+    </span>Id(CoreTypeId),
+}
+
+<span class="kw">impl </span>UnpackedIndex {
+    <span class="doccomment">/// Compress this index into its packed form.
+    ///
+    /// Returns `None` if an index is beyond implementation limits.
+    </span><span class="kw">pub fn </span>pack(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;PackedIndex&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            UnpackedIndex::Module(i) =&gt; PackedIndex::from_module_index(<span class="kw-2">*</span>i),
+            UnpackedIndex::RecGroup(i) =&gt; PackedIndex::from_rec_group_index(<span class="kw-2">*</span>i),
+            UnpackedIndex::Id(id) =&gt; PackedIndex::from_id(<span class="kw-2">*</span>id),
+        }
+    }
+
+    <span class="doccomment">/// Is this index in canonical form?
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>is_canonical(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, UnpackedIndex::RecGroup(<span class="kw">_</span>) | UnpackedIndex::Id(<span class="kw">_</span>))
+    }
+
+    <span class="doccomment">/// Get the underlying index into a module&#39;s types space, if any.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_module_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="kw">if let </span><span class="self">Self</span>::Module(i) = <span class="kw-2">*</span><span class="self">self </span>{
+            <span class="prelude-val">Some</span>(i)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Get the underlying index into the containing recursion group, if any.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_rec_group_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
+        <span class="kw">if let </span><span class="self">Self</span>::RecGroup(i) = <span class="kw-2">*</span><span class="self">self </span>{
+            <span class="prelude-val">Some</span>(i)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="doccomment">/// Get the underlying `CoreTypeId`, if any.
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_core_type_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt; {
+        <span class="kw">if let </span><span class="self">Self</span>::Id(id) = <span class="kw-2">*</span><span class="self">self </span>{
+            <span class="prelude-val">Some</span>(id)
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+}
+
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>UnpackedIndex {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            UnpackedIndex::Module(i) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(module {i})&quot;</span>),
+            UnpackedIndex::RecGroup(i) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(recgroup {i})&quot;</span>),
+            UnpackedIndex::Id(id) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(id {})&quot;</span>, <span class="kw">crate</span>::types::TypeIdentifier::index(id)),
+        }
+    }
+}
+
+<span class="doccomment">/// Represents a recursive type group in a WebAssembly module.
+</span><span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>RecGroup {
+    inner: RecGroupInner,
+}
+
+<span class="attr">#[derive(Debug, Clone)]
+</span><span class="kw">enum </span>RecGroupInner {
+    Implicit(SubType),
+    Explicit(Vec&lt;SubType&gt;),
+}
+
+<span class="kw">impl </span>RecGroup {
+    <span class="doccomment">/// Create an explicit `RecGroup` for the given types.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>explicit(types: Vec&lt;SubType&gt;) -&gt; <span class="self">Self </span>{
+        RecGroup {
+            inner: RecGroupInner::Explicit(types),
+        }
+    }
+
+    <span class="doccomment">/// Create an implicit `RecGroup` for a type that was not contained
+    /// in a `(rec ...)`.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>implicit(ty: SubType) -&gt; <span class="self">Self </span>{
+        RecGroup {
+            inner: RecGroupInner::Implicit(ty),
+        }
+    }
+
+    <span class="doccomment">/// Is this an explicit recursion group?
+    </span><span class="kw">pub fn </span>is_explicit_rec_group(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>.inner, RecGroupInner::Explicit(<span class="kw">_</span>))
+    }
+
+    <span class="doccomment">/// Returns the list of subtypes in the recursive type group.
+    </span><span class="kw">pub fn </span>types(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[SubType] {
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.inner {
+            RecGroupInner::Implicit(ty) =&gt; std::slice::from_ref(ty),
+            RecGroupInner::Explicit(types) =&gt; types,
+        }
+    }
+
+    <span class="doccomment">/// Return a mutable borrow of the list of subtypes in this
+    /// recursive type group.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>types_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[SubType] {
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.inner {
+            RecGroupInner::Implicit(ty) =&gt; std::slice::from_mut(ty),
+            RecGroupInner::Explicit(types) =&gt; types,
+        }
+    }
+
+    <span class="doccomment">/// Returns an owning iterator of all subtypes in this recursion
+    /// group.
+    </span><span class="kw">pub fn </span>into_types(<span class="self">self</span>) -&gt; <span class="kw">impl </span>ExactSizeIterator&lt;Item = SubType&gt; {
+        <span class="kw">return match </span><span class="self">self</span>.inner {
+            RecGroupInner::Implicit(ty) =&gt; Iter::Implicit(<span class="prelude-val">Some</span>(ty)),
+            RecGroupInner::Explicit(types) =&gt; Iter::Explicit(types.into_iter()),
+        };
+
+        <span class="kw">enum </span>Iter {
+            Implicit(<span class="prelude-ty">Option</span>&lt;SubType&gt;),
+            Explicit(std::vec::IntoIter&lt;SubType&gt;),
+        }
+
+        <span class="kw">impl </span>Iterator <span class="kw">for </span>Iter {
+            <span class="kw">type </span>Item = SubType;
+
+            <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;SubType&gt; {
+                <span class="kw">match </span><span class="self">self </span>{
+                    <span class="self">Self</span>::Implicit(ty) =&gt; ty.take(),
+                    <span class="self">Self</span>::Explicit(types) =&gt; types.next(),
+                }
+            }
+
+            <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+                <span class="kw">match </span><span class="self">self </span>{
+                    <span class="self">Self</span>::Implicit(<span class="prelude-val">None</span>) =&gt; (<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="number">0</span>)),
+                    <span class="self">Self</span>::Implicit(<span class="prelude-val">Some</span>(<span class="kw">_</span>)) =&gt; (<span class="number">1</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>)),
+                    <span class="self">Self</span>::Explicit(types) =&gt; types.size_hint(),
+                }
+            }
+        }
+
+        <span class="kw">impl </span>ExactSizeIterator <span class="kw">for </span>Iter {}
+    }
+}
+
+<span class="kw">impl </span>Hash <span class="kw">for </span>RecGroup {
+    <span class="kw">fn </span>hash&lt;H: Hasher&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, hasher: <span class="kw-2">&amp;mut </span>H) {
+        <span class="self">self</span>.types().hash(hasher)
+    }
+}
+
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>RecGroup {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>RecGroup) -&gt; bool {
+        <span class="self">self</span>.types() == other.types()
+    }
+}
+
+<span class="kw">impl </span>Eq <span class="kw">for </span>RecGroup {}
+
+<span class="doccomment">/// Represents a subtype of possible other types in a WebAssembly module.
+</span><span class="attr">#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+</span><span class="kw">pub struct </span>SubType {
+    <span class="doccomment">/// Is the subtype final.
+    </span><span class="kw">pub </span>is_final: bool,
+    <span class="doccomment">/// The list of supertype indexes. As of GC MVP, there can be at most one supertype.
+    </span><span class="kw">pub </span>supertype_idx: <span class="prelude-ty">Option</span>&lt;PackedIndex&gt;,
+    <span class="doccomment">/// The composite type of the subtype.
+    </span><span class="kw">pub </span>composite_type: CompositeType,
+}
+
+<span class="kw">impl </span>SubType {
+    <span class="doccomment">/// Unwrap an `ArrayType` or panic.
+    ///
+    /// Does not check finality or whether there is a supertype.
+    </span><span class="kw">pub fn </span>unwrap_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ArrayType {
+        <span class="self">self</span>.composite_type.unwrap_array()
+    }
+
+    <span class="doccomment">/// Unwrap an `FuncType` or panic.
+    ///
+    /// Does not check finality or whether there is a supertype.
+    </span><span class="kw">pub fn </span>unwrap_func(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>FuncType {
+        <span class="self">self</span>.composite_type.unwrap_func()
+    }
+
+    <span class="doccomment">/// Unwrap an `StructType` or panic.
+    ///
+    /// Does not check finality or whether there is a supertype.
+    </span><span class="kw">pub fn </span>unwrap_struct(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>StructType {
+        <span class="self">self</span>.composite_type.unwrap_struct()
+    }
+
+    <span class="doccomment">/// Maps any `UnpackedIndex` via the specified closure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>remap_indices(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>PackedIndex) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(idx) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.supertype_idx {
+            f(idx)<span class="question-mark">?</span>;
+        }
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.composite_type {
+            CompositeType::Func(ty) =&gt; {
+                <span class="kw">for </span>ty <span class="kw">in </span>ty.params_mut() {
+                    ty.remap_indices(f)<span class="question-mark">?</span>;
+                }
+                <span class="kw">for </span>ty <span class="kw">in </span>ty.results_mut() {
+                    ty.remap_indices(f)<span class="question-mark">?</span>;
+                }
+            }
+            CompositeType::Array(ty) =&gt; {
+                ty.<span class="number">0</span>.remap_indices(f)<span class="question-mark">?</span>;
+            }
+            CompositeType::Struct(ty) =&gt; {
+                <span class="kw">for </span>field <span class="kw">in </span>ty.fields.iter_mut() {
+                    field.remap_indices(f)<span class="question-mark">?</span>;
+                }
+            }
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="doccomment">/// Represents a composite type in a WebAssembly module.
+</span><span class="attr">#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+</span><span class="kw">pub enum </span>CompositeType {
+    <span class="doccomment">/// The type is for a function.
+    </span>Func(FuncType),
+    <span class="doccomment">/// The type is for an array.
+    </span>Array(ArrayType),
+    <span class="doccomment">/// The type is for a struct.
+    </span>Struct(StructType),
+}
+
+<span class="kw">impl </span>CompositeType {
+    <span class="doccomment">/// Unwrap a `FuncType` or panic.
+    </span><span class="kw">pub fn </span>unwrap_func(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>FuncType {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::Func(f) =&gt; f,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;not a func&quot;</span>),
+        }
+    }
+
+    <span class="doccomment">/// Unwrap a `ArrayType` or panic.
+    </span><span class="kw">pub fn </span>unwrap_array(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>ArrayType {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::Array(a) =&gt; a,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;not a array&quot;</span>),
+        }
+    }
+
+    <span class="doccomment">/// Unwrap a `StructType` or panic.
+    </span><span class="kw">pub fn </span>unwrap_struct(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>StructType {
+        <span class="kw">match </span><span class="self">self </span>{
+            <span class="self">Self</span>::Struct(s) =&gt; s,
+            <span class="kw">_ </span>=&gt; <span class="macro">panic!</span>(<span class="string">&quot;not a struct&quot;</span>),
+        }
+    }
+}
+
+<span class="doccomment">/// Represents a type of a function in a WebAssembly module.
+</span><span class="attr">#[derive(Clone, Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>FuncType {
+    <span class="doccomment">/// The combined parameters and result types.
+    </span>params_results: Box&lt;[ValType]&gt;,
+    <span class="doccomment">/// The number of parameter types.
+    </span>len_params: usize,
+}
+
+<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>FuncType {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        f.debug_struct(<span class="string">&quot;FuncType&quot;</span>)
+            .field(<span class="string">&quot;params&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.params())
+            .field(<span class="string">&quot;results&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.results())
+            .finish()
+    }
+}
+
+<span class="kw">impl </span>FuncType {
+    <span class="doccomment">/// Creates a new [`FuncType`] from the given `params` and `results`.
+    </span><span class="kw">pub fn </span>new&lt;P, R&gt;(params: P, results: R) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>P: IntoIterator&lt;Item = ValType&gt;,
+        R: IntoIterator&lt;Item = ValType&gt;,
+    {
+        <span class="kw">let </span><span class="kw-2">mut </span>buffer = params.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
+        <span class="kw">let </span>len_params = buffer.len();
+        buffer.extend(results);
+        <span class="self">Self </span>{
+            params_results: buffer.into(),
+            len_params,
+        }
+    }
+
+    <span class="doccomment">/// Creates a new [`FuncType`] fom its raw parts.
+    ///
+    /// # Panics
+    ///
+    /// If `len_params` is greater than the length of `params_results` combined.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_raw_parts(params_results: Box&lt;[ValType]&gt;, len_params: usize) -&gt; <span class="self">Self </span>{
+        <span class="macro">assert!</span>(len_params &lt;= params_results.len());
+        <span class="self">Self </span>{
+            params_results,
+            len_params,
+        }
+    }
+
+    <span class="doccomment">/// Returns a shared slice to the parameter types of the [`FuncType`].
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>params(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[ValType] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.params_results[..<span class="self">self</span>.len_params]
+    }
+
+    <span class="doccomment">/// Returns an exclusive slice to the parameter types of the
+    /// [`FuncType`].
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>params_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[ValType] {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.params_results[..<span class="self">self</span>.len_params]
+    }
+
+    <span class="doccomment">/// Returns a shared slice to the result types of the [`FuncType`].
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>results(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[ValType] {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.params_results[<span class="self">self</span>.len_params..]
+    }
+
+    <span class="doccomment">/// Returns an exclusive slice to the result types of the
+    /// [`FuncType`].
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>results_mut(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;mut </span>[ValType] {
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>.params_results[<span class="self">self</span>.len_params..]
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>desc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
+        s.push_str(<span class="string">&quot;[&quot;</span>);
+        <span class="kw">for </span>(i, param) <span class="kw">in </span><span class="self">self</span>.params().iter().enumerate() {
+            <span class="kw">if </span>i &gt; <span class="number">0 </span>{
+                s.push_str(<span class="string">&quot; &quot;</span>);
+            }
+            <span class="macro">write!</span>(s, <span class="string">&quot;{param}&quot;</span>).unwrap();
+        }
+        s.push_str(<span class="string">&quot;] -&gt; [&quot;</span>);
+        <span class="kw">for </span>(i, result) <span class="kw">in </span><span class="self">self</span>.results().iter().enumerate() {
+            <span class="kw">if </span>i &gt; <span class="number">0 </span>{
+                s.push_str(<span class="string">&quot; &quot;</span>);
+            }
+            <span class="macro">write!</span>(s, <span class="string">&quot;{result}&quot;</span>).unwrap();
+        }
+        s.push_str(<span class="string">&quot;]&quot;</span>);
+        s
+    }
+}
+
+<span class="doccomment">/// Represents a type of an array in a WebAssembly module.
+</span><span class="attr">#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>ArrayType(<span class="kw">pub </span>FieldType);
+
+<span class="doccomment">/// Represents a field type of an array or a struct.
+</span><span class="attr">#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>FieldType {
+    <span class="doccomment">/// Array element type.
+    </span><span class="kw">pub </span>element_type: StorageType,
+    <span class="doccomment">/// Are elements mutable.
+    </span><span class="kw">pub </span>mutable: bool,
+}
+
+<span class="kw">impl </span>FieldType {
+    <span class="doccomment">/// Maps any `UnpackedIndex` via the specified closure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>remap_indices(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        f: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>PackedIndex) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">match </span><span class="kw-2">&amp;mut </span><span class="self">self</span>.element_type {
+            StorageType::I8 | StorageType::I16 =&gt; <span class="prelude-val">Ok</span>(()),
+            StorageType::Val(ty) =&gt; ty.remap_indices(f),
+        }
+    }
+}
+
+<span class="doccomment">/// Represents storage types introduced in the GC spec for array and struct fields.
+</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+</span><span class="kw">pub enum </span>StorageType {
+    <span class="doccomment">/// The storage type is i8.
+    </span>I8,
+    <span class="doccomment">/// The storage type is i16.
+    </span>I16,
+    <span class="doccomment">/// The storage type is a value type.
+    </span>Val(ValType),
+}
+
+<span class="doccomment">/// Represents a type of a struct in a WebAssembly module.
+</span><span class="attr">#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+</span><span class="kw">pub struct </span>StructType {
+    <span class="doccomment">/// Struct fields.
+    </span><span class="kw">pub </span>fields: Box&lt;[FieldType]&gt;,
+}
 
 <span class="doccomment">/// Represents the types of values in a WebAssembly module.
 </span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -1269,31 +2173,23 @@
     </span>Ref(RefType),
 }
 
-<span class="doccomment">/// Represents storage types introduced in the GC spec for array and struct fields.
-</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-</span><span class="kw">pub enum </span>StorageType {
-    <span class="doccomment">/// The storage type is i8.
-    </span>I8,
-    <span class="doccomment">/// The storage type is i16.
-    </span>I16,
-    <span class="doccomment">/// The storage type is a value type.
-    </span>Val(ValType),
-}
-
-<span class="comment">// The size of `ValType` is performance sensitive.
-</span><span class="kw">const _</span>: () = {
-    <span class="macro">assert!</span>(std::mem::size_of::&lt;ValType&gt;() == <span class="number">4</span>);
-};
-
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">trait </span>Matches {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType;
-}
-
 <span class="kw">impl </span>From&lt;RefType&gt; <span class="kw">for </span>ValType {
-    <span class="kw">fn </span>from(ty: RefType) -&gt; ValType {
+    <span class="attr">#[inline]
+    </span><span class="kw">fn </span>from(ty: RefType) -&gt; ValType {
         ValType::Ref(ty)
+    }
+}
+
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>ValType {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="kw">match </span><span class="self">self </span>{
+            ValType::I32 =&gt; f.write_str(<span class="string">&quot;i32&quot;</span>),
+            ValType::I64 =&gt; f.write_str(<span class="string">&quot;i64&quot;</span>),
+            ValType::F32 =&gt; f.write_str(<span class="string">&quot;f32&quot;</span>),
+            ValType::F64 =&gt; f.write_str(<span class="string">&quot;f64&quot;</span>),
+            ValType::V128 =&gt; f.write_str(<span class="string">&quot;v128&quot;</span>),
+            ValType::Ref(r) =&gt; std::fmt::Display::fmt(r, f),
+        }
     }
 }
 
@@ -1321,23 +2217,467 @@
         }
     }
 
+    <span class="doccomment">/// Maps any `UnpackedIndex` via the specified closure.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>remap_indices(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        map: <span class="kw-2">&amp;mut </span><span class="kw">dyn </span>FnMut(<span class="kw-2">&amp;mut </span>PackedIndex) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">match </span><span class="self">self </span>{
+            ValType::Ref(r) =&gt; {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>idx) = r.type_index() {
+                    map(<span class="kw-2">&amp;mut </span>idx)<span class="question-mark">?</span>;
+                    <span class="kw-2">*</span>r = RefType::concrete(r.is_nullable(), idx);
+                }
+            }
+            ValType::I32 | ValType::I64 | ValType::F32 | ValType::F64 | ValType::V128 =&gt; {}
+        }
+        <span class="prelude-val">Ok</span>(())
+    }
+}
+
+<span class="doccomment">/// A reference type.
+///
+/// The reference types proposal first introduced `externref` and
+/// `funcref`.
+///
+/// The function references proposal introduced typed function
+/// references.
+///
+/// The GC proposal introduces heap types: any, eq, i31, struct, array,
+/// nofunc, noextern, none.
+</span><span class="comment">//
+// RefType is a bit-packed enum that fits in a `u24` aka `[u8; 3]`.
+// Note that its content is opaque (and subject to change), but its API
+// is stable.
+//
+// It has the following internal structure:
+//
+// ```
+// [nullable:u1 concrete==1:u1 index:u22]
+// [nullable:u1 concrete==0:u1 abstype:u4 (unused):u18]
+// ```
+//
+// Where
+//
+// - `nullable` determines nullability of the ref,
+//
+// - `concrete` determines if the ref is of a dynamically defined type
+//   with an index (encoded in a following bit-packing section) or of a
+//   known fixed type,
+//
+// - `index` is the type index,
+//
+// - `abstype` is an enumeration of abstract types:
+//
+//   ```
+//   1111 = any
+//
+//   1101 = eq
+//   1000 = i31
+//   1001 = struct
+//   1100 = array
+//
+//   0101 = func
+//   0100 = nofunc
+//
+//   0011 = extern
+//   0010 = noextern
+//
+//   0000 = none
+//   ```
+</span><span class="attr">#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>RefType([u8; <span class="number">3</span>]);
+
+<span class="kw">impl </span>std::fmt::Debug <span class="kw">for </span>RefType {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
+        <span class="kw">match </span>(<span class="self">self</span>.is_nullable(), <span class="self">self</span>.heap_type()) {
+            (<span class="bool-val">true</span>, HeapType::Any) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;anyref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Any) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref any)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::None) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;nullref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::None) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref none)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::NoExtern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;nullexternref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::NoExtern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref noextern)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::NoFunc) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;nullfuncref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::NoFunc) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref nofunc)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::Eq) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;eqref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Eq) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref eq)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::Struct) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;structref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Struct) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref struct)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::Array) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;arrayref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Array) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref array)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::I31) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;i31ref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::I31) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref i31)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::Extern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;externref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Extern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref extern)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::Func) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;funcref&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Func) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref func)&quot;</span>),
+            (<span class="bool-val">true</span>, HeapType::Concrete(idx)) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref null {idx})&quot;</span>),
+            (<span class="bool-val">false</span>, HeapType::Concrete(idx)) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref {idx})&quot;</span>),
+        }
+    }
+}
+
+<span class="kw">impl </span>std::fmt::Display <span class="kw">for </span>RefType {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
+        std::fmt::Debug::fmt(<span class="self">self</span>, f)
+    }
+}
+
+<span class="comment">// Assert that we can fit indices up to `MAX_WASM_TYPES` inside `RefType`.
+</span><span class="attr">#[test]
+</span><span class="kw">fn </span>can_fit_max_wasm_types_in_ref_type() {
+    <span class="kw">fn </span>can_roundtrip_index(index: u32) -&gt; bool {
+        <span class="macro">assert!</span>(RefType::can_represent_type_index(index));
+        <span class="kw">let </span>rt = RefType::concrete(<span class="bool-val">true</span>, PackedIndex::from_module_index(index).unwrap());
+        <span class="macro">assert!</span>(rt.is_nullable());
+        <span class="kw">let </span>actual_index = <span class="kw">match </span>rt.type_index() {
+            <span class="prelude-val">Some</span>(i) =&gt; i,
+            <span class="prelude-val">None </span>=&gt; <span class="macro">panic!</span>(),
+        };
+        actual_index.as_module_index() == <span class="prelude-val">Some</span>(index)
+    }
+
+    <span class="macro">assert!</span>(can_roundtrip_index(<span class="kw">crate</span>::limits::MAX_WASM_TYPES <span class="kw">as </span>u32));
+    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0b00000000_00001111_00000000_00000000</span>));
+    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0b00000000_00000000_11111111_00000000</span>));
+    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0b00000000_00000000_00000000_11111111</span>));
+    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0</span>));
+}
+
+<span class="kw">impl </span>RefType {
+    <span class="comment">// These bits are valid for all `RefType`s.
+    </span><span class="kw">const </span>NULLABLE_BIT: u32 = <span class="number">1 </span>&lt;&lt; <span class="number">23</span>;
+    <span class="kw">const </span>CONCRETE_BIT: u32 = <span class="number">1 </span>&lt;&lt; <span class="number">22</span>;
+
+    <span class="comment">// The `abstype` field is valid only when `concrete == 0`.
+    </span><span class="kw">const </span>ABSTYPE_MASK: u32 = <span class="number">0b1111 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>ANY_ABSTYPE: u32 = <span class="number">0b1111 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>EQ_ABSTYPE: u32 = <span class="number">0b1101 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>I31_ABSTYPE: u32 = <span class="number">0b1000 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>STRUCT_ABSTYPE: u32 = <span class="number">0b1001 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>ARRAY_ABSTYPE: u32 = <span class="number">0b1100 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>FUNC_ABSTYPE: u32 = <span class="number">0b0101 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>NOFUNC_ABSTYPE: u32 = <span class="number">0b0100 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>EXTERN_ABSTYPE: u32 = <span class="number">0b0011 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>NOEXTERN_ABSTYPE: u32 = <span class="number">0b0010 </span>&lt;&lt; <span class="number">18</span>;
+    <span class="kw">const </span>NONE_ABSTYPE: u32 = <span class="number">0b0000 </span>&lt;&lt; <span class="number">18</span>;
+
+    <span class="comment">// The `index` is valid only when `concrete == 1`.
+    </span><span class="kw">const </span>INDEX_MASK: u32 = (<span class="number">1 </span>&lt;&lt; <span class="number">22</span>) - <span class="number">1</span>;
+
+    <span class="doccomment">/// A nullable untyped function reference aka `(ref null func)` aka
+    /// `funcref` aka `anyfunc`.
+    </span><span class="kw">pub const </span>FUNCREF: <span class="self">Self </span>= RefType::FUNC.nullable();
+
+    <span class="doccomment">/// A nullable reference to an extern object aka `(ref null extern)` aka
+    /// `externref`.
+    </span><span class="kw">pub const </span>EXTERNREF: <span class="self">Self </span>= RefType::EXTERN.nullable();
+
+    <span class="doccomment">/// A non-nullable untyped function reference aka `(ref func)`.
+    </span><span class="kw">pub const </span>FUNC: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::FUNC_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to an extern object aka `(ref extern)`.
+    </span><span class="kw">pub const </span>EXTERN: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::EXTERN_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to any object aka `(ref any)`.
+    </span><span class="kw">pub const </span>ANY: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::ANY_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to no object aka `(ref none)`.
+    </span><span class="kw">pub const </span>NONE: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::NONE_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to a noextern object aka `(ref noextern)`.
+    </span><span class="kw">pub const </span>NOEXTERN: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::NOEXTERN_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to a nofunc object aka `(ref nofunc)`.
+    </span><span class="kw">pub const </span>NOFUNC: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::NOFUNC_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to an eq object aka `(ref eq)`.
+    </span><span class="kw">pub const </span>EQ: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::EQ_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to a struct aka `(ref struct)`.
+    </span><span class="kw">pub const </span>STRUCT: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::STRUCT_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to an array aka `(ref array)`.
+    </span><span class="kw">pub const </span>ARRAY: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::ARRAY_ABSTYPE);
+
+    <span class="doccomment">/// A non-nullable reference to an i31 object aka `(ref i31)`.
+    </span><span class="kw">pub const </span>I31: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::I31_ABSTYPE);
+
+    <span class="kw">const fn </span>can_represent_type_index(index: u32) -&gt; bool {
+        index &amp; <span class="self">Self</span>::INDEX_MASK == index
+    }
+
+    <span class="kw">const fn </span>u24_to_u32(bytes: [u8; <span class="number">3</span>]) -&gt; u32 {
+        <span class="kw">let </span>expanded_bytes = [bytes[<span class="number">0</span>], bytes[<span class="number">1</span>], bytes[<span class="number">2</span>], <span class="number">0</span>];
+        u32::from_le_bytes(expanded_bytes)
+    }
+
+    <span class="kw">const fn </span>u32_to_u24(x: u32) -&gt; [u8; <span class="number">3</span>] {
+        <span class="kw">let </span>bytes = x.to_le_bytes();
+        <span class="macro">debug_assert!</span>(bytes[<span class="number">3</span>] == <span class="number">0</span>);
+        [bytes[<span class="number">0</span>], bytes[<span class="number">1</span>], bytes[<span class="number">2</span>]]
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">const fn </span>as_u32(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="self">Self</span>::u24_to_u32(<span class="self">self</span>.<span class="number">0</span>)
+    }
+
+    <span class="attr">#[inline]
+    </span><span class="kw">const fn </span>from_u32(x: u32) -&gt; <span class="self">Self </span>{
+        <span class="macro">debug_assert!</span>(x &amp; (<span class="number">0b11111111 </span>&lt;&lt; <span class="number">24</span>) == <span class="number">0</span>);
+
+        <span class="comment">// Either concrete or it must be a known abstract type.
+        </span><span class="macro">debug_assert!</span>(
+            x &amp; <span class="self">Self</span>::CONCRETE_BIT != <span class="number">0
+                </span>|| <span class="macro">matches!</span>(
+                    x &amp; <span class="self">Self</span>::ABSTYPE_MASK,
+                    <span class="self">Self</span>::ANY_ABSTYPE
+                        | <span class="self">Self</span>::EQ_ABSTYPE
+                        | <span class="self">Self</span>::I31_ABSTYPE
+                        | <span class="self">Self</span>::STRUCT_ABSTYPE
+                        | <span class="self">Self</span>::ARRAY_ABSTYPE
+                        | <span class="self">Self</span>::FUNC_ABSTYPE
+                        | <span class="self">Self</span>::NOFUNC_ABSTYPE
+                        | <span class="self">Self</span>::EXTERN_ABSTYPE
+                        | <span class="self">Self</span>::NOEXTERN_ABSTYPE
+                        | <span class="self">Self</span>::NONE_ABSTYPE
+                )
+        );
+
+        RefType(<span class="self">Self</span>::u32_to_u24(x))
+    }
+
+    <span class="doccomment">/// Create a reference to a concrete Wasm-defined type at the given
+    /// index.
+    ///
+    /// Returns `None` when the type index is beyond this crate&#39;s
+    /// implementation limits and therefore is not representable.
+    </span><span class="kw">pub fn </span>concrete(nullable: bool, index: PackedIndex) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>index: u32 = PackedIndex::to_u32(index);
+        <span class="macro">debug_assert!</span>(<span class="self">Self</span>::can_represent_type_index(index));
+        <span class="kw">let </span>nullable32 = <span class="self">Self</span>::NULLABLE_BIT * nullable <span class="kw">as </span>u32;
+        RefType::from_u32(nullable32 | <span class="self">Self</span>::CONCRETE_BIT | index)
+    }
+
+    <span class="doccomment">/// Create a new `RefType`.
+    ///
+    /// Returns `None` when the heap type&#39;s type index (if any) is
+    /// beyond this crate&#39;s implementation limits and therfore is not
+    /// representable.
+    </span><span class="kw">pub fn </span>new(nullable: bool, heap_type: HeapType) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
+        <span class="kw">let </span>nullable32 = <span class="self">Self</span>::NULLABLE_BIT * (nullable <span class="kw">as </span>u32);
+        <span class="kw">match </span>heap_type {
+            HeapType::Concrete(index) =&gt; <span class="prelude-val">Some</span>(RefType::concrete(nullable, index.pack()<span class="question-mark">?</span>)),
+            HeapType::Func =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::FUNC_ABSTYPE)),
+            HeapType::Extern =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::EXTERN_ABSTYPE)),
+            HeapType::Any =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::ANY_ABSTYPE)),
+            HeapType::None =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::NONE_ABSTYPE)),
+            HeapType::NoExtern =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::NOEXTERN_ABSTYPE)),
+            HeapType::NoFunc =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::NOFUNC_ABSTYPE)),
+            HeapType::Eq =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::EQ_ABSTYPE)),
+            HeapType::Struct =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::STRUCT_ABSTYPE)),
+            HeapType::Array =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::ARRAY_ABSTYPE)),
+            HeapType::I31 =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::I31_ABSTYPE)),
+        }
+    }
+
+    <span class="doccomment">/// Is this a reference to an concrete type?
+    </span><span class="kw">pub const fn </span>is_concrete_type_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::CONCRETE_BIT != <span class="number">0
+    </span>}
+
+    <span class="doccomment">/// If this is a reference to a concrete Wasm-defined type, get its
+    /// type index.
+    </span><span class="kw">pub fn </span>type_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;PackedIndex&gt; {
+        <span class="kw">if </span><span class="self">self</span>.is_concrete_type_ref() {
+            <span class="kw">let </span>index = <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::INDEX_MASK;
+            <span class="prelude-val">Some</span>(PackedIndex::unchecked_from_u32(index))
+        } <span class="kw">else </span>{
+            <span class="prelude-val">None
+        </span>}
+    }
+
+    <span class="kw">const fn </span>abstype(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
+        <span class="macro">debug_assert!</span>(!<span class="self">self</span>.is_concrete_type_ref());
+        <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::ABSTYPE_MASK
+    }
+
+    <span class="doccomment">/// Is this the abstract untyped function reference type aka `(ref
+    /// null func)` aka `funcref` aka `anyfunc`?
+    </span><span class="kw">pub const fn </span>is_func_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_concrete_type_ref() &amp;&amp; <span class="self">self</span>.abstype() == <span class="self">Self</span>::FUNC_ABSTYPE
+    }
+
+    <span class="doccomment">/// Is this the abstract external reference type aka `(ref null
+    /// extern)` aka `externref`?
+    </span><span class="kw">pub const fn </span>is_extern_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_concrete_type_ref() &amp;&amp; <span class="self">self</span>.abstype() == <span class="self">Self</span>::EXTERN_ABSTYPE
+    }
+
+    <span class="doccomment">/// Is this the abstract untyped array refrence type aka `(ref null
+    /// array)` aka `arrayref`?
+    </span><span class="kw">pub const fn </span>is_array_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_concrete_type_ref() &amp;&amp; <span class="self">self</span>.abstype() == <span class="self">Self</span>::ARRAY_ABSTYPE
+    }
+
+    <span class="doccomment">/// Is this the abstract untyped struct reference type aka `(ref
+    /// null struct)` aka `structref`?
+    </span><span class="kw">pub const fn </span>is_struct_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        !<span class="self">self</span>.is_concrete_type_ref() &amp;&amp; <span class="self">self</span>.abstype() == <span class="self">Self</span>::STRUCT_ABSTYPE
+    }
+
+    <span class="doccomment">/// Is this ref type nullable?
+    </span><span class="kw">pub const fn </span>is_nullable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::NULLABLE_BIT != <span class="number">0
+    </span>}
+
+    <span class="doccomment">/// Get the non-nullable version of this ref type.
+    </span><span class="kw">pub const fn </span>as_non_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_u32(<span class="self">self</span>.as_u32() &amp; !<span class="self">Self</span>::NULLABLE_BIT)
+    }
+
+    <span class="doccomment">/// Get the non-nullable version of this ref type.
+    </span><span class="kw">pub const fn </span>nullable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::from_u32(<span class="self">self</span>.as_u32() | <span class="self">Self</span>::NULLABLE_BIT)
+    }
+
+    <span class="doccomment">/// Get the heap type that this is a reference to.
+    </span><span class="kw">pub fn </span>heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; HeapType {
+        <span class="kw">let </span>s = <span class="self">self</span>.as_u32();
+        <span class="kw">if </span><span class="self">self</span>.is_concrete_type_ref() {
+            HeapType::Concrete(<span class="self">self</span>.type_index().unwrap().unpack())
+        } <span class="kw">else </span>{
+            <span class="kw">match </span>s &amp; <span class="self">Self</span>::ABSTYPE_MASK {
+                <span class="self">Self</span>::FUNC_ABSTYPE =&gt; HeapType::Func,
+                <span class="self">Self</span>::EXTERN_ABSTYPE =&gt; HeapType::Extern,
+                <span class="self">Self</span>::ANY_ABSTYPE =&gt; HeapType::Any,
+                <span class="self">Self</span>::NONE_ABSTYPE =&gt; HeapType::None,
+                <span class="self">Self</span>::NOEXTERN_ABSTYPE =&gt; HeapType::NoExtern,
+                <span class="self">Self</span>::NOFUNC_ABSTYPE =&gt; HeapType::NoFunc,
+                <span class="self">Self</span>::EQ_ABSTYPE =&gt; HeapType::Eq,
+                <span class="self">Self</span>::STRUCT_ABSTYPE =&gt; HeapType::Struct,
+                <span class="self">Self</span>::ARRAY_ABSTYPE =&gt; HeapType::Array,
+                <span class="self">Self</span>::I31_ABSTYPE =&gt; HeapType::I31,
+                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
+            }
+        }
+    }
+
+    <span class="comment">// Note that this is similar to `Display for RefType` except that it has
+    // the indexes stubbed out.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>wat(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
+        <span class="kw">match </span>(<span class="self">self</span>.is_nullable(), <span class="self">self</span>.heap_type()) {
+            (<span class="bool-val">true</span>, HeapType::Func) =&gt; <span class="string">&quot;funcref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::Extern) =&gt; <span class="string">&quot;externref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::Concrete(<span class="kw">_</span>)) =&gt; <span class="string">&quot;(ref null $type)&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::Any) =&gt; <span class="string">&quot;anyref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::None) =&gt; <span class="string">&quot;nullref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::NoExtern) =&gt; <span class="string">&quot;nullexternref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::NoFunc) =&gt; <span class="string">&quot;nullfuncref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::Eq) =&gt; <span class="string">&quot;eqref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::Struct) =&gt; <span class="string">&quot;structref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::Array) =&gt; <span class="string">&quot;arrayref&quot;</span>,
+            (<span class="bool-val">true</span>, HeapType::I31) =&gt; <span class="string">&quot;i31ref&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Func) =&gt; <span class="string">&quot;(ref func)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Extern) =&gt; <span class="string">&quot;(ref extern)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Concrete(<span class="kw">_</span>)) =&gt; <span class="string">&quot;(ref $type)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Any) =&gt; <span class="string">&quot;(ref any)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::None) =&gt; <span class="string">&quot;(ref none)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::NoExtern) =&gt; <span class="string">&quot;(ref noextern)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::NoFunc) =&gt; <span class="string">&quot;(ref nofunc)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Eq) =&gt; <span class="string">&quot;(ref eq)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Struct) =&gt; <span class="string">&quot;(ref struct)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::Array) =&gt; <span class="string">&quot;(ref array)&quot;</span>,
+            (<span class="bool-val">false</span>, HeapType::I31) =&gt; <span class="string">&quot;(ref i31)&quot;</span>,
+        }
+    }
+}
+
+<span class="doccomment">/// A heap type.
+</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+</span><span class="kw">pub enum </span>HeapType {
+    <span class="doccomment">/// A concrete, user-defined type.
+    ///
+    /// Introduced in the function-references proposal.
+    </span>Concrete(UnpackedIndex),
+
+    <span class="doccomment">/// The abstract, untyped (any) function.
+    ///
+    /// Introduced in the references-types proposal.
+    </span>Func,
+
+    <span class="doccomment">/// The abstract, external heap type.
+    ///
+    /// Introduced in the references-types proposal.
+    </span>Extern,
+
+    <span class="doccomment">/// The abstract `any` heap type.
+    ///
+    /// The common supertype (a.k.a. top) of all internal types.
+    ///
+    /// Introduced in the GC proposal.
+    </span>Any,
+
+    <span class="doccomment">/// The abstract `none` heap type.
+    ///
+    /// The common subtype (a.k.a. bottom) of all internal types.
+    ///
+    /// Introduced in the GC proposal.
+    </span><span class="prelude-val">None</span>,
+
+    <span class="doccomment">/// The abstract `noextern` heap type.
+    ///
+    /// The common subtype (a.k.a. bottom) of all external types.
+    ///
+    /// Introduced in the GC proposal.
+    </span>NoExtern,
+
+    <span class="doccomment">/// The abstract `nofunc` heap type.
+    ///
+    /// The common subtype (a.k.a. bottom) of all function types.
+    ///
+    /// Introduced in the GC proposal.
+    </span>NoFunc,
+
+    <span class="doccomment">/// The abstract `eq` heap type.
+    ///
+    /// The common supertype of all heap types on which the `ref.eq`
+    /// instruction is allowed.
+    ///
+    /// Introduced in the GC proposal.
+    </span>Eq,
+
+    <span class="doccomment">/// The abstract `struct` heap type.
+    ///
+    /// The common supertype of all struct types.
+    ///
+    /// Introduced in the GC proposal.
+    </span>Struct,
+
+    <span class="doccomment">/// The abstract `array` heap type.
+    ///
+    /// The common supertype of all array types.
+    ///
+    /// Introduced in the GC proposal.
+    </span>Array,
+
+    <span class="doccomment">/// The abstract `i31` heap type.
+    ///
+    /// It is not expected that Wasm runtimes actually store these
+    /// values on the heap, but unbox them inline into the `i31ref`s
+    /// themselves instead.
+    ///
+    /// Introduced in the GC proposal.
+    </span>I31,
+}
+
+<span class="kw">impl </span>ValType {
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>is_valtype_byte(byte: u8) -&gt; bool {
         <span class="kw">match </span>byte {
             <span class="number">0x7F </span>| <span class="number">0x7E </span>| <span class="number">0x7D </span>| <span class="number">0x7C </span>| <span class="number">0x7B </span>| <span class="number">0x70 </span>| <span class="number">0x6F </span>| <span class="number">0x64 </span>| <span class="number">0x63 </span>| <span class="number">0x6E </span>| <span class="number">0x71 </span>| <span class="number">0x72
             </span>| <span class="number">0x73 </span>| <span class="number">0x6D </span>| <span class="number">0x6B </span>| <span class="number">0x6A </span>| <span class="number">0x6C </span>=&gt; <span class="bool-val">true</span>,
             <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
-        }
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>ValType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="kw">match </span>(<span class="self">self</span>, other) {
-            (<span class="self">Self</span>::Ref(r1), <span class="self">Self</span>::Ref(r2)) =&gt; r1.matches(r2, type_at),
-            (a, b) =&gt; a == b,
         }
     }
 }
@@ -1389,403 +2729,6 @@
     }
 }
 
-<span class="kw">impl </span>fmt::Display <span class="kw">for </span>ValType {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        <span class="kw">let </span>s = <span class="kw">match </span><span class="self">self </span>{
-            ValType::I32 =&gt; <span class="string">&quot;i32&quot;</span>,
-            ValType::I64 =&gt; <span class="string">&quot;i64&quot;</span>,
-            ValType::F32 =&gt; <span class="string">&quot;f32&quot;</span>,
-            ValType::F64 =&gt; <span class="string">&quot;f64&quot;</span>,
-            ValType::V128 =&gt; <span class="string">&quot;v128&quot;</span>,
-            ValType::Ref(r) =&gt; <span class="kw">return </span>fmt::Display::fmt(r, f),
-        };
-        f.write_str(s)
-    }
-}
-
-<span class="doccomment">/// A reference type.
-///
-/// The reference types proposal first introduced `externref` and `funcref`.
-///
-/// The function references proposal introduced typed function references.
-///
-/// The GC proposal introduces heap types: any, eq, i31, struct, array, nofunc, noextern, none.
-</span><span class="comment">//
-// RefType is a bit-packed enum that fits in a `u24` aka `[u8; 3]`.
-// Note that its content is opaque (and subject to change), but its API is stable.
-//
-// It has the following internal structure:
-//
-// ```
-// [nullable:u1] [indexed==1:u1] [kind:u2] [index:u20]
-// [nullable:u1] [indexed==0:u1] [type:u4] [(unused):u18]
-// ```
-//
-// Where
-//
-// - `nullable` determines nullability of the ref
-//
-// - `indexed` determines if the ref is of a dynamically defined type with an
-//   index (encoded in a following bit-packing section) or of a known fixed type
-//
-// - `kind` determines what kind of indexed type the index is pointing to:
-//
-//   ```
-//   10 = struct
-//   11 = array
-//   01 = function
-//   ```
-//
-// - `index` is the type index
-//
-// - `type` is an enumeration of known types:
-//
-//   ```
-//   1111 = any
-//
-//   1101 = eq
-//   1000 = i31
-//   1001 = struct
-//   1100 = array
-//
-//   0101 = func
-//   0100 = nofunc
-//
-//   0011 = extern
-//   0010 = noextern
-//
-//   0000 = none
-//   ```
-//
-// - `(unused)` is unused sequence of bits
-</span><span class="attr">#[derive(Copy, Clone, PartialEq, Eq, Hash)]
-</span><span class="kw">pub struct </span>RefType([u8; <span class="number">3</span>]);
-
-<span class="kw">impl </span>Debug <span class="kw">for </span>RefType {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        <span class="kw">match </span>(<span class="self">self</span>.is_nullable(), <span class="self">self</span>.heap_type()) {
-            (<span class="bool-val">true</span>, HeapType::Any) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;anyref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Any) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref any)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::None) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;nullref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::None) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref none)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::NoExtern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;nullexternref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::NoExtern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref noextern)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::NoFunc) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;nullfuncref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::NoFunc) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref nofunc)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Eq) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;eqref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Eq) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref eq)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Struct) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;structref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Struct) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref struct)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Array) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;arrayref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Array) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref array)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::I31) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;i31ref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::I31) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref i31)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Extern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;externref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Extern) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref extern)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Func) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;funcref&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Func) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref func)&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Indexed(idx)) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref null {idx})&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Indexed(idx)) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;(ref {idx})&quot;</span>),
-        }
-    }
-}
-
-<span class="comment">// Static assert that we can fit indices up to `MAX_WASM_TYPES` inside `RefType`.
-</span><span class="kw">const _</span>: () = {
-    <span class="kw">const fn </span>can_roundtrip_index(index: u32) -&gt; bool {
-        <span class="macro">assert!</span>(RefType::can_represent_type_index(index));
-        <span class="kw">let </span>rt = <span class="kw">match </span>RefType::indexed_func(<span class="bool-val">true</span>, index) {
-            <span class="prelude-val">Some</span>(rt) =&gt; rt,
-            <span class="prelude-val">None </span>=&gt; <span class="macro">panic!</span>(),
-        };
-        <span class="macro">assert!</span>(rt.is_nullable());
-        <span class="kw">let </span>actual_index = <span class="kw">match </span>rt.type_index() {
-            <span class="prelude-val">Some</span>(i) =&gt; i,
-            <span class="prelude-val">None </span>=&gt; <span class="macro">panic!</span>(),
-        };
-        actual_index == index
-    }
-
-    <span class="macro">assert!</span>(can_roundtrip_index(<span class="kw">crate</span>::limits::MAX_WASM_TYPES <span class="kw">as </span>u32));
-    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0b00000000_00001111_00000000_00000000</span>));
-    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0b00000000_00000000_11111111_00000000</span>));
-    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0b00000000_00000000_00000000_11111111</span>));
-    <span class="macro">assert!</span>(can_roundtrip_index(<span class="number">0</span>));
-};
-
-<span class="kw">impl </span>RefType {
-    <span class="kw">const </span>NULLABLE_BIT: u32 = <span class="number">1 </span>&lt;&lt; <span class="number">23</span>; <span class="comment">// bit #23
-    </span><span class="kw">const </span>INDEXED_BIT: u32 = <span class="number">1 </span>&lt;&lt; <span class="number">22</span>; <span class="comment">// bit #22
-
-    </span><span class="kw">const </span>TYPE_MASK: u32 = <span class="number">0b1111 </span>&lt;&lt; <span class="number">18</span>; <span class="comment">// 4 bits #21-#18 (if `indexed == 0`)
-    </span><span class="kw">const </span>ANY_TYPE: u32 = <span class="number">0b1111 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>EQ_TYPE: u32 = <span class="number">0b1101 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>I31_TYPE: u32 = <span class="number">0b1000 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>STRUCT_TYPE: u32 = <span class="number">0b1001 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>ARRAY_TYPE: u32 = <span class="number">0b1100 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>FUNC_TYPE: u32 = <span class="number">0b0101 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>NOFUNC_TYPE: u32 = <span class="number">0b0100 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>EXTERN_TYPE: u32 = <span class="number">0b0011 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>NOEXTERN_TYPE: u32 = <span class="number">0b0010 </span>&lt;&lt; <span class="number">18</span>;
-    <span class="kw">const </span>NONE_TYPE: u32 = <span class="number">0b0000 </span>&lt;&lt; <span class="number">18</span>;
-
-    <span class="kw">const </span>KIND_MASK: u32 = <span class="number">0b11 </span>&lt;&lt; <span class="number">20</span>; <span class="comment">// 2 bits #21-#20 (if `indexed == 1`)
-    </span><span class="kw">const </span>STRUCT_KIND: u32 = <span class="number">0b10 </span>&lt;&lt; <span class="number">20</span>;
-    <span class="kw">const </span>ARRAY_KIND: u32 = <span class="number">0b11 </span>&lt;&lt; <span class="number">20</span>;
-    <span class="kw">const </span>FUNC_KIND: u32 = <span class="number">0b01 </span>&lt;&lt; <span class="number">20</span>;
-
-    <span class="kw">const </span>INDEX_MASK: u32 = (<span class="number">1 </span>&lt;&lt; <span class="number">20</span>) - <span class="number">1</span>; <span class="comment">// 20 bits #19-#0 (if `indexed == 1`)
-
-    </span><span class="doccomment">/// A nullable untyped function reference aka `(ref null func)` aka
-    /// `funcref` aka `anyfunc`.
-    </span><span class="kw">pub const </span>FUNCREF: <span class="self">Self </span>= RefType::FUNC.nullable();
-
-    <span class="doccomment">/// A nullable reference to an extern object aka `(ref null extern)` aka
-    /// `externref`.
-    </span><span class="kw">pub const </span>EXTERNREF: <span class="self">Self </span>= RefType::EXTERN.nullable();
-
-    <span class="doccomment">/// A non-nullable untyped function reference aka `(ref func)`.
-    </span><span class="kw">pub const </span>FUNC: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::FUNC_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to an extern object aka `(ref extern)`.
-    </span><span class="kw">pub const </span>EXTERN: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::EXTERN_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to any object aka `(ref any)`.
-    </span><span class="kw">pub const </span>ANY: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::ANY_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to no object aka `(ref none)`.
-    </span><span class="kw">pub const </span>NONE: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::NONE_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to a noextern object aka `(ref noextern)`.
-    </span><span class="kw">pub const </span>NOEXTERN: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::NOEXTERN_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to a nofunc object aka `(ref nofunc)`.
-    </span><span class="kw">pub const </span>NOFUNC: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::NOFUNC_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to an eq object aka `(ref eq)`.
-    </span><span class="kw">pub const </span>EQ: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::EQ_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to a struct aka `(ref struct)`.
-    </span><span class="kw">pub const </span>STRUCT: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::STRUCT_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to an array aka `(ref array)`.
-    </span><span class="kw">pub const </span>ARRAY: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::ARRAY_TYPE);
-
-    <span class="doccomment">/// A non-nullable reference to an i31 object aka `(ref i31)`.
-    </span><span class="kw">pub const </span>I31: <span class="self">Self </span>= RefType::from_u32(<span class="self">Self</span>::I31_TYPE);
-
-    <span class="kw">const fn </span>can_represent_type_index(index: u32) -&gt; bool {
-        index &amp; <span class="self">Self</span>::INDEX_MASK == index
-    }
-
-    <span class="kw">const fn </span>u24_to_u32(bytes: [u8; <span class="number">3</span>]) -&gt; u32 {
-        <span class="kw">let </span>expanded_bytes = [bytes[<span class="number">0</span>], bytes[<span class="number">1</span>], bytes[<span class="number">2</span>], <span class="number">0</span>];
-        u32::from_le_bytes(expanded_bytes)
-    }
-
-    <span class="kw">const fn </span>u32_to_u24(x: u32) -&gt; [u8; <span class="number">3</span>] {
-        <span class="kw">let </span>bytes = x.to_le_bytes();
-        <span class="macro">debug_assert!</span>(bytes[<span class="number">3</span>] == <span class="number">0</span>);
-        [bytes[<span class="number">0</span>], bytes[<span class="number">1</span>], bytes[<span class="number">2</span>]]
-    }
-
-    <span class="attr">#[inline]
-    </span><span class="kw">const fn </span>as_u32(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
-        <span class="self">Self</span>::u24_to_u32(<span class="self">self</span>.<span class="number">0</span>)
-    }
-
-    <span class="attr">#[inline]
-    </span><span class="kw">const fn </span>from_u32(x: u32) -&gt; <span class="self">Self </span>{
-        <span class="macro">debug_assert!</span>(x &amp; (<span class="number">0b11111111 </span>&lt;&lt; <span class="number">24</span>) == <span class="number">0</span>);
-
-        <span class="comment">// if not indexed, type must be any/eq/i31/struct/array/func/extern/nofunc/noextern/none
-        </span><span class="macro">debug_assert!</span>(
-            x &amp; <span class="self">Self</span>::INDEXED_BIT != <span class="number">0
-                </span>|| <span class="macro">matches!</span>(
-                    x &amp; <span class="self">Self</span>::TYPE_MASK,
-                    <span class="self">Self</span>::ANY_TYPE
-                        | <span class="self">Self</span>::EQ_TYPE
-                        | <span class="self">Self</span>::I31_TYPE
-                        | <span class="self">Self</span>::STRUCT_TYPE
-                        | <span class="self">Self</span>::ARRAY_TYPE
-                        | <span class="self">Self</span>::FUNC_TYPE
-                        | <span class="self">Self</span>::NOFUNC_TYPE
-                        | <span class="self">Self</span>::EXTERN_TYPE
-                        | <span class="self">Self</span>::NOEXTERN_TYPE
-                        | <span class="self">Self</span>::NONE_TYPE
-                )
-        );
-        RefType(<span class="self">Self</span>::u32_to_u24(x))
-    }
-
-    <span class="doccomment">/// Create a reference to a typed function with the type at the given index.
-    ///
-    /// Returns `None` when the type index is beyond this crate&#39;s implementation
-    /// limits and therefore is not representable.
-    </span><span class="kw">pub const fn </span>indexed_func(nullable: bool, index: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::indexed(nullable, <span class="self">Self</span>::FUNC_KIND, index)
-    }
-
-    <span class="doccomment">/// Create a reference to an array with the type at the given index.
-    ///
-    /// Returns `None` when the type index is beyond this crate&#39;s implementation
-    /// limits and therefore is not representable.
-    </span><span class="kw">pub const fn </span>indexed_array(nullable: bool, index: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::indexed(nullable, <span class="self">Self</span>::ARRAY_KIND, index)
-    }
-
-    <span class="doccomment">/// Create a reference to a struct with the type at the given index.
-    ///
-    /// Returns `None` when the type index is beyond this crate&#39;s implementation
-    /// limits and therefore is not representable.
-    </span><span class="kw">pub const fn </span>indexed_struct(nullable: bool, index: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="self">Self</span>::indexed(nullable, <span class="self">Self</span>::STRUCT_KIND, index)
-    }
-
-    <span class="doccomment">/// Create a reference to a user defined type at the given index.
-    ///
-    /// Returns `None` when the type index is beyond this crate&#39;s implementation
-    /// limits and therefore is not representable, or when the heap type is not
-    /// a typed array, struct or function.
-    </span><span class="kw">const fn </span>indexed(nullable: bool, kind: u32, index: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">if </span><span class="self">Self</span>::can_represent_type_index(index) {
-            <span class="kw">let </span>nullable32 = <span class="self">Self</span>::NULLABLE_BIT * nullable <span class="kw">as </span>u32;
-            <span class="prelude-val">Some</span>(RefType::from_u32(
-                nullable32 | <span class="self">Self</span>::INDEXED_BIT | kind | index,
-            ))
-        } <span class="kw">else </span>{
-            <span class="prelude-val">None
-        </span>}
-    }
-
-    <span class="doccomment">/// Create a new `RefType`.
-    ///
-    /// Returns `None` when the heap type&#39;s type index (if any) is beyond this
-    /// crate&#39;s implementation limits and therfore is not representable.
-    </span><span class="kw">pub const fn </span>new(nullable: bool, heap_type: HeapType) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="kw">let </span>nullable32 = <span class="self">Self</span>::NULLABLE_BIT * nullable <span class="kw">as </span>u32;
-        <span class="kw">match </span>heap_type {
-            HeapType::Indexed(index) =&gt; RefType::indexed(nullable, <span class="number">0</span>, index), <span class="comment">// 0 bc we don&#39;t know the kind
-            </span>HeapType::Func =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::FUNC_TYPE)),
-            HeapType::Extern =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::EXTERN_TYPE)),
-            HeapType::Any =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::ANY_TYPE)),
-            HeapType::None =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::NONE_TYPE)),
-            HeapType::NoExtern =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::NOEXTERN_TYPE)),
-            HeapType::NoFunc =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::NOFUNC_TYPE)),
-            HeapType::Eq =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::EQ_TYPE)),
-            HeapType::Struct =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::STRUCT_TYPE)),
-            HeapType::Array =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::ARRAY_TYPE)),
-            HeapType::I31 =&gt; <span class="prelude-val">Some</span>(<span class="self">Self</span>::from_u32(nullable32 | <span class="self">Self</span>::I31_TYPE)),
-        }
-    }
-
-    <span class="doccomment">/// Is this a reference to a typed function?
-    </span><span class="kw">pub const fn </span>is_typed_func_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.is_indexed_type_ref() &amp;&amp; <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::KIND_MASK == <span class="self">Self</span>::FUNC_KIND
-    }
-
-    <span class="doccomment">/// Is this a reference to an indexed type?
-    </span><span class="kw">pub const fn </span>is_indexed_type_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::INDEXED_BIT != <span class="number">0
-    </span>}
-
-    <span class="doccomment">/// If this is a reference to a typed function, get its type index.
-    </span><span class="kw">pub const fn </span>type_index(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="kw">if </span><span class="self">self</span>.is_indexed_type_ref() {
-            <span class="prelude-val">Some</span>(<span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::INDEX_MASK)
-        } <span class="kw">else </span>{
-            <span class="prelude-val">None
-        </span>}
-    }
-
-    <span class="doccomment">/// Is this an untyped function reference aka `(ref null func)` aka `funcref` aka `anyfunc`?
-    </span><span class="kw">pub const fn </span>is_func_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        !<span class="self">self</span>.is_indexed_type_ref() &amp;&amp; <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::TYPE_MASK == <span class="self">Self</span>::FUNC_TYPE
-    }
-
-    <span class="doccomment">/// Is this a `(ref null extern)` aka `externref`?
-    </span><span class="kw">pub const fn </span>is_extern_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        !<span class="self">self</span>.is_indexed_type_ref() &amp;&amp; <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::TYPE_MASK == <span class="self">Self</span>::EXTERN_TYPE
-    }
-
-    <span class="doccomment">/// Is this ref type nullable?
-    </span><span class="kw">pub const fn </span>is_nullable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.as_u32() &amp; <span class="self">Self</span>::NULLABLE_BIT != <span class="number">0
-    </span>}
-
-    <span class="doccomment">/// Get the non-nullable version of this ref type.
-    </span><span class="kw">pub const fn </span>as_non_null(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::from_u32(<span class="self">self</span>.as_u32() &amp; !<span class="self">Self</span>::NULLABLE_BIT)
-    }
-
-    <span class="doccomment">/// Get the non-nullable version of this ref type.
-    </span><span class="kw">pub const fn </span>nullable(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
-        <span class="self">Self</span>::from_u32(<span class="self">self</span>.as_u32() | <span class="self">Self</span>::NULLABLE_BIT)
-    }
-
-    <span class="doccomment">/// Get the heap type that this is a reference to.
-    </span><span class="kw">pub fn </span>heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; HeapType {
-        <span class="kw">let </span>s = <span class="self">self</span>.as_u32();
-        <span class="kw">if </span><span class="self">self</span>.is_indexed_type_ref() {
-            HeapType::Indexed(<span class="self">self</span>.type_index().unwrap())
-        } <span class="kw">else </span>{
-            <span class="kw">match </span>s &amp; <span class="self">Self</span>::TYPE_MASK {
-                <span class="self">Self</span>::FUNC_TYPE =&gt; HeapType::Func,
-                <span class="self">Self</span>::EXTERN_TYPE =&gt; HeapType::Extern,
-                <span class="self">Self</span>::ANY_TYPE =&gt; HeapType::Any,
-                <span class="self">Self</span>::NONE_TYPE =&gt; HeapType::None,
-                <span class="self">Self</span>::NOEXTERN_TYPE =&gt; HeapType::NoExtern,
-                <span class="self">Self</span>::NOFUNC_TYPE =&gt; HeapType::NoFunc,
-                <span class="self">Self</span>::EQ_TYPE =&gt; HeapType::Eq,
-                <span class="self">Self</span>::STRUCT_TYPE =&gt; HeapType::Struct,
-                <span class="self">Self</span>::ARRAY_TYPE =&gt; HeapType::Array,
-                <span class="self">Self</span>::I31_TYPE =&gt; HeapType::I31,
-                <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
-            }
-        }
-    }
-
-    <span class="comment">// Note that this is similar to `Display for RefType` except that it has
-    // the indexes stubbed out.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>wat(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str {
-        <span class="kw">match </span>(<span class="self">self</span>.is_nullable(), <span class="self">self</span>.heap_type()) {
-            (<span class="bool-val">true</span>, HeapType::Func) =&gt; <span class="string">&quot;funcref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Extern) =&gt; <span class="string">&quot;externref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Indexed(<span class="kw">_</span>)) =&gt; <span class="string">&quot;(ref null $type)&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Any) =&gt; <span class="string">&quot;anyref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::None) =&gt; <span class="string">&quot;nullref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::NoExtern) =&gt; <span class="string">&quot;nullexternref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::NoFunc) =&gt; <span class="string">&quot;nullfuncref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Eq) =&gt; <span class="string">&quot;eqref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Struct) =&gt; <span class="string">&quot;structref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Array) =&gt; <span class="string">&quot;arrayref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::I31) =&gt; <span class="string">&quot;i31ref&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Func) =&gt; <span class="string">&quot;(ref func)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Extern) =&gt; <span class="string">&quot;(ref extern)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Indexed(<span class="kw">_</span>)) =&gt; <span class="string">&quot;(ref $type)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Any) =&gt; <span class="string">&quot;(ref any)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::None) =&gt; <span class="string">&quot;(ref none)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::NoExtern) =&gt; <span class="string">&quot;(ref noextern)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::NoFunc) =&gt; <span class="string">&quot;(ref nofunc)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Eq) =&gt; <span class="string">&quot;(ref eq)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Struct) =&gt; <span class="string">&quot;(ref struct)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Array) =&gt; <span class="string">&quot;(ref array)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::I31) =&gt; <span class="string">&quot;(ref i31)&quot;</span>,
-        }
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>RefType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="self">self </span>== other
-            || ((other.is_nullable() || !<span class="self">self</span>.is_nullable())
-                &amp;&amp; <span class="self">self</span>.heap_type().matches(<span class="kw-2">&amp;</span>other.heap_type(), type_at))
-    }
-}
-
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FromReader&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>RefType {
     <span class="kw">fn </span>from_reader(reader: <span class="kw-2">&amp;mut </span>BinaryReader&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
         <span class="kw">match </span>reader.read()<span class="question-mark">? </span>{
@@ -1806,119 +2749,6 @@
                     .ok_or_else(|| <span class="kw">crate</span>::BinaryReaderError::new(<span class="string">&quot;type index too large&quot;</span>, pos))
             }
             <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(reader.original_position(), <span class="string">&quot;malformed reference type&quot;</span>),
-        }
-    }
-}
-
-<span class="kw">impl </span>fmt::Display <span class="kw">for </span>RefType {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; fmt::Result {
-        <span class="comment">// Note that this is similar to `RefType::wat` except that it has the
-        // indexes filled out.
-        </span><span class="kw">let </span>s = <span class="kw">match </span>(<span class="self">self</span>.is_nullable(), <span class="self">self</span>.heap_type()) {
-            (<span class="bool-val">true</span>, HeapType::Func) =&gt; <span class="string">&quot;funcref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Extern) =&gt; <span class="string">&quot;externref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Indexed(i)) =&gt; <span class="kw">return </span><span class="macro">write!</span>(f, <span class="string">&quot;(ref null {i})&quot;</span>),
-            (<span class="bool-val">true</span>, HeapType::Any) =&gt; <span class="string">&quot;anyref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::None) =&gt; <span class="string">&quot;nullref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::NoExtern) =&gt; <span class="string">&quot;nullexternref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::NoFunc) =&gt; <span class="string">&quot;nullfuncref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Eq) =&gt; <span class="string">&quot;eqref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Struct) =&gt; <span class="string">&quot;structref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::Array) =&gt; <span class="string">&quot;arrayref&quot;</span>,
-            (<span class="bool-val">true</span>, HeapType::I31) =&gt; <span class="string">&quot;i31ref&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Func) =&gt; <span class="string">&quot;(ref func)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Extern) =&gt; <span class="string">&quot;(ref extern)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Indexed(i)) =&gt; <span class="kw">return </span><span class="macro">write!</span>(f, <span class="string">&quot;(ref {i})&quot;</span>),
-            (<span class="bool-val">false</span>, HeapType::Any) =&gt; <span class="string">&quot;(ref any)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::None) =&gt; <span class="string">&quot;(ref none)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::NoExtern) =&gt; <span class="string">&quot;(ref noextern)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::NoFunc) =&gt; <span class="string">&quot;(ref nofunc)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Eq) =&gt; <span class="string">&quot;(ref eq)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Struct) =&gt; <span class="string">&quot;(ref struct)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::Array) =&gt; <span class="string">&quot;(ref array)&quot;</span>,
-            (<span class="bool-val">false</span>, HeapType::I31) =&gt; <span class="string">&quot;(ref i31)&quot;</span>,
-        };
-        f.write_str(s)
-    }
-}
-
-<span class="doccomment">/// A heap type from function references. When the proposal is disabled, Index
-/// is an invalid type.
-</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-</span><span class="kw">pub enum </span>HeapType {
-    <span class="doccomment">/// User defined type at the given index.
-    </span>Indexed(u32),
-    <span class="doccomment">/// Untyped (any) function.
-    </span>Func,
-    <span class="doccomment">/// External heap type.
-    </span>Extern,
-    <span class="doccomment">/// The `any` heap type. The common supertype (a.k.a. top) of all internal types.
-    </span>Any,
-    <span class="doccomment">/// The `none` heap type. The common subtype (a.k.a. bottom) of all internal types.
-    </span><span class="prelude-val">None</span>,
-    <span class="doccomment">/// The `noextern` heap type. The common subtype (a.k.a. bottom) of all external types.
-    </span>NoExtern,
-    <span class="doccomment">/// The `nofunc` heap type. The common subtype (a.k.a. bottom) of all function types.
-    </span>NoFunc,
-    <span class="doccomment">/// The `eq` heap type. The common supertype of all referenceable types on which comparison
-    /// (ref.eq) is allowed.
-    </span>Eq,
-    <span class="doccomment">/// The `struct` heap type. The common supertype of all struct types.
-    </span>Struct,
-    <span class="doccomment">/// The `array` heap type. The common supertype of all array types.
-    </span>Array,
-    <span class="doccomment">/// The i31 heap type.
-    </span>I31,
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>HeapType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="kw">if </span><span class="self">self </span>== other {
-            <span class="kw">return </span><span class="bool-val">true</span>;
-        }
-
-        <span class="kw">use </span>HeapType <span class="kw">as </span>HT;
-        <span class="kw">match </span>(<span class="self">self</span>, other) {
-            (HT::Eq | HT::I31 | HT::Struct | HT::Array | HT::None, HT::Any) =&gt; <span class="bool-val">true</span>,
-            (HT::I31 | HT::Struct | HT::Array | HT::None, HT::Eq) =&gt; <span class="bool-val">true</span>,
-            (HT::NoExtern, HT::Extern) =&gt; <span class="bool-val">true</span>,
-            (HT::NoFunc, HT::Func) =&gt; <span class="bool-val">true</span>,
-            (HT::None, HT::I31 | HT::Array | HT::Struct) =&gt; <span class="bool-val">true</span>,
-
-            (HT::Indexed(a), HT::Eq | HT::Any) =&gt; <span class="macro">matches!</span>(
-                type_at(<span class="kw-2">*</span>a).structural_type,
-                StructuralType::Array(<span class="kw">_</span>) | StructuralType::Struct(<span class="kw">_</span>)
-            ),
-
-            (HT::Indexed(a), HT::Struct) =&gt; {
-                <span class="macro">matches!</span>(type_at(<span class="kw-2">*</span>a).structural_type, StructuralType::Struct(<span class="kw">_</span>))
-            }
-
-            (HT::Indexed(a), HT::Array) =&gt; {
-                <span class="macro">matches!</span>(type_at(<span class="kw-2">*</span>a).structural_type, StructuralType::Array(<span class="kw">_</span>))
-            }
-
-            (HT::Indexed(a), HT::Func) =&gt; {
-                <span class="macro">matches!</span>(type_at(<span class="kw-2">*</span>a).structural_type, StructuralType::Func(<span class="kw">_</span>))
-            }
-
-            (HT::Indexed(a), HT::Indexed(b)) =&gt; type_at(<span class="kw-2">*</span>a)
-                .structural_type
-                .matches(<span class="kw-2">&amp;</span>type_at(<span class="kw-2">*</span>b).structural_type, type_at),
-
-            (HT::None, HT::Indexed(b)) =&gt; <span class="macro">matches!</span>(
-                type_at(<span class="kw-2">*</span>b).structural_type,
-                StructuralType::Array(<span class="kw">_</span>) | StructuralType::Struct(<span class="kw">_</span>)
-            ),
-
-            (HT::NoFunc, HT::Indexed(b)) =&gt; {
-                <span class="macro">matches!</span>(type_at(<span class="kw-2">*</span>b).structural_type, StructuralType::Func(<span class="kw">_</span>))
-            }
-
-            <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
         }
     }
 }
@@ -1973,278 +2803,15 @@
                         <span class="macro">bail!</span>(reader.original_position(), <span class="string">&quot;invalid indexed ref heap type&quot;</span>);
                     }
                 };
-                <span class="prelude-val">Ok</span>(HeapType::Indexed(idx))
+                <span class="kw">let </span>idx = PackedIndex::from_module_index(idx).ok_or_else(|| {
+                    BinaryReaderError::new(
+                        <span class="string">&quot;type index greater than implementation limits&quot;</span>,
+                        reader.original_position(),
+                    )
+                })<span class="question-mark">?</span>;
+                <span class="prelude-val">Ok</span>(HeapType::Concrete(idx.unpack()))
             }
         }
-    }
-}
-
-<span class="doccomment">/// Represents a structural type in a WebAssembly module.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub enum </span>StructuralType {
-    <span class="doccomment">/// The type is for a function.
-    </span>Func(FuncType),
-    <span class="doccomment">/// The type is for an array.
-    </span>Array(ArrayType),
-    <span class="doccomment">/// The type is for a struct.
-    </span>Struct(StructType),
-}
-
-<span class="doccomment">/// Represents a subtype of possible other types in a WebAssembly module.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub struct </span>SubType {
-    <span class="doccomment">/// Is the subtype final.
-    </span><span class="kw">pub </span>is_final: bool,
-    <span class="doccomment">/// The list of supertype indexes. As of GC MVP, there can be at most one supertype.
-    </span><span class="kw">pub </span>supertype_idx: <span class="prelude-ty">Option</span>&lt;u32&gt;,
-    <span class="doccomment">/// The structural type of the subtype.
-    </span><span class="kw">pub </span>structural_type: StructuralType,
-}
-
-<span class="doccomment">/// Represents a recursive type group in a WebAssembly module.
-</span><span class="attr">#[derive(Debug, Clone)]
-</span><span class="kw">pub enum </span>RecGroup {
-    <span class="doccomment">/// The list of subtypes in the recursive type group.
-    </span>Many(Vec&lt;SubType&gt;),
-    <span class="doccomment">/// A single subtype in the recursive type group.
-    </span>Single(SubType),
-}
-
-<span class="kw">impl </span>RecGroup {
-    <span class="doccomment">/// Returns the list of subtypes in the recursive type group.
-    </span><span class="kw">pub fn </span>types(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[SubType] {
-        <span class="kw">match </span><span class="self">self </span>{
-            RecGroup::Many(types) =&gt; types,
-            RecGroup::Single(ty) =&gt; slice::from_ref(ty),
-        }
-    }
-
-    <span class="doccomment">/// Return an iterator over the types in this rec group, giving ownership of
-    /// the types.
-    </span><span class="kw">pub fn </span>into_types(<span class="self">self</span>) -&gt; <span class="kw">impl </span>ExactSizeIterator&lt;Item = SubType&gt; {
-        <span class="kw">return match </span><span class="self">self </span>{
-            RecGroup::Single(ty) =&gt; IntoIter::Single(<span class="prelude-val">Some</span>(ty)),
-            RecGroup::Many(tys) =&gt; IntoIter::Many(tys.into_iter()),
-        };
-
-        <span class="kw">enum </span>IntoIter {
-            Single(<span class="prelude-ty">Option</span>&lt;SubType&gt;),
-            Many(std::vec::IntoIter&lt;SubType&gt;),
-        }
-
-        <span class="kw">impl </span>Iterator <span class="kw">for </span>IntoIter {
-            <span class="kw">type </span>Item = SubType;
-
-            <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
-                <span class="kw">match </span><span class="self">self </span>{
-                    IntoIter::Single(ty) =&gt; ty.take(),
-                    IntoIter::Many(tys) =&gt; tys.next(),
-                }
-            }
-
-            <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
-                <span class="kw">match </span><span class="self">self </span>{
-                    IntoIter::Single(<span class="prelude-val">None</span>) =&gt; (<span class="number">0</span>, <span class="prelude-val">Some</span>(<span class="number">0</span>)),
-                    IntoIter::Single(<span class="prelude-val">Some</span>(<span class="kw">_</span>)) =&gt; (<span class="number">1</span>, <span class="prelude-val">Some</span>(<span class="number">1</span>)),
-                    IntoIter::Many(tys) =&gt; tys.size_hint(),
-                }
-            }
-        }
-
-        <span class="kw">impl </span>ExactSizeIterator <span class="kw">for </span>IntoIter {}
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>SubType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        !other.is_final
-            &amp;&amp; <span class="self">self
-                </span>.structural_type
-                .matches(<span class="kw-2">&amp;</span>other.structural_type, type_at)
-    }
-}
-
-<span class="doccomment">/// Represents a type of a function in a WebAssembly module.
-</span><span class="attr">#[derive(Clone, Eq, PartialEq, Hash)]
-</span><span class="kw">pub struct </span>FuncType {
-    <span class="doccomment">/// The combined parameters and result types.
-    </span>params_results: Box&lt;[ValType]&gt;,
-    <span class="doccomment">/// The number of parameter types.
-    </span>len_params: usize,
-}
-
-<span class="doccomment">/// Represents a type of an array in a WebAssembly module.
-</span><span class="attr">#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-</span><span class="kw">pub struct </span>ArrayType(<span class="kw">pub </span>FieldType);
-
-<span class="doccomment">/// Represents a field type of an array or a struct.
-</span><span class="attr">#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-</span><span class="kw">pub struct </span>FieldType {
-    <span class="doccomment">/// Array element type.
-    </span><span class="kw">pub </span>element_type: StorageType,
-    <span class="doccomment">/// Are elements mutable.
-    </span><span class="kw">pub </span>mutable: bool,
-}
-
-<span class="doccomment">/// Represents a type of a struct in a WebAssembly module.
-</span><span class="attr">#[derive(Debug, Clone, Eq, PartialEq, Hash)]
-</span><span class="kw">pub struct </span>StructType {
-    <span class="doccomment">/// Struct fields.
-    </span><span class="kw">pub </span>fields: Box&lt;[FieldType]&gt;,
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>StructuralType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="kw">match </span>(<span class="self">self</span>, other) {
-            (StructuralType::Func(a), StructuralType::Func(b)) =&gt; a.matches(b, type_at),
-            (StructuralType::Array(a), StructuralType::Array(b)) =&gt; a.matches(b, type_at),
-            (StructuralType::Struct(a), StructuralType::Struct(b)) =&gt; a.matches(b, type_at),
-            <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
-        }
-    }
-}
-
-<span class="kw">impl </span>Debug <span class="kw">for </span>FuncType {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>std::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; std::fmt::Result {
-        f.debug_struct(<span class="string">&quot;FuncType&quot;</span>)
-            .field(<span class="string">&quot;params&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.params())
-            .field(<span class="string">&quot;returns&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.results())
-            .finish()
-    }
-}
-
-<span class="kw">impl </span>FuncType {
-    <span class="doccomment">/// Creates a new [`FuncType`] from the given `params` and `results`.
-    </span><span class="kw">pub fn </span>new&lt;P, R&gt;(params: P, results: R) -&gt; <span class="self">Self
-    </span><span class="kw">where
-        </span>P: IntoIterator&lt;Item = ValType&gt;,
-        R: IntoIterator&lt;Item = ValType&gt;,
-    {
-        <span class="kw">let </span><span class="kw-2">mut </span>buffer = params.into_iter().collect::&lt;Vec&lt;<span class="kw">_</span>&gt;&gt;();
-        <span class="kw">let </span>len_params = buffer.len();
-        buffer.extend(results);
-        <span class="self">Self </span>{
-            params_results: buffer.into(),
-            len_params,
-        }
-    }
-
-    <span class="doccomment">/// Creates a new [`FuncType`] fom its raw parts.
-    ///
-    /// # Panics
-    ///
-    /// If `len_params` is greater than the length of `params_results` combined.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>from_raw_parts(params_results: Box&lt;[ValType]&gt;, len_params: usize) -&gt; <span class="self">Self </span>{
-        <span class="macro">assert!</span>(len_params &lt;= params_results.len());
-        <span class="self">Self </span>{
-            params_results,
-            len_params,
-        }
-    }
-
-    <span class="doccomment">/// Returns a shared slice to the parameter types of the [`FuncType`].
-    </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>params(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[ValType] {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.params_results[..<span class="self">self</span>.len_params]
-    }
-
-    <span class="doccomment">/// Returns a shared slice to the result types of the [`FuncType`].
-    </span><span class="attr">#[inline]
-    </span><span class="kw">pub fn </span>results(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>[ValType] {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.params_results[<span class="self">self</span>.len_params..]
-    }
-
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>desc(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
-        <span class="kw">let </span><span class="kw-2">mut </span>s = String::new();
-        s.push_str(<span class="string">&quot;[&quot;</span>);
-        <span class="kw">for </span>(i, param) <span class="kw">in </span><span class="self">self</span>.params().iter().enumerate() {
-            <span class="kw">if </span>i &gt; <span class="number">0 </span>{
-                s.push_str(<span class="string">&quot; &quot;</span>);
-            }
-            <span class="macro">write!</span>(s, <span class="string">&quot;{param}&quot;</span>).unwrap();
-        }
-        s.push_str(<span class="string">&quot;] -&gt; [&quot;</span>);
-        <span class="kw">for </span>(i, result) <span class="kw">in </span><span class="self">self</span>.results().iter().enumerate() {
-            <span class="kw">if </span>i &gt; <span class="number">0 </span>{
-                s.push_str(<span class="string">&quot; &quot;</span>);
-            }
-            <span class="macro">write!</span>(s, <span class="string">&quot;{result}&quot;</span>).unwrap();
-        }
-        s.push_str(<span class="string">&quot;]&quot;</span>);
-        s
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>FuncType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="self">self</span>.params().len() == other.params().len()
-            &amp;&amp; <span class="self">self</span>.results().len() == other.results().len()
-            <span class="comment">// Note: per GC spec, function subtypes are contravariant in their parameter types.
-            // Also see https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)
-            </span>&amp;&amp; <span class="self">self
-                </span>.params()
-                .iter()
-                .zip(other.params())
-                .all(|(a, b)| b.matches(a, type_at))
-            &amp;&amp; <span class="self">self
-                </span>.results()
-                .iter()
-                .zip(other.results())
-                .all(|(a, b)| a.matches(b, type_at))
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>ArrayType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="self">self</span>.<span class="number">0</span>.matches(<span class="kw-2">&amp;</span>other.<span class="number">0</span>, type_at)
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>FieldType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        (other.mutable || !<span class="self">self</span>.mutable) &amp;&amp; <span class="self">self</span>.element_type.matches(<span class="kw-2">&amp;</span>other.element_type, type_at)
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>StorageType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="kw">match </span>(<span class="self">self</span>, other) {
-            (<span class="self">Self</span>::Val(a), <span class="self">Self</span>::Val(b)) =&gt; a.matches(b, type_at),
-            (a @ (<span class="self">Self</span>::I8 | <span class="self">Self</span>::I16 | <span class="self">Self</span>::Val(<span class="kw">_</span>)), b) =&gt; a == b,
-        }
-    }
-}
-
-<span class="kw">impl </span>Matches <span class="kw">for </span>StructType {
-    <span class="kw">fn </span>matches&lt;<span class="lifetime">&#39;a</span>, F&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>, type_at: <span class="kw-2">&amp;</span>F) -&gt; bool
-    <span class="kw">where
-        </span>F: Fn(u32) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType,
-    {
-        <span class="comment">// Note: Structure types support width and depth subtyping.
-        </span><span class="self">self</span>.fields.len() &gt;= other.fields.len()
-            &amp;&amp; <span class="self">self
-                </span>.fields
-                .iter()
-                .zip(other.fields.iter())
-                .all(|(a, b)| a.matches(b, type_at))
     }
 }
 
@@ -2335,16 +2902,17 @@
     </span><span class="kw">pub fn </span>into_iter_err_on_gc_types(<span class="self">self</span>) -&gt; <span class="kw">impl </span>Iterator&lt;Item = <span class="prelude-ty">Result</span>&lt;FuncType&gt;&gt; + <span class="lifetime">&#39;a </span>{
         <span class="self">self</span>.into_iter_with_offsets().map(|item| {
             <span class="kw">let </span>(offset, group) = item<span class="question-mark">?</span>;
-            <span class="kw">let </span>ty = <span class="kw">match </span>group {
-                RecGroup::Single(ty) =&gt; ty,
-                RecGroup::Many(<span class="kw">_</span>) =&gt; <span class="macro">bail!</span>(offset, <span class="string">&quot;gc proposal not supported&quot;</span>),
+            <span class="kw">let </span><span class="kw-2">mut </span>types = group.into_types();
+            <span class="kw">let </span>ty = <span class="kw">match </span>(types.next(), types.next()) {
+                (<span class="prelude-val">Some</span>(ty), <span class="prelude-val">None</span>) =&gt; ty,
+                <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(offset, <span class="string">&quot;gc proposal not supported&quot;</span>),
             };
             <span class="kw">if </span>!ty.is_final || ty.supertype_idx.is_some() {
                 <span class="macro">bail!</span>(offset, <span class="string">&quot;gc proposal not supported&quot;</span>);
             }
-            <span class="kw">match </span>ty.structural_type {
-                StructuralType::Func(f) =&gt; <span class="prelude-val">Ok</span>(f),
-                StructuralType::Array(<span class="kw">_</span>) | StructuralType::Struct(<span class="kw">_</span>) =&gt; {
+            <span class="kw">match </span>ty.composite_type {
+                CompositeType::Func(f) =&gt; <span class="prelude-val">Ok</span>(f),
+                CompositeType::Array(<span class="kw">_</span>) | CompositeType::Struct(<span class="kw">_</span>) =&gt; {
                     <span class="macro">bail!</span>(offset, <span class="string">&quot;gc proposal not supported&quot;</span>);
                 }
             }
@@ -2352,34 +2920,34 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FromReader&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>StructuralType {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FromReader&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>CompositeType {
     <span class="kw">fn </span>from_reader(reader: <span class="kw-2">&amp;mut </span>BinaryReader&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        read_structural_type(reader.read_u8()<span class="question-mark">?</span>, reader)
+        read_composite_type(reader.read_u8()<span class="question-mark">?</span>, reader)
     }
 }
 
-<span class="kw">fn </span>read_structural_type(
+<span class="kw">fn </span>read_composite_type(
     opcode: u8,
     reader: <span class="kw-2">&amp;mut </span>BinaryReader,
-) -&gt; <span class="prelude-ty">Result</span>&lt;StructuralType, BinaryReaderError&gt; {
+) -&gt; <span class="prelude-ty">Result</span>&lt;CompositeType, BinaryReaderError&gt; {
     <span class="prelude-val">Ok</span>(<span class="kw">match </span>opcode {
-        <span class="number">0x60 </span>=&gt; StructuralType::Func(reader.read()<span class="question-mark">?</span>),
-        <span class="number">0x5e </span>=&gt; StructuralType::Array(reader.read()<span class="question-mark">?</span>),
-        <span class="number">0x5f </span>=&gt; StructuralType::Struct(reader.read()<span class="question-mark">?</span>),
+        <span class="number">0x60 </span>=&gt; CompositeType::Func(reader.read()<span class="question-mark">?</span>),
+        <span class="number">0x5e </span>=&gt; CompositeType::Array(reader.read()<span class="question-mark">?</span>),
+        <span class="number">0x5f </span>=&gt; CompositeType::Struct(reader.read()<span class="question-mark">?</span>),
         x =&gt; <span class="kw">return </span>reader.invalid_leading_byte(x, <span class="string">&quot;type&quot;</span>),
     })
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>&gt; FromReader&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>RecGroup {
     <span class="kw">fn </span>from_reader(reader: <span class="kw-2">&amp;mut </span>BinaryReader&lt;<span class="lifetime">&#39;a</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>&gt; {
-        <span class="prelude-val">Ok</span>(<span class="kw">match </span>reader.peek()<span class="question-mark">? </span>{
+        <span class="kw">match </span>reader.peek()<span class="question-mark">? </span>{
             <span class="number">0x4e </span>=&gt; {
                 reader.read_u8()<span class="question-mark">?</span>;
                 <span class="kw">let </span>types = reader.read_iter(MAX_WASM_TYPES, <span class="string">&quot;rec group types&quot;</span>)<span class="question-mark">?</span>;
-                RecGroup::Many(types.collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>)
+                <span class="prelude-val">Ok</span>(RecGroup::explicit(types.collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>&gt;&gt;()<span class="question-mark">?</span>))
             }
-            <span class="kw">_ </span>=&gt; RecGroup::Single(reader.read()<span class="question-mark">?</span>),
-        })
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">Ok</span>(RecGroup::implicit(reader.read()<span class="question-mark">?</span>)),
+        }
     }
 }
 
@@ -2396,16 +2964,28 @@
                         pos,
                     ));
                 }
+                <span class="kw">let </span>supertype_idx = idxs
+                    .first()
+                    .copied()
+                    .map(|idx| {
+                        PackedIndex::from_module_index(idx).ok_or_else(|| {
+                            BinaryReaderError::new(
+                                <span class="string">&quot;type index greater than implementation limits&quot;</span>,
+                                reader.original_position(),
+                            )
+                        })
+                    })
+                    .transpose()<span class="question-mark">?</span>;
                 SubType {
                     is_final: opcode == <span class="number">0x4f</span>,
-                    supertype_idx: idxs.first().copied(),
-                    structural_type: read_structural_type(reader.read_u8()<span class="question-mark">?</span>, reader)<span class="question-mark">?</span>,
+                    supertype_idx,
+                    composite_type: read_composite_type(reader.read_u8()<span class="question-mark">?</span>, reader)<span class="question-mark">?</span>,
                 }
             }
             opcode =&gt; SubType {
                 is_final: <span class="bool-val">true</span>,
                 supertype_idx: <span class="prelude-val">None</span>,
-                structural_type: read_structural_type(opcode, reader)<span class="question-mark">?</span>,
+                composite_type: read_composite_type(opcode, reader)<span class="question-mark">?</span>,
             },
         })
     }

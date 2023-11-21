@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-gossipsub-0.45.2/src/config.rs`."><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_gossipsub" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_gossipsub/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-gossipsub-0.46.0/src/config.rs`."><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_gossipsub" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_gossipsub/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -981,64 +981,6 @@
 <a href="#981" id="981">981</a>
 <a href="#982" id="982">982</a>
 <a href="#983" id="983">983</a>
-<a href="#984" id="984">984</a>
-<a href="#985" id="985">985</a>
-<a href="#986" id="986">986</a>
-<a href="#987" id="987">987</a>
-<a href="#988" id="988">988</a>
-<a href="#989" id="989">989</a>
-<a href="#990" id="990">990</a>
-<a href="#991" id="991">991</a>
-<a href="#992" id="992">992</a>
-<a href="#993" id="993">993</a>
-<a href="#994" id="994">994</a>
-<a href="#995" id="995">995</a>
-<a href="#996" id="996">996</a>
-<a href="#997" id="997">997</a>
-<a href="#998" id="998">998</a>
-<a href="#999" id="999">999</a>
-<a href="#1000" id="1000">1000</a>
-<a href="#1001" id="1001">1001</a>
-<a href="#1002" id="1002">1002</a>
-<a href="#1003" id="1003">1003</a>
-<a href="#1004" id="1004">1004</a>
-<a href="#1005" id="1005">1005</a>
-<a href="#1006" id="1006">1006</a>
-<a href="#1007" id="1007">1007</a>
-<a href="#1008" id="1008">1008</a>
-<a href="#1009" id="1009">1009</a>
-<a href="#1010" id="1010">1010</a>
-<a href="#1011" id="1011">1011</a>
-<a href="#1012" id="1012">1012</a>
-<a href="#1013" id="1013">1013</a>
-<a href="#1014" id="1014">1014</a>
-<a href="#1015" id="1015">1015</a>
-<a href="#1016" id="1016">1016</a>
-<a href="#1017" id="1017">1017</a>
-<a href="#1018" id="1018">1018</a>
-<a href="#1019" id="1019">1019</a>
-<a href="#1020" id="1020">1020</a>
-<a href="#1021" id="1021">1021</a>
-<a href="#1022" id="1022">1022</a>
-<a href="#1023" id="1023">1023</a>
-<a href="#1024" id="1024">1024</a>
-<a href="#1025" id="1025">1025</a>
-<a href="#1026" id="1026">1026</a>
-<a href="#1027" id="1027">1027</a>
-<a href="#1028" id="1028">1028</a>
-<a href="#1029" id="1029">1029</a>
-<a href="#1030" id="1030">1030</a>
-<a href="#1031" id="1031">1031</a>
-<a href="#1032" id="1032">1032</a>
-<a href="#1033" id="1033">1033</a>
-<a href="#1034" id="1034">1034</a>
-<a href="#1035" id="1035">1035</a>
-<a href="#1036" id="1036">1036</a>
-<a href="#1037" id="1037">1037</a>
-<a href="#1038" id="1038">1038</a>
-<a href="#1039" id="1039">1039</a>
-<a href="#1040" id="1040">1040</a>
-<a href="#1041" id="1041">1041</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2020 Sigma Prime Pty Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1063,8 +1005,9 @@
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::time::Duration;
 
+<span class="kw">use </span><span class="kw">crate</span>::error::ConfigBuilderError;
 <span class="kw">use </span><span class="kw">crate</span>::protocol::{ProtocolConfig, ProtocolId, FLOODSUB_PROTOCOL};
-<span class="kw">use </span><span class="kw">crate</span>::types::{FastMessageId, Message, MessageId, PeerKind, RawMessage};
+<span class="kw">use </span><span class="kw">crate</span>::types::{Message, MessageId, PeerKind};
 
 <span class="kw">use </span>libp2p_identity::PeerId;
 <span class="kw">use </span>libp2p_swarm::StreamProtocol;
@@ -1115,11 +1058,9 @@
     heartbeat_interval: Duration,
     fanout_ttl: Duration,
     check_explicit_peers_ticks: u64,
-    idle_timeout: Duration,
     duplicate_cache_time: Duration,
     validate_messages: bool,
     message_id_fn: Arc&lt;<span class="kw">dyn </span>Fn(<span class="kw-2">&amp;</span>Message) -&gt; MessageId + Send + Sync + <span class="lifetime">&#39;static</span>&gt;,
-    fast_message_id_fn: <span class="prelude-ty">Option</span>&lt;Arc&lt;<span class="kw">dyn </span>Fn(<span class="kw-2">&amp;</span>RawMessage) -&gt; FastMessageId + Send + Sync + <span class="lifetime">&#39;static</span>&gt;&gt;,
     allow_self_origin: bool,
     do_px: bool,
     prune_peers: usize,
@@ -1224,16 +1165,6 @@
         <span class="self">self</span>.protocol.max_transmit_size
     }
 
-    <span class="doccomment">/// The time a connection is maintained to a peer without being in the mesh and without
-    /// send/receiving a message from. Connections that idle beyond this timeout are disconnected.
-    /// Default is 120 seconds.
-    </span><span class="attr">#[deprecated(
-        note = <span class="string">&quot;Set a global idle connection timeout via `SwarmBuilder::idle_connection_timeout` instead.&quot;
-    </span>)]
-    </span><span class="kw">pub fn </span>idle_timeout(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Duration {
-        <span class="self">self</span>.idle_timeout
-    }
-
     <span class="doccomment">/// Duplicates are prevented by storing message id&#39;s of known messages in an LRU time cache.
     /// This settings sets the time period that messages are stored in the cache. Duplicates can be
     /// received if duplicate messages are sent at a time greater than this setting apart. The
@@ -1267,20 +1198,6 @@
     /// the message id.
     </span><span class="kw">pub fn </span>message_id(<span class="kw-2">&amp;</span><span class="self">self</span>, message: <span class="kw-2">&amp;</span>Message) -&gt; MessageId {
         (<span class="self">self</span>.message_id_fn)(message)
-    }
-
-    <span class="doccomment">/// A user-defined optional function that computes fast ids from raw messages. This can be used
-    /// to avoid possibly expensive transformations from [`RawMessage`] to
-    /// [`Message`] for duplicates. Two semantically different messages must always
-    /// have different fast message ids, but it is allowed that two semantically identical messages
-    /// have different fast message ids as long as the message_id_fn produces the same id for them.
-    ///
-    /// The function takes a [`RawMessage`] as input and outputs a String to be
-    /// interpreted as the fast message id. Default is None.
-    </span><span class="kw">pub fn </span>fast_message_id(<span class="kw-2">&amp;</span><span class="self">self</span>, message: <span class="kw-2">&amp;</span>RawMessage) -&gt; <span class="prelude-ty">Option</span>&lt;FastMessageId&gt; {
-        <span class="self">self</span>.fast_message_id_fn
-            .as_ref()
-            .map(|fast_message_id_fn| fast_message_id_fn(message))
     }
 
     <span class="doccomment">/// By default, gossipsub will reject messages that are sent to us that have the same message
@@ -1450,7 +1367,6 @@
                 heartbeat_interval: Duration::from_secs(<span class="number">1</span>),
                 fanout_ttl: Duration::from_secs(<span class="number">60</span>),
                 check_explicit_peers_ticks: <span class="number">300</span>,
-                idle_timeout: Duration::from_secs(<span class="number">120</span>),
                 duplicate_cache_time: Duration::from_secs(<span class="number">60</span>),
                 validate_messages: <span class="bool-val">false</span>,
                 message_id_fn: Arc::new(|message| {
@@ -1467,7 +1383,6 @@
                         .push_str(<span class="kw-2">&amp;</span>message.sequence_number.unwrap_or_default().to_string());
                     MessageId::from(source_string)
                 }),
-                fast_message_id_fn: <span class="prelude-val">None</span>,
                 allow_self_origin: <span class="bool-val">false</span>,
                 do_px: <span class="bool-val">false</span>,
                 prune_peers: <span class="number">0</span>, <span class="comment">// NOTE: Increasing this currently has little effect until Signed records are implemented.
@@ -1645,14 +1560,6 @@
         <span class="self">self
     </span>}
 
-    <span class="doccomment">/// The time a connection is maintained to a peer without being in the mesh and without
-    /// send/receiving a message from. Connections that idle beyond this timeout are disconnected.
-    /// Default is 120 seconds.
-    </span><span class="kw">pub fn </span>idle_timeout(<span class="kw-2">&amp;mut </span><span class="self">self</span>, idle_timeout: Duration) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="self">self</span>.config.idle_timeout = idle_timeout;
-        <span class="self">self
-    </span>}
-
     <span class="doccomment">/// Duplicates are prevented by storing message id&#39;s of known messages in an LRU time cache.
     /// This settings sets the time period that messages are stored in the cache. Duplicates can be
     /// received if duplicate messages are sent at a time greater than this setting apart. The
@@ -1691,22 +1598,6 @@
         </span>F: Fn(<span class="kw-2">&amp;</span>Message) -&gt; MessageId + Send + Sync + <span class="lifetime">&#39;static</span>,
     {
         <span class="self">self</span>.config.message_id_fn = Arc::new(id_fn);
-        <span class="self">self
-    </span>}
-
-    <span class="doccomment">/// A user-defined optional function that computes fast ids from raw messages. This can be used
-    /// to avoid possibly expensive transformations from [`RawMessage`] to
-    /// [`Message`] for duplicates. Two semantically different messages must always
-    /// have different fast message ids, but it is allowed that two semantically identical messages
-    /// have different fast message ids as long as the message_id_fn produces the same id for them.
-    ///
-    /// The function takes a [`Message`] as input and outputs a String to be interpreted
-    /// as the fast message id. Default is None.
-    </span><span class="kw">pub fn </span>fast_message_id_fn&lt;F&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, fast_id_fn: F) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self
-    </span><span class="kw">where
-        </span>F: Fn(<span class="kw-2">&amp;</span>RawMessage) -&gt; FastMessageId + Send + Sync + <span class="lifetime">&#39;static</span>,
-    {
-        <span class="self">self</span>.config.fast_message_id_fn = <span class="prelude-val">Some</span>(Arc::new(fast_id_fn));
         <span class="self">self
     </span>}
 
@@ -1875,40 +1766,34 @@
     </span>}
 
     <span class="doccomment">/// Constructs a [`Config`] from the given configuration and validates the settings.
-    </span><span class="kw">pub fn </span>build(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Config, <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; {
+    </span><span class="kw">pub fn </span>build(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;Config, ConfigBuilderError&gt; {
         <span class="comment">// check all constraints on config
 
         </span><span class="kw">if </span><span class="self">self</span>.config.protocol.max_transmit_size &lt; <span class="number">100 </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;The maximum transmission size must be greater than 100 to permit basic control messages&quot;</span>);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigBuilderError::MaxTransmissionSizeTooSmall);
         }
 
         <span class="kw">if </span><span class="self">self</span>.config.history_length &lt; <span class="self">self</span>.config.history_gossip {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(
-                <span class="string">&quot;The history_length must be greater than or equal to the history_gossip \
-                length&quot;</span>,
-            );
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigBuilderError::HistoryLengthTooSmall);
         }
 
         <span class="kw">if </span>!(<span class="self">self</span>.config.mesh_outbound_min &lt;= <span class="self">self</span>.config.mesh_n_low
             &amp;&amp; <span class="self">self</span>.config.mesh_n_low &lt;= <span class="self">self</span>.config.mesh_n
             &amp;&amp; <span class="self">self</span>.config.mesh_n &lt;= <span class="self">self</span>.config.mesh_n_high)
         {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;The following inequality doesn&#39;t hold \
-                mesh_outbound_min &lt;= mesh_n_low &lt;= mesh_n &lt;= mesh_n_high&quot;</span>);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigBuilderError::MeshParametersInvalid);
         }
 
         <span class="kw">if </span><span class="self">self</span>.config.mesh_outbound_min * <span class="number">2 </span>&gt; <span class="self">self</span>.config.mesh_n {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(
-                <span class="string">&quot;The following inequality doesn&#39;t hold mesh_outbound_min &lt;= self.config.mesh_n / 2&quot;</span>,
-            );
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigBuilderError::MeshOutboundInvalid);
         }
 
         <span class="kw">if </span><span class="self">self</span>.config.unsubscribe_backoff.as_millis() == <span class="number">0 </span>{
-            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;The unsubscribe_backoff parameter should be positive.&quot;</span>);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigBuilderError::UnsubscribeBackoffIsZero);
         }
 
         <span class="kw">if </span><span class="self">self</span>.invalid_protocol {
-            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;The provided protocol is invalid, it must start with a forward-slash&quot;</span>);
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ConfigBuilderError::InvalidProtocol);
         }
 
         <span class="prelude-val">Ok</span>(<span class="self">self</span>.config.clone())
@@ -1930,7 +1815,6 @@
         <span class="kw">let _ </span>= builder.field(<span class="string">&quot;heartbeat_initial_delay&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.heartbeat_initial_delay);
         <span class="kw">let _ </span>= builder.field(<span class="string">&quot;heartbeat_interval&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.heartbeat_interval);
         <span class="kw">let _ </span>= builder.field(<span class="string">&quot;fanout_ttl&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.fanout_ttl);
-        <span class="kw">let _ </span>= builder.field(<span class="string">&quot;idle_timeout&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.idle_timeout);
         <span class="kw">let _ </span>= builder.field(<span class="string">&quot;duplicate_cache_time&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.duplicate_cache_time);
         <span class="kw">let _ </span>= builder.field(<span class="string">&quot;validate_messages&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.validate_messages);
         <span class="kw">let _ </span>= builder.field(<span class="string">&quot;allow_self_origin&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.allow_self_origin);

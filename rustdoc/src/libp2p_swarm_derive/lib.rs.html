@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-swarm-derive-0.33.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_swarm_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_swarm_derive/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-swarm-derive-0.34.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_swarm_derive" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_swarm_derive/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -881,69 +881,6 @@
 <a href="#881" id="881">881</a>
 <a href="#882" id="882">882</a>
 <a href="#883" id="883">883</a>
-<a href="#884" id="884">884</a>
-<a href="#885" id="885">885</a>
-<a href="#886" id="886">886</a>
-<a href="#887" id="887">887</a>
-<a href="#888" id="888">888</a>
-<a href="#889" id="889">889</a>
-<a href="#890" id="890">890</a>
-<a href="#891" id="891">891</a>
-<a href="#892" id="892">892</a>
-<a href="#893" id="893">893</a>
-<a href="#894" id="894">894</a>
-<a href="#895" id="895">895</a>
-<a href="#896" id="896">896</a>
-<a href="#897" id="897">897</a>
-<a href="#898" id="898">898</a>
-<a href="#899" id="899">899</a>
-<a href="#900" id="900">900</a>
-<a href="#901" id="901">901</a>
-<a href="#902" id="902">902</a>
-<a href="#903" id="903">903</a>
-<a href="#904" id="904">904</a>
-<a href="#905" id="905">905</a>
-<a href="#906" id="906">906</a>
-<a href="#907" id="907">907</a>
-<a href="#908" id="908">908</a>
-<a href="#909" id="909">909</a>
-<a href="#910" id="910">910</a>
-<a href="#911" id="911">911</a>
-<a href="#912" id="912">912</a>
-<a href="#913" id="913">913</a>
-<a href="#914" id="914">914</a>
-<a href="#915" id="915">915</a>
-<a href="#916" id="916">916</a>
-<a href="#917" id="917">917</a>
-<a href="#918" id="918">918</a>
-<a href="#919" id="919">919</a>
-<a href="#920" id="920">920</a>
-<a href="#921" id="921">921</a>
-<a href="#922" id="922">922</a>
-<a href="#923" id="923">923</a>
-<a href="#924" id="924">924</a>
-<a href="#925" id="925">925</a>
-<a href="#926" id="926">926</a>
-<a href="#927" id="927">927</a>
-<a href="#928" id="928">928</a>
-<a href="#929" id="929">929</a>
-<a href="#930" id="930">930</a>
-<a href="#931" id="931">931</a>
-<a href="#932" id="932">932</a>
-<a href="#933" id="933">933</a>
-<a href="#934" id="934">934</a>
-<a href="#935" id="935">935</a>
-<a href="#936" id="936">936</a>
-<a href="#937" id="937">937</a>
-<a href="#938" id="938">938</a>
-<a href="#939" id="939">939</a>
-<a href="#940" id="940">940</a>
-<a href="#941" id="941">941</a>
-<a href="#942" id="942">942</a>
-<a href="#943" id="943">943</a>
-<a href="#944" id="944">944</a>
-<a href="#945" id="945">945</a>
-<a href="#946" id="946">946</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -974,7 +911,6 @@
 <span class="kw">use </span>proc_macro::TokenStream;
 <span class="kw">use </span>quote::quote;
 <span class="kw">use </span>syn::punctuated::Punctuated;
-<span class="kw">use </span>syn::spanned::Spanned;
 <span class="kw">use </span>syn::{parse_macro_input, Data, DataStruct, DeriveInput, Meta, Token};
 
 <span class="doccomment">/// Generates a delegating `NetworkBehaviour` implementation for the struct this is used for. See
@@ -1007,7 +943,6 @@
     <span class="kw">let </span>BehaviourAttributes {
         prelude_path,
         user_specified_out_event,
-        deprecation_tokenstream,
     } = parse_attributes(ast)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>multiaddr = <span class="macro">quote! </span>{ #prelude_path::Multiaddr };
@@ -1018,7 +953,6 @@
     <span class="kw">let </span>proto_select_ident = <span class="macro">quote! </span>{ #prelude_path::ConnectionHandlerSelect };
     <span class="kw">let </span>peer_id = <span class="macro">quote! </span>{ #prelude_path::PeerId };
     <span class="kw">let </span>connection_id = <span class="macro">quote! </span>{ #prelude_path::ConnectionId };
-    <span class="kw">let </span>poll_parameters = <span class="macro">quote! </span>{ #prelude_path::PollParameters };
     <span class="kw">let </span>from_swarm = <span class="macro">quote! </span>{ #prelude_path::FromSwarm };
     <span class="kw">let </span>connection_established = <span class="macro">quote! </span>{ #prelude_path::ConnectionEstablished };
     <span class="kw">let </span>address_change = <span class="macro">quote! </span>{ #prelude_path::AddressChange };
@@ -1232,26 +1166,15 @@
         data_struct
             .fields
             .iter()
+            .rev()
             .enumerate()
-            <span class="comment">// The outmost handler belongs to the last behaviour.
-            </span>.rev()
-            .enumerate()
-            .map(|(enum_n, (field_n, field))| {
-                <span class="kw">let </span>handler = <span class="kw">if </span>field_n == <span class="number">0 </span>{
-                    <span class="comment">// Given that the iterator is reversed, this is the innermost handler only.
-                    </span><span class="macro">quote! </span>{ <span class="kw">let </span>handler = handlers }
-                } <span class="kw">else </span>{
-                    <span class="macro">quote! </span>{
-                        <span class="kw">let </span>(handlers, handler) = handlers.into_inner()
-                    }
-                };
+            .map(|(enum_n, field)| {
                 <span class="kw">let </span>inject = <span class="kw">match </span>field.ident {
                     <span class="prelude-val">Some</span>(<span class="kw-2">ref </span>i) =&gt; <span class="macro">quote! </span>{
                     <span class="self">self</span>.#i.on_swarm_event(#from_swarm::ConnectionClosed(#connection_closed {
                             peer_id,
                             connection_id,
                             endpoint,
-                            handler,
                             remaining_established,
                         }));
                     },
@@ -1260,14 +1183,12 @@
                             peer_id,
                             connection_id,
                             endpoint,
-                            handler,
                             remaining_established,
                         }));
                     },
                 };
 
                 <span class="macro">quote! </span>{
-                    #handler;
                     #inject;
                 }
             })
@@ -1634,79 +1555,47 @@
     <span class="comment">// List of statements to put in `poll()`.
     //
     // We poll each child one by one and wrap around the output.
-    </span><span class="kw">let </span>poll_stmts = data_struct.fields.iter().enumerate().map(|(field_n, field)| {
-        <span class="kw">let </span>field = field
-            .ident
-            .clone()
-            .expect(<span class="string">&quot;Fields of NetworkBehaviour implementation to be named.&quot;</span>);
+    </span><span class="kw">let </span>poll_stmts = data_struct
+        .fields
+        .iter()
+        .enumerate()
+        .map(|(field_n, field)| {
+            <span class="kw">let </span>field = field
+                .ident
+                .clone()
+                .expect(<span class="string">&quot;Fields of NetworkBehaviour implementation to be named.&quot;</span>);
 
-        <span class="kw">let </span><span class="kw-2">mut </span>wrapped_event = <span class="kw">if </span>field_n != <span class="number">0 </span>{
-            <span class="macro">quote!</span>{ #either_ident::Right(event) }
-        } <span class="kw">else </span>{
-            <span class="macro">quote!</span>{ event }
-        };
-        <span class="kw">for _ in </span><span class="number">0 </span>.. data_struct.fields.len() - <span class="number">1 </span>- field_n {
-            wrapped_event = <span class="macro">quote!</span>{ #either_ident::Left(#wrapped_event) };
-        }
+            <span class="kw">let </span><span class="kw-2">mut </span>wrapped_event = <span class="kw">if </span>field_n != <span class="number">0 </span>{
+                <span class="macro">quote! </span>{ #either_ident::Right(event) }
+            } <span class="kw">else </span>{
+                <span class="macro">quote! </span>{ event }
+            };
+            <span class="kw">for _ in </span><span class="number">0</span>..data_struct.fields.len() - <span class="number">1 </span>- field_n {
+                wrapped_event = <span class="macro">quote! </span>{ #either_ident::Left(#wrapped_event) };
+            }
 
-        <span class="kw">let </span>generate_event_match_arm =  {
             <span class="comment">// If the `NetworkBehaviour`&#39;s `ToSwarm` is generated by the derive macro, wrap the sub
             // `NetworkBehaviour` `ToSwarm` in the variant of the generated `ToSwarm`. If the
             // `NetworkBehaviour`&#39;s `ToSwarm` is provided by the user, use the corresponding `From`
             // implementation.
-            </span><span class="kw">let </span>into_out_event = <span class="kw">if </span>out_event_definition.is_some() {
-                <span class="kw">let </span>event_variant: syn::Variant = syn::parse_str(
-                    <span class="kw-2">&amp;</span>field
-                        .to_string()
-                        .to_upper_camel_case()
-                ).expect(<span class="string">&quot;uppercased field name to be a valid enum variant name&quot;</span>);
-                <span class="macro">quote! </span>{ #out_event_name::#event_variant(event) }
+            </span><span class="kw">let </span>map_out_event = <span class="kw">if </span>out_event_definition.is_some() {
+                <span class="kw">let </span>event_variant: syn::Variant =
+                    syn::parse_str(<span class="kw-2">&amp;</span>field.to_string().to_upper_camel_case())
+                        .expect(<span class="string">&quot;uppercased field name to be a valid enum variant name&quot;</span>);
+                <span class="macro">quote! </span>{ #out_event_name::#event_variant }
             } <span class="kw">else </span>{
-                <span class="macro">quote! </span>{ event.into() }
+                <span class="macro">quote! </span>{ |e| e.into() }
             };
 
-            <span class="macro">quote! </span>{
-                std::task::Poll::Ready(#network_behaviour_action::GenerateEvent(event)) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::GenerateEvent(#into_out_event))
-                }
-            }
-        };
+            <span class="kw">let </span>map_in_event = <span class="macro">quote! </span>{ |event| #wrapped_event };
 
-        <span class="macro">quote!</span>{
-            <span class="kw">match </span>#trait_to_impl::poll(<span class="kw-2">&amp;mut </span><span class="self">self</span>.#field, cx, poll_params) {
-                #generate_event_match_arm
-                std::task::Poll::Ready(#network_behaviour_action::Dial { opts }) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::Dial { opts });
+            <span class="macro">quote! </span>{
+                <span class="kw">match </span>#trait_to_impl::poll(<span class="kw-2">&amp;mut </span><span class="self">self</span>.#field, cx) {
+                    std::task::Poll::Ready(e) =&gt; <span class="kw">return </span>std::task::Poll::Ready(e.map_out(#map_out_event).map_in(#map_in_event)),
+                    std::task::Poll::Pending =&gt; {},
                 }
-                std::task::Poll::Ready(#network_behaviour_action::ListenOn { opts }) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::ListenOn { opts });
-                }
-                std::task::Poll::Ready(#network_behaviour_action::RemoveListener { id }) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::RemoveListener { id });
-                }
-                std::task::Poll::Ready(#network_behaviour_action::NotifyHandler { peer_id, handler, event }) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::NotifyHandler {
-                        peer_id,
-                        handler,
-                        event: #wrapped_event,
-                    });
-                }
-                std::task::Poll::Ready(#network_behaviour_action::NewExternalAddrCandidate(addr)) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::NewExternalAddrCandidate(addr));
-                }
-                std::task::Poll::Ready(#network_behaviour_action::ExternalAddrConfirmed(addr)) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::ExternalAddrConfirmed(addr));
-                }
-                std::task::Poll::Ready(#network_behaviour_action::ExternalAddrExpired(addr)) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::ExternalAddrExpired(addr));
-                }
-                std::task::Poll::Ready(#network_behaviour_action::CloseConnection { peer_id, connection }) =&gt; {
-                    <span class="kw">return </span>std::task::Poll::Ready(#network_behaviour_action::CloseConnection { peer_id, connection });
-                }
-                std::task::Poll::Pending =&gt; {},
             }
-        }
-    });
+        });
 
     <span class="kw">let </span>out_event_reference = <span class="kw">if </span>out_event_definition.is_some() {
         <span class="macro">quote! </span>{ #out_event_name #ty_generics }
@@ -1716,8 +1605,6 @@
 
     <span class="comment">// Now the magic happens.
     </span><span class="kw">let </span>final_quote = <span class="macro">quote! </span>{
-        #deprecation_tokenstream
-
         #out_event_definition
 
         <span class="kw">impl </span>#impl_generics #trait_to_impl <span class="kw">for </span>#name #ty_generics
@@ -1782,13 +1669,12 @@
                 }
             }
 
-            <span class="kw">fn </span>poll(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>std::task::Context, poll_params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>#poll_parameters) -&gt; std::task::Poll&lt;#network_behaviour_action&lt;<span class="self">Self</span>::ToSwarm, #t_handler_in_event&lt;<span class="self">Self</span>&gt;&gt;&gt; {
-                <span class="kw">use </span>#prelude_path::futures::<span class="kw-2">*</span>;
+            <span class="kw">fn </span>poll(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cx: <span class="kw-2">&amp;mut </span>std::task::Context) -&gt; std::task::Poll&lt;#network_behaviour_action&lt;<span class="self">Self</span>::ToSwarm, #t_handler_in_event&lt;<span class="self">Self</span>&gt;&gt;&gt; {
                 #(#poll_stmts)*
                 std::task::Poll::Pending
             }
 
-            <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: #from_swarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+            <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: #from_swarm) {
                 <span class="kw">match </span>event {
                     #from_swarm::ConnectionEstablished(
                         #connection_established { peer_id, connection_id, endpoint, failed_addresses, other_established })
@@ -1797,7 +1683,7 @@
                         #address_change { peer_id, connection_id, old, new })
                     =&gt; { #(#on_address_change_stmts)* }
                     #from_swarm::ConnectionClosed(
-                        #connection_closed { peer_id, connection_id, endpoint, handler: handlers, remaining_established })
+                        #connection_closed { peer_id, connection_id, endpoint, remaining_established })
                     =&gt; { #(#on_connection_closed_stmts)* }
                     #from_swarm::DialFailure(
                         #dial_failure { peer_id, connection_id, error })
@@ -1841,7 +1727,6 @@
 <span class="kw">struct </span>BehaviourAttributes {
     prelude_path: syn::Path,
     user_specified_out_event: <span class="prelude-ty">Option</span>&lt;syn::Type&gt;,
-    deprecation_tokenstream: proc_macro2::TokenStream,
 }
 
 <span class="doccomment">/// Parses the `value` of a key=value pair in the `#[behaviour]` attribute into the requested type.
@@ -1849,7 +1734,6 @@
     <span class="kw">let </span><span class="kw-2">mut </span>attributes = BehaviourAttributes {
         prelude_path: <span class="macro">syn::parse_quote! </span>{ ::libp2p::swarm::derive_prelude },
         user_specified_out_event: <span class="prelude-val">None</span>,
-        deprecation_tokenstream: proc_macro2::TokenStream::new(),
     };
 
     <span class="kw">for </span>attr <span class="kw">in </span>ast
@@ -1869,16 +1753,6 @@
             }
 
             <span class="kw">if </span>meta.path().is_ident(<span class="string">&quot;to_swarm&quot;</span>) || meta.path().is_ident(<span class="string">&quot;out_event&quot;</span>) {
-                <span class="kw">if </span>meta.path().is_ident(<span class="string">&quot;out_event&quot;</span>) {
-                    <span class="kw">let </span>warning = proc_macro_warning::FormattedWarning::new_deprecated(
-                        <span class="string">&quot;out_event_renamed_to_to_swarm&quot;</span>,
-                        <span class="string">&quot;The `out_event` attribute has been renamed to `to_swarm`.&quot;</span>,
-                        meta.span(),
-                    );
-
-                    attributes.deprecation_tokenstream = <span class="macro">quote::quote! </span>{ #warning };
-                }
-
                 <span class="kw">let </span>value = meta.require_name_value()<span class="question-mark">?</span>.value.require_str_lit()<span class="question-mark">?</span>;
 
                 attributes.user_specified_out_event = <span class="prelude-val">Some</span>(syn::parse_str(<span class="kw-2">&amp;</span>value)<span class="question-mark">?</span>);

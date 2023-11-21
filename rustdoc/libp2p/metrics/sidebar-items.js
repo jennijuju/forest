@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["Metrics"],"trait":["Recorder"]};
+window.SIDEBAR_ITEMS = {"struct":["BandwidthTransport","Metrics","Registry"],"trait":["Recorder"]};

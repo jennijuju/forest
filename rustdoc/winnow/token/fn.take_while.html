@@ -6,7 +6,7 @@
     T: <a class="trait" href="../stream/trait.ContainsToken.html" title="trait winnow::stream::ContainsToken">ContainsToken</a>&lt;&lt;I as <a class="trait" href="../stream/trait.Stream.html" title="trait winnow::stream::Stream">Stream</a>&gt;::<a class="associatedtype" href="../stream/trait.Stream.html#associatedtype.Token" title="type winnow::stream::Stream::Token">Token</a>&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Recognize the longest (m &lt;= len &lt;= n) input slice that matches the <a href="../stream/trait.ContainsToken.html" title="trait winnow::stream::ContainsToken">pattern</a></p>
 <p>It will return an <code>ErrMode::Backtrack(InputError::new(_, ErrorKind::Slice))</code> if the pattern wasn’t met or is out
 of range (m &lt;= len &lt;= n).</p>
-<p><em>Partial version</em> will return a <code>ErrMode::Incomplete(Needed::new(1))</code>  if the pattern reaches the end of the input or is too short.</p>
+<p><em>Partial version</em> will return a <code>ErrMode::Incomplete(Needed::new(1))</code> if the pattern reaches the end of the input or is too short.</p>
 <p>To recognize a series of tokens, use <a href="../combinator/fn.repeat.html" title="fn winnow::combinator::repeat"><code>repeat</code></a> to <a href="../stream/trait.Accumulate.html" title="trait winnow::stream::Accumulate"><code>Accumulate</code></a> into a <code>()</code> and then <a href="../trait.Parser.html#method.recognize" title="method winnow::Parser::recognize"><code>Parser::recognize</code></a>.</p>
 <h2 id="example"><a href="#example">Example</a></h2>
 <p>Zero or more tokens:</p>

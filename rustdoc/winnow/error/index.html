@@ -4,7 +4,7 @@
 <li>Accumulate more <a href="../trait.Parser.html#method.context" title="method winnow::Parser::context">context</a> as the error goes up the parser chain</li>
 <li>Distinguish between <a href="enum.ErrMode.html" title="enum winnow::error::ErrMode">recoverable errors,
 unrecoverable errors, and more data is needed</a></li>
-<li>Have a very low overhead, as errors are often discarded by the calling parser (examples: <code>many0</code>, <code>alt</code>)</li>
+<li>Have a very low overhead, as errors are often discarded by the calling parser (examples: <code>repeat</code>, <code>alt</code>)</li>
 <li>Can be modified according to the user’s needs, because some languages need a lot more information</li>
 <li>Help thread-through the <a href="../stream/index.html" title="mod winnow::stream">stream</a></li>
 </ul>

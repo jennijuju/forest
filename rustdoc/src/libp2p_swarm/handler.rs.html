@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-swarm-0.43.6/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_swarm" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_swarm/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-swarm-0.44.0/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_swarm" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_swarm/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -693,101 +693,6 @@
 <a href="#693" id="693">693</a>
 <a href="#694" id="694">694</a>
 <a href="#695" id="695">695</a>
-<a href="#696" id="696">696</a>
-<a href="#697" id="697">697</a>
-<a href="#698" id="698">698</a>
-<a href="#699" id="699">699</a>
-<a href="#700" id="700">700</a>
-<a href="#701" id="701">701</a>
-<a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
-<a href="#707" id="707">707</a>
-<a href="#708" id="708">708</a>
-<a href="#709" id="709">709</a>
-<a href="#710" id="710">710</a>
-<a href="#711" id="711">711</a>
-<a href="#712" id="712">712</a>
-<a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
-<a href="#715" id="715">715</a>
-<a href="#716" id="716">716</a>
-<a href="#717" id="717">717</a>
-<a href="#718" id="718">718</a>
-<a href="#719" id="719">719</a>
-<a href="#720" id="720">720</a>
-<a href="#721" id="721">721</a>
-<a href="#722" id="722">722</a>
-<a href="#723" id="723">723</a>
-<a href="#724" id="724">724</a>
-<a href="#725" id="725">725</a>
-<a href="#726" id="726">726</a>
-<a href="#727" id="727">727</a>
-<a href="#728" id="728">728</a>
-<a href="#729" id="729">729</a>
-<a href="#730" id="730">730</a>
-<a href="#731" id="731">731</a>
-<a href="#732" id="732">732</a>
-<a href="#733" id="733">733</a>
-<a href="#734" id="734">734</a>
-<a href="#735" id="735">735</a>
-<a href="#736" id="736">736</a>
-<a href="#737" id="737">737</a>
-<a href="#738" id="738">738</a>
-<a href="#739" id="739">739</a>
-<a href="#740" id="740">740</a>
-<a href="#741" id="741">741</a>
-<a href="#742" id="742">742</a>
-<a href="#743" id="743">743</a>
-<a href="#744" id="744">744</a>
-<a href="#745" id="745">745</a>
-<a href="#746" id="746">746</a>
-<a href="#747" id="747">747</a>
-<a href="#748" id="748">748</a>
-<a href="#749" id="749">749</a>
-<a href="#750" id="750">750</a>
-<a href="#751" id="751">751</a>
-<a href="#752" id="752">752</a>
-<a href="#753" id="753">753</a>
-<a href="#754" id="754">754</a>
-<a href="#755" id="755">755</a>
-<a href="#756" id="756">756</a>
-<a href="#757" id="757">757</a>
-<a href="#758" id="758">758</a>
-<a href="#759" id="759">759</a>
-<a href="#760" id="760">760</a>
-<a href="#761" id="761">761</a>
-<a href="#762" id="762">762</a>
-<a href="#763" id="763">763</a>
-<a href="#764" id="764">764</a>
-<a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a>
-<a href="#768" id="768">768</a>
-<a href="#769" id="769">769</a>
-<a href="#770" id="770">770</a>
-<a href="#771" id="771">771</a>
-<a href="#772" id="772">772</a>
-<a href="#773" id="773">773</a>
-<a href="#774" id="774">774</a>
-<a href="#775" id="775">775</a>
-<a href="#776" id="776">776</a>
-<a href="#777" id="777">777</a>
-<a href="#778" id="778">778</a>
-<a href="#779" id="779">779</a>
-<a href="#780" id="780">780</a>
-<a href="#781" id="781">781</a>
-<a href="#782" id="782">782</a>
-<a href="#783" id="783">783</a>
-<a href="#784" id="784">784</a>
-<a href="#785" id="785">785</a>
-<a href="#786" id="786">786</a>
-<a href="#787" id="787">787</a>
-<a href="#788" id="788">788</a>
-<a href="#789" id="789">789</a>
-<a href="#790" id="790">790</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -845,7 +750,6 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::StreamProtocol;
 <span class="kw">use </span>::either::Either;
-<span class="kw">use </span>instant::Instant;
 <span class="kw">use </span>libp2p_core::Multiaddr;
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>smallvec::SmallVec;
@@ -853,7 +757,7 @@
 <span class="kw">use </span>std::collections::hash_set::{Difference, Intersection};
 <span class="kw">use </span>std::collections::HashSet;
 <span class="kw">use </span>std::iter::Peekable;
-<span class="kw">use </span>std::{cmp::Ordering, error, fmt, io, task::Context, task::Poll, time::Duration};
+<span class="kw">use </span>std::{error, fmt, io, task::Context, task::Poll, time::Duration};
 
 <span class="doccomment">/// A handler for a set of protocols used on a connection with a remote.
 ///
@@ -893,8 +797,6 @@
     </span><span class="kw">type </span>FromBehaviour: fmt::Debug + Send + <span class="lifetime">&#39;static</span>;
     <span class="doccomment">/// A type representing message(s) a [`ConnectionHandler`] can send to a [`NetworkBehaviour`](crate::behaviour::NetworkBehaviour) via [`ConnectionHandlerEvent::NotifyBehaviour`].
     </span><span class="kw">type </span>ToBehaviour: fmt::Debug + Send + <span class="lifetime">&#39;static</span>;
-    <span class="doccomment">/// The type of errors returned by [`ConnectionHandler::poll`].
-    </span><span class="kw">type </span>Error: error::Error + fmt::Debug + Send + <span class="lifetime">&#39;static</span>;
     <span class="doccomment">/// The inbound upgrade for the protocol(s) used by the handler.
     </span><span class="kw">type </span>InboundProtocol: InboundUpgradeSend;
     <span class="doccomment">/// The outbound upgrade for the protocol(s) used by the handler.
@@ -913,40 +815,52 @@
     /// &gt;           This allows a remote to put the list of supported protocols in a cache.
     </span><span class="kw">fn </span>listen_protocol(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SubstreamProtocol&lt;<span class="self">Self</span>::InboundProtocol, <span class="self">Self</span>::InboundOpenInfo&gt;;
 
-    <span class="doccomment">/// Returns until when the connection should be kept alive.
+    <span class="doccomment">/// Returns whether the connection should be kept alive.
     ///
-    /// This method is called by the `Swarm` after each invocation of
-    /// [`ConnectionHandler::poll`] to determine if the connection and the associated
-    /// [`ConnectionHandler`]s should be kept alive as far as this handler is concerned
-    /// and if so, for how long.
+    /// ## Keep alive algorithm
     ///
-    /// Returning [`KeepAlive::No`] indicates that the connection should be
-    /// closed and this handler destroyed immediately.
+    /// A connection is always kept alive:
     ///
-    /// Returning [`KeepAlive::Until`] indicates that the connection may be closed
-    /// and this handler destroyed after the specified `Instant`.
+    /// - Whilst a [`ConnectionHandler`] returns [`Poll::Ready`].
+    /// - We are negotiating inbound or outbound streams.
+    /// - There are active [`Stream`](crate::Stream)s on the connection.
     ///
-    /// Returning [`KeepAlive::Yes`] indicates that the connection should
-    /// be kept alive until the next call to this method.
+    /// The combination of the above means that _most_ protocols will not need to override this method.
+    /// This method is only invoked when all of the above are `false`, i.e. when the connection is entirely idle.
     ///
-    /// &gt; **Note**: The connection is always closed and the handler destroyed
-    /// &gt; when [`ConnectionHandler::poll`] returns an error. Furthermore, the
-    /// &gt; connection may be closed for reasons outside of the control
-    /// &gt; of the handler.
-    </span><span class="kw">fn </span>connection_keep_alive(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; KeepAlive;
+    /// ## Exceptions
+    ///
+    /// - Protocols like [circuit-relay v2](https://github.com/libp2p/specs/blob/master/relay/circuit-v2.md) need to keep a connection alive beyond these circumstances and can thus override this method.
+    /// - Protocols like [ping](https://github.com/libp2p/specs/blob/master/ping/ping.md) **don&#39;t** want to keep a connection alive despite an active streams.
+    /// In that case, protocol authors can use [`Stream::ignore_for_keep_alive`](crate::Stream::ignore_for_keep_alive) to opt-out a particular stream from the keep-alive algorithm.
+    </span><span class="kw">fn </span>connection_keep_alive(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="bool-val">false
+    </span>}
 
     <span class="doccomment">/// Should behave like `Stream::poll()`.
     </span><span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; Poll&lt;
-        ConnectionHandlerEvent&lt;
-            <span class="self">Self</span>::OutboundProtocol,
-            <span class="self">Self</span>::OutboundOpenInfo,
-            <span class="self">Self</span>::ToBehaviour,
-            <span class="self">Self</span>::Error,
-        &gt;,
+        ConnectionHandlerEvent&lt;<span class="self">Self</span>::OutboundProtocol, <span class="self">Self</span>::OutboundOpenInfo, <span class="self">Self</span>::ToBehaviour&gt;,
     &gt;;
+
+    <span class="doccomment">/// Gracefully close the [`ConnectionHandler`].
+    ///
+    /// The contract for this function is equivalent to a [`Stream`](futures::Stream).
+    /// When a connection is being shut down, we will first poll this function to completion.
+    /// Following that, the physical connection will be shut down.
+    ///
+    /// This is also called when the shutdown was initiated due to an error on the connection.
+    /// We therefore cannot guarantee that performing IO within here will succeed.
+    ///
+    /// To signal completion, [`Poll::Ready(None)`] should be returned.
+    ///
+    /// Implementations MUST have a [`fuse`](futures::StreamExt::fuse)-like behaviour.
+    /// That is, [`Poll::Ready(None)`] MUST be returned on repeated calls to [`ConnectionHandler::poll_close`].
+    </span><span class="kw">fn </span>poll_close(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::ToBehaviour&gt;&gt; {
+        Poll::Ready(<span class="prelude-val">None</span>)
+    }
 
     <span class="doccomment">/// Adds a closure that turns the input event into something else.
     </span><span class="kw">fn </span>map_in_event&lt;TNewIn, TMap&gt;(<span class="self">self</span>, map: TMap) -&gt; MapInEvent&lt;<span class="self">Self</span>, TNewIn, TMap&gt;
@@ -968,10 +882,6 @@
 
     <span class="doccomment">/// Creates a new [`ConnectionHandler`] that selects either this handler or
     /// `other` by delegating methods calls appropriately.
-    ///
-    /// &gt; **Note**: The largest `KeepAlive` returned by the two handlers takes precedence,
-    /// &gt; i.e. is returned from [`ConnectionHandler::connection_keep_alive`] by the returned
-    /// &gt; handler.
     </span><span class="kw">fn </span>select&lt;TProto2&gt;(<span class="self">self</span>, other: TProto2) -&gt; ConnectionHandlerSelect&lt;<span class="self">Self</span>, TProto2&gt;
     <span class="kw">where
         </span><span class="self">Self</span>: Sized,
@@ -995,6 +905,7 @@
 
 <span class="doccomment">/// Enumeration with the list of the possible stream events
 /// to pass to [`on_connection_event`](ConnectionHandler::on_connection_event).
+</span><span class="attr">#[non_exhaustive]
 </span><span class="kw">pub enum </span>ConnectionEvent&lt;<span class="lifetime">&#39;a</span>, IP: InboundUpgradeSend, OP: OutboundUpgradeSend, IOI, OOI&gt; {
     <span class="doccomment">/// Informs the handler about the output of a successful upgrade on a new inbound substream.
     </span>FullyNegotiatedInbound(FullyNegotiatedInbound&lt;IP, IOI&gt;),
@@ -1320,22 +1231,13 @@
 
 <span class="doccomment">/// Event produced by a handler.
 </span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom, TErr&gt; {
+#[non_exhaustive]
+</span><span class="kw">pub enum </span>ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom&gt; {
     <span class="doccomment">/// Request a new outbound substream to be opened with the remote.
     </span>OutboundSubstreamRequest {
         <span class="doccomment">/// The protocol(s) to apply on the substream.
         </span>protocol: SubstreamProtocol&lt;TConnectionUpgrade, TOutboundOpenInfo&gt;,
     },
-
-    <span class="doccomment">/// Close the connection for the given reason.
-    ///
-    /// Note this will affect all [`ConnectionHandler`]s handling this
-    /// connection, in other words it will close the connection for all
-    /// [`ConnectionHandler`]s. To signal that one has no more need for the
-    /// connection, while allowing other [`ConnectionHandler`]s to continue using
-    /// the connection, return [`KeepAlive::No`] in
-    /// [`ConnectionHandler::connection_keep_alive`].
-    </span>Close(TErr),
     <span class="doccomment">/// We learned something about the protocols supported by the remote.
     </span>ReportRemoteProtocols(ProtocolSupport),
 
@@ -1352,15 +1254,15 @@
 }
 
 <span class="doccomment">/// Event produced by a handler.
-</span><span class="kw">impl</span>&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom, TErr&gt;
-    ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom, TErr&gt;
+</span><span class="kw">impl</span>&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom&gt;
+    ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom&gt;
 {
     <span class="doccomment">/// If this is an `OutboundSubstreamRequest`, maps the `info` member from a
     /// `TOutboundOpenInfo` to something else.
     </span><span class="kw">pub fn </span>map_outbound_open_info&lt;F, I&gt;(
         <span class="self">self</span>,
         map: F,
-    ) -&gt; ConnectionHandlerEvent&lt;TConnectionUpgrade, I, TCustom, TErr&gt;
+    ) -&gt; ConnectionHandlerEvent&lt;TConnectionUpgrade, I, TCustom&gt;
     <span class="kw">where
         </span>F: FnOnce(TOutboundOpenInfo) -&gt; I,
     {
@@ -1373,7 +1275,6 @@
             ConnectionHandlerEvent::NotifyBehaviour(val) =&gt; {
                 ConnectionHandlerEvent::NotifyBehaviour(val)
             }
-            ConnectionHandlerEvent::Close(val) =&gt; ConnectionHandlerEvent::Close(val),
             ConnectionHandlerEvent::ReportRemoteProtocols(support) =&gt; {
                 ConnectionHandlerEvent::ReportRemoteProtocols(support)
             }
@@ -1382,10 +1283,7 @@
 
     <span class="doccomment">/// If this is an `OutboundSubstreamRequest`, maps the protocol (`TConnectionUpgrade`)
     /// to something else.
-    </span><span class="kw">pub fn </span>map_protocol&lt;F, I&gt;(
-        <span class="self">self</span>,
-        map: F,
-    ) -&gt; ConnectionHandlerEvent&lt;I, TOutboundOpenInfo, TCustom, TErr&gt;
+    </span><span class="kw">pub fn </span>map_protocol&lt;F, I&gt;(<span class="self">self</span>, map: F) -&gt; ConnectionHandlerEvent&lt;I, TOutboundOpenInfo, TCustom&gt;
     <span class="kw">where
         </span>F: FnOnce(TConnectionUpgrade) -&gt; I,
     {
@@ -1398,7 +1296,6 @@
             ConnectionHandlerEvent::NotifyBehaviour(val) =&gt; {
                 ConnectionHandlerEvent::NotifyBehaviour(val)
             }
-            ConnectionHandlerEvent::Close(val) =&gt; ConnectionHandlerEvent::Close(val),
             ConnectionHandlerEvent::ReportRemoteProtocols(support) =&gt; {
                 ConnectionHandlerEvent::ReportRemoteProtocols(support)
             }
@@ -1409,7 +1306,7 @@
     </span><span class="kw">pub fn </span>map_custom&lt;F, I&gt;(
         <span class="self">self</span>,
         map: F,
-    ) -&gt; ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, I, TErr&gt;
+    ) -&gt; ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, I&gt;
     <span class="kw">where
         </span>F: FnOnce(TCustom) -&gt; I,
     {
@@ -1420,38 +1317,12 @@
             ConnectionHandlerEvent::NotifyBehaviour(val) =&gt; {
                 ConnectionHandlerEvent::NotifyBehaviour(map(val))
             }
-            ConnectionHandlerEvent::Close(val) =&gt; ConnectionHandlerEvent::Close(val),
-            ConnectionHandlerEvent::ReportRemoteProtocols(support) =&gt; {
-                ConnectionHandlerEvent::ReportRemoteProtocols(support)
-            }
-        }
-    }
-
-    <span class="doccomment">/// If this is a `Close` event, maps the content to something else.
-    </span><span class="kw">pub fn </span>map_close&lt;F, I&gt;(
-        <span class="self">self</span>,
-        map: F,
-    ) -&gt; ConnectionHandlerEvent&lt;TConnectionUpgrade, TOutboundOpenInfo, TCustom, I&gt;
-    <span class="kw">where
-        </span>F: FnOnce(TErr) -&gt; I,
-    {
-        <span class="kw">match </span><span class="self">self </span>{
-            ConnectionHandlerEvent::OutboundSubstreamRequest { protocol } =&gt; {
-                ConnectionHandlerEvent::OutboundSubstreamRequest { protocol }
-            }
-            ConnectionHandlerEvent::NotifyBehaviour(val) =&gt; {
-                ConnectionHandlerEvent::NotifyBehaviour(val)
-            }
-            ConnectionHandlerEvent::Close(val) =&gt; ConnectionHandlerEvent::Close(map(val)),
             ConnectionHandlerEvent::ReportRemoteProtocols(support) =&gt; {
                 ConnectionHandlerEvent::ReportRemoteProtocols(support)
             }
         }
     }
 }
-
-<span class="attr">#[deprecated(note = <span class="string">&quot;Renamed to `StreamUpgradeError`&quot;</span>)]
-</span><span class="kw">pub type </span>ConnectionHandlerUpgrErr&lt;TUpgrErr&gt; = StreamUpgradeError&lt;TUpgrErr&gt;;
 
 <span class="doccomment">/// Error that can happen on an outbound substream opening attempt.
 </span><span class="attr">#[derive(Debug)]
@@ -1512,67 +1383,6 @@
     <span class="kw">fn </span>source(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>(<span class="kw">dyn </span>error::Error + <span class="lifetime">&#39;static</span>)&gt; {
         <span class="prelude-val">None
     </span>}
-}
-
-<span class="doccomment">/// How long the connection should be kept alive.
-</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-</span><span class="kw">pub enum </span>KeepAlive {
-    <span class="doccomment">/// If nothing new happens, the connection should be closed at the given `Instant`.
-    </span><span class="attr">#[deprecated(
-        note = <span class="string">&quot;Use `swarm::Config::with_idle_connection_timeout` instead. See &lt;https://github.com/libp2p/rust-libp2p/issues/3844&gt; for details.&quot;
-    </span>)]
-    </span>Until(Instant),
-    <span class="doccomment">/// Keep the connection alive.
-    </span>Yes,
-    <span class="doccomment">/// Close the connection as soon as possible.
-    </span>No,
-}
-
-<span class="kw">impl </span>KeepAlive {
-    <span class="doccomment">/// Returns true for `Yes`, false otherwise.
-    </span><span class="kw">pub fn </span>is_yes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="macro">matches!</span>(<span class="kw-2">*</span><span class="self">self</span>, KeepAlive::Yes)
-    }
-}
-
-<span class="kw">impl </span>PartialOrd <span class="kw">for </span>KeepAlive {
-    <span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>KeepAlive) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.cmp(other))
-    }
-}
-
-<span class="attr">#[allow(deprecated)]
-</span><span class="kw">impl </span>Ord <span class="kw">for </span>KeepAlive {
-    <span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span>KeepAlive) -&gt; Ordering {
-        <span class="kw">use </span><span class="self">self</span>::KeepAlive::<span class="kw-2">*</span>;
-
-        <span class="kw">match </span>(<span class="self">self</span>, other) {
-            (No, No) | (Yes, Yes) =&gt; Ordering::Equal,
-            (No, <span class="kw">_</span>) | (<span class="kw">_</span>, Yes) =&gt; Ordering::Less,
-            (<span class="kw">_</span>, No) | (Yes, <span class="kw">_</span>) =&gt; Ordering::Greater,
-            (Until(t1), Until(t2)) =&gt; t1.cmp(t2),
-        }
-    }
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">impl </span>quickcheck::Arbitrary <span class="kw">for </span>KeepAlive {
-    <span class="kw">fn </span>arbitrary(g: <span class="kw-2">&amp;mut </span>quickcheck::Gen) -&gt; <span class="self">Self </span>{
-        <span class="kw">match </span>quickcheck::GenRange::gen_range(g, <span class="number">1u8</span>..<span class="number">4</span>) {
-            <span class="number">1 </span>=&gt;
-            {
-                <span class="attr">#[allow(deprecated)]
-                </span>KeepAlive::Until(
-                    Instant::now()
-                        .checked_add(Duration::arbitrary(g))
-                        .unwrap_or(Instant::now()),
-                )
-            }
-            <span class="number">2 </span>=&gt; KeepAlive::Yes,
-            <span class="number">3 </span>=&gt; KeepAlive::No,
-            <span class="kw">_ </span>=&gt; <span class="macro">unreachable!</span>(),
-        }
-    }
 }
 
 <span class="doccomment">/// A statically declared, empty [`HashSet`] allows us to work around borrow-checker rules for

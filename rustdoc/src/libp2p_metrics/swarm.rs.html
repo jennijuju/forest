@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-metrics-0.13.1/src/swarm.rs`."><title>swarm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_metrics" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_metrics/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-metrics-0.14.1/src/swarm.rs`."><title>swarm.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_metrics" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_metrics/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -406,6 +406,46 @@
 <a href="#406" id="406">406</a>
 <a href="#407" id="407">407</a>
 <a href="#408" id="408">408</a>
+<a href="#409" id="409">409</a>
+<a href="#410" id="410">410</a>
+<a href="#411" id="411">411</a>
+<a href="#412" id="412">412</a>
+<a href="#413" id="413">413</a>
+<a href="#414" id="414">414</a>
+<a href="#415" id="415">415</a>
+<a href="#416" id="416">416</a>
+<a href="#417" id="417">417</a>
+<a href="#418" id="418">418</a>
+<a href="#419" id="419">419</a>
+<a href="#420" id="420">420</a>
+<a href="#421" id="421">421</a>
+<a href="#422" id="422">422</a>
+<a href="#423" id="423">423</a>
+<a href="#424" id="424">424</a>
+<a href="#425" id="425">425</a>
+<a href="#426" id="426">426</a>
+<a href="#427" id="427">427</a>
+<a href="#428" id="428">428</a>
+<a href="#429" id="429">429</a>
+<a href="#430" id="430">430</a>
+<a href="#431" id="431">431</a>
+<a href="#432" id="432">432</a>
+<a href="#433" id="433">433</a>
+<a href="#434" id="434">434</a>
+<a href="#435" id="435">435</a>
+<a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
+<a href="#445" id="445">445</a>
+<a href="#446" id="446">446</a>
+<a href="#447" id="447">447</a>
+<a href="#448" id="448">448</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2021 Protocol Labs.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -431,7 +471,7 @@
 
 <span class="kw">use </span><span class="kw">crate</span>::protocol_stack;
 <span class="kw">use </span>instant::Instant;
-<span class="kw">use </span>libp2p_swarm::ConnectionId;
+<span class="kw">use </span>libp2p_swarm::{ConnectionId, DialError, SwarmEvent};
 <span class="kw">use </span>prometheus_client::encoding::{EncodeLabelSet, EncodeLabelValue};
 <span class="kw">use </span>prometheus_client::metrics::counter::Counter;
 <span class="kw">use </span>prometheus_client::metrics::family::Family;
@@ -448,6 +488,10 @@
 
     new_listen_addr: Family&lt;AddressLabels, Counter&gt;,
     expired_listen_addr: Family&lt;AddressLabels, Counter&gt;,
+
+    external_addr_candidates: Family&lt;AddressLabels, Counter&gt;,
+    external_addr_confirmed: Family&lt;AddressLabels, Counter&gt;,
+    external_addr_expired: Family&lt;AddressLabels, Counter&gt;,
 
     listener_closed: Family&lt;AddressLabels, Counter&gt;,
     listener_error: Counter,
@@ -488,6 +532,27 @@
             <span class="string">&quot;expired_listen_addr&quot;</span>,
             <span class="string">&quot;Number of expired listen addresses&quot;</span>,
             expired_listen_addr.clone(),
+        );
+
+        <span class="kw">let </span>external_addr_candidates = Family::default();
+        sub_registry.register(
+            <span class="string">&quot;external_addr_candidates&quot;</span>,
+            <span class="string">&quot;Number of new external address candidates&quot;</span>,
+            external_addr_candidates.clone(),
+        );
+
+        <span class="kw">let </span>external_addr_confirmed = Family::default();
+        sub_registry.register(
+            <span class="string">&quot;external_addr_confirmed&quot;</span>,
+            <span class="string">&quot;Number of confirmed external addresses&quot;</span>,
+            external_addr_confirmed.clone(),
+        );
+
+        <span class="kw">let </span>external_addr_expired = Family::default();
+        sub_registry.register(
+            <span class="string">&quot;external_addr_expired&quot;</span>,
+            <span class="string">&quot;Number of expired external addresses&quot;</span>,
+            external_addr_expired.clone(),
         );
 
         <span class="kw">let </span>listener_closed = Family::default();
@@ -554,6 +619,9 @@
             connections_established,
             new_listen_addr,
             expired_listen_addr,
+            external_addr_candidates,
+            external_addr_confirmed,
+            external_addr_expired,
             listener_closed,
             listener_error,
             dial_attempt,
@@ -565,11 +633,11 @@
     }
 }
 
-<span class="kw">impl</span>&lt;TBvEv, THandleErr&gt; <span class="kw">super</span>::Recorder&lt;libp2p_swarm::SwarmEvent&lt;TBvEv, THandleErr&gt;&gt; <span class="kw">for </span>Metrics {
-    <span class="kw">fn </span>record(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;</span>libp2p_swarm::SwarmEvent&lt;TBvEv, THandleErr&gt;) {
+<span class="kw">impl</span>&lt;TBvEv&gt; <span class="kw">super</span>::Recorder&lt;SwarmEvent&lt;TBvEv&gt;&gt; <span class="kw">for </span>Metrics {
+    <span class="kw">fn </span>record(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;</span>SwarmEvent&lt;TBvEv&gt;) {
         <span class="kw">match </span>event {
-            libp2p_swarm::SwarmEvent::Behaviour(<span class="kw">_</span>) =&gt; {}
-            libp2p_swarm::SwarmEvent::ConnectionEstablished {
+            SwarmEvent::Behaviour(<span class="kw">_</span>) =&gt; {}
+            SwarmEvent::ConnectionEstablished {
                 endpoint,
                 established_in: time_taken,
                 connection_id,
@@ -588,7 +656,7 @@
                     .expect(<span class="string">&quot;lock not to be poisoned&quot;</span>)
                     .insert(<span class="kw-2">*</span>connection_id, Instant::now());
             }
-            libp2p_swarm::SwarmEvent::ConnectionClosed {
+            SwarmEvent::ConnectionClosed {
                 endpoint,
                 connection_id,
                 cause,
@@ -611,14 +679,14 @@
                         .as_secs_f64(),
                 );
             }
-            libp2p_swarm::SwarmEvent::IncomingConnection { send_back_addr, .. } =&gt; {
+            SwarmEvent::IncomingConnection { send_back_addr, .. } =&gt; {
                 <span class="self">self</span>.connections_incoming
                     .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
                         protocols: protocol_stack::as_string(send_back_addr),
                     })
                     .inc();
             }
-            libp2p_swarm::SwarmEvent::IncomingConnectionError {
+            SwarmEvent::IncomingConnectionError {
                 error,
                 send_back_addr,
                 ..
@@ -630,7 +698,7 @@
                     })
                     .inc();
             }
-            libp2p_swarm::SwarmEvent::OutgoingConnectionError { error, peer_id, .. } =&gt; {
+            SwarmEvent::OutgoingConnectionError { error, peer_id, .. } =&gt; {
                 <span class="kw">let </span>peer = <span class="kw">match </span>peer_id {
                     <span class="prelude-val">Some</span>(<span class="kw">_</span>) =&gt; PeerStatus::Known,
                     <span class="prelude-val">None </span>=&gt; PeerStatus::Unknown,
@@ -643,7 +711,7 @@
                 };
 
                 <span class="kw">match </span>error {
-                    libp2p_swarm::DialError::Transport(errors) =&gt; {
+                    DialError::Transport(errors) =&gt; {
                         <span class="kw">for </span>(_multiaddr, error) <span class="kw">in </span>errors {
                             <span class="kw">match </span>error {
                                 libp2p_core::transport::TransportError::MultiaddrNotSupported(
@@ -657,39 +725,31 @@
                             };
                         }
                     }
-                    libp2p_swarm::DialError::LocalPeerId { .. } =&gt; {
-                        record(OutgoingConnectionError::LocalPeerId)
-                    }
-                    libp2p_swarm::DialError::NoAddresses =&gt; {
-                        record(OutgoingConnectionError::NoAddresses)
-                    }
-                    libp2p_swarm::DialError::DialPeerConditionFalse(<span class="kw">_</span>) =&gt; {
+                    DialError::LocalPeerId { .. } =&gt; record(OutgoingConnectionError::LocalPeerId),
+                    DialError::NoAddresses =&gt; record(OutgoingConnectionError::NoAddresses),
+                    DialError::DialPeerConditionFalse(<span class="kw">_</span>) =&gt; {
                         record(OutgoingConnectionError::DialPeerConditionFalse)
                     }
-                    libp2p_swarm::DialError::Aborted =&gt; record(OutgoingConnectionError::Aborted),
-                    libp2p_swarm::DialError::WrongPeerId { .. } =&gt; {
-                        record(OutgoingConnectionError::WrongPeerId)
-                    }
-                    libp2p_swarm::DialError::Denied { .. } =&gt; {
-                        record(OutgoingConnectionError::Denied)
-                    }
+                    DialError::Aborted =&gt; record(OutgoingConnectionError::Aborted),
+                    DialError::WrongPeerId { .. } =&gt; record(OutgoingConnectionError::WrongPeerId),
+                    DialError::Denied { .. } =&gt; record(OutgoingConnectionError::Denied),
                 };
             }
-            libp2p_swarm::SwarmEvent::NewListenAddr { address, .. } =&gt; {
+            SwarmEvent::NewListenAddr { address, .. } =&gt; {
                 <span class="self">self</span>.new_listen_addr
                     .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
                         protocols: protocol_stack::as_string(address),
                     })
                     .inc();
             }
-            libp2p_swarm::SwarmEvent::ExpiredListenAddr { address, .. } =&gt; {
+            SwarmEvent::ExpiredListenAddr { address, .. } =&gt; {
                 <span class="self">self</span>.expired_listen_addr
                     .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
                         protocols: protocol_stack::as_string(address),
                     })
                     .inc();
             }
-            libp2p_swarm::SwarmEvent::ListenerClosed { addresses, .. } =&gt; {
+            SwarmEvent::ListenerClosed { addresses, .. } =&gt; {
                 <span class="kw">for </span>address <span class="kw">in </span>addresses {
                     <span class="self">self</span>.listener_closed
                         .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
@@ -698,12 +758,34 @@
                         .inc();
                 }
             }
-            libp2p_swarm::SwarmEvent::ListenerError { .. } =&gt; {
+            SwarmEvent::ListenerError { .. } =&gt; {
                 <span class="self">self</span>.listener_error.inc();
             }
-            libp2p_swarm::SwarmEvent::Dialing { .. } =&gt; {
+            SwarmEvent::Dialing { .. } =&gt; {
                 <span class="self">self</span>.dial_attempt.inc();
             }
+            SwarmEvent::NewExternalAddrCandidate { address } =&gt; {
+                <span class="self">self</span>.external_addr_candidates
+                    .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
+                        protocols: protocol_stack::as_string(address),
+                    })
+                    .inc();
+            }
+            SwarmEvent::ExternalAddrConfirmed { address } =&gt; {
+                <span class="self">self</span>.external_addr_confirmed
+                    .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
+                        protocols: protocol_stack::as_string(address),
+                    })
+                    .inc();
+            }
+            SwarmEvent::ExternalAddrExpired { address } =&gt; {
+                <span class="self">self</span>.external_addr_expired
+                    .get_or_create(<span class="kw-2">&amp;</span>AddressLabels {
+                        protocols: protocol_stack::as_string(address),
+                    })
+                    .inc();
+            }
+            <span class="kw">_ </span>=&gt; {}
         }
     }
 }
@@ -725,15 +807,13 @@
 </span><span class="kw">enum </span>ConnectionError {
     Io,
     KeepAliveTimeout,
-    Handler,
 }
 
-<span class="kw">impl</span>&lt;E&gt; From&lt;<span class="kw-2">&amp;</span>libp2p_swarm::ConnectionError&lt;E&gt;&gt; <span class="kw">for </span>ConnectionError {
-    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>libp2p_swarm::ConnectionError&lt;E&gt;) -&gt; <span class="self">Self </span>{
+<span class="kw">impl </span>From&lt;<span class="kw-2">&amp;</span>libp2p_swarm::ConnectionError&gt; <span class="kw">for </span>ConnectionError {
+    <span class="kw">fn </span>from(value: <span class="kw-2">&amp;</span>libp2p_swarm::ConnectionError) -&gt; <span class="self">Self </span>{
         <span class="kw">match </span>value {
             libp2p_swarm::ConnectionError::IO(<span class="kw">_</span>) =&gt; ConnectionError::Io,
             libp2p_swarm::ConnectionError::KeepAliveTimeout =&gt; ConnectionError::KeepAliveTimeout,
-            libp2p_swarm::ConnectionError::Handler(<span class="kw">_</span>) =&gt; ConnectionError::Handler,
         }
     }
 }

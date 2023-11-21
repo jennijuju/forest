@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.115.0/src/validator/operators.rs`."><title>operators.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../wasmparser/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.118.0/src/validator/operators.rs`."><title>operators.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../wasmparser/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3464,6 +3464,50 @@
 <a href="#3464" id="3464">3464</a>
 <a href="#3465" id="3465">3465</a>
 <a href="#3466" id="3466">3466</a>
+<a href="#3467" id="3467">3467</a>
+<a href="#3468" id="3468">3468</a>
+<a href="#3469" id="3469">3469</a>
+<a href="#3470" id="3470">3470</a>
+<a href="#3471" id="3471">3471</a>
+<a href="#3472" id="3472">3472</a>
+<a href="#3473" id="3473">3473</a>
+<a href="#3474" id="3474">3474</a>
+<a href="#3475" id="3475">3475</a>
+<a href="#3476" id="3476">3476</a>
+<a href="#3477" id="3477">3477</a>
+<a href="#3478" id="3478">3478</a>
+<a href="#3479" id="3479">3479</a>
+<a href="#3480" id="3480">3480</a>
+<a href="#3481" id="3481">3481</a>
+<a href="#3482" id="3482">3482</a>
+<a href="#3483" id="3483">3483</a>
+<a href="#3484" id="3484">3484</a>
+<a href="#3485" id="3485">3485</a>
+<a href="#3486" id="3486">3486</a>
+<a href="#3487" id="3487">3487</a>
+<a href="#3488" id="3488">3488</a>
+<a href="#3489" id="3489">3489</a>
+<a href="#3490" id="3490">3490</a>
+<a href="#3491" id="3491">3491</a>
+<a href="#3492" id="3492">3492</a>
+<a href="#3493" id="3493">3493</a>
+<a href="#3494" id="3494">3494</a>
+<a href="#3495" id="3495">3495</a>
+<a href="#3496" id="3496">3496</a>
+<a href="#3497" id="3497">3497</a>
+<a href="#3498" id="3498">3498</a>
+<a href="#3499" id="3499">3499</a>
+<a href="#3500" id="3500">3500</a>
+<a href="#3501" id="3501">3501</a>
+<a href="#3502" id="3502">3502</a>
+<a href="#3503" id="3503">3503</a>
+<a href="#3504" id="3504">3504</a>
+<a href="#3505" id="3505">3505</a>
+<a href="#3506" id="3506">3506</a>
+<a href="#3507" id="3507">3507</a>
+<a href="#3508" id="3508">3508</a>
+<a href="#3509" id="3509">3509</a>
+<a href="#3510" id="3510">3510</a>
 </pre></div><pre class="rust"><code><span class="comment">/* Copyright 2019 Mozilla Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -3490,8 +3534,8 @@
 
 </span><span class="kw">use crate</span>::{
     limits::MAX_WASM_FUNCTION_LOCALS, BinaryReaderError, BlockType, BrTable, HeapType, Ieee32,
-    Ieee64, MemArg, RefType, <span class="prelude-ty">Result</span>, ValType, VisitOperator, WasmFeatures, WasmFuncType,
-    WasmModuleResources, V128,
+    Ieee64, MemArg, RefType, <span class="prelude-ty">Result</span>, UnpackedIndex, ValType, VisitOperator, WasmFeatures,
+    WasmFuncType, WasmModuleResources, V128,
 };
 <span class="kw">use </span>std::ops::{Deref, DerefMut};
 
@@ -3741,10 +3785,10 @@
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         offset: usize,
         count: u32,
-        ty: ValType,
+        <span class="kw-2">mut </span>ty: ValType,
         resources: <span class="kw-2">&amp;</span><span class="kw">impl </span>WasmModuleResources,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        resources.check_value_type(ty, <span class="kw-2">&amp;</span><span class="self">self</span>.features, offset)<span class="question-mark">?</span>;
+        resources.check_value_type(<span class="kw-2">&amp;mut </span>ty, <span class="kw-2">&amp;</span><span class="self">self</span>.features, offset)<span class="question-mark">?</span>;
         <span class="kw">if </span>count == <span class="number">0 </span>{
             <span class="kw">return </span><span class="prelude-val">Ok</span>(());
         }
@@ -3859,7 +3903,10 @@
     }
 }
 
-<span class="kw">impl</span>&lt;<span class="lifetime">&#39;resources</span>, R: WasmModuleResources&gt; OperatorValidatorTemp&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;resources</span>, R&gt; {
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;resources</span>, R&gt; OperatorValidatorTemp&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;resources</span>, R&gt;
+<span class="kw">where
+    </span>R: WasmModuleResources,
+{
     <span class="doccomment">/// Pushes a type onto the operand stack.
     ///
     /// This is used by instructions to represent a value that is pushed to the
@@ -3870,6 +3917,23 @@
         </span>T: Into&lt;MaybeType&gt;,
     {
         <span class="kw">let </span>maybe_ty = ty.into();
+
+        <span class="kw">if </span><span class="macro">cfg!</span>(debug_assertions) {
+            <span class="kw">match </span>maybe_ty {
+                MaybeType::Type(ValType::Ref(r)) =&gt; <span class="kw">match </span>r.heap_type() {
+                    HeapType::Concrete(index) =&gt; {
+                        <span class="macro">debug_assert!</span>(
+                            <span class="macro">matches!</span>(index, UnpackedIndex::Id(<span class="kw">_</span>)),
+                            <span class="string">&quot;only ref types referencing `CoreTypeId`s can \
+                             be pushed to the operand stack&quot;
+                        </span>);
+                    }
+                    <span class="kw">_ </span>=&gt; {}
+                },
+                <span class="kw">_ </span>=&gt; {}
+            }
+        }
+
         <span class="self">self</span>.operands.push(maybe_ty);
         <span class="prelude-val">Ok</span>(())
     }
@@ -3959,10 +4023,10 @@
                 // but not any integer types.
                 </span>| (MaybeType::HeapBot, ValType::Ref(<span class="kw">_</span>)) =&gt; {}
 
-                <span class="comment">// Use the `matches` predicate to test if a found type matches
+                <span class="comment">// Use the `is_subtype` predicate to test if a found type matches
                 // the expectation.
                 </span>(MaybeType::Type(actual), expected) =&gt; {
-                    <span class="kw">if </span>!<span class="self">self</span>.resources.matches(actual, expected) {
+                    <span class="kw">if </span>!<span class="self">self</span>.resources.is_subtype(actual, expected) {
                         <span class="macro">bail!</span>(
                             <span class="self">self</span>.offset,
                             <span class="string">&quot;type mismatch: expected {}, found {}&quot;</span>,
@@ -4155,7 +4219,7 @@
     }
 
     <span class="doccomment">/// Validates a block type, primarily with various in-flight proposals.
-    </span><span class="kw">fn </span>check_block_type(<span class="kw-2">&amp;</span><span class="self">self</span>, ty: BlockType) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    </span><span class="kw">fn </span>check_block_type(<span class="kw-2">&amp;</span><span class="self">self</span>, ty: <span class="kw-2">&amp;mut </span>BlockType) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">match </span>ty {
             BlockType::Empty =&gt; <span class="prelude-val">Ok</span>(()),
             BlockType::Type(t) =&gt; <span class="self">self
@@ -4169,7 +4233,7 @@
                          when multi-value is not enabled&quot;</span>,
                     );
                 }
-                <span class="self">self</span>.func_type_at(idx)<span class="question-mark">?</span>;
+                <span class="self">self</span>.func_type_at(<span class="kw-2">*</span>idx)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             }
         }
@@ -4178,7 +4242,7 @@
     <span class="doccomment">/// Validates a `call` instruction, ensuring that the function index is
     /// in-bounds and the right types are on the stack to call the function.
     </span><span class="kw">fn </span>check_call(<span class="kw-2">&amp;mut </span><span class="self">self</span>, function_index: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>ty = <span class="kw">match </span><span class="self">self</span>.resources.type_index_of_function(function_index) {
+        <span class="kw">let </span>ty = <span class="kw">match </span><span class="self">self</span>.resources.type_of_function(function_index) {
             <span class="prelude-val">Some</span>(i) =&gt; i,
             <span class="prelude-val">None </span>=&gt; {
                 <span class="macro">bail!</span>(
@@ -4190,7 +4254,7 @@
         <span class="self">self</span>.check_call_ty(ty)
     }
 
-    <span class="kw">fn </span>check_call_ty(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_index: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>check_call_type_index(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_index: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">let </span>ty = <span class="kw">match </span><span class="self">self</span>.resources.func_type_at(type_index) {
             <span class="prelude-val">Some</span>(i) =&gt; i,
             <span class="prelude-val">None </span>=&gt; {
@@ -4200,10 +4264,16 @@
                 );
             }
         };
+        <span class="self">self</span>.check_call_ty(ty)
+    }
+
+    <span class="kw">fn </span>check_call_ty(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ty: <span class="kw-2">&amp;</span>R::FuncType) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="kw">for </span>ty <span class="kw">in </span>ty.inputs().rev() {
+            debug_assert_type_indices_are_ids(ty);
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         }
         <span class="kw">for </span>ty <span class="kw">in </span>ty.outputs() {
+            debug_assert_type_indices_are_ids(ty);
             <span class="self">self</span>.push_operand(ty)<span class="question-mark">?</span>;
         }
         <span class="prelude-val">Ok</span>(())
@@ -4218,7 +4288,7 @@
             <span class="prelude-val">Some</span>(tab) =&gt; {
                 <span class="kw">if </span>!<span class="self">self
                     </span>.resources
-                    .matches(ValType::Ref(tab.element_type), ValType::FUNCREF)
+                    .is_subtype(ValType::Ref(tab.element_type), ValType::FUNCREF)
                 {
                     <span class="macro">bail!</span>(
                         <span class="self">self</span>.offset,
@@ -4229,7 +4299,7 @@
         }
         <span class="kw">let </span>ty = <span class="self">self</span>.func_type_at(index)<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
-        <span class="kw">for </span>ty <span class="kw">in </span>ty.inputs().rev() {
+        <span class="kw">for </span>ty <span class="kw">in </span>ty.clone().inputs().rev() {
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         }
         <span class="kw">for </span>ty <span class="kw">in </span>ty.outputs() {
@@ -4519,6 +4589,21 @@
     <span class="macro">for_each_operator!</span>(validate_proposal);
 }
 
+<span class="attr">#[track_caller]
+#[inline]
+</span><span class="kw">fn </span>debug_assert_type_indices_are_ids(ty: ValType) {
+    <span class="kw">if </span><span class="macro">cfg!</span>(debug_assertions) {
+        <span class="kw">if let </span>ValType::Ref(r) = ty {
+            <span class="kw">if let </span>HeapType::Concrete(idx) = r.heap_type() {
+                <span class="macro">debug_assert!</span>(
+                    <span class="macro">matches!</span>(idx, UnpackedIndex::Id(<span class="kw">_</span>)),
+                    <span class="string">&quot;type reference should be a `CoreTypeId`, found {idx:?}&quot;
+                </span>);
+            }
+        }
+    }
+}
+
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;a</span>, T&gt; VisitOperator&lt;<span class="lifetime">&#39;a</span>&gt; <span class="kw">for </span>OperatorValidatorTemp&lt;<span class="lifetime">&#39;_</span>, <span class="lifetime">&#39;_</span>, T&gt;
 <span class="kw">where
     </span>T: WasmModuleResources,
@@ -4532,24 +4617,24 @@
         <span class="self">self</span>.unreachable()<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="kw">fn </span>visit_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ty: BlockType) -&gt; <span class="self">Self</span>::Output {
-        <span class="self">self</span>.check_block_type(ty)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>visit_block(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>ty: BlockType) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self</span>.check_block_type(<span class="kw-2">&amp;mut </span>ty)<span class="question-mark">?</span>;
         <span class="kw">for </span>ty <span class="kw">in </span><span class="self">self</span>.params(ty)<span class="question-mark">?</span>.rev() {
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         }
         <span class="self">self</span>.push_ctrl(FrameKind::Block, ty)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="kw">fn </span>visit_loop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ty: BlockType) -&gt; <span class="self">Self</span>::Output {
-        <span class="self">self</span>.check_block_type(ty)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>visit_loop(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>ty: BlockType) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self</span>.check_block_type(<span class="kw-2">&amp;mut </span>ty)<span class="question-mark">?</span>;
         <span class="kw">for </span>ty <span class="kw">in </span><span class="self">self</span>.params(ty)<span class="question-mark">?</span>.rev() {
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         }
         <span class="self">self</span>.push_ctrl(FrameKind::Loop, ty)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="kw">fn </span>visit_if(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ty: BlockType) -&gt; <span class="self">Self</span>::Output {
-        <span class="self">self</span>.check_block_type(ty)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>visit_if(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>ty: BlockType) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self</span>.check_block_type(<span class="kw-2">&amp;mut </span>ty)<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
         <span class="kw">for </span>ty <span class="kw">in </span><span class="self">self</span>.params(ty)<span class="question-mark">?</span>.rev() {
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
@@ -4565,8 +4650,8 @@
         <span class="self">self</span>.push_ctrl(FrameKind::Else, frame.block_type)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="kw">fn </span>visit_try(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ty: BlockType) -&gt; <span class="self">Self</span>::Output {
-        <span class="self">self</span>.check_block_type(ty)<span class="question-mark">?</span>;
+    <span class="kw">fn </span>visit_try(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>ty: BlockType) -&gt; <span class="self">Self</span>::Output {
+        <span class="self">self</span>.check_block_type(<span class="kw-2">&amp;mut </span>ty)<span class="question-mark">?</span>;
         <span class="kw">for </span>ty <span class="kw">in </span><span class="self">self</span>.params(ty)<span class="question-mark">?</span>.rev() {
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         }
@@ -4598,7 +4683,7 @@
     <span class="kw">fn </span>visit_throw(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="comment">// Check values associated with the exception.
         </span><span class="kw">let </span>ty = <span class="self">self</span>.tag_at(index)<span class="question-mark">?</span>;
-        <span class="kw">for </span>ty <span class="kw">in </span>ty.inputs().rev() {
+        <span class="kw">for </span>ty <span class="kw">in </span>ty.clone().inputs().rev() {
             <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         }
         <span class="kw">if </span>ty.outputs().len() &gt; <span class="number">0 </span>{
@@ -4738,25 +4823,22 @@
         <span class="prelude-val">Ok</span>(())
     }
     <span class="kw">fn </span>visit_call_ref(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_index: u32) -&gt; <span class="self">Self</span>::Output {
-        <span class="kw">let </span>hty = HeapType::Indexed(type_index);
-        <span class="self">self</span>.resources
-            .check_heap_type(hty, <span class="kw-2">&amp;</span><span class="self">self</span>.features, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
+        <span class="kw">let </span>unpacked_index = UnpackedIndex::Module(type_index);
+        <span class="kw">let </span><span class="kw-2">mut </span>hty = HeapType::Concrete(unpacked_index);
+        <span class="self">self</span>.resources.check_heap_type(<span class="kw-2">&amp;mut </span>hty, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
         <span class="comment">// If `None` is popped then that means a &quot;bottom&quot; type was popped which
         // is always considered equivalent to the `hty` tag.
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(rt) = <span class="self">self</span>.pop_ref()<span class="question-mark">? </span>{
-            <span class="kw">let </span>expected = RefType::indexed_func(<span class="bool-val">true</span>, type_index)
-                .expect(<span class="string">&quot;existing heap types should be within our limits&quot;</span>);
-            <span class="kw">if </span>!<span class="self">self
-                </span>.resources
-                .matches(ValType::Ref(rt), ValType::Ref(expected))
-            {
+            <span class="kw">let </span>expected = RefType::new(<span class="bool-val">true</span>, hty).expect(<span class="string">&quot;hty should be previously validated&quot;</span>);
+            <span class="kw">let </span>expected = ValType::Ref(expected);
+            <span class="kw">if </span>!<span class="self">self</span>.resources.is_subtype(ValType::Ref(rt), expected) {
                 <span class="macro">bail!</span>(
                     <span class="self">self</span>.offset,
                     <span class="string">&quot;type mismatch: funcref on stack does not match specified type&quot;</span>,
                 );
             }
         }
-        <span class="self">self</span>.check_call_ty(type_index)
+        <span class="self">self</span>.check_call_type_index(type_index)
     }
     <span class="kw">fn </span>visit_return_call_ref(<span class="kw-2">&amp;mut </span><span class="self">self</span>, type_index: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="self">self</span>.visit_call_ref(type_index)<span class="question-mark">?</span>;
@@ -4823,9 +4905,9 @@
         <span class="self">self</span>.push_operand(ty)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="kw">fn </span>visit_typed_select(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ty: ValType) -&gt; <span class="self">Self</span>::Output {
+    <span class="kw">fn </span>visit_typed_select(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>ty: ValType) -&gt; <span class="self">Self</span>::Output {
         <span class="self">self</span>.resources
-            .check_value_type(ty, <span class="kw-2">&amp;</span><span class="self">self</span>.features, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
+            .check_value_type(<span class="kw-2">&amp;mut </span>ty, <span class="kw-2">&amp;</span><span class="self">self</span>.features, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
@@ -4834,6 +4916,7 @@
     }
     <span class="kw">fn </span>visit_local_get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, local_index: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span>ty = <span class="self">self</span>.local(local_index)<span class="question-mark">?</span>;
+        debug_assert_type_indices_are_ids(ty);
         <span class="kw">if </span>!<span class="self">self</span>.local_inits[local_index <span class="kw">as </span>usize] {
             <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;uninitialized local: {}&quot;</span>, local_index);
         }
@@ -4862,7 +4945,9 @@
     }
     <span class="kw">fn </span>visit_global_get(<span class="kw-2">&amp;mut </span><span class="self">self</span>, global_index: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(ty) = <span class="self">self</span>.resources.global_at(global_index) {
-            <span class="self">self</span>.push_operand(ty.content_type)<span class="question-mark">?</span>;
+            <span class="kw">let </span>ty = ty.content_type;
+            debug_assert_type_indices_are_ids(ty);
+            <span class="self">self</span>.push_operand(ty)<span class="question-mark">?</span>;
         } <span class="kw">else </span>{
             <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;unknown global: global index out of bounds&quot;</span>);
         };
@@ -5667,12 +5752,13 @@
     <span class="kw">fn </span>visit_atomic_fence(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="self">Self</span>::Output {
         <span class="prelude-val">Ok</span>(())
     }
-    <span class="kw">fn </span>visit_ref_null(<span class="kw-2">&amp;mut </span><span class="self">self</span>, heap_type: HeapType) -&gt; <span class="self">Self</span>::Output {
+    <span class="kw">fn </span>visit_ref_null(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>heap_type: HeapType) -&gt; <span class="self">Self</span>::Output {
         <span class="self">self</span>.resources
-            .check_heap_type(heap_type, <span class="kw-2">&amp;</span><span class="self">self</span>.features, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
-        <span class="self">self</span>.push_operand(ValType::Ref(
+            .check_heap_type(<span class="kw-2">&amp;mut </span>heap_type, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
+        <span class="kw">let </span>ty = ValType::Ref(
             RefType::new(<span class="bool-val">true</span>, heap_type).expect(<span class="string">&quot;existing heap types should be within our limits&quot;</span>),
-        ))<span class="question-mark">?</span>;
+        );
+        <span class="self">self</span>.push_operand(ty)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
 
@@ -5714,7 +5800,7 @@
                 // perform the match because if the branch is taken it&#39;s a
                 // non-null value.
                 </span><span class="kw">let </span>ty = rt0.as_non_null();
-                <span class="kw">if </span>!<span class="self">self</span>.resources.matches(ty.into(), rt1) {
+                <span class="kw">if </span>!<span class="self">self</span>.resources.is_subtype(ty.into(), rt1) {
                     <span class="macro">bail!</span>(
                         <span class="self">self</span>.offset,
                         <span class="string">&quot;type mismatch: expected {} but found {}&quot;</span>,
@@ -5742,8 +5828,8 @@
         <span class="prelude-val">Ok</span>(())
     }
     <span class="kw">fn </span>visit_ref_func(<span class="kw-2">&amp;mut </span><span class="self">self</span>, function_index: u32) -&gt; <span class="self">Self</span>::Output {
-        <span class="kw">let </span>type_index = <span class="kw">match </span><span class="self">self</span>.resources.type_index_of_function(function_index) {
-            <span class="prelude-val">Some</span>(idx) =&gt; idx,
+        <span class="kw">let </span>type_id = <span class="kw">match </span><span class="self">self</span>.resources.type_id_of_function(function_index) {
+            <span class="prelude-val">Some</span>(id) =&gt; id,
             <span class="prelude-val">None </span>=&gt; <span class="macro">bail!</span>(
                 <span class="self">self</span>.offset,
                 <span class="string">&quot;unknown function {}: function index out of bounds&quot;</span>,
@@ -5754,16 +5840,13 @@
             <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;undeclared function reference&quot;</span>);
         }
 
-        <span class="comment">// FIXME(#924) this should not be conditional based on enabled
-        // proposals.
-        </span><span class="kw">if </span><span class="self">self</span>.features.function_references {
-            <span class="self">self</span>.push_operand(
-                RefType::indexed_func(<span class="bool-val">false</span>, type_index)
-                    .expect(<span class="string">&quot;our limits on number of types should fit into ref type&quot;</span>),
-            )<span class="question-mark">?</span>;
-        } <span class="kw">else </span>{
-            <span class="self">self</span>.push_operand(ValType::FUNCREF)<span class="question-mark">?</span>;
-        }
+        <span class="kw">let </span>index = UnpackedIndex::Id(type_id);
+        <span class="kw">let </span>ty = ValType::Ref(
+            RefType::new(<span class="bool-val">false</span>, HeapType::Concrete(index)).ok_or_else(|| {
+                BinaryReaderError::new(<span class="string">&quot;implementation limit: type index too large&quot;</span>, <span class="self">self</span>.offset)
+            })<span class="question-mark">?</span>,
+        );
+        <span class="self">self</span>.push_operand(ty)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
     <span class="kw">fn </span>visit_v128_load(<span class="kw-2">&amp;mut </span><span class="self">self</span>, memarg: MemArg) -&gt; <span class="self">Self</span>::Output {
@@ -6720,7 +6803,7 @@
         };
         <span class="kw">if </span>!<span class="self">self
             </span>.resources
-            .matches(ValType::Ref(segment_ty), ValType::Ref(table.element_type))
+            .is_subtype(ValType::Ref(segment_ty), ValType::Ref(table.element_type))
         {
             <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;type mismatch&quot;</span>);
         }
@@ -6748,7 +6831,7 @@
             (<span class="prelude-val">Some</span>(a), <span class="prelude-val">Some</span>(b)) =&gt; (a, b),
             <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;table index out of bounds&quot;</span>),
         };
-        <span class="kw">if </span>!<span class="self">self</span>.resources.matches(
+        <span class="kw">if </span>!<span class="self">self</span>.resources.is_subtype(
             ValType::Ref(src.element_type),
             ValType::Ref(dst.element_type),
         ) {
@@ -6764,26 +6847,30 @@
             <span class="prelude-val">Some</span>(ty) =&gt; ty.element_type,
             <span class="prelude-val">None </span>=&gt; <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;table index out of bounds&quot;</span>),
         };
+        <span class="kw">let </span>ty = ValType::Ref(ty);
+        debug_assert_type_indices_are_ids(ty);
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
-        <span class="self">self</span>.push_operand(ValType::Ref(ty))<span class="question-mark">?</span>;
+        <span class="self">self</span>.push_operand(ty)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
     <span class="kw">fn </span>visit_table_set(<span class="kw-2">&amp;mut </span><span class="self">self</span>, table: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span>ty = <span class="kw">match </span><span class="self">self</span>.resources.table_at(table) {
-            <span class="prelude-val">Some</span>(ty) =&gt; ty.element_type,
+            <span class="prelude-val">Some</span>(ty) =&gt; ValType::Ref(ty.element_type),
             <span class="prelude-val">None </span>=&gt; <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;table index out of bounds&quot;</span>),
         };
-        <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::Ref(ty)))<span class="question-mark">?</span>;
+        debug_assert_type_indices_are_ids(ty);
+        <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
     <span class="kw">fn </span>visit_table_grow(<span class="kw-2">&amp;mut </span><span class="self">self</span>, table: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span>ty = <span class="kw">match </span><span class="self">self</span>.resources.table_at(table) {
-            <span class="prelude-val">Some</span>(ty) =&gt; ty.element_type,
+            <span class="prelude-val">Some</span>(ty) =&gt; ValType::Ref(ty.element_type),
             <span class="prelude-val">None </span>=&gt; <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;table index out of bounds&quot;</span>),
         };
+        debug_assert_type_indices_are_ids(ty);
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
-        <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::Ref(ty)))<span class="question-mark">?</span>;
+        <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         <span class="self">self</span>.push_operand(ValType::I32)<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }
@@ -6796,11 +6883,12 @@
     }
     <span class="kw">fn </span>visit_table_fill(<span class="kw-2">&amp;mut </span><span class="self">self</span>, table: u32) -&gt; <span class="self">Self</span>::Output {
         <span class="kw">let </span>ty = <span class="kw">match </span><span class="self">self</span>.resources.table_at(table) {
-            <span class="prelude-val">Some</span>(ty) =&gt; ty.element_type,
+            <span class="prelude-val">Some</span>(ty) =&gt; ValType::Ref(ty.element_type),
             <span class="prelude-val">None </span>=&gt; <span class="macro">bail!</span>(<span class="self">self</span>.offset, <span class="string">&quot;table index out of bounds&quot;</span>),
         };
+        debug_assert_type_indices_are_ids(ty);
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
-        <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::Ref(ty)))<span class="question-mark">?</span>;
+        <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ty))<span class="question-mark">?</span>;
         <span class="self">self</span>.pop_operand(<span class="prelude-val">Some</span>(ValType::I32))<span class="question-mark">?</span>;
         <span class="prelude-val">Ok</span>(())
     }

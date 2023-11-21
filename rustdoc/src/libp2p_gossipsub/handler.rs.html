@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-gossipsub-0.45.2/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_gossipsub" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_gossipsub/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-gossipsub-0.46.0/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_gossipsub" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_gossipsub/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -532,38 +532,6 @@
 <a href="#532" id="532">532</a>
 <a href="#533" id="533">533</a>
 <a href="#534" id="534">534</a>
-<a href="#535" id="535">535</a>
-<a href="#536" id="536">536</a>
-<a href="#537" id="537">537</a>
-<a href="#538" id="538">538</a>
-<a href="#539" id="539">539</a>
-<a href="#540" id="540">540</a>
-<a href="#541" id="541">541</a>
-<a href="#542" id="542">542</a>
-<a href="#543" id="543">543</a>
-<a href="#544" id="544">544</a>
-<a href="#545" id="545">545</a>
-<a href="#546" id="546">546</a>
-<a href="#547" id="547">547</a>
-<a href="#548" id="548">548</a>
-<a href="#549" id="549">549</a>
-<a href="#550" id="550">550</a>
-<a href="#551" id="551">551</a>
-<a href="#552" id="552">552</a>
-<a href="#553" id="553">553</a>
-<a href="#554" id="554">554</a>
-<a href="#555" id="555">555</a>
-<a href="#556" id="556">556</a>
-<a href="#557" id="557">557</a>
-<a href="#558" id="558">558</a>
-<a href="#559" id="559">559</a>
-<a href="#560" id="560">560</a>
-<a href="#561" id="561">561</a>
-<a href="#562" id="562">562</a>
-<a href="#563" id="563">563</a>
-<a href="#564" id="564">564</a>
-<a href="#565" id="565">565</a>
-<a href="#566" id="566">566</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2020 Sigma Prime Pty Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -596,17 +564,14 @@
 <span class="kw">use </span>libp2p_core::upgrade::DeniedUpgrade;
 <span class="kw">use </span>libp2p_swarm::handler::{
     ConnectionEvent, ConnectionHandler, ConnectionHandlerEvent, DialUpgradeError,
-    FullyNegotiatedInbound, FullyNegotiatedOutbound, KeepAlive, StreamUpgradeError,
-    SubstreamProtocol,
+    FullyNegotiatedInbound, FullyNegotiatedOutbound, StreamUpgradeError, SubstreamProtocol,
 };
 <span class="kw">use </span>libp2p_swarm::Stream;
 <span class="kw">use </span>smallvec::SmallVec;
 <span class="kw">use </span>std::{
     pin::Pin,
     task::{Context, Poll},
-    time::Duration,
 };
-<span class="kw">use </span>void::Void;
 
 <span class="doccomment">/// The event emitted by the Handler. This informs the behaviour of various events created
 /// by the handler.
@@ -685,9 +650,6 @@
 
     last_io_activity: Instant,
 
-    <span class="doccomment">/// The amount of time we keep an idle connection alive.
-    </span>idle_timeout: Duration,
-
     <span class="doccomment">/// Keeps track of whether this connection is for a peer in the mesh. This is used to make
     /// decisions about the keep alive state for this connection.
     </span>in_mesh: bool,
@@ -730,7 +692,7 @@
 
 <span class="kw">impl </span>Handler {
     <span class="doccomment">/// Builds a new [`Handler`].
-    </span><span class="kw">pub fn </span>new(protocol_config: ProtocolConfig, idle_timeout: Duration) -&gt; <span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>new(protocol_config: ProtocolConfig) -&gt; <span class="self">Self </span>{
         Handler::Enabled(EnabledHandler {
             listen_protocol: protocol_config,
             inbound_substream: <span class="prelude-val">None</span>,
@@ -742,7 +704,6 @@
             peer_kind: <span class="prelude-val">None</span>,
             peer_kind_sent: <span class="bool-val">false</span>,
             last_io_activity: Instant::now(),
-            idle_timeout,
             in_mesh: <span class="bool-val">false</span>,
         })
     }
@@ -759,7 +720,7 @@
         }
 
         <span class="comment">// new inbound substream. Replace the current one, if it exists.
-        </span><span class="macro">log::trace!</span>(<span class="string">&quot;New inbound substream request&quot;</span>);
+        </span><span class="macro">tracing::trace!</span>(<span class="string">&quot;New inbound substream request&quot;</span>);
         <span class="self">self</span>.inbound_substream = <span class="prelude-val">Some</span>(InboundSubstreamState::WaitingInput(substream));
     }
 
@@ -792,7 +753,6 @@
             &lt;Handler <span class="kw">as </span>ConnectionHandler&gt;::OutboundProtocol,
             &lt;Handler <span class="kw">as </span>ConnectionHandler&gt;::OutboundOpenInfo,
             &lt;Handler <span class="kw">as </span>ConnectionHandler&gt;::ToBehaviour,
-            &lt;Handler <span class="kw">as </span>ConnectionHandler&gt;::Error,
         &gt;,
     &gt; {
         <span class="kw">if </span>!<span class="self">self</span>.peer_kind_sent {
@@ -830,7 +790,7 @@
                             <span class="kw">return </span>Poll::Ready(ConnectionHandlerEvent::NotifyBehaviour(message));
                         }
                         Poll::Ready(<span class="prelude-val">Some</span>(<span class="prelude-val">Err</span>(error))) =&gt; {
-                            <span class="macro">log::debug!</span>(<span class="string">&quot;Failed to read from inbound stream: {error}&quot;</span>);
+                            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Failed to read from inbound stream: {error}&quot;</span>);
                             <span class="comment">// Close this side of the stream. If the
                             // peer is still around, they will re-establish their
                             // outbound stream i.e. our inbound stream.
@@ -839,7 +799,7 @@
                         }
                         <span class="comment">// peer closed the stream
                         </span>Poll::Ready(<span class="prelude-val">None</span>) =&gt; {
-                            <span class="macro">log::debug!</span>(<span class="string">&quot;Inbound stream closed by remote&quot;</span>);
+                            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Inbound stream closed by remote&quot;</span>);
                             <span class="self">self</span>.inbound_substream =
                                 <span class="prelude-val">Some</span>(InboundSubstreamState::Closing(substream));
                         }
@@ -857,7 +817,7 @@
                                 <span class="comment">// Don&#39;t close the connection but just drop the inbound substream.
                                 // In case the remote has more to send, they will open up a new
                                 // substream.
-                                </span><span class="macro">log::debug!</span>(<span class="string">&quot;Inbound substream error while closing: {e}&quot;</span>);
+                                </span><span class="macro">tracing::debug!</span>(<span class="string">&quot;Inbound substream error while closing: {e}&quot;</span>);
                             }
                             <span class="self">self</span>.inbound_substream = <span class="prelude-val">None</span>;
                             <span class="kw">break</span>;
@@ -907,14 +867,16 @@
                                         <span class="prelude-val">Some</span>(OutboundSubstreamState::PendingFlush(substream))
                                 }
                                 <span class="prelude-val">Err</span>(e) =&gt; {
-                                    <span class="macro">log::debug!</span>(<span class="string">&quot;Failed to send message on outbound stream: {e}&quot;</span>);
+                                    <span class="macro">tracing::debug!</span>(
+                                        <span class="string">&quot;Failed to send message on outbound stream: {e}&quot;
+                                    </span>);
                                     <span class="self">self</span>.outbound_substream = <span class="prelude-val">None</span>;
                                     <span class="kw">break</span>;
                                 }
                             }
                         }
                         Poll::Ready(<span class="prelude-val">Err</span>(e)) =&gt; {
-                            <span class="macro">log::debug!</span>(<span class="string">&quot;Failed to send message on outbound stream: {e}&quot;</span>);
+                            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Failed to send message on outbound stream: {e}&quot;</span>);
                             <span class="self">self</span>.outbound_substream = <span class="prelude-val">None</span>;
                             <span class="kw">break</span>;
                         }
@@ -933,7 +895,7 @@
                                 <span class="prelude-val">Some</span>(OutboundSubstreamState::WaitingOutput(substream))
                         }
                         Poll::Ready(<span class="prelude-val">Err</span>(e)) =&gt; {
-                            <span class="macro">log::debug!</span>(<span class="string">&quot;Failed to flush outbound stream: {e}&quot;</span>);
+                            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Failed to flush outbound stream: {e}&quot;</span>);
                             <span class="self">self</span>.outbound_substream = <span class="prelude-val">None</span>;
                             <span class="kw">break</span>;
                         }
@@ -961,7 +923,6 @@
 <span class="kw">impl </span>ConnectionHandler <span class="kw">for </span>Handler {
     <span class="kw">type </span>FromBehaviour = HandlerIn;
     <span class="kw">type </span>ToBehaviour = HandlerEvent;
-    <span class="kw">type </span>Error = Void;
     <span class="kw">type </span>InboundOpenInfo = ();
     <span class="kw">type </span>InboundProtocol = either::Either&lt;ProtocolConfig, DeniedUpgrade&gt;;
     <span class="kw">type </span>OutboundOpenInfo = ();
@@ -990,43 +951,21 @@
                 }
             },
             Handler::Disabled(<span class="kw">_</span>) =&gt; {
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Handler is disabled. Dropping message {:?}&quot;</span>, message);
+                <span class="macro">tracing::debug!</span>(<span class="question-mark">?</span>message, <span class="string">&quot;Handler is disabled. Dropping message&quot;</span>);
             }
         }
     }
 
-    <span class="kw">fn </span>connection_keep_alive(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; KeepAlive {
-        <span class="kw">match </span><span class="self">self </span>{
-            Handler::Enabled(handler) =&gt; {
-                <span class="kw">if </span>handler.in_mesh {
-                    <span class="kw">return </span>KeepAlive::Yes;
-                }
-
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(
-                    OutboundSubstreamState::PendingSend(<span class="kw">_</span>, <span class="kw">_</span>)
-                    | OutboundSubstreamState::PendingFlush(<span class="kw">_</span>),
-                ) = handler.outbound_substream
-                {
-                    <span class="kw">return </span>KeepAlive::Yes;
-                }
-
-                <span class="attr">#[allow(deprecated)]
-                </span>KeepAlive::Until(handler.last_io_activity + handler.idle_timeout)
-            }
-            Handler::Disabled(<span class="kw">_</span>) =&gt; KeepAlive::No,
-        }
+    <span class="kw">fn </span>connection_keep_alive(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="macro">matches!</span>(<span class="self">self</span>, Handler::Enabled(h) <span class="kw">if </span>h.in_mesh)
     }
 
-    <span class="kw">fn </span>poll(
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, name = <span class="string">&quot;ConnectionHandler::poll&quot;</span>, skip(<span class="self">self</span>, cx))]
+    </span><span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
     ) -&gt; Poll&lt;
-        ConnectionHandlerEvent&lt;
-            <span class="self">Self</span>::OutboundProtocol,
-            <span class="self">Self</span>::OutboundOpenInfo,
-            <span class="self">Self</span>::ToBehaviour,
-            <span class="self">Self</span>::Error,
-        &gt;,
+        ConnectionHandlerEvent&lt;<span class="self">Self</span>::OutboundProtocol, <span class="self">Self</span>::OutboundOpenInfo, <span class="self">Self</span>::ToBehaviour&gt;,
     &gt; {
         <span class="kw">match </span><span class="self">self </span>{
             Handler::Enabled(handler) =&gt; handler.poll(cx),
@@ -1059,7 +998,7 @@
                     handler.inbound_substream_attempts += <span class="number">1</span>;
 
                     <span class="kw">if </span>handler.inbound_substream_attempts == MAX_SUBSTREAM_ATTEMPTS {
-                        <span class="macro">log::warn!</span>(
+                        <span class="macro">tracing::warn!</span>(
                             <span class="string">&quot;The maximum number of inbound substreams attempts has been exceeded&quot;
                         </span>);
                         <span class="kw-2">*</span><span class="self">self </span>= Handler::Disabled(DisabledHandler::MaxSubstreamAttempts);
@@ -1073,7 +1012,7 @@
                     handler.outbound_substream_attempts += <span class="number">1</span>;
 
                     <span class="kw">if </span>handler.outbound_substream_attempts == MAX_SUBSTREAM_ATTEMPTS {
-                        <span class="macro">log::warn!</span>(
+                        <span class="macro">tracing::warn!</span>(
                             <span class="string">&quot;The maximum number of outbound substream attempts has been exceeded&quot;
                         </span>);
                         <span class="kw-2">*</span><span class="self">self </span>= Handler::Disabled(DisabledHandler::MaxSubstreamAttempts);
@@ -1096,7 +1035,7 @@
                         error: StreamUpgradeError::Timeout,
                         ..
                     }) =&gt; {
-                        <span class="macro">log::debug!</span>(<span class="string">&quot;Dial upgrade error: Protocol negotiation timeout&quot;</span>);
+                        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Dial upgrade error: Protocol negotiation timeout&quot;</span>);
                     }
                     ConnectionEvent::DialUpgradeError(DialUpgradeError {
                         error: StreamUpgradeError::Apply(e),
@@ -1107,7 +1046,7 @@
                         ..
                     }) =&gt; {
                         <span class="comment">// The protocol is not supported
-                        </span><span class="macro">log::debug!</span>(
+                        </span><span class="macro">tracing::debug!</span>(
                             <span class="string">&quot;The remote peer does not support gossipsub on this connection&quot;
                         </span>);
                         <span class="kw-2">*</span><span class="self">self </span>= Handler::Disabled(DisabledHandler::ProtocolUnsupported {
@@ -1118,12 +1057,9 @@
                         error: StreamUpgradeError::Io(e),
                         ..
                     }) =&gt; {
-                        <span class="macro">log::debug!</span>(<span class="string">&quot;Protocol negotiation failed: {e}&quot;</span>)
+                        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Protocol negotiation failed: {e}&quot;</span>)
                     }
-                    ConnectionEvent::AddressChange(<span class="kw">_</span>)
-                    | ConnectionEvent::ListenUpgradeError(<span class="kw">_</span>)
-                    | ConnectionEvent::LocalProtocolsChange(<span class="kw">_</span>)
-                    | ConnectionEvent::RemoteProtocolsChange(<span class="kw">_</span>) =&gt; {}
+                    <span class="kw">_ </span>=&gt; {}
                 }
             }
             Handler::Disabled(<span class="kw">_</span>) =&gt; {}

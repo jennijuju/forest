@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["Unit"],"struct":["CollectorIterator","Descriptor","MetricIterator","Prefix","Registry"],"trait":["LocalMetric","Metric"]};
+window.SIDEBAR_ITEMS = {"enum":["Unit"],"struct":["Registry"],"trait":["Metric"]};

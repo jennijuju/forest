@@ -851,13 +851,6 @@
 <a href="#851" id="851">851</a>
 <a href="#852" id="852">852</a>
 <a href="#853" id="853">853</a>
-<a href="#854" id="854">854</a>
-<a href="#855" id="855">855</a>
-<a href="#856" id="856">856</a>
-<a href="#857" id="857">857</a>
-<a href="#858" id="858">858</a>
-<a href="#859" id="859">859</a>
-<a href="#860" id="860">860</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -888,8 +881,7 @@
     identity::Keypair,
     metrics::{Metrics, Recorder},
     multiaddr::Protocol,
-    noise, ping,
-    request_response::{<span class="self">self</span>, RequestId, ResponseChannel},
+    noise, ping, request_response,
     swarm::{<span class="self">self</span>, SwarmEvent},
     yamux, PeerId, Swarm, Transport,
 };
@@ -968,22 +960,22 @@
         request: HelloRequest,
     },
     HelloRequestOutbound {
-        request_id: RequestId,
+        request_id: request_response::OutboundRequestId,
     },
     HelloResponseInbound {
-        request_id: RequestId,
+        request_id: request_response::OutboundRequestId,
     },
     ChainExchangeRequestOutbound {
-        request_id: RequestId,
+        request_id: request_response::OutboundRequestId,
     },
     ChainExchangeResponseInbound {
-        request_id: RequestId,
+        request_id: request_response::OutboundRequestId,
     },
     ChainExchangeRequestInbound {
-        request_id: RequestId,
+        request_id: request_response::InboundRequestId,
     },
     ChainExchangeResponseOutbound {
-        request_id: RequestId,
+        request_id: request_response::InboundRequestId,
     },
     PeerConnected(PeerId),
     PeerDisconnected(PeerId),
@@ -1510,16 +1502,10 @@
             peer,
             error: <span class="kw">_</span>,
         } =&gt; {
-            hello.on_error(<span class="kw-2">&amp;</span>request_id);
+            hello.on_outbound_failure(<span class="kw-2">&amp;</span>request_id);
             peer_manager.mark_peer_bad(peer).<span class="kw">await</span>;
         }
-        request_response::Event::InboundFailure {
-            request_id,
-            peer: <span class="kw">_</span>,
-            error: <span class="kw">_</span>,
-        } =&gt; {
-            hello.on_error(<span class="kw-2">&amp;</span>request_id);
-        }
+        request_response::Event::InboundFailure { .. } =&gt; {}
         request_response::Event::ResponseSent { .. } =&gt; (),
     }
 }
@@ -1557,8 +1543,8 @@
     db: <span class="kw-2">&amp;</span>Arc&lt;ChainStore&lt;DB&gt;&gt;,
     network_sender_out: <span class="kw-2">&amp;</span>Sender&lt;NetworkEvent&gt;,
     cx_response_tx: Sender&lt;(
-        RequestId,
-        ResponseChannel&lt;ChainExchangeResponse&gt;,
+        request_response::InboundRequestId,
+        request_response::ResponseChannel&lt;ChainExchangeResponse&gt;,
         ChainExchangeResponse,
     )&gt;,
 ) <span class="kw">where
@@ -1641,8 +1627,8 @@
     genesis_cid: <span class="kw-2">&amp;</span>Cid,
     network_sender_out: <span class="kw-2">&amp;</span>Sender&lt;NetworkEvent&gt;,
     cx_response_tx: Sender&lt;(
-        RequestId,
-        ResponseChannel&lt;ChainExchangeResponse&gt;,
+        request_response::InboundRequestId,
+        request_response::ResponseChannel&lt;ChainExchangeResponse&gt;,
         ChainExchangeResponse,
     )&gt;,
     pubsub_block_str: <span class="kw-2">&amp;</span>str,

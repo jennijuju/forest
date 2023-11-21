@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.115.0/src/validator/core.rs`."><title>core.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../wasmparser/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.118.0/src/validator/core.rs`."><title>core.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../wasmparser/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1344,36 +1344,71 @@
 <a href="#1344" id="1344">1344</a>
 <a href="#1345" id="1345">1345</a>
 <a href="#1346" id="1346">1346</a>
+<a href="#1347" id="1347">1347</a>
+<a href="#1348" id="1348">1348</a>
+<a href="#1349" id="1349">1349</a>
+<a href="#1350" id="1350">1350</a>
+<a href="#1351" id="1351">1351</a>
+<a href="#1352" id="1352">1352</a>
+<a href="#1353" id="1353">1353</a>
+<a href="#1354" id="1354">1354</a>
+<a href="#1355" id="1355">1355</a>
+<a href="#1356" id="1356">1356</a>
+<a href="#1357" id="1357">1357</a>
+<a href="#1358" id="1358">1358</a>
+<a href="#1359" id="1359">1359</a>
+<a href="#1360" id="1360">1360</a>
+<a href="#1361" id="1361">1361</a>
+<a href="#1362" id="1362">1362</a>
+<a href="#1363" id="1363">1363</a>
+<a href="#1364" id="1364">1364</a>
+<a href="#1365" id="1365">1365</a>
+<a href="#1366" id="1366">1366</a>
+<a href="#1367" id="1367">1367</a>
+<a href="#1368" id="1368">1368</a>
+<a href="#1369" id="1369">1369</a>
+<a href="#1370" id="1370">1370</a>
+<a href="#1371" id="1371">1371</a>
+<a href="#1372" id="1372">1372</a>
+<a href="#1373" id="1373">1373</a>
+<a href="#1374" id="1374">1374</a>
+<a href="#1375" id="1375">1375</a>
+<a href="#1376" id="1376">1376</a>
+<a href="#1377" id="1377">1377</a>
+<a href="#1378" id="1378">1378</a>
+<a href="#1379" id="1379">1379</a>
+<a href="#1380" id="1380">1380</a>
+<a href="#1381" id="1381">1381</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! State relating to validating a WebAssembly module.
 //!
-</span><span class="kw">use </span>std::mem;
-<span class="kw">use </span>std::{collections::HashSet, sync::Arc};
 
-<span class="kw">use </span>indexmap::IndexMap;
+</span><span class="kw">mod </span>canonical;
 
-<span class="kw">use </span><span class="kw">crate</span>::limits::<span class="kw-2">*</span>;
-<span class="kw">use </span><span class="kw">crate</span>::readers::Matches;
-<span class="kw">use </span><span class="kw">crate</span>::validator::core::arc::MaybeOwned;
-<span class="kw">use crate</span>::{
-    BinaryReaderError, ConstExpr, Data, DataKind, Element, ElementKind, ExternalKind, FuncType,
-    Global, GlobalType, HeapType, MemoryType, RecGroup, RefType, <span class="prelude-ty">Result</span>, StorageType,
-    StructuralType, SubType, Table, TableInit, TableType, TagType, TypeRef, ValType, VisitOperator,
-    WasmFeatures, WasmModuleResources,
-};
-
+<span class="kw">use </span><span class="self">self</span>::{arc::MaybeOwned, canonical::canonicalize_and_intern_rec_group};
 <span class="kw">use super</span>::{
     check_max, combine_type_sizes,
     operators::{ty_to_str, OperatorValidator, OperatorValidatorAllocations},
-    types::{EntityType, Type, TypeAlloc, TypeId, TypeList},
+    types::{CoreTypeId, EntityType, RecGroupId, TypeAlloc, TypeList},
 };
+<span class="kw">use </span><span class="kw">crate</span>::validator::types::TypeIdentifier;
+<span class="kw">use crate</span>::{
+    limits::<span class="kw-2">*</span>, BinaryReaderError, CompositeType, ConstExpr, Data, DataKind, Element, ElementKind,
+    ExternalKind, FuncType, Global, GlobalType, HeapType, MemoryType, PackedIndex, RecGroup,
+    RefType, <span class="prelude-ty">Result</span>, StorageType, SubType, Table, TableInit, TableType, TagType, TypeRef,
+    UnpackedIndex, ValType, VisitOperator, WasmFeatures, WasmModuleResources,
+};
+<span class="kw">use </span>indexmap::IndexMap;
+<span class="kw">use </span>std::mem;
+<span class="kw">use </span>std::{collections::HashSet, sync::Arc};
 
 <span class="comment">// Section order for WebAssembly modules.
 //
 // Component sections are unordered and allow for duplicates,
 // so this isn&#39;t used for components.
-</span><span class="attr">#[derive(Copy, Clone, PartialOrd, Ord, PartialEq, Eq, Debug)]
+</span><span class="attr">#[derive(Copy, Clone, Default, PartialOrd, Ord, PartialEq, Eq, Debug)]
 </span><span class="kw">pub enum </span>Order {
-    Initial,
+    <span class="attr">#[default]
+    </span>Initial,
     Type,
     Import,
     Function,
@@ -1387,12 +1422,6 @@
     DataCount,
     Code,
     Data,
-}
-
-<span class="kw">impl </span>Default <span class="kw">for </span>Order {
-    <span class="kw">fn </span>default() -&gt; Order {
-        Order::Initial
-    }
 }
 
 <span class="attr">#[derive(Default)]
@@ -1478,13 +1507,13 @@
 
     <span class="kw">pub fn </span>add_global(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        global: Global,
+        <span class="kw-2">mut </span>global: Global,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;</span>TypeList,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.module
-            .check_global_type(<span class="kw-2">&amp;</span>global.ty, features, offset)<span class="question-mark">?</span>;
+            .check_global_type(<span class="kw-2">&amp;mut </span>global.ty, features, offset)<span class="question-mark">?</span>;
         <span class="self">self</span>.check_const_expr(<span class="kw-2">&amp;</span>global.init_expr, global.ty.content_type, features, types)<span class="question-mark">?</span>;
         <span class="self">self</span>.module.assert_mut().globals.push(global.ty);
         <span class="prelude-val">Ok</span>(())
@@ -1492,12 +1521,13 @@
 
     <span class="kw">pub fn </span>add_table(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        table: Table&lt;<span class="lifetime">&#39;_</span>&gt;,
+        <span class="kw-2">mut </span>table: Table&lt;<span class="lifetime">&#39;_</span>&gt;,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;</span>TypeList,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.module.check_table_type(<span class="kw-2">&amp;</span>table.ty, features, offset)<span class="question-mark">?</span>;
+        <span class="self">self</span>.module
+            .check_table_type(<span class="kw-2">&amp;mut </span>table.ty, features, offset)<span class="question-mark">?</span>;
 
         <span class="kw">match </span><span class="kw-2">&amp;</span>table.init {
             TableInit::RefNull =&gt; {
@@ -1541,18 +1571,17 @@
 
     <span class="kw">pub fn </span>add_element_segment(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        e: Element,
+        <span class="kw-2">mut </span>e: Element,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;</span>TypeList,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// the `funcref` value type is allowed all the way back to the MVP, so
         // don&#39;t check it here
-        </span><span class="kw">let </span>element_ty = <span class="kw">match </span><span class="kw-2">&amp;</span>e.items {
+        </span><span class="kw">let </span>element_ty = <span class="kw">match </span><span class="kw-2">&amp;mut </span>e.items {
             <span class="kw">crate</span>::ElementItems::Functions(<span class="kw">_</span>) =&gt; RefType::FUNC,
             <span class="kw">crate</span>::ElementItems::Expressions(ty, <span class="kw">_</span>) =&gt; {
-                <span class="self">self</span>.module
-                    .check_value_type(ValType::Ref(<span class="kw-2">*</span>ty), features, offset)<span class="question-mark">?</span>;
+                <span class="self">self</span>.module.check_ref_type(ty, features, offset)<span class="question-mark">?</span>;
                 <span class="kw-2">*</span>ty
             }
         };
@@ -1563,11 +1592,7 @@
                 offset_expr,
             } =&gt; {
                 <span class="kw">let </span>table = <span class="self">self</span>.module.table_at(table_index.unwrap_or(<span class="number">0</span>), offset)<span class="question-mark">?</span>;
-                <span class="kw">if </span>!<span class="self">self</span>.module.matches(
-                    ValType::Ref(element_ty),
-                    ValType::Ref(table.element_type),
-                    types,
-                ) {
+                <span class="kw">if </span>!types.reftype_is_subtype(element_ty, table.element_type) {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(BinaryReaderError::new(
                         <span class="macro">format!</span>(
                             <span class="string">&quot;type mismatch: invalid element type `{}` for table type `{}`&quot;</span>,
@@ -1641,6 +1666,7 @@
                 types,
                 module: <span class="kw-2">&amp;mut </span><span class="self">self</span>.module,
             },
+            features,
         };
 
         <span class="kw">let </span><span class="kw-2">mut </span>ops = expr.get_operators_reader();
@@ -1663,6 +1689,7 @@
             ops: OperatorValidator,
             resources: OperatorValidatorResources&lt;<span class="lifetime">&#39;a</span>&gt;,
             order: Order,
+            features: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>WasmFeatures,
         }
 
         <span class="kw">impl </span>VisitConstOperator&lt;<span class="lifetime">&#39;_</span>&gt; {
@@ -1670,12 +1697,29 @@
                 <span class="self">self</span>.ops.with_resources(<span class="kw-2">&amp;</span><span class="self">self</span>.resources, <span class="self">self</span>.offset)
             }
 
-            <span class="kw">fn </span>validate_extended_const(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+            <span class="kw">fn </span>validate_extended_const(<span class="kw-2">&amp;mut </span><span class="self">self</span>, op: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
                 <span class="kw">if </span><span class="self">self</span>.ops.features.extended_const {
                     <span class="prelude-val">Ok</span>(())
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Err</span>(BinaryReaderError::new(
-                        <span class="string">&quot;constant expression required: non-constant operator&quot;</span>,
+                        <span class="macro">format!</span>(
+                            <span class="string">&quot;constant expression required: non-constant operator: {}&quot;</span>,
+                            op
+                        ),
+                        <span class="self">self</span>.offset,
+                    ))
+                }
+            }
+
+            <span class="kw">fn </span>validate_gc(<span class="kw-2">&amp;mut </span><span class="self">self</span>, op: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+                <span class="kw">if </span><span class="self">self</span>.features.gc {
+                    <span class="prelude-val">Ok</span>(())
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Err</span>(BinaryReaderError::new(
+                        <span class="macro">format!</span>(
+                            <span class="string">&quot;constant expression required: non-constant operator: {}&quot;</span>,
+                            op
+                        ),
                         <span class="self">self</span>.offset,
                     ))
                 }
@@ -1684,7 +1728,8 @@
             <span class="kw">fn </span>validate_global(<span class="kw-2">&amp;mut </span><span class="self">self</span>, index: u32) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
                 <span class="kw">let </span>module = <span class="kw-2">&amp;</span><span class="self">self</span>.resources.module;
                 <span class="kw">let </span>global = module.global_at(index, <span class="self">self</span>.offset)<span class="question-mark">?</span>;
-                <span class="kw">if </span>index &gt;= module.num_imported_globals {
+
+                <span class="kw">if </span>index &gt;= module.num_imported_globals &amp;&amp; !<span class="self">self</span>.features.gc {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(BinaryReaderError::new(
                         <span class="string">&quot;constant expression required: global.get of locally defined global&quot;</span>,
                         <span class="self">self</span>.offset,
@@ -1765,28 +1810,35 @@
 
             <span class="comment">// These are valid const expressions when the extended-const proposal is enabled.
             </span>(@visit <span class="macro-nonterminal">$self</span>:ident visit_i32_add) =&gt; {{
-                <span class="macro-nonterminal">$self</span>.validate_extended_const()<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validate_extended_const(<span class="string">&quot;i32.add&quot;</span>)<span class="question-mark">?</span>;
                 <span class="macro-nonterminal">$self</span>.validator().visit_i32_add()
             }};
             (@visit <span class="macro-nonterminal">$self</span>:ident visit_i32_sub) =&gt; {{
-                <span class="macro-nonterminal">$self</span>.validate_extended_const()<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validate_extended_const(<span class="string">&quot;i32.sub&quot;</span>)<span class="question-mark">?</span>;
                 <span class="macro-nonterminal">$self</span>.validator().visit_i32_sub()
             }};
             (@visit <span class="macro-nonterminal">$self</span>:ident visit_i32_mul) =&gt; {{
-                <span class="macro-nonterminal">$self</span>.validate_extended_const()<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validate_extended_const(<span class="string">&quot;i32.mul&quot;</span>)<span class="question-mark">?</span>;
                 <span class="macro-nonterminal">$self</span>.validator().visit_i32_mul()
             }};
             (@visit <span class="macro-nonterminal">$self</span>:ident visit_i64_add) =&gt; {{
-                <span class="macro-nonterminal">$self</span>.validate_extended_const()<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validate_extended_const(<span class="string">&quot;i64.add&quot;</span>)<span class="question-mark">?</span>;
                 <span class="macro-nonterminal">$self</span>.validator().visit_i64_add()
             }};
             (@visit <span class="macro-nonterminal">$self</span>:ident visit_i64_sub) =&gt; {{
-                <span class="macro-nonterminal">$self</span>.validate_extended_const()<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validate_extended_const(<span class="string">&quot;i64.sub&quot;</span>)<span class="question-mark">?</span>;
                 <span class="macro-nonterminal">$self</span>.validator().visit_i64_sub()
             }};
             (@visit <span class="macro-nonterminal">$self</span>:ident visit_i64_mul) =&gt; {{
-                <span class="macro-nonterminal">$self</span>.validate_extended_const()<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validate_extended_const(<span class="string">&quot;i64.mul&quot;</span>)<span class="question-mark">?</span>;
                 <span class="macro-nonterminal">$self</span>.validator().visit_i64_mul()
+            }};
+
+            <span class="comment">// These are valid const expressions with the gc proposal is
+            // enabled.
+            </span>(@visit <span class="macro-nonterminal">$self</span>:ident visit_ref_i31) =&gt; {{
+                <span class="macro-nonterminal">$self</span>.validate_gc(<span class="string">&quot;ref.i31&quot;</span>)<span class="question-mark">?</span>;
+                <span class="macro-nonterminal">$self</span>.validator().visit_ref_i31()
             }};
 
             <span class="comment">// `global.get` is a valid const expression for imported, immutable
@@ -1804,7 +1856,7 @@
 
             (@visit <span class="macro-nonterminal">$self</span>:ident <span class="macro-nonterminal">$op</span>:ident $(<span class="macro-nonterminal">$args</span>:tt)<span class="kw-2">*</span>) =&gt; {{
                 <span class="prelude-val">Err</span>(BinaryReaderError::new(
-                    <span class="string">&quot;constant expression required: non-constant operator&quot;</span>,
+                    <span class="macro">format!</span>(<span class="string">&quot;constant expression required: non-constant operator: {}&quot;</span>, <span class="macro">stringify!</span>(<span class="macro-nonterminal">$op</span>)),
                     <span class="macro-nonterminal">$self</span>.offset,
                 ))
             }}
@@ -1824,7 +1876,7 @@
     // enable parallel validation of functions.
     </span><span class="kw">pub </span>snapshot: <span class="prelude-ty">Option</span>&lt;Arc&lt;TypeList&gt;&gt;,
     <span class="comment">// Stores indexes into the validator&#39;s types list.
-    </span><span class="kw">pub </span>types: Vec&lt;TypeId&gt;,
+    </span><span class="kw">pub </span>types: Vec&lt;CoreTypeId&gt;,
     <span class="kw">pub </span>tables: Vec&lt;TableType&gt;,
     <span class="kw">pub </span>memories: Vec&lt;MemoryType&gt;,
     <span class="kw">pub </span>globals: Vec&lt;GlobalType&gt;,
@@ -1832,7 +1884,7 @@
     <span class="kw">pub </span>data_count: <span class="prelude-ty">Option</span>&lt;u32&gt;,
     <span class="comment">// Stores indexes into `types`.
     </span><span class="kw">pub </span>functions: Vec&lt;u32&gt;,
-    <span class="kw">pub </span>tags: Vec&lt;TypeId&gt;,
+    <span class="kw">pub </span>tags: Vec&lt;CoreTypeId&gt;,
     <span class="kw">pub </span>function_references: HashSet&lt;u32&gt;,
     <span class="kw">pub </span>imports: IndexMap&lt;(String, String), Vec&lt;EntityType&gt;&gt;,
     <span class="kw">pub </span>exports: IndexMap&lt;String, EntityType&gt;,
@@ -1842,15 +1894,31 @@
 }
 
 <span class="kw">impl </span>Module {
+    <span class="doccomment">/// Get the `CoreTypeId` of the type at the given packed index.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>at_packed_index(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        types: <span class="kw-2">&amp;</span>TypeList,
+        rec_group: RecGroupId,
+        index: PackedIndex,
+        offset: usize,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;CoreTypeId&gt; {
+        <span class="kw">match </span>index.unpack() {
+            UnpackedIndex::Id(id) =&gt; <span class="prelude-val">Ok</span>(id),
+            UnpackedIndex::Module(idx) =&gt; <span class="self">self</span>.type_id_at(idx, offset),
+            UnpackedIndex::RecGroup(idx) =&gt; types.rec_group_local_id(rec_group, idx, offset),
+        }
+    }
+
     <span class="kw">pub fn </span>add_types(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        rec_group: <span class="kw-2">&amp;</span>RecGroup,
+        rec_group: RecGroup,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;mut </span>TypeAlloc,
         offset: usize,
         check_limit: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">if </span><span class="macro">matches!</span>(<span class="kw-2">&amp;</span>rec_group, RecGroup::Many(<span class="kw">_</span>)) &amp;&amp; !features.gc {
+        <span class="macro">debug_assert!</span>(rec_group.is_explicit_rec_group() || rec_group.types().len() == <span class="number">1</span>);
+        <span class="kw">if </span>rec_group.is_explicit_rec_group() &amp;&amp; !features.gc {
             <span class="macro">bail!</span>(
                 offset,
                 <span class="string">&quot;rec group usage requires `gc` proposal to be enabled&quot;
@@ -1867,86 +1935,70 @@
             )<span class="question-mark">?</span>;
         }
 
-        <span class="kw">let </span>idx_types: Vec&lt;<span class="kw">_</span>&gt; = rec_group
-            .types()
-            .iter()
-            .map(|ty| {
-                <span class="kw">let </span>id = types.push_ty(Type::Sub(ty.clone()));
-                <span class="kw">if </span>features.gc {
-                    <span class="comment">// make types in a rec group resolvable by index before validation:
-                    // this is needed to support recursive types in the GC proposal
-                    </span><span class="self">self</span>.types.push(id);
-                }
-                (id, ty)
-            })
-            .collect();
+        <span class="kw">let </span>(is_new, rec_group_id) =
+            canonicalize_and_intern_rec_group(features, types, <span class="self">self</span>, rec_group, offset)<span class="question-mark">?</span>;
 
-        <span class="kw">for </span>(id, ty) <span class="kw">in </span>idx_types {
-            <span class="self">self</span>.check_subtype(id.index() <span class="kw">as </span>u32, ty.clone(), features, types, offset)<span class="question-mark">?</span>;
-            <span class="kw">if </span>!features.gc {
-                <span class="self">self</span>.types.push(id);
+        <span class="kw">let </span>range = <span class="kw-2">&amp;</span>types[rec_group_id];
+        <span class="kw">let </span>start = range.start.index();
+        <span class="kw">let </span>end = range.end.index();
+
+        <span class="kw">for </span>i <span class="kw">in </span>start..end {
+            <span class="kw">let </span>i = u32::try_from(i).unwrap();
+            <span class="kw">let </span>id = CoreTypeId::from_index(i);
+            <span class="macro">debug_assert!</span>(types.get(id).is_some());
+            <span class="self">self</span>.types.push(id);
+            <span class="kw">if </span>is_new {
+                <span class="self">self</span>.check_subtype(rec_group_id, id, features, types, offset)<span class="question-mark">?</span>;
             }
         }
+
         <span class="prelude-val">Ok</span>(())
     }
 
     <span class="kw">fn </span>check_subtype(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        type_index: u32,
-        ty: SubType,
+        rec_group: RecGroupId,
+        id: CoreTypeId,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;mut </span>TypeAlloc,
         offset: usize,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;Type&gt; {
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>ty = <span class="kw-2">&amp;</span>types[id];
         <span class="kw">if </span>!features.gc &amp;&amp; (!ty.is_final || ty.supertype_idx.is_some()) {
             <span class="macro">bail!</span>(offset, <span class="string">&quot;gc proposal must be enabled to use subtypes&quot;</span>);
         }
 
-        <span class="self">self</span>.check_structural_type(<span class="kw-2">&amp;</span>ty.structural_type, features, offset)<span class="question-mark">?</span>;
+        <span class="self">self</span>.check_composite_type(<span class="kw-2">&amp;</span>ty.composite_type, features, offset)<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(supertype_index) = ty.supertype_idx {
-            <span class="comment">// Check the supertype exists, is not final, and the subtype matches it.
-            </span><span class="kw">if </span>supertype_index &gt;= type_index {
-                <span class="macro">bail!</span>(
-                    offset,
-                    <span class="string">&quot;unknown type {type_index}: type index out of bounds&quot;
-                </span>);
+            <span class="macro">debug_assert!</span>(supertype_index.is_canonical());
+            <span class="kw">let </span>sup_id = <span class="self">self</span>.at_packed_index(types, rec_group, supertype_index, offset)<span class="question-mark">?</span>;
+            <span class="kw">if </span>types[sup_id].is_final {
+                <span class="macro">bail!</span>(offset, <span class="string">&quot;supertype must not be final&quot;</span>);
             }
-            <span class="kw">match </span><span class="self">self</span>.type_at(types, supertype_index, offset)<span class="question-mark">? </span>{
-                Type::Sub(st) =&gt; {
-                    <span class="kw">if </span>!<span class="kw-2">&amp;</span>ty.matches(st, <span class="kw-2">&amp;</span>|idx| <span class="self">self</span>.subtype_at(types, idx, offset).unwrap()) {
-                        <span class="macro">bail!</span>(offset, <span class="string">&quot;subtype must match supertype&quot;</span>);
-                    }
-                }
-                <span class="kw">_ </span>=&gt; {
-                    <span class="macro">bail!</span>(offset, <span class="string">&quot;supertype must be a non-final subtype itself&quot;</span>);
-                }
-            };
+            <span class="kw">if </span>!types.matches(id, sup_id) {
+                <span class="macro">bail!</span>(offset, <span class="string">&quot;subtype must match supertype&quot;</span>);
+            }
         }
 
-        <span class="prelude-val">Ok</span>(Type::Sub(ty))
+        <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>subtype_at&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, types: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TypeList, idx: u32, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType&gt; {
-        <span class="kw">match </span><span class="self">self</span>.type_at(types, idx, offset)<span class="question-mark">? </span>{
-            Type::Sub(ty) =&gt; <span class="prelude-val">Ok</span>(ty),
-            <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(
-                offset,
-                <span class="string">&quot;subtype with index {idx} not found, offset: {offset}&quot;
-            </span>),
-        }
-    }
-
-    <span class="kw">fn </span>check_structural_type(
+    <span class="kw">fn </span>check_composite_type(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        ty: <span class="kw-2">&amp;</span>StructuralType,
+        ty: <span class="kw-2">&amp;</span>CompositeType,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="kw">let </span>check = |ty: <span class="kw-2">&amp;</span>ValType| {
+            features
+                .check_value_type(<span class="kw-2">*</span>ty)
+                .map_err(|e| BinaryReaderError::new(e, offset))
+        };
         <span class="kw">match </span>ty {
-            StructuralType::Func(t) =&gt; {
+            CompositeType::Func(t) =&gt; {
                 <span class="kw">for </span>ty <span class="kw">in </span>t.params().iter().chain(t.results()) {
-                    <span class="self">self</span>.check_value_type(<span class="kw-2">*</span>ty, features, offset)<span class="question-mark">?</span>;
+                    check(ty)<span class="question-mark">?</span>;
                 }
                 <span class="kw">if </span>t.results().len() &gt; <span class="number">1 </span>&amp;&amp; !features.multi_value {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(BinaryReaderError::new(
@@ -1955,21 +2007,19 @@
                     ));
                 }
             }
-            StructuralType::Array(t) =&gt; {
+            CompositeType::Array(t) =&gt; {
                 <span class="kw">if </span>!features.gc {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(BinaryReaderError::new(
                         <span class="string">&quot;array indexed types not supported without the gc feature&quot;</span>,
                         offset,
                     ));
                 }
-                <span class="kw">match </span>t.<span class="number">0</span>.element_type {
+                <span class="kw">match </span><span class="kw-2">&amp;</span>t.<span class="number">0</span>.element_type {
                     StorageType::I8 | StorageType::I16 =&gt; {}
-                    StorageType::Val(value_type) =&gt; {
-                        <span class="self">self</span>.check_value_type(value_type, features, offset)<span class="question-mark">?</span>;
-                    }
+                    StorageType::Val(value_type) =&gt; check(value_type)<span class="question-mark">?</span>,
                 };
             }
-            StructuralType::Struct(t) =&gt; {
+            CompositeType::Struct(t) =&gt; {
                 <span class="kw">if </span>!features.gc {
                     <span class="kw">return </span><span class="prelude-val">Err</span>(BinaryReaderError::new(
                         <span class="string">&quot;struct indexed types not supported without the gc feature&quot;</span>,
@@ -1977,7 +2027,10 @@
                     ));
                 }
                 <span class="kw">for </span>ty <span class="kw">in </span>t.fields.iter() {
-                    <span class="self">self</span>.check_storage_type(ty.element_type, features, offset)<span class="question-mark">?</span>;
+                    <span class="kw">match </span><span class="kw-2">&amp;</span>ty.element_type {
+                        StorageType::I8 | StorageType::I16 =&gt; {}
+                        StorageType::Val(value_type) =&gt; check(value_type)<span class="question-mark">?</span>,
+                    }
                 }
             }
         }
@@ -1986,12 +2039,12 @@
 
     <span class="kw">pub fn </span>add_import(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        import: <span class="kw">crate</span>::Import,
+        <span class="kw-2">mut </span>import: <span class="kw">crate</span>::Import,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;</span>TypeList,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>entity = <span class="self">self</span>.check_type_ref(<span class="kw-2">&amp;</span>import.ty, features, types, offset)<span class="question-mark">?</span>;
+        <span class="kw">let </span>entity = <span class="self">self</span>.check_type_ref(<span class="kw-2">&amp;mut </span>import.ty, features, types, offset)<span class="question-mark">?</span>;
 
         <span class="kw">let </span>(len, max, desc) = <span class="kw">match </span>import.ty {
             TypeRef::Func(type_index) =&gt; {
@@ -2100,15 +2153,16 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">pub fn </span>type_id_at(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: u32, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;TypeId&gt; {
+    <span class="kw">pub fn </span>type_id_at(<span class="kw-2">&amp;</span><span class="self">self</span>, idx: u32, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;CoreTypeId&gt; {
         <span class="self">self</span>.types
             .get(idx <span class="kw">as </span>usize)
             .copied()
             .ok_or_else(|| <span class="macro">format_err!</span>(offset, <span class="string">&quot;unknown type {idx}: type index out of bounds&quot;</span>))
     }
 
-    <span class="kw">fn </span>type_at&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, types: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TypeList, idx: u32, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Type&gt; {
-        <span class="self">self</span>.type_id_at(idx, offset).map(|type_id| <span class="kw-2">&amp;</span>types[type_id])
+    <span class="kw">fn </span>sub_type_at&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, types: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TypeList, idx: u32, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>SubType&gt; {
+        <span class="kw">let </span>id = <span class="self">self</span>.type_id_at(idx, offset)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="kw-2">&amp;</span>types[id])
     }
 
     <span class="kw">fn </span>func_type_at&lt;<span class="lifetime">&#39;a</span>&gt;(
@@ -2117,18 +2171,15 @@
         types: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>TypeList,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>FuncType&gt; {
-        <span class="kw">match </span><span class="kw-2">&amp;</span>types[<span class="self">self</span>.type_id_at(type_index, offset)<span class="question-mark">?</span>] {
-            Type::Sub(SubType {
-                structural_type: StructuralType::Func(f),
-                ..
-            }) =&gt; <span class="prelude-val">Ok</span>(f),
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.sub_type_at(types, type_index, offset)<span class="question-mark">?</span>.composite_type {
+            CompositeType::Func(f) =&gt; <span class="prelude-val">Ok</span>(f),
             <span class="kw">_ </span>=&gt; <span class="macro">bail!</span>(offset, <span class="string">&quot;type index {type_index} is not a function type&quot;</span>),
         }
     }
 
     <span class="kw">pub fn </span>check_type_ref(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        type_ref: <span class="kw-2">&amp;</span>TypeRef,
+        type_ref: <span class="kw-2">&amp;mut </span>TypeRef,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         types: <span class="kw-2">&amp;</span>TypeList,
         offset: usize,
@@ -2159,14 +2210,14 @@
 
     <span class="kw">fn </span>check_table_type(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        ty: <span class="kw-2">&amp;</span>TableType,
+        ty: <span class="kw-2">&amp;mut </span>TableType,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// the `funcref` value type is allowed all the way back to the MVP, so
         // don&#39;t check it here
         </span><span class="kw">if </span>ty.element_type != RefType::FUNCREF {
-            <span class="self">self</span>.check_value_type(ValType::Ref(ty.element_type), features, offset)<span class="question-mark">?
+            <span class="self">self</span>.check_ref_type(<span class="kw-2">&amp;mut </span>ty.element_type, features, offset)<span class="question-mark">?
         </span>}
 
         <span class="self">self</span>.check_limits(ty.initial, ty.maximum, offset)<span class="question-mark">?</span>;
@@ -2248,40 +2299,40 @@
             .collect::&lt;<span class="prelude-ty">Result</span>&lt;<span class="kw">_</span>&gt;&gt;()
     }
 
-    <span class="kw">fn </span>check_storage_type(
+    <span class="kw">fn </span>check_value_type(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        ty: StorageType,
+        ty: <span class="kw-2">&amp;mut </span>ValType,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">match </span>ty {
-            StorageType::I8 | StorageType::I16 =&gt; {}
-            StorageType::Val(value_type) =&gt; {
-                <span class="self">self</span>.check_value_type(value_type, features, offset)<span class="question-mark">?</span>;
-            }
-        }
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="kw">fn </span>check_value_type(<span class="kw-2">&amp;</span><span class="self">self</span>, ty: ValType, features: <span class="kw-2">&amp;</span>WasmFeatures, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">match </span>features.check_value_type(ty) {
-            <span class="prelude-val">Ok</span>(()) =&gt; <span class="prelude-val">Ok</span>(()),
-            <span class="prelude-val">Err</span>(e) =&gt; <span class="prelude-val">Err</span>(BinaryReaderError::new(e, offset)),
-        }<span class="question-mark">?</span>;
         <span class="comment">// The above only checks the value type for features.
         // We must check it if it&#39;s a reference.
         </span><span class="kw">match </span>ty {
-            ValType::Ref(rt) =&gt; {
-                <span class="self">self</span>.check_ref_type(rt, offset)<span class="question-mark">?</span>;
-            }
-            <span class="kw">_ </span>=&gt; (),
+            ValType::Ref(rt) =&gt; <span class="self">self</span>.check_ref_type(rt, features, offset),
+            <span class="kw">_ </span>=&gt; features
+                .check_value_type(<span class="kw-2">*</span>ty)
+                .map_err(|e| BinaryReaderError::new(e, offset)),
         }
+    }
+
+    <span class="kw">fn </span>check_ref_type(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        ty: <span class="kw-2">&amp;mut </span>RefType,
+        features: <span class="kw-2">&amp;</span>WasmFeatures,
+        offset: usize,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        features
+            .check_ref_type(<span class="kw-2">*</span>ty)
+            .map_err(|e| BinaryReaderError::new(e, offset))<span class="question-mark">?</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>hty = ty.heap_type();
+        <span class="self">self</span>.check_heap_type(<span class="kw-2">&amp;mut </span>hty, offset)<span class="question-mark">?</span>;
+        <span class="kw-2">*</span>ty = RefType::new(ty.is_nullable(), hty).unwrap();
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>check_ref_type(<span class="kw-2">&amp;</span><span class="self">self</span>, ty: RefType, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>check_heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>, ty: <span class="kw-2">&amp;mut </span>HeapType, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="comment">// Check that the heap type is valid
-        </span><span class="kw">match </span>ty.heap_type() {
+        </span><span class="kw">let </span>type_index = <span class="kw">match </span>ty {
             HeapType::Func
             | HeapType::Extern
             | HeapType::Any
@@ -2291,20 +2342,20 @@
             | HeapType::Eq
             | HeapType::Struct
             | HeapType::Array
-            | HeapType::I31 =&gt; (),
-            HeapType::Indexed(type_index) =&gt; {
-                <span class="comment">// Just check that the index is valid
-                </span><span class="self">self</span>.type_id_at(type_index, offset)<span class="question-mark">?</span>;
+            | HeapType::I31 =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
+            HeapType::Concrete(type_index) =&gt; type_index,
+        };
+        <span class="kw">match </span>type_index {
+            UnpackedIndex::Module(idx) =&gt; {
+                <span class="kw">let </span>id = <span class="self">self</span>.type_id_at(<span class="kw-2">*</span>idx, offset)<span class="question-mark">?</span>;
+                <span class="kw-2">*</span>type_index = UnpackedIndex::Id(id);
+                <span class="prelude-val">Ok</span>(())
             }
+            <span class="comment">// Types at this stage should not be canonicalized. All
+            // canonicalized types should already be validated meaning they
+            // shouldn&#39;t be double-checked here again.
+            </span>UnpackedIndex::RecGroup(<span class="kw">_</span>) | UnpackedIndex::Id(<span class="kw">_</span>) =&gt; <span class="macro">unreachable!</span>(),
         }
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="doccomment">/// Check that a value of type ty1 is assignable to a variable / table element of type ty2.
-    /// E.g. a non-nullable reference can be assigned to a nullable reference, but not vice versa.
-    /// Or an indexed func ref is assignable to a generic func ref, but not vice versa.
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, ty1: ValType, ty2: ValType, types: <span class="kw-2">&amp;</span>TypeList) -&gt; bool {
-        ty1.matches(<span class="kw-2">&amp;</span>ty2, <span class="kw-2">&amp;</span>|idx| <span class="self">self</span>.subtype_at(types, idx, <span class="number">0</span>).unwrap())
     }
 
     <span class="kw">fn </span>check_tag_type(
@@ -2332,11 +2383,11 @@
 
     <span class="kw">fn </span>check_global_type(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
-        ty: <span class="kw-2">&amp;</span>GlobalType,
+        ty: <span class="kw-2">&amp;mut </span>GlobalType,
         features: <span class="kw-2">&amp;</span>WasmFeatures,
         offset: usize,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.check_value_type(ty.content_type, features, offset)
+        <span class="self">self</span>.check_value_type(<span class="kw-2">&amp;mut </span>ty.content_type, features, offset)
     }
 
     <span class="kw">fn </span>check_limits&lt;T&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, initial: T, maximum: <span class="prelude-ty">Option</span>&lt;T&gt;, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt;
@@ -2496,7 +2547,8 @@
     }
 
     <span class="kw">fn </span>tag_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.types[<span class="kw-2">*</span><span class="self">self</span>.module.tags.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>].unwrap_func())
+        <span class="kw">let </span>type_id = <span class="kw-2">*</span><span class="self">self</span>.module.tags.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="prelude-val">Some</span>(<span class="self">self</span>.types[type_id].unwrap_func())
     }
 
     <span class="kw">fn </span>global_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;GlobalType&gt; {
@@ -2504,27 +2556,33 @@
     }
 
     <span class="kw">fn </span>func_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.types[<span class="kw-2">*</span><span class="self">self</span>.module.types.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>].unwrap_func())
+        <span class="kw">let </span>id = <span class="kw-2">*</span><span class="self">self</span>.module.types.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.types[id].composite_type {
+            CompositeType::Func(f) =&gt; <span class="prelude-val">Some</span>(f),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
     }
 
-    <span class="kw">fn </span>type_index_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.module.functions.get(at <span class="kw">as </span>usize).cloned()
+    <span class="kw">fn </span>type_id_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt; {
+        <span class="kw">let </span>type_index = <span class="self">self</span>.module.functions.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="self">self</span>.module.types.get(<span class="kw-2">*</span>type_index <span class="kw">as </span>usize).copied()
     }
 
     <span class="kw">fn </span>type_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
-        <span class="self">self</span>.func_type_at(<span class="self">self</span>.type_index_of_function(at)<span class="question-mark">?</span>)
+        <span class="kw">let </span>type_index = <span class="self">self</span>.module.functions.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="self">self</span>.func_type_at(<span class="kw-2">*</span>type_index)
     }
 
-    <span class="kw">fn </span>check_value_type(<span class="kw-2">&amp;</span><span class="self">self</span>, t: ValType, features: <span class="kw-2">&amp;</span>WasmFeatures, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.module.check_value_type(t, features, offset)
+    <span class="kw">fn </span>check_heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>, t: <span class="kw-2">&amp;mut </span>HeapType, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.module.check_heap_type(t, offset)
     }
 
     <span class="kw">fn </span>element_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;RefType&gt; {
         <span class="self">self</span>.module.element_types.get(at <span class="kw">as </span>usize).cloned()
     }
 
-    <span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, t1: ValType, t2: ValType) -&gt; bool {
-        <span class="self">self</span>.module.matches(t1, t2, <span class="self">self</span>.types)
+    <span class="kw">fn </span>is_subtype(<span class="kw-2">&amp;</span><span class="self">self</span>, a: ValType, b: ValType) -&gt; bool {
+        <span class="self">self</span>.types.valtype_is_subtype(a, b)
     }
 
     <span class="kw">fn </span>element_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {
@@ -2556,7 +2614,12 @@
     }
 
     <span class="kw">fn </span>tag_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.snapshot.as_ref().unwrap()[<span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.tags.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>].unwrap_func())
+        <span class="kw">let </span>id = <span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.tags.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="kw">let </span>types = <span class="self">self</span>.<span class="number">0</span>.snapshot.as_ref().unwrap();
+        <span class="kw">match </span><span class="kw-2">&amp;</span>types[id].composite_type {
+            CompositeType::Func(f) =&gt; <span class="prelude-val">Some</span>(f),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
     }
 
     <span class="kw">fn </span>global_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;GlobalType&gt; {
@@ -2564,27 +2627,34 @@
     }
 
     <span class="kw">fn </span>func_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="number">0</span>.snapshot.as_ref().unwrap()[<span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.types.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>].unwrap_func())
+        <span class="kw">let </span>id = <span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.types.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="kw">let </span>types = <span class="self">self</span>.<span class="number">0</span>.snapshot.as_ref().unwrap();
+        <span class="kw">match </span><span class="kw-2">&amp;</span>types[id].composite_type {
+            CompositeType::Func(f) =&gt; <span class="prelude-val">Some</span>(f),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        }
     }
 
-    <span class="kw">fn </span>type_index_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;u32&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.functions.get(at <span class="kw">as </span>usize).cloned()
+    <span class="kw">fn </span>type_id_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;CoreTypeId&gt; {
+        <span class="kw">let </span>type_index = <span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.functions.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="self">self</span>.<span class="number">0</span>.types.get(type_index <span class="kw">as </span>usize).copied()
     }
 
     <span class="kw">fn </span>type_of_function(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="self">Self</span>::FuncType&gt; {
-        <span class="self">self</span>.func_type_at(<span class="self">self</span>.type_index_of_function(at)<span class="question-mark">?</span>)
+        <span class="kw">let </span>type_index = <span class="kw-2">*</span><span class="self">self</span>.<span class="number">0</span>.functions.get(at <span class="kw">as </span>usize)<span class="question-mark">?</span>;
+        <span class="self">self</span>.func_type_at(type_index)
     }
 
-    <span class="kw">fn </span>check_value_type(<span class="kw-2">&amp;</span><span class="self">self</span>, t: ValType, features: <span class="kw-2">&amp;</span>WasmFeatures, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="self">self</span>.<span class="number">0</span>.check_value_type(t, features, offset)
+    <span class="kw">fn </span>check_heap_type(<span class="kw-2">&amp;</span><span class="self">self</span>, t: <span class="kw-2">&amp;mut </span>HeapType, offset: usize) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+        <span class="self">self</span>.<span class="number">0</span>.check_heap_type(t, offset)
     }
 
     <span class="kw">fn </span>element_type_at(<span class="kw-2">&amp;</span><span class="self">self</span>, at: u32) -&gt; <span class="prelude-ty">Option</span>&lt;RefType&gt; {
         <span class="self">self</span>.<span class="number">0</span>.element_types.get(at <span class="kw">as </span>usize).cloned()
     }
 
-    <span class="kw">fn </span>matches(<span class="kw-2">&amp;</span><span class="self">self</span>, t1: ValType, t2: ValType) -&gt; bool {
-        <span class="self">self</span>.<span class="number">0</span>.matches(t1, t2, <span class="self">self</span>.<span class="number">0</span>.snapshot.as_ref().unwrap())
+    <span class="kw">fn </span>is_subtype(<span class="kw-2">&amp;</span><span class="self">self</span>, a: ValType, b: ValType) -&gt; bool {
+        <span class="self">self</span>.<span class="number">0</span>.snapshot.as_ref().unwrap().valtype_is_subtype(a, b)
     }
 
     <span class="kw">fn </span>element_count(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u32 {

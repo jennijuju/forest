@@ -6,7 +6,7 @@
     C: <a class="trait" href="../stream/trait.Accumulate.html" title="trait winnow::stream::Accumulate">Accumulate</a>&lt;O&gt;,
     F: <a class="trait" href="../trait.Parser.html" title="trait winnow::Parser">Parser</a>&lt;I, O, E&gt;,
     E: <a class="trait" href="../error/trait.ParserError.html" title="trait winnow::error::ParserError">ParserError</a>&lt;I&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p><a href="../stream/trait.Accumulate.html" title="trait winnow::stream::Accumulate"><code>Accumulate</code></a> the output of a parser into a container, like <code>Vec</code></p>
-<p>This stops before <code>n</code> when the parser returns <a href="../error/enum.ErrMode.html#variant.Backtrack" title="variant winnow::error::ErrMode::Backtrack"><code>ErrMode::Backtrack</code></a>.  To instead chain an error up, see
+<p>This stops before <code>n</code> when the parser returns <a href="../error/enum.ErrMode.html#variant.Backtrack" title="variant winnow::error::ErrMode::Backtrack"><code>ErrMode::Backtrack</code></a>. To instead chain an error up, see
 <a href="fn.cut_err.html" title="fn winnow::combinator::cut_err"><code>cut_err</code></a>.</p>
 <h2 id="arguments"><a href="#arguments">Arguments</a></h2>
 <ul>
@@ -19,7 +19,7 @@
 (like <code>alpha0</code> or <code>digit0</code>), <code>repeat</code> will return an error,
 to prevent going into an infinite loop.</p>
 <h2 id="example"><a href="#example">Example</a></h2>
-<p>Zero or more reptitions:</p>
+<p>Zero or more repetitions:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>winnow::combinator::repeat;
 <span class="kw">use </span>winnow::token::tag;
@@ -32,7 +32,7 @@ to prevent going into an infinite loop.</p>
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;abc123&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;123&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;abc&quot;</span>])));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;123123&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;123123&quot;</span>, <span class="macro">vec!</span>[])));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;&quot;</span>, <span class="macro">vec!</span>[])));</code></pre></div>
-<p>One or more reptitions:</p>
+<p>One or more repetitions:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>winnow::combinator::repeat;
 <span class="kw">use </span>winnow::token::tag;
@@ -45,7 +45,7 @@ to prevent going into an infinite loop.</p>
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;abc123&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;123&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;abc&quot;</span>])));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;123123&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(<span class="string">&quot;123123&quot;</span>, ErrorKind::Tag))));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(<span class="string">&quot;&quot;</span>, ErrorKind::Tag))));</code></pre></div>
-<p>Fixed number of repeitions:</p>
+<p>Fixed number of repetitions:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>winnow::combinator::repeat;
 <span class="kw">use </span>winnow::token::tag;
@@ -59,7 +59,7 @@ to prevent going into an infinite loop.</p>
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;123123&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(<span class="string">&quot;123123&quot;</span>, ErrorKind::Tag))));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;&quot;</span>), <span class="prelude-val">Err</span>(ErrMode::Backtrack(InputError::new(<span class="string">&quot;&quot;</span>, ErrorKind::Tag))));
 <span class="macro">assert_eq!</span>(parser(<span class="string">&quot;abcabcabc&quot;</span>), <span class="prelude-val">Ok</span>((<span class="string">&quot;abc&quot;</span>, <span class="macro">vec!</span>[<span class="string">&quot;abc&quot;</span>, <span class="string">&quot;abc&quot;</span>])));</code></pre></div>
-<p>Arbitrary reptitions:</p>
+<p>Arbitrary repetitions:</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>winnow::combinator::repeat;
 <span class="kw">use </span>winnow::token::tag;

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/filecoin-proofs-16.0.0/src/api/seal.rs`."><title>seal.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="filecoin_proofs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../filecoin_proofs/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/filecoin-proofs-16.1.0/src/api/seal.rs`."><title>seal.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="filecoin_proofs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../filecoin_proofs/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1282,51 +1282,11 @@
 <a href="#1282" id="1282">1282</a>
 <a href="#1283" id="1283">1283</a>
 <a href="#1284" id="1284">1284</a>
-<a href="#1285" id="1285">1285</a>
-<a href="#1286" id="1286">1286</a>
-<a href="#1287" id="1287">1287</a>
-<a href="#1288" id="1288">1288</a>
-<a href="#1289" id="1289">1289</a>
-<a href="#1290" id="1290">1290</a>
-<a href="#1291" id="1291">1291</a>
-<a href="#1292" id="1292">1292</a>
-<a href="#1293" id="1293">1293</a>
-<a href="#1294" id="1294">1294</a>
-<a href="#1295" id="1295">1295</a>
-<a href="#1296" id="1296">1296</a>
-<a href="#1297" id="1297">1297</a>
-<a href="#1298" id="1298">1298</a>
-<a href="#1299" id="1299">1299</a>
-<a href="#1300" id="1300">1300</a>
-<a href="#1301" id="1301">1301</a>
-<a href="#1302" id="1302">1302</a>
-<a href="#1303" id="1303">1303</a>
-<a href="#1304" id="1304">1304</a>
-<a href="#1305" id="1305">1305</a>
-<a href="#1306" id="1306">1306</a>
-<a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
-<a href="#1314" id="1314">1314</a>
-<a href="#1315" id="1315">1315</a>
-<a href="#1316" id="1316">1316</a>
-<a href="#1317" id="1317">1317</a>
-<a href="#1318" id="1318">1318</a>
-<a href="#1319" id="1319">1319</a>
-<a href="#1320" id="1320">1320</a>
-<a href="#1321" id="1321">1321</a>
-<a href="#1322" id="1322">1322</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::fs::{<span class="self">self</span>, metadata, File, OpenOptions};
-<span class="kw">use </span>std::io::Write;
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::fs::{<span class="self">self</span>, metadata, OpenOptions};
 <span class="kw">use </span>std::path::{Path, PathBuf};
 
 <span class="kw">use </span>anyhow::{anyhow, ensure, Context, <span class="prelude-ty">Result</span>};
 <span class="kw">use </span>bellperson::groth16;
-<span class="kw">use </span>bincode::{deserialize, serialize};
 <span class="kw">use </span>blstrs::{Bls12, Scalar <span class="kw">as </span>Fr};
 <span class="kw">use </span>filecoin_hashers::{Domain, Hasher};
 <span class="kw">use </span>log::{info, trace};
@@ -1353,14 +1313,14 @@
 };
 <span class="kw">use </span>storage_proofs_porep::stacked::{
     <span class="self">self</span>, generate_replica_id, ChallengeRequirements, Labels, LabelsCache, StackedCompound,
-    StackedDrg, Tau, TemporaryAux, TemporaryAuxCache,
+    StackedDrg, Tau, TemporaryAuxCache,
 };
 <span class="kw">use </span>storage_proofs_update::vanilla::prepare_tree_r_data;
 <span class="kw">use </span>typenum::{Unsigned, U11, U2};
 
 <span class="kw">use </span><span class="kw">crate</span>::POREP_MINIMUM_CHALLENGES;
 <span class="kw">use crate</span>::{
-    api::{as_safe_commitment, commitment_from_fr, get_base_tree_leafs, get_base_tree_size},
+    api::{as_safe_commitment, commitment_from_fr, get_base_tree_leafs, get_base_tree_size, util},
     caches::{
         get_stacked_params, get_stacked_srs_key, get_stacked_srs_verifier_key,
         get_stacked_verifying_key,
@@ -1480,11 +1440,7 @@
             base_tree_leafs,
         );
 
-        <span class="kw">let </span><span class="kw-2">mut </span>config = StoreConfig::new(
-            cache_path.as_ref(),
-            CacheKey::CommDTree.to_string(),
-            default_rows_to_discard(base_tree_leafs, BINARY_ARITY),
-        );
+        <span class="kw">let </span><span class="kw-2">mut </span>config = StoreConfig::new(cache_path.as_ref(), CacheKey::CommDTree.to_string(), <span class="number">0</span>);
 
         <span class="kw">let </span>data_tree = create_base_merkle_tree::&lt;BinaryMerkleTree&lt;DefaultPieceHasher&gt;&gt;(
             <span class="prelude-val">Some</span>(config.clone()),
@@ -1517,7 +1473,7 @@
         <span class="kw-2">&amp;</span>porep_config.porep_id,
     );
 
-    <span class="kw">let </span>labels = StackedDrg::&lt;Tree, DefaultPieceHasher&gt;::replicate_phase1(
+    <span class="kw">let </span>(labels, <span class="kw">_</span>) = StackedDrg::&lt;Tree, DefaultPieceHasher&gt;::replicate_phase1(
         <span class="kw-2">&amp;</span>compound_public_params.vanilla_params,
         <span class="kw-2">&amp;</span>replica_id,
         <span class="kw-2">&amp;</span>config.path,
@@ -1595,11 +1551,7 @@
             <span class="string">&quot;seal phase 2: base tree size {}, base tree leafs {}, rows to discard {}&quot;</span>,
             base_tree_size,
             base_tree_leafs,
-            default_rows_to_discard(base_tree_leafs, BINARY_ARITY)
-        );
-        <span class="macro">ensure!</span>(
-            config.rows_to_discard == default_rows_to_discard(base_tree_leafs, BINARY_ARITY),
-            <span class="string">&quot;Invalid cache size specified&quot;
+            <span class="number">0
         </span>);
 
         <span class="kw">let </span>store: DiskStore&lt;DefaultPieceDomain&gt; =
@@ -1618,11 +1570,13 @@
         <span class="kw">_</span>,
     &gt;&gt;::setup(<span class="kw-2">&amp;</span>compound_setup_params)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>(tau, (p_aux, t_aux)) = StackedDrg::&lt;Tree, DefaultPieceHasher&gt;::replicate_phase2(
+    <span class="comment">// Silence Clippy warning for the case where `t_aux` is not written.
+    </span><span class="attr">#[allow(unused_variables)]
+    </span><span class="kw">let </span>(tau, (p_aux, t_aux)) = StackedDrg::&lt;Tree, DefaultPieceHasher&gt;::replicate_phase2(
         <span class="kw-2">&amp;</span>compound_public_params.vanilla_params,
         labels,
         data,
-        data_tree,
+        <span class="prelude-val">Some</span>(data_tree),
         cache_path.as_ref().to_path_buf(),
         replica_path.as_ref().to_path_buf(),
     )<span class="question-mark">?</span>;
@@ -1630,21 +1584,9 @@
     <span class="kw">let </span>comm_r = commitment_from_fr(tau.comm_r.into());
 
     <span class="comment">// Persist p_aux and t_aux here
-    </span><span class="kw">let </span>p_aux_path = cache_path.as_ref().join(CacheKey::PAux.to_string());
-    <span class="kw">let </span><span class="kw-2">mut </span>f_p_aux = File::create(<span class="kw-2">&amp;</span>p_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not create file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
-    <span class="kw">let </span>p_aux_bytes = serialize(<span class="kw-2">&amp;</span>p_aux)<span class="question-mark">?</span>;
-    f_p_aux
-        .write_all(<span class="kw-2">&amp;</span>p_aux_bytes)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not write to file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>t_aux_path = cache_path.as_ref().join(CacheKey::TAux.to_string());
-    <span class="kw">let </span><span class="kw-2">mut </span>f_t_aux = File::create(<span class="kw-2">&amp;</span>t_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not create file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
-    <span class="kw">let </span>t_aux_bytes = serialize(<span class="kw-2">&amp;</span>t_aux)<span class="question-mark">?</span>;
-    f_t_aux
-        .write_all(<span class="kw-2">&amp;</span>t_aux_bytes)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not write to file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
+    </span>util::persist_p_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>p_aux, cache_path.as_ref())<span class="question-mark">?</span>;
+    <span class="attr">#[cfg(not(feature = <span class="string">&quot;fixed-rows-to-discard&quot;</span>))]
+    </span>util::persist_t_aux(<span class="kw-2">&amp;</span>t_aux, cache_path.as_ref())<span class="question-mark">?</span>;
 
     <span class="kw">let </span>out = SealPreCommitOutput { comm_r, comm_d };
 
@@ -1758,25 +1700,8 @@
         <span class="string">&quot;pieces and comm_d do not match&quot;
     </span>);
 
-    <span class="kw">let </span>p_aux = {
-        <span class="kw">let </span>p_aux_path = cache_path.as_ref().join(CacheKey::PAux.to_string());
-        <span class="kw">let </span>p_aux_bytes = fs::read(<span class="kw-2">&amp;</span>p_aux_path)
-            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
-
-        deserialize(<span class="kw-2">&amp;</span>p_aux_bytes)
-    }<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>t_aux = {
-        <span class="kw">let </span>t_aux_path = cache_path.as_ref().join(CacheKey::TAux.to_string());
-        <span class="kw">let </span>t_aux_bytes = fs::read(<span class="kw-2">&amp;</span>t_aux_path)
-            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>res: TemporaryAux&lt;<span class="kw">_</span>, <span class="kw">_</span>&gt; = deserialize(<span class="kw-2">&amp;</span>t_aux_bytes)<span class="question-mark">?</span>;
-
-        <span class="comment">// Switch t_aux to the passed in cache_path
-        </span>res.set_cache_path(cache_path);
-        res
-    };
+    <span class="kw">let </span>p_aux = util::get_p_aux::&lt;Tree&gt;(cache_path.as_ref())<span class="question-mark">?</span>;
+    <span class="kw">let </span>t_aux = util::get_t_aux::&lt;Tree&gt;(cache_path.as_ref(), u64::from(porep_config.sector_size))<span class="question-mark">?</span>;
 
     <span class="comment">// Convert TemporaryAux to TemporaryAuxCache, which instantiates all
     // elements based on the configs stored in TemporaryAux.
@@ -2524,19 +2449,19 @@
     <span class="kw">let </span>base_tree_count = get_base_tree_count::&lt;TreeR&gt;();
     <span class="kw">let </span>base_tree_leafs = leaf_count / base_tree_count;
 
-    <span class="kw">let </span>rows_to_discard = default_rows_to_discard(base_tree_leafs, TreeR::Arity::to_usize());
     <span class="kw">let </span>size = get_base_tree_size::&lt;TreeR&gt;(SectorSize(sector_size))<span class="question-mark">?</span>;
     <span class="kw">let </span>tree_r_last_config = StoreConfig {
         path: PathBuf::from(output_dir.as_ref()),
         id: CacheKey::CommRLastTree.to_string(),
         size: <span class="prelude-val">Some</span>(size),
-        <span class="comment">// A default &#39;rows_to_discard&#39; value will be chosen for tree_r_last, unless the user
-        // overrides this value via the environment setting (FIL_PROOFS_ROWS_TO_DISCARD). If
-        // this value is specified, no checking is done on it and it may result in a broken
-        // configuration. *Use with caution*. It must be noted that if/when this unchecked
-        // value is passed through merkle_light, merkle_light now does a check that does not
-        // allow us to discard more rows than is possible to discard.
-        </span>rows_to_discard,
+        <span class="comment">// A default &#39;rows_to_discard&#39; value will be chosen for tree_r_last, unless the
+        // `fixed-rows-to-discard` feature is not enabled and the user overrides this value via
+        // the environment setting (FIL_PROOFS_ROWS_TO_DISCARD). If this value is specified, no
+        // checking is done on it and it may result in a broken configuration. *Use with caution*.
+        // It must be noted that if/when this unchecked value is passed through merkle_light,
+        // merkle_light now does a check that does not allow us to discard more rows than is
+        // possible to discard.
+        </span>rows_to_discard: default_rows_to_discard(base_tree_leafs, TreeR::Arity::to_usize()),
     };
 
     <span class="kw">let </span>replica_base_tree_size = get_base_tree_size::&lt;DefaultBinaryTree&gt;(sector_size.into())<span class="question-mark">?</span>;
@@ -2579,13 +2504,12 @@
     <span class="kw">let </span>base_tree_count = get_base_tree_count::&lt;Tree&gt;();
     <span class="kw">let </span>base_tree_leafs = leaf_count / base_tree_count;
 
-    <span class="kw">let </span>rows_to_discard = default_rows_to_discard(base_tree_leafs, Tree::Arity::to_usize());
     <span class="kw">let </span>size = get_base_tree_size::&lt;Tree&gt;(SectorSize(sector_size))<span class="question-mark">?</span>;
     <span class="kw">let </span>tree_c_config = StoreConfig {
         path: PathBuf::from(output_dir.as_ref()),
         id: CacheKey::CommCTree.to_string(),
         size: <span class="prelude-val">Some</span>(size),
-        rows_to_discard,
+        rows_to_discard: <span class="number">0</span>,
     };
     <span class="kw">let </span>configs = split_config(tree_c_config, base_tree_count)<span class="question-mark">?</span>;
 
@@ -2597,7 +2521,7 @@
                 path: PathBuf::from(input_dir.as_ref()),
                 id: CacheKey::label_layer(layer),
                 size: <span class="prelude-val">Some</span>(label_base_tree_leafs),
-                rows_to_discard: default_rows_to_discard(label_base_tree_leafs, BINARY_ARITY),
+                rows_to_discard: <span class="number">0</span>,
             })
             .collect();
         <span class="kw">let </span>labels = Labels::new(label_configs);

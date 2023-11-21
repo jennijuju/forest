@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-identify-0.43.1/src/protocol.rs`."><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_identify" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_identify/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-identify-0.44.0/src/protocol.rs`."><title>protocol.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_identify" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_identify/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -297,11 +297,6 @@
 <a href="#297" id="297">297</a>
 <a href="#298" id="298">298</a>
 <a href="#299" id="299">299</a>
-<a href="#300" id="300">300</a>
-<a href="#301" id="301">301</a>
-<a href="#302" id="302">302</a>
-<a href="#303" id="303">303</a>
-<a href="#304" id="304">304</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -329,7 +324,6 @@
 <span class="kw">use </span>libp2p_identity <span class="kw">as </span>identity;
 <span class="kw">use </span>libp2p_identity::PublicKey;
 <span class="kw">use </span>libp2p_swarm::StreamProtocol;
-<span class="kw">use </span>log::{debug, trace};
 <span class="kw">use </span>std::convert::TryFrom;
 <span class="kw">use </span>std::io;
 <span class="kw">use </span>thiserror::Error;
@@ -394,27 +388,23 @@
     <span class="kw">pub </span>observed_addr: <span class="prelude-ty">Option</span>&lt;Multiaddr&gt;,
 }
 
-<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>send_identify&lt;T&gt;(io: T, info: Info) -&gt; <span class="prelude-ty">Result</span>&lt;(), UpgradeError&gt;
+<span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>send_identify&lt;T&gt;(io: T, info: Info) -&gt; <span class="prelude-ty">Result</span>&lt;Info, UpgradeError&gt;
 <span class="kw">where
     </span>T: AsyncWrite + Unpin,
 {
-    <span class="macro">trace!</span>(<span class="string">&quot;Sending: {:?}&quot;</span>, info);
+    <span class="macro">tracing::trace!</span>(<span class="string">&quot;Sending: {:?}&quot;</span>, info);
 
-    <span class="kw">let </span>listen_addrs = info
-        .listen_addrs
-        .into_iter()
-        .map(|addr| addr.to_vec())
-        .collect();
+    <span class="kw">let </span>listen_addrs = info.listen_addrs.iter().map(|addr| addr.to_vec()).collect();
 
     <span class="kw">let </span>pubkey_bytes = info.public_key.encode_protobuf();
 
     <span class="kw">let </span>message = proto::Identify {
-        agentVersion: <span class="prelude-val">Some</span>(info.agent_version),
-        protocolVersion: <span class="prelude-val">Some</span>(info.protocol_version),
+        agentVersion: <span class="prelude-val">Some</span>(info.agent_version.clone()),
+        protocolVersion: <span class="prelude-val">Some</span>(info.protocol_version.clone()),
         publicKey: <span class="prelude-val">Some</span>(pubkey_bytes),
         listenAddrs: listen_addrs,
         observedAddr: <span class="prelude-val">Some</span>(info.observed_addr.to_vec()),
-        protocols: info.protocols.into_iter().map(|p| p.to_string()).collect(),
+        protocols: info.protocols.iter().map(|p| p.to_string()).collect(),
     };
 
     <span class="kw">let </span><span class="kw-2">mut </span>framed_io = FramedWrite::new(
@@ -425,7 +415,7 @@
     framed_io.send(message).<span class="kw">await</span><span class="question-mark">?</span>;
     framed_io.close().<span class="kw">await</span><span class="question-mark">?</span>;
 
-    <span class="prelude-val">Ok</span>(())
+    <span class="prelude-val">Ok</span>(info)
 }
 
 <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">async fn </span>recv_push&lt;T&gt;(socket: T) -&gt; <span class="prelude-ty">Result</span>&lt;PushInfo, UpgradeError&gt;
@@ -434,7 +424,7 @@
 {
     <span class="kw">let </span>info = recv(socket).<span class="kw">await</span><span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>;
 
-    <span class="macro">trace!</span>(<span class="string">&quot;Received {:?}&quot;</span>, info);
+    <span class="macro">tracing::trace!</span>(<span class="question-mark">?</span>info, <span class="string">&quot;Received&quot;</span>);
 
     <span class="prelude-val">Ok</span>(info)
 }
@@ -445,7 +435,7 @@
 {
     <span class="kw">let </span>info = recv(socket).<span class="kw">await</span><span class="question-mark">?</span>.try_into()<span class="question-mark">?</span>;
 
-    <span class="macro">trace!</span>(<span class="string">&quot;Received {:?}&quot;</span>, info);
+    <span class="macro">tracing::trace!</span>(<span class="question-mark">?</span>info, <span class="string">&quot;Received&quot;</span>);
 
     <span class="prelude-val">Ok</span>(info)
 }
@@ -476,7 +466,7 @@
         .filter_map(|bytes| <span class="kw">match </span>Multiaddr::try_from(bytes) {
             <span class="prelude-val">Ok</span>(a) =&gt; <span class="prelude-val">Some</span>(a),
             <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Unable to parse multiaddr: {e:?}&quot;</span>);
+                <span class="macro">tracing::debug!</span>(<span class="string">&quot;Unable to parse multiaddr: {e:?}&quot;</span>);
                 <span class="prelude-val">None
             </span>}
         })
@@ -489,7 +479,7 @@
         .filter_map(|p| <span class="kw">match </span>StreamProtocol::try_from_owned(p) {
             <span class="prelude-val">Ok</span>(p) =&gt; <span class="prelude-val">Some</span>(p),
             <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Received invalid protocol from peer: {e}&quot;</span>);
+                <span class="macro">tracing::debug!</span>(<span class="string">&quot;Received invalid protocol from peer: {e}&quot;</span>);
                 <span class="prelude-val">None
             </span>}
         })
@@ -500,7 +490,7 @@
     public_key.and_then(|key| <span class="kw">match </span>PublicKey::try_decode_protobuf(<span class="kw-2">&amp;</span>key) {
         <span class="prelude-val">Ok</span>(k) =&gt; <span class="prelude-val">Some</span>(k),
         <span class="prelude-val">Err</span>(e) =&gt; {
-            <span class="macro">debug!</span>(<span class="string">&quot;Unable to decode public key: {e:?}&quot;</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Unable to decode public key: {e:?}&quot;</span>);
             <span class="prelude-val">None
         </span>}
     })
@@ -510,7 +500,7 @@
     observed_addr.and_then(|bytes| <span class="kw">match </span>Multiaddr::try_from(bytes) {
         <span class="prelude-val">Ok</span>(a) =&gt; <span class="prelude-val">Some</span>(a),
         <span class="prelude-val">Err</span>(e) =&gt; {
-            <span class="macro">debug!</span>(<span class="string">&quot;Unable to parse observed multiaddr: {e:?}&quot;</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Unable to parse observed multiaddr: {e:?}&quot;</span>);
             <span class="prelude-val">None
         </span>}
     })

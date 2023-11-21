@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"enum":["MaybeOwned"],"mod":["collector","encoding","metrics","registry"]};
+window.SIDEBAR_ITEMS = {"mod":["collector","encoding","metrics","registry"]};

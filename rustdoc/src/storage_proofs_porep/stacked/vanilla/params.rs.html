@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/storage-proofs-porep-16.0.0/src/stacked/vanilla/params.rs`."><title>params.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="storage_proofs_porep" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../storage_proofs_porep/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/storage-proofs-porep-16.1.0/src/stacked/vanilla/params.rs`."><title>params.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="storage_proofs_porep" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../storage_proofs_porep/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1295,92 +1295,7 @@
 <a href="#1295" id="1295">1295</a>
 <a href="#1296" id="1296">1296</a>
 <a href="#1297" id="1297">1297</a>
-<a href="#1298" id="1298">1298</a>
-<a href="#1299" id="1299">1299</a>
-<a href="#1300" id="1300">1300</a>
-<a href="#1301" id="1301">1301</a>
-<a href="#1302" id="1302">1302</a>
-<a href="#1303" id="1303">1303</a>
-<a href="#1304" id="1304">1304</a>
-<a href="#1305" id="1305">1305</a>
-<a href="#1306" id="1306">1306</a>
-<a href="#1307" id="1307">1307</a>
-<a href="#1308" id="1308">1308</a>
-<a href="#1309" id="1309">1309</a>
-<a href="#1310" id="1310">1310</a>
-<a href="#1311" id="1311">1311</a>
-<a href="#1312" id="1312">1312</a>
-<a href="#1313" id="1313">1313</a>
-<a href="#1314" id="1314">1314</a>
-<a href="#1315" id="1315">1315</a>
-<a href="#1316" id="1316">1316</a>
-<a href="#1317" id="1317">1317</a>
-<a href="#1318" id="1318">1318</a>
-<a href="#1319" id="1319">1319</a>
-<a href="#1320" id="1320">1320</a>
-<a href="#1321" id="1321">1321</a>
-<a href="#1322" id="1322">1322</a>
-<a href="#1323" id="1323">1323</a>
-<a href="#1324" id="1324">1324</a>
-<a href="#1325" id="1325">1325</a>
-<a href="#1326" id="1326">1326</a>
-<a href="#1327" id="1327">1327</a>
-<a href="#1328" id="1328">1328</a>
-<a href="#1329" id="1329">1329</a>
-<a href="#1330" id="1330">1330</a>
-<a href="#1331" id="1331">1331</a>
-<a href="#1332" id="1332">1332</a>
-<a href="#1333" id="1333">1333</a>
-<a href="#1334" id="1334">1334</a>
-<a href="#1335" id="1335">1335</a>
-<a href="#1336" id="1336">1336</a>
-<a href="#1337" id="1337">1337</a>
-<a href="#1338" id="1338">1338</a>
-<a href="#1339" id="1339">1339</a>
-<a href="#1340" id="1340">1340</a>
-<a href="#1341" id="1341">1341</a>
-<a href="#1342" id="1342">1342</a>
-<a href="#1343" id="1343">1343</a>
-<a href="#1344" id="1344">1344</a>
-<a href="#1345" id="1345">1345</a>
-<a href="#1346" id="1346">1346</a>
-<a href="#1347" id="1347">1347</a>
-<a href="#1348" id="1348">1348</a>
-<a href="#1349" id="1349">1349</a>
-<a href="#1350" id="1350">1350</a>
-<a href="#1351" id="1351">1351</a>
-<a href="#1352" id="1352">1352</a>
-<a href="#1353" id="1353">1353</a>
-<a href="#1354" id="1354">1354</a>
-<a href="#1355" id="1355">1355</a>
-<a href="#1356" id="1356">1356</a>
-<a href="#1357" id="1357">1357</a>
-<a href="#1358" id="1358">1358</a>
-<a href="#1359" id="1359">1359</a>
-<a href="#1360" id="1360">1360</a>
-<a href="#1361" id="1361">1361</a>
-<a href="#1362" id="1362">1362</a>
-<a href="#1363" id="1363">1363</a>
-<a href="#1364" id="1364">1364</a>
-<a href="#1365" id="1365">1365</a>
-<a href="#1366" id="1366">1366</a>
-<a href="#1367" id="1367">1367</a>
-<a href="#1368" id="1368">1368</a>
-<a href="#1369" id="1369">1369</a>
-<a href="#1370" id="1370">1370</a>
-<a href="#1371" id="1371">1371</a>
-<a href="#1372" id="1372">1372</a>
-<a href="#1373" id="1373">1373</a>
-<a href="#1374" id="1374">1374</a>
-<a href="#1375" id="1375">1375</a>
-<a href="#1376" id="1376">1376</a>
-<a href="#1377" id="1377">1377</a>
-<a href="#1378" id="1378">1378</a>
-<a href="#1379" id="1379">1379</a>
-<a href="#1380" id="1380">1380</a>
-<a href="#1381" id="1381">1381</a>
-</pre></div><pre class="rust"><code><span class="kw">use </span>std::fs::remove_file;
-<span class="kw">use </span>std::io::{<span class="self">self</span>, Read, Seek, SeekFrom, Write};
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::io::{<span class="self">self</span>, Read, Seek, SeekFrom, Write};
 <span class="kw">use </span>std::iter;
 <span class="kw">use </span>std::marker::PhantomData;
 <span class="kw">use </span>std::mem;
@@ -2219,6 +2134,58 @@
 }
 
 <span class="kw">impl</span>&lt;Tree: MerkleTreeTrait, G: Hasher&gt; TemporaryAux&lt;Tree, G&gt; {
+    <span class="doccomment">/// Create a new instance based on default values.
+    </span><span class="attr">#[cfg(feature = <span class="string">&quot;fixed-rows-to-discard&quot;</span>)]
+    </span><span class="kw">pub fn </span>new(sector_nodes: usize, num_layers: usize, cache_path: PathBuf) -&gt; <span class="self">Self </span>{
+        <span class="kw">use </span>merkletree::merkle::get_merkle_tree_len;
+        <span class="kw">use </span>storage_proofs_core::{cache_key::CacheKey, util};
+
+        <span class="kw">let </span>labels = (<span class="number">1</span>..=num_layers)
+            .map(|layer| StoreConfig {
+                path: cache_path.clone(),
+                id: CacheKey::label_layer(layer),
+                size: <span class="prelude-val">Some</span>(sector_nodes),
+                rows_to_discard: <span class="number">0</span>,
+            })
+            .collect();
+
+        <span class="kw">let </span>tree_d_size = get_merkle_tree_len(sector_nodes, BINARY_ARITY)
+            .expect(<span class="string">&quot;Tree must have enough leaves and have an arity of power of two&quot;</span>);
+        <span class="kw">let </span>tree_d_config = StoreConfig {
+            path: cache_path.clone(),
+            id: CacheKey::CommDTree.to_string(),
+            size: <span class="prelude-val">Some</span>(tree_d_size),
+            rows_to_discard: <span class="number">0</span>,
+        };
+
+        <span class="kw">let </span>tree_count = get_base_tree_count::&lt;Tree&gt;();
+        <span class="kw">let </span>tree_nodes = sector_nodes / tree_count;
+        <span class="kw">let </span>tree_size = get_merkle_tree_len(tree_nodes, Tree::Arity::to_usize())
+            .expect(<span class="string">&quot;Tree must have enough leaves and have an arity of power of two&quot;</span>);
+
+        <span class="kw">let </span>tree_r_last_config = StoreConfig {
+            path: cache_path.clone(),
+            id: CacheKey::CommRLastTree.to_string(),
+            size: <span class="prelude-val">Some</span>(tree_size),
+            rows_to_discard: util::default_rows_to_discard(tree_nodes, Tree::Arity::to_usize()),
+        };
+
+        <span class="kw">let </span>tree_c_config = StoreConfig {
+            path: cache_path,
+            id: CacheKey::CommCTree.to_string(),
+            size: <span class="prelude-val">Some</span>(tree_size),
+            rows_to_discard: <span class="number">0</span>,
+        };
+
+        <span class="self">Self </span>{
+            labels: Labels::new(labels),
+            tree_d_config,
+            tree_r_last_config,
+            tree_c_config,
+            _g: PhantomData,
+        }
+    }
+
     <span class="kw">pub fn </span>set_cache_path&lt;P: AsRef&lt;Path&gt;&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, cache_path: P) {
         <span class="kw">let </span>cp = cache_path.as_ref().to_path_buf();
         <span class="kw">for </span>label <span class="kw">in </span><span class="self">self</span>.labels.labels.iter_mut() {
@@ -2248,194 +2215,11 @@
         <span class="self">self</span>.labels.column(column_index)
     }
 
-    <span class="kw">fn </span>cached(<span class="kw-2">&amp;</span><span class="self">self</span>, config: <span class="kw-2">&amp;</span>StoreConfig) -&gt; bool {
-        Path::new(<span class="kw-2">&amp;</span>StoreConfig::data_path(<span class="kw-2">&amp;</span>config.path, <span class="kw-2">&amp;</span>config.id)).exists()
-    }
-
-    <span class="comment">// &#39;clear_layer_data&#39; will discard all persisted layer data that
-    // is no longer required.  Unfortunately, it also clears TreeC and
-    // TreeD, which means this method is strangely named, but those
-    // are also no longer needed in the SynthPoRep case (which this
-    // call is only used for).
-    </span><span class="kw">pub fn </span>clear_layer_data(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>delete_tree_c_store = |config: <span class="kw-2">&amp;</span>StoreConfig, tree_c_size: usize| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-            <span class="kw">let </span>tree_c_store = DiskStore::&lt;&lt;Tree::Hasher <span class="kw">as </span>Hasher&gt;::Domain&gt;::new_from_disk(
-                tree_c_size,
-                Tree::Arity::to_usize(),
-                config,
-            )
-            .context(<span class="string">&quot;tree_c&quot;</span>)<span class="question-mark">?</span>;
-            <span class="comment">// Note: from_data_store requires the base tree leaf count
-            </span><span class="kw">let </span>tree_c = DiskTree::&lt;
-                Tree::Hasher,
-                Tree::Arity,
-                Tree::SubTreeArity,
-                Tree::TopTreeArity,
-            &gt;::from_data_store(
-                tree_c_store,
-                get_merkle_tree_leafs(tree_c_size, Tree::Arity::to_usize())<span class="question-mark">?</span>,
-            )
-            .context(<span class="string">&quot;tree_c&quot;</span>)<span class="question-mark">?</span>;
-            tree_c.delete(config.clone()).context(<span class="string">&quot;tree_c&quot;</span>)<span class="question-mark">?</span>;
-
-            <span class="prelude-val">Ok</span>(())
-        };
-
-        <span class="kw">let </span>tree_d_config = <span class="self">self</span>.tree_d_config.clone();
-        <span class="kw">if </span><span class="self">self</span>.cached(<span class="kw-2">&amp;</span>tree_d_config) {
-            <span class="kw">let </span>tree_d_size = <span class="self">self
-                </span>.tree_d_config
-                .size
-                .context(<span class="string">&quot;tree_d config has no size&quot;</span>)<span class="question-mark">?</span>;
-            <span class="kw">let </span>tree_d_store: DiskStore&lt;G::Domain&gt; =
-                DiskStore::new_from_disk(tree_d_size, BINARY_ARITY, <span class="kw-2">&amp;</span>tree_d_config)
-                    .context(<span class="string">&quot;tree_d&quot;</span>)<span class="question-mark">?</span>;
-            <span class="comment">// Note: from_data_store requires the base tree leaf count
-            </span><span class="kw">let </span>tree_d = BinaryMerkleTree::&lt;G&gt;::from_data_store(
-                tree_d_store,
-                get_merkle_tree_leafs(tree_d_size, BINARY_ARITY)<span class="question-mark">?</span>,
-            )
-            .context(<span class="string">&quot;tree_d&quot;</span>)<span class="question-mark">?</span>;
-
-            tree_d.delete(tree_d_config).context(<span class="string">&quot;tree_d&quot;</span>)<span class="question-mark">?</span>;
-            <span class="macro">trace!</span>(<span class="string">&quot;tree d deleted&quot;</span>);
-        }
-
-        <span class="kw">let </span>tree_count = get_base_tree_count::&lt;Tree&gt;();
-        <span class="kw">let </span>tree_c_size = <span class="self">self
-            </span>.tree_c_config
-            .size
-            .context(<span class="string">&quot;tree_c config has no size&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>configs = split_config(<span class="self">self</span>.tree_c_config.clone(), tree_count)<span class="question-mark">?</span>;
-
-        <span class="kw">if </span><span class="self">self</span>.cached(<span class="kw-2">&amp;</span><span class="self">self</span>.tree_c_config) {
-            delete_tree_c_store(<span class="kw-2">&amp;</span><span class="self">self</span>.tree_c_config, tree_c_size)<span class="question-mark">?</span>;
-            <span class="macro">trace!</span>(<span class="string">&quot;tree c deleted&quot;</span>);
-        } <span class="kw">else if </span><span class="self">self</span>.cached(<span class="kw-2">&amp;</span>configs[<span class="number">0</span>]) {
-            <span class="kw">for </span>config <span class="kw">in </span><span class="kw-2">&amp;</span>configs {
-                <span class="comment">// Trees with sub-trees cannot be instantiated and deleted via the existing tree interface since
-                // knowledge of how the base trees are split exists outside of merkle light.  For now, we manually
-                // remove each on disk tree file since we know where they are here.
-                </span><span class="kw">let </span>tree_c_path = StoreConfig::data_path(<span class="kw-2">&amp;</span>config.path, <span class="kw-2">&amp;</span>config.id);
-                remove_file(<span class="kw-2">&amp;</span>tree_c_path)
-                    .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Failed to delete {:?}&quot;</span>, <span class="kw-2">&amp;</span>tree_c_path))<span class="question-mark">?
-            </span>}
-            <span class="macro">trace!</span>(<span class="string">&quot;tree c deleted&quot;</span>);
-        }
-
-        <span class="self">self</span>.clear_layer_data_inner()
-    }
-
-    <span class="comment">// &#39;clear_layer_data&#39; will discard all persisted layer data that
-    // is no longer required.  Unfortunately, it also clears TreeC and
-    // TreeD, which means this method is strangely named, but those
-    // are also no longer needed in the SynthPoRep case (which this
-    // call is only used for).
-    </span><span class="kw">fn </span>clear_layer_data_inner(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="self">self</span>.labels.labels.len() {
-            <span class="kw">let </span>cur_config = <span class="self">self</span>.labels.labels[i].clone();
-            <span class="kw">if </span><span class="self">self</span>.cached(<span class="kw-2">&amp;</span>cur_config) {
-                DiskStore::&lt;&lt;Tree::Hasher <span class="kw">as </span>Hasher&gt;::Domain&gt;::delete(cur_config)
-                    .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;labels {}&quot;</span>, i))<span class="question-mark">?</span>;
-                <span class="macro">trace!</span>(<span class="string">&quot;layer {} deleted&quot;</span>, i);
-            }
-        }
-
-        <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="comment">// &#39;clear_temp&#39; will discard all persisted merkle and layer data
-    // that is no longer required.
-    </span><span class="kw">pub fn </span>clear_temp(t_aux: TemporaryAux&lt;Tree, G&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>delete_tree_c_store = |config: <span class="kw-2">&amp;</span>StoreConfig, tree_c_size: usize| -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-            <span class="kw">let </span>tree_c_store = DiskStore::&lt;&lt;Tree::Hasher <span class="kw">as </span>Hasher&gt;::Domain&gt;::new_from_disk(
-                tree_c_size,
-                Tree::Arity::to_usize(),
-                config,
-            )
-            .context(<span class="string">&quot;tree_c&quot;</span>)<span class="question-mark">?</span>;
-            <span class="comment">// Note: from_data_store requires the base tree leaf count
-            </span><span class="kw">let </span>tree_c = DiskTree::&lt;
-                Tree::Hasher,
-                Tree::Arity,
-                Tree::SubTreeArity,
-                Tree::TopTreeArity,
-            &gt;::from_data_store(
-                tree_c_store,
-                get_merkle_tree_leafs(tree_c_size, Tree::Arity::to_usize())<span class="question-mark">?</span>,
-            )
-            .context(<span class="string">&quot;tree_c&quot;</span>)<span class="question-mark">?</span>;
-            tree_c.delete(config.clone()).context(<span class="string">&quot;tree_c&quot;</span>)<span class="question-mark">?</span>;
-
-            <span class="prelude-val">Ok</span>(())
-        };
-
-        <span class="kw">let </span>tree_d_config = t_aux.tree_d_config.clone();
-        <span class="kw">if </span>t_aux.cached(<span class="kw-2">&amp;</span>tree_d_config) {
-            <span class="kw">let </span>tree_d_size = t_aux
-                .tree_d_config
-                .size
-                .context(<span class="string">&quot;tree_d config has no size&quot;</span>)<span class="question-mark">?</span>;
-            <span class="kw">let </span>tree_d_store: DiskStore&lt;G::Domain&gt; =
-                DiskStore::new_from_disk(tree_d_size, BINARY_ARITY, <span class="kw-2">&amp;</span>tree_d_config)
-                    .context(<span class="string">&quot;tree_d&quot;</span>)<span class="question-mark">?</span>;
-            <span class="comment">// Note: from_data_store requires the base tree leaf count
-            </span><span class="kw">let </span>tree_d = BinaryMerkleTree::&lt;G&gt;::from_data_store(
-                tree_d_store,
-                get_merkle_tree_leafs(tree_d_size, BINARY_ARITY)<span class="question-mark">?</span>,
-            )
-            .context(<span class="string">&quot;tree_d&quot;</span>)<span class="question-mark">?</span>;
-
-            tree_d.delete(tree_d_config).context(<span class="string">&quot;tree_d&quot;</span>)<span class="question-mark">?</span>;
-            <span class="macro">trace!</span>(<span class="string">&quot;tree d deleted&quot;</span>);
-        }
-
-        <span class="kw">let </span>tree_count = get_base_tree_count::&lt;Tree&gt;();
-        <span class="kw">let </span>tree_c_size = t_aux
-            .tree_c_config
-            .size
-            .context(<span class="string">&quot;tree_c config has no size&quot;</span>)<span class="question-mark">?</span>;
-        <span class="kw">let </span>configs = split_config(t_aux.tree_c_config.clone(), tree_count)<span class="question-mark">?</span>;
-
-        <span class="kw">if </span>t_aux.cached(<span class="kw-2">&amp;</span>t_aux.tree_c_config) {
-            delete_tree_c_store(<span class="kw-2">&amp;</span>t_aux.tree_c_config, tree_c_size)<span class="question-mark">?</span>;
-            <span class="macro">trace!</span>(<span class="string">&quot;tree c deleted&quot;</span>);
-        } <span class="kw">else if </span>t_aux.cached(<span class="kw-2">&amp;</span>configs[<span class="number">0</span>]) {
-            <span class="kw">for </span>config <span class="kw">in </span><span class="kw-2">&amp;</span>configs {
-                <span class="comment">// Trees with sub-trees cannot be instantiated and deleted via the existing tree interface since
-                // knowledge of how the base trees are split exists outside of merkle light.  For now, we manually
-                // remove each on disk tree file since we know where they are here.
-                </span><span class="kw">let </span>tree_c_path = StoreConfig::data_path(<span class="kw-2">&amp;</span>config.path, <span class="kw-2">&amp;</span>config.id);
-                remove_file(<span class="kw-2">&amp;</span>tree_c_path)
-                    .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Failed to delete {:?}&quot;</span>, <span class="kw-2">&amp;</span>tree_c_path))<span class="question-mark">?
-            </span>}
-            <span class="macro">trace!</span>(<span class="string">&quot;tree c deleted&quot;</span>);
-        }
-
-        t_aux.clear_layer_data()
-    }
-
     <span class="kw">pub fn </span>synth_proofs_path(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; PathBuf {
         <span class="self">self</span>.tree_d_config.path.clone().join(<span class="macro">format!</span>(
             <span class="string">&quot;{}.{}&quot;</span>,
             SYNTHETIC_POREP_VANILLA_PROOFS_KEY, SYNTHETIC_POREP_VANILLA_PROOFS_EXT
         ))
-    }
-
-    <span class="kw">pub fn </span>clear_synthetic_proofs(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">let </span>synth_proofs_path = <span class="self">self</span>.synth_proofs_path();
-        <span class="kw">if </span>Path::new(<span class="kw-2">&amp;</span>synth_proofs_path).exists() {
-            <span class="macro">trace!</span>(<span class="string">&quot;removing synthetic proofs at {:?}&quot;</span>, synth_proofs_path);
-            remove_file(<span class="kw-2">&amp;</span>synth_proofs_path)
-                .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;Failed to delete {:?}&quot;</span>, <span class="kw-2">&amp;</span>synth_proofs_path))
-        } <span class="kw">else </span>{
-            <span class="macro">trace!</span>(
-                <span class="string">&quot;persisted synthetic proofs do not exist at {:?}&quot;</span>,
-                synth_proofs_path
-            );
-
-            <span class="prelude-val">Ok</span>(())
-        }
     }
 }
 
@@ -2759,5 +2543,53 @@
         .finalize();
 
     bytes_into_fr_repr_safe(hash.as_ref()).into()
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>filecoin_hashers::{poseidon::PoseidonHasher, sha256::Sha256Hasher};
+    <span class="kw">use </span>generic_array::typenum::{U0, U2, U8};
+    <span class="kw">use </span>storage_proofs_core::{
+        api_version::ApiVersion, drgraph::BASE_DEGREE, merkle::DiskTree,
+        parameter_cache::ParameterSetMetadata, proof::ProofScheme, util::NODE_SIZE,
+    };
+
+    <span class="kw">use </span><span class="kw">crate</span>::stacked::{LayerChallenges, SetupParams, StackedDrg, EXP_DEGREE};
+
+    <span class="comment">// The identifier is used for the parameter file filenames. It must not change, as the
+    // filenames are fixed for the official parameter files. Hence staticly assert certain
+    // identifiers.
+    </span><span class="attr">#[test]
+    </span><span class="kw">fn </span>test_public_params_identifier() {
+        <span class="kw">type </span>OctTree32Gib = DiskTree&lt;PoseidonHasher, U8, U8, U0&gt;;
+        <span class="kw">let </span>setup_params_32gib = SetupParams {
+            nodes: <span class="number">32 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>/ NODE_SIZE,
+            degree: BASE_DEGREE,
+            expansion_degree: EXP_DEGREE,
+            porep_id: [<span class="number">1u8</span>; <span class="number">32</span>],
+            layer_challenges: LayerChallenges::new(<span class="number">11</span>, <span class="number">18</span>),
+            api_version: ApiVersion::V1_1_0,
+            api_features: <span class="macro">vec!</span>[],
+        };
+        <span class="kw">let </span>public_params_32gib =
+            StackedDrg::&lt;OctTree32Gib, Sha256Hasher&gt;::setup(<span class="kw-2">&amp;</span>setup_params_32gib)
+                .expect(<span class="string">&quot;setup failed&quot;</span>);
+        <span class="macro">assert_eq!</span>(public_params_32gib.identifier(), <span class="string">&quot;layered_drgporep::PublicParams{ graph: stacked_graph::StackedGraph{expansion_degree: 8 base_graph: drgraph::BucketGraph{size: 1073741824; degree: 6; hasher: poseidon_hasher} }, challenges: LayerChallenges { layers: 11, max_count: 18 }, tree: merkletree-poseidon_hasher-8-8-0 }&quot;</span>);
+
+        <span class="kw">type </span>OctTree64Gib = DiskTree&lt;PoseidonHasher, U8, U8, U2&gt;;
+        <span class="kw">let </span>setup_params_64gib = SetupParams {
+            nodes: <span class="number">64 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>/ NODE_SIZE,
+            degree: BASE_DEGREE,
+            expansion_degree: EXP_DEGREE,
+            porep_id: [<span class="number">1u8</span>; <span class="number">32</span>],
+            layer_challenges: LayerChallenges::new(<span class="number">11</span>, <span class="number">18</span>),
+            api_version: ApiVersion::V1_1_0,
+            api_features: <span class="macro">vec!</span>[],
+        };
+        <span class="kw">let </span>public_params_64gib =
+            StackedDrg::&lt;OctTree64Gib, Sha256Hasher&gt;::setup(<span class="kw-2">&amp;</span>setup_params_64gib)
+                .expect(<span class="string">&quot;setup failed&quot;</span>);
+        <span class="macro">assert_eq!</span>(public_params_64gib.identifier(), <span class="string">&quot;layered_drgporep::PublicParams{ graph: stacked_graph::StackedGraph{expansion_degree: 8 base_graph: drgraph::BucketGraph{size: 2147483648; degree: 6; hasher: poseidon_hasher} }, challenges: LayerChallenges { layers: 11, max_count: 18 }, tree: merkletree-poseidon_hasher-8-8-2 }&quot;</span>);
+    }
 }
 </code></pre></div></section></main></body></html>

@@ -11,7 +11,7 @@
 </div><section id="variant.Backtrack" class="variant"><a href="#variant.Backtrack" class="anchor">§</a><h3 class="code-header">Backtrack(E)</h3></section><div class="docblock"><p>The parser failed with a recoverable error (the default).</p>
 <p>For example, a parser for json values might include a
 <a href="../ascii/fn.dec_uint.html" title="fn winnow::ascii::dec_uint"><code>dec_uint</code></a> as one case in an <a href="../combinator/fn.alt.html" title="fn winnow::combinator::alt"><code>alt</code></a>
-combiantor.  If it fails, the next case should be tried.</p>
+combinator. If it fails, the next case should be tried.</p>
 </div><section id="variant.Cut" class="variant"><a href="#variant.Cut" class="anchor">§</a><h3 class="code-header">Cut(E)</h3></section><div class="docblock"><p>The parser had an unrecoverable error.</p>
 <p>The parser was on the right branch, so directly report it to the user rather than trying
 other branches. You can use <a href="../combinator/fn.cut_err.html" title="fn winnow::combinator::cut_err"><code>cut_err()</code></a> combinator to switch

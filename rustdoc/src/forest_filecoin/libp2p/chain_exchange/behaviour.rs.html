@@ -167,12 +167,17 @@
 <a href="#167" id="167">167</a>
 <a href="#168" id="168">168</a>
 <a href="#169" id="169">169</a>
+<a href="#170" id="170">170</a>
+<a href="#171" id="171">171</a>
+<a href="#172" id="172">172</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>libp2p::{
-    request_response::{<span class="self">self</span>, OutboundFailure, ProtocolSupport, RequestId, ResponseChannel},
+    request_response::{
+        <span class="self">self</span>, OutboundFailure, OutboundRequestId, ProtocolSupport, ResponseChannel,
+    },
     swarm::{derive_prelude::<span class="kw-2">*</span>, NetworkBehaviour, THandlerOutEvent},
     PeerId,
 };
@@ -185,8 +190,10 @@
 
 <span class="kw">pub struct </span>ChainExchangeBehaviour {
     inner: InnerBehaviour,
-    response_channels:
-        HashMap&lt;RequestId, flume::Sender&lt;<span class="prelude-ty">Result</span>&lt;ChainExchangeResponse, RequestResponseError&gt;&gt;&gt;,
+    response_channels: HashMap&lt;
+        OutboundRequestId,
+        flume::Sender&lt;<span class="prelude-ty">Result</span>&lt;ChainExchangeResponse, RequestResponseError&gt;&gt;,
+    &gt;,
 }
 
 <span class="kw">impl </span>ChainExchangeBehaviour {
@@ -195,7 +202,7 @@
         peer: <span class="kw-2">&amp;</span>PeerId,
         request: ChainExchangeRequest,
         response_channel: flume::Sender&lt;<span class="prelude-ty">Result</span>&lt;ChainExchangeResponse, RequestResponseError&gt;&gt;,
-    ) -&gt; RequestId {
+    ) -&gt; OutboundRequestId {
         <span class="kw">let </span>request_id = <span class="self">self</span>.inner.send_request(peer, request);
         <span class="self">self</span>.response_channels.insert(request_id, response_channel);
         <span class="self">self</span>.track_metrics();
@@ -212,7 +219,7 @@
 
     <span class="kw">pub async fn </span>handle_inbound_response(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        request_id: <span class="kw-2">&amp;</span>RequestId,
+        request_id: <span class="kw-2">&amp;</span>OutboundRequestId,
         response: ChainExchangeResponse,
     ) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(channel) = <span class="self">self</span>.response_channels.remove(request_id) {
@@ -226,7 +233,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>on_outbound_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: <span class="kw-2">&amp;</span>RequestId, error: OutboundFailure) {
+    <span class="kw">pub fn </span>on_outbound_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: <span class="kw-2">&amp;</span>OutboundRequestId, error: OutboundFailure) {
         <span class="self">self</span>.track_metrics();
         <span class="kw">if let </span><span class="prelude-val">Some</span>(tx) = <span class="self">self</span>.response_channels.remove(request_id) {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = tx.send(<span class="prelude-val">Err</span>(error.into())) {
@@ -324,16 +331,15 @@
             .on_connection_handler_event(peer_id, connection_id, event)
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="self">self</span>.inner.on_swarm_event(event)
     }
 
     <span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>std::task::Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
     ) -&gt; std::task::Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
-        <span class="self">self</span>.inner.poll(cx, params)
+        <span class="self">self</span>.inner.poll(cx)
     }
 }
 </code></pre></div></section></main></body></html>

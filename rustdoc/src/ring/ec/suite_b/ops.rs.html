@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ring-0.17.4/src/ec/suite_b/ops.rs`."><title>ops.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="ring" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../ring/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ring-0.17.5/src/ec/suite_b/ops.rs`."><title>ops.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="ring" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../../src-files.js"></script><script defer src="../../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../ring/index.html"><img class="rust-logo" src="../../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1173,6 +1173,18 @@
 <a href="#1173" id="1173">1173</a>
 <a href="#1174" id="1174">1174</a>
 <a href="#1175" id="1175">1175</a>
+<a href="#1176" id="1176">1176</a>
+<a href="#1177" id="1177">1177</a>
+<a href="#1178" id="1178">1178</a>
+<a href="#1179" id="1179">1179</a>
+<a href="#1180" id="1180">1180</a>
+<a href="#1181" id="1181">1181</a>
+<a href="#1182" id="1182">1182</a>
+<a href="#1183" id="1183">1183</a>
+<a href="#1184" id="1184">1184</a>
+<a href="#1185" id="1185">1185</a>
+<a href="#1186" id="1186">1186</a>
+<a href="#1187" id="1187">1187</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2016 Brian Smith.
 //
 // Permission to use, copy, modify, and/or distribute this software for any
@@ -1187,7 +1199,7 @@
 // OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 // CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-</span><span class="kw">use crate</span>::{arithmetic::montgomery::<span class="kw-2">*</span>, c, error, limb::<span class="kw-2">*</span>};
+</span><span class="kw">use crate</span>::{arithmetic::limbs_from_hex, arithmetic::montgomery::<span class="kw-2">*</span>, c, error, limb::<span class="kw-2">*</span>};
 <span class="kw">use </span>core::marker::PhantomData;
 
 <span class="kw">pub use </span><span class="self">self</span>::elem::<span class="kw-2">*</span>;
@@ -1225,11 +1237,7 @@
     }
 }
 
-<span class="kw">static </span>ONE: Elem&lt;Unencoded&gt; = Elem {
-    limbs: <span class="macro">limbs!</span>[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],
-    m: PhantomData,
-    encoding: PhantomData,
-};
+<span class="kw">const </span>ONE: Elem&lt;Unencoded&gt; = Elem::from_hex(<span class="string">&quot;1&quot;</span>);
 
 <span class="doccomment">/// Operations and values needed by all curve operations.
 </span><span class="kw">pub struct </span>CommonOps {
@@ -1449,10 +1457,7 @@
     <span class="kw">pub </span>scalar_ops: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>ScalarOps,
     <span class="kw">pub </span>public_key_ops: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PublicKeyOps,
 
-    <span class="comment">// XXX: `PublicScalarOps` shouldn&#39;t depend on `PrivateKeyOps`, but it does
-    // temporarily until `twin_mul` is rewritten.
-    </span><span class="kw">pub </span>private_key_ops: <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>PrivateKeyOps,
-
+    <span class="kw">pub </span>twin_mul: <span class="kw">fn</span>(g_scalar: <span class="kw-2">&amp;</span>Scalar, p_scalar: <span class="kw-2">&amp;</span>Scalar, p_xy: <span class="kw-2">&amp;</span>(Elem&lt;R&gt;, Elem&lt;R&gt;)) -&gt; Point,
     <span class="kw">pub </span>q_minus_n: Elem&lt;Unencoded&gt;,
 }
 
@@ -1483,6 +1488,19 @@
 
     <span class="kw">pub </span>oneRR_mod_n: Scalar&lt;RR&gt;, <span class="comment">// 1 * R**2 (mod n). TOOD: Use One&lt;RR&gt;.
 </span>}
+
+<span class="comment">// XXX: Inefficient and unnecessarily depends on `PrivateKeyOps`. TODO: implement interleaved wNAF
+// multiplication.
+</span><span class="kw">fn </span>twin_mul_inefficient(
+    ops: <span class="kw-2">&amp;</span>PrivateKeyOps,
+    g_scalar: <span class="kw-2">&amp;</span>Scalar,
+    p_scalar: <span class="kw-2">&amp;</span>Scalar,
+    p_xy: <span class="kw-2">&amp;</span>(Elem&lt;R&gt;, Elem&lt;R&gt;),
+) -&gt; Point {
+    <span class="kw">let </span>scaled_g = ops.point_mul_base(g_scalar);
+    <span class="kw">let </span>scaled_p = ops.point_mul(p_scalar, p_xy);
+    ops.common.point_sum(<span class="kw-2">&amp;</span>scaled_g, <span class="kw-2">&amp;</span>scaled_p)
+}
 
 <span class="comment">// This assumes n &lt; q &lt; 2*n.
 </span><span class="kw">pub fn </span>elem_reduced_to_scalar(ops: <span class="kw-2">&amp;</span>CommonOps, elem: <span class="kw-2">&amp;</span>Elem&lt;Unencoded&gt;) -&gt; Scalar&lt;Unencoded&gt; {
@@ -2025,14 +2043,14 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>p384_point_double_test() {
         <span class="macro">prefixed_extern! </span>{
-            <span class="kw">fn </span>nistz384_point_double(
+            <span class="kw">fn </span>p384_point_double(
                 r: <span class="kw-2">*mut </span>Limb,   <span class="comment">// [p384::COMMON_OPS.num_limbs*3]
                 </span>a: <span class="kw-2">*const </span>Limb, <span class="comment">// [p384::COMMON_OPS.num_limbs*3]
             </span>);
         }
         point_double_test(
             <span class="kw-2">&amp;</span>p384::PRIVATE_KEY_OPS,
-            nistz384_point_double,
+            p384_point_double,
             <span class="macro">test_file!</span>(<span class="string">&quot;ops/p384_point_double_tests.txt&quot;</span>),
         );
     }
@@ -2148,6 +2166,7 @@
     </span><span class="kw">fn </span>p256_point_mul_base_test() {
         point_mul_base_tests(
             <span class="kw-2">&amp;</span>p256::PRIVATE_KEY_OPS,
+            |s| p256::PRIVATE_KEY_OPS.point_mul_base(s),
             <span class="macro">test_file!</span>(<span class="string">&quot;ops/p256_point_mul_base_tests.txt&quot;</span>),
         );
     }
@@ -2156,16 +2175,21 @@
     </span><span class="kw">fn </span>p384_point_mul_base_test() {
         point_mul_base_tests(
             <span class="kw-2">&amp;</span>p384::PRIVATE_KEY_OPS,
+            |s| p384::PRIVATE_KEY_OPS.point_mul_base(s),
             <span class="macro">test_file!</span>(<span class="string">&quot;ops/p384_point_mul_base_tests.txt&quot;</span>),
         );
     }
 
-    <span class="kw">fn </span>point_mul_base_tests(ops: <span class="kw-2">&amp;</span>PrivateKeyOps, test_file: test::File) {
+    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>point_mul_base_tests(
+        ops: <span class="kw-2">&amp;</span>PrivateKeyOps,
+        f: <span class="kw">impl </span>Fn(<span class="kw-2">&amp;</span>Scalar) -&gt; Point,
+        test_file: test::File,
+    ) {
         test::run(test_file, |section, test_case| {
             <span class="macro">assert_eq!</span>(section, <span class="string">&quot;&quot;</span>);
             <span class="kw">let </span>g_scalar = consume_scalar(ops.common, test_case, <span class="string">&quot;g_scalar&quot;</span>);
             <span class="kw">let </span>expected_result = consume_point(ops, test_case, <span class="string">&quot;r&quot;</span>);
-            <span class="kw">let </span>actual_result = ops.point_mul_base(<span class="kw-2">&amp;</span>g_scalar);
+            <span class="kw">let </span>actual_result = f(<span class="kw-2">&amp;</span>g_scalar);
             assert_point_actual_equals_expected(ops, <span class="kw-2">&amp;</span>actual_result, <span class="kw-2">&amp;</span>expected_result);
             <span class="prelude-val">Ok</span>(())
         })

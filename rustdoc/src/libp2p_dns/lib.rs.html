@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-dns-0.40.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_dns" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_dns/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-dns-0.41.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_dns" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_dns/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -787,6 +787,11 @@
 <a href="#787" id="787">787</a>
 <a href="#788" id="788">788</a>
 <a href="#789" id="789">789</a>
+<a href="#790" id="790">790</a>
+<a href="#791" id="791">791</a>
+<a href="#792" id="792">792</a>
+<a href="#793" id="793">793</a>
+<a href="#794" id="794">794</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -849,12 +854,13 @@
 #[cfg(feature = <span class="string">&quot;async-std&quot;</span>)]
 </span><span class="kw">pub mod </span>async_std {
     <span class="kw">use </span>async_std_resolver::AsyncStdResolver;
-    <span class="kw">use </span>parking_lot::Mutex;
-    <span class="kw">use </span>std::{io, sync::Arc};
-    <span class="kw">use </span>trust_dns_resolver::{
+    <span class="kw">use </span>futures::FutureExt;
+    <span class="kw">use </span>hickory_resolver::{
         config::{ResolverConfig, ResolverOpts},
         system_conf,
     };
+    <span class="kw">use </span>parking_lot::Mutex;
+    <span class="kw">use </span>std::{io, sync::Arc};
 
     <span class="doccomment">/// A `Transport` wrapper for performing DNS lookups when dialing `Multiaddr`esses
     /// using `async-std` for all async I/O.
@@ -864,32 +870,48 @@
         <span class="doccomment">/// Creates a new [`Transport`] from the OS&#39;s DNS configuration and defaults.
         </span><span class="kw">pub async fn </span>system(inner: T) -&gt; <span class="prelude-ty">Result</span>&lt;Transport&lt;T&gt;, io::Error&gt; {
             <span class="kw">let </span>(cfg, opts) = system_conf::read_system_conf()<span class="question-mark">?</span>;
-            <span class="self">Self</span>::custom(inner, cfg, opts).<span class="kw">await
-        </span>}
+            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::custom(inner, cfg, opts).<span class="kw">await</span>)
+        }
 
         <span class="doccomment">/// Creates a [`Transport`] with a custom resolver configuration and options.
-        </span><span class="kw">pub async fn </span>custom(
-            inner: T,
-            cfg: ResolverConfig,
-            opts: ResolverOpts,
-        ) -&gt; <span class="prelude-ty">Result</span>&lt;Transport&lt;T&gt;, io::Error&gt; {
-            <span class="prelude-val">Ok</span>(Transport {
+        </span><span class="kw">pub async fn </span>custom(inner: T, cfg: ResolverConfig, opts: ResolverOpts) -&gt; Transport&lt;T&gt; {
+            Transport {
                 inner: Arc::new(Mutex::new(inner)),
                 resolver: async_std_resolver::resolver(cfg, opts).<span class="kw">await</span>,
+            }
+        }
+
+        <span class="comment">// TODO: Replace `system` implementation with this
+        </span><span class="attr">#[doc(hidden)]
+        </span><span class="kw">pub fn </span>system2(inner: T) -&gt; <span class="prelude-ty">Result</span>&lt;Transport&lt;T&gt;, io::Error&gt; {
+            <span class="prelude-val">Ok</span>(Transport {
+                inner: Arc::new(Mutex::new(inner)),
+                resolver: async_std_resolver::resolver_from_system_conf()
+                    .now_or_never()
+                    .expect(
+                        <span class="string">&quot;async_std_resolver::resolver_from_system_conf did not resolve immediately&quot;</span>,
+                    )<span class="question-mark">?</span>,
             })
+        }
+
+        <span class="comment">// TODO: Replace `custom` implementation with this
+        </span><span class="attr">#[doc(hidden)]
+        </span><span class="kw">pub fn </span>custom2(inner: T, cfg: ResolverConfig, opts: ResolverOpts) -&gt; Transport&lt;T&gt; {
+            Transport {
+                inner: Arc::new(Mutex::new(inner)),
+                resolver: async_std_resolver::resolver(cfg, opts)
+                    .now_or_never()
+                    .expect(<span class="string">&quot;async_std_resolver::resolver did not resolve immediately&quot;</span>),
+            }
         }
     }
 }
 
-<span class="attr">#[cfg(feature = <span class="string">&quot;async-std&quot;</span>)]
-#[deprecated(note = <span class="string">&quot;Use `async_std::Transport` instead.&quot;</span>)]
-</span><span class="kw">pub type </span>DnsConfig&lt;T&gt; = async_std::Transport&lt;T&gt;;
-
 <span class="attr">#[cfg(feature = <span class="string">&quot;tokio&quot;</span>)]
 </span><span class="kw">pub mod </span>tokio {
+    <span class="kw">use </span>hickory_resolver::{system_conf, TokioAsyncResolver};
     <span class="kw">use </span>parking_lot::Mutex;
     <span class="kw">use </span>std::sync::Arc;
-    <span class="kw">use </span>trust_dns_resolver::{system_conf, TokioAsyncResolver};
 
     <span class="doccomment">/// A `Transport` wrapper for performing DNS lookups when dialing `Multiaddr`esses
     /// using `tokio` for all async I/O.
@@ -897,30 +919,25 @@
 
     <span class="kw">impl</span>&lt;T&gt; Transport&lt;T&gt; {
         <span class="doccomment">/// Creates a new [`Transport`] from the OS&#39;s DNS configuration and defaults.
-        </span><span class="kw">pub fn </span>system(inner: T) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">crate</span>::Transport&lt;T, TokioAsyncResolver&gt;, std::io::Error&gt; {
+        </span><span class="kw">pub fn </span>system(inner: T) -&gt; <span class="prelude-ty">Result</span>&lt;Transport&lt;T&gt;, std::io::Error&gt; {
             <span class="kw">let </span>(cfg, opts) = system_conf::read_system_conf()<span class="question-mark">?</span>;
-            <span class="self">Self</span>::custom(inner, cfg, opts)
+            <span class="prelude-val">Ok</span>(<span class="self">Self</span>::custom(inner, cfg, opts))
         }
 
         <span class="doccomment">/// Creates a [`Transport`] with a custom resolver configuration
         /// and options.
         </span><span class="kw">pub fn </span>custom(
             inner: T,
-            cfg: trust_dns_resolver::config::ResolverConfig,
-            opts: trust_dns_resolver::config::ResolverOpts,
-        ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="kw">crate</span>::Transport&lt;T, TokioAsyncResolver&gt;, std::io::Error&gt; {
-            <span class="comment">// TODO: Make infallible in next breaking release. Or deprecation?
-            </span><span class="prelude-val">Ok</span>(Transport {
+            cfg: hickory_resolver::config::ResolverConfig,
+            opts: hickory_resolver::config::ResolverOpts,
+        ) -&gt; Transport&lt;T&gt; {
+            Transport {
                 inner: Arc::new(Mutex::new(inner)),
                 resolver: TokioAsyncResolver::tokio(cfg, opts),
-            })
+            }
         }
     }
 }
-
-<span class="attr">#[cfg(feature = <span class="string">&quot;tokio&quot;</span>)]
-#[deprecated(note = <span class="string">&quot;Use `tokio::Transport` instead.&quot;</span>)]
-</span><span class="kw">pub type </span>TokioDnsConfig&lt;T&gt; = tokio::Transport&lt;T&gt;;
 
 <span class="kw">use </span>async_trait::async_trait;
 <span class="kw">use </span>futures::{future::BoxFuture, prelude::<span class="kw-2">*</span>};
@@ -943,12 +960,12 @@
     task::{Context, Poll},
 };
 
-<span class="kw">pub use </span>trust_dns_resolver::config::{ResolverConfig, ResolverOpts};
-<span class="kw">pub use </span>trust_dns_resolver::error::{ResolveError, ResolveErrorKind};
-<span class="kw">use </span>trust_dns_resolver::lookup::{Ipv4Lookup, Ipv6Lookup, TxtLookup};
-<span class="kw">use </span>trust_dns_resolver::lookup_ip::LookupIp;
-<span class="kw">use </span>trust_dns_resolver::name_server::ConnectionProvider;
-<span class="kw">use </span>trust_dns_resolver::AsyncResolver;
+<span class="kw">pub use </span>hickory_resolver::config::{ResolverConfig, ResolverOpts};
+<span class="kw">pub use </span>hickory_resolver::error::{ResolveError, ResolveErrorKind};
+<span class="kw">use </span>hickory_resolver::lookup::{Ipv4Lookup, Ipv6Lookup, TxtLookup};
+<span class="kw">use </span>hickory_resolver::lookup_ip::LookupIp;
+<span class="kw">use </span>hickory_resolver::name_server::ConnectionProvider;
+<span class="kw">use </span>hickory_resolver::AsyncResolver;
 
 <span class="doccomment">/// The prefix for `dnsaddr` protocol TXT record lookups.
 </span><span class="kw">const </span>DNSADDR_PREFIX: <span class="kw-2">&amp;</span>str = <span class="string">&quot;_dnsaddr.&quot;</span>;
@@ -977,9 +994,6 @@
     <span class="doccomment">/// The DNS resolver used when dialing addresses with DNS components.
     </span>resolver: R,
 }
-
-<span class="attr">#[deprecated(note = <span class="string">&quot;Use `async_std::Transport` or `tokio::Transport` instead.&quot;</span>)]
-</span><span class="kw">pub type </span>GenDnsConfig&lt;T, R&gt; = Transport&lt;T, R&gt;;
 
 <span class="kw">impl</span>&lt;T, R&gt; libp2p_core::Transport <span class="kw">for </span>Transport&lt;T, R&gt;
 <span class="kw">where
@@ -1082,7 +1096,7 @@
                     )
                 }) {
                     <span class="kw">if </span>dns_lookups == MAX_DNS_LOOKUPS {
-                        <span class="macro">log::debug!</span>(<span class="string">&quot;Too many DNS lookups. Dropping unresolved {}.&quot;</span>, addr);
+                        <span class="macro">tracing::debug!</span>(address=%addr, <span class="string">&quot;Too many DNS lookups, dropping unresolved address&quot;</span>);
                         last_err = <span class="prelude-val">Some</span>(Error::TooManyLookups);
                         <span class="comment">// There may still be fully resolved addresses in `unresolved`,
                         // so keep going until `unresolved` is empty.
@@ -1099,13 +1113,13 @@
                             </span>last_err = <span class="prelude-val">Some</span>(e);
                         }
                         <span class="prelude-val">Ok</span>(Resolved::One(ip)) =&gt; {
-                            <span class="macro">log::trace!</span>(<span class="string">&quot;Resolved {} -&gt; {}&quot;</span>, name, ip);
+                            <span class="macro">tracing::trace!</span>(protocol=%name, resolved=%ip);
                             <span class="kw">let </span>addr = addr.replace(i, |<span class="kw">_</span>| <span class="prelude-val">Some</span>(ip)).expect(<span class="string">&quot;`i` is a valid index&quot;</span>);
                             unresolved.push(addr);
                         }
                         <span class="prelude-val">Ok</span>(Resolved::Many(ips)) =&gt; {
                             <span class="kw">for </span>ip <span class="kw">in </span>ips {
-                                <span class="macro">log::trace!</span>(<span class="string">&quot;Resolved {} -&gt; {}&quot;</span>, name, ip);
+                                <span class="macro">tracing::trace!</span>(protocol=%name, resolved=%ip);
                                 <span class="kw">let </span>addr =
                                     addr.replace(i, |<span class="kw">_</span>| <span class="prelude-val">Some</span>(ip)).expect(<span class="string">&quot;`i` is a valid index&quot;</span>);
                                 unresolved.push(addr);
@@ -1119,15 +1133,15 @@
                                 <span class="kw">if </span>a.ends_with(<span class="kw-2">&amp;</span>suffix) {
                                     <span class="kw">if </span>n &lt; MAX_TXT_RECORDS {
                                         n += <span class="number">1</span>;
-                                        <span class="macro">log::trace!</span>(<span class="string">&quot;Resolved {} -&gt; {}&quot;</span>, name, a);
+                                        <span class="macro">tracing::trace!</span>(protocol=%name, resolved=%a);
                                         <span class="kw">let </span>addr =
                                             prefix.iter().chain(a.iter()).collect::&lt;Multiaddr&gt;();
                                         unresolved.push(addr);
                                     } <span class="kw">else </span>{
-                                        <span class="macro">log::debug!</span>(
-                                            <span class="string">&quot;Too many TXT records. Dropping resolved {}.&quot;</span>,
-                                            a
-                                        );
+                                        <span class="macro">tracing::debug!</span>(
+                                            resolved=%a,
+                                            <span class="string">&quot;Too many TXT records, dropping resolved&quot;
+                                        </span>);
                                     }
                                 }
                             }
@@ -1135,7 +1149,7 @@
                     }
                 } <span class="kw">else </span>{
                     <span class="comment">// We have a fully resolved address, so try to dial it.
-                    </span><span class="macro">log::debug!</span>(<span class="string">&quot;Dialing {}&quot;</span>, addr);
+                    </span><span class="macro">tracing::debug!</span>(address=%addr, <span class="string">&quot;Dialing address&quot;</span>);
 
                     <span class="kw">let </span>transport = inner.clone();
                     <span class="kw">let </span>dial = <span class="kw">match </span>role_override {
@@ -1159,12 +1173,12 @@
                     <span class="kw">match </span>result {
                         <span class="prelude-val">Ok</span>(out) =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(out),
                         <span class="prelude-val">Err</span>(err) =&gt; {
-                            <span class="macro">log::debug!</span>(<span class="string">&quot;Dial error: {:?}.&quot;</span>, err);
+                            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Dial error: {:?}.&quot;</span>, err);
                             <span class="kw">if </span>unresolved.is_empty() {
                                 <span class="kw">return </span><span class="prelude-val">Err</span>(err);
                             }
                             <span class="kw">if </span>dial_attempts == MAX_DIAL_ATTEMPTS {
-                                <span class="macro">log::debug!</span>(
+                                <span class="macro">tracing::debug!</span>(
                                     <span class="string">&quot;Aborting dialing after {} attempts.&quot;</span>,
                                     MAX_DIAL_ATTEMPTS
                                 );
@@ -1207,9 +1221,6 @@
     /// should be investigated.
     </span>TooManyLookups,
 }
-
-<span class="attr">#[deprecated(note = <span class="string">&quot;Use `Error` instead.&quot;</span>)]
-</span><span class="kw">pub type </span>DnsErr&lt;TErr&gt; = Error&lt;TErr&gt;;
 
 <span class="kw">impl</span>&lt;TErr&gt; fmt::Display <span class="kw">for </span>Error&lt;TErr&gt;
 <span class="kw">where
@@ -1345,7 +1356,7 @@
                                 <span class="kw">match </span>parse_dnsaddr_txt(chars) {
                                     <span class="prelude-val">Err</span>(e) =&gt; {
                                         <span class="comment">// Skip over seemingly invalid entries.
-                                        </span><span class="macro">log::debug!</span>(<span class="string">&quot;Invalid TXT record: {:?}&quot;</span>, e);
+                                        </span><span class="macro">tracing::debug!</span>(<span class="string">&quot;Invalid TXT record: {:?}&quot;</span>, e);
                                     }
                                     <span class="prelude-val">Ok</span>(a) =&gt; {
                                         addrs.push(a);
@@ -1420,7 +1431,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>basic_resolve() {
-        <span class="kw">let _ </span>= env_logger::try_init();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="attr">#[derive(Clone)]
         </span><span class="kw">struct </span>CustomTransport;
@@ -1553,8 +1566,7 @@
             </span><span class="kw">let </span>config = ResolverConfig::quad9();
             <span class="kw">let </span>opts = ResolverOpts::default();
             async_std_crate::task::block_on(
-                async_std::Transport::custom(CustomTransport, config, opts)
-                    .then(|dns| run(dns.unwrap())),
+                async_std::Transport::custom(CustomTransport, config, opts).then(run),
             );
         }
 
@@ -1570,9 +1582,7 @@
                 .build()
                 .unwrap();
 
-            rt.block_on(run(
-                tokio::Transport::custom(CustomTransport, config, opts).unwrap()
-            ));
+            rt.block_on(run(tokio::Transport::custom(CustomTransport, config, opts)));
         }
     }
 }

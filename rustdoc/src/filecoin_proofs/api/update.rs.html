@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/filecoin-proofs-16.0.0/src/api/update.rs`."><title>update.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="filecoin_proofs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../filecoin_proofs/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/filecoin-proofs-16.1.0/src/api/update.rs`."><title>update.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="filecoin_proofs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../filecoin_proofs/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -652,89 +652,26 @@
 <a href="#652" id="652">652</a>
 <a href="#653" id="653">653</a>
 <a href="#654" id="654">654</a>
-<a href="#655" id="655">655</a>
-<a href="#656" id="656">656</a>
-<a href="#657" id="657">657</a>
-<a href="#658" id="658">658</a>
-<a href="#659" id="659">659</a>
-<a href="#660" id="660">660</a>
-<a href="#661" id="661">661</a>
-<a href="#662" id="662">662</a>
-<a href="#663" id="663">663</a>
-<a href="#664" id="664">664</a>
-<a href="#665" id="665">665</a>
-<a href="#666" id="666">666</a>
-<a href="#667" id="667">667</a>
-<a href="#668" id="668">668</a>
-<a href="#669" id="669">669</a>
-<a href="#670" id="670">670</a>
-<a href="#671" id="671">671</a>
-<a href="#672" id="672">672</a>
-<a href="#673" id="673">673</a>
-<a href="#674" id="674">674</a>
-<a href="#675" id="675">675</a>
-<a href="#676" id="676">676</a>
-<a href="#677" id="677">677</a>
-<a href="#678" id="678">678</a>
-<a href="#679" id="679">679</a>
-<a href="#680" id="680">680</a>
-<a href="#681" id="681">681</a>
-<a href="#682" id="682">682</a>
-<a href="#683" id="683">683</a>
-<a href="#684" id="684">684</a>
-<a href="#685" id="685">685</a>
-<a href="#686" id="686">686</a>
-<a href="#687" id="687">687</a>
-<a href="#688" id="688">688</a>
-<a href="#689" id="689">689</a>
-<a href="#690" id="690">690</a>
-<a href="#691" id="691">691</a>
-<a href="#692" id="692">692</a>
-<a href="#693" id="693">693</a>
-<a href="#694" id="694">694</a>
-<a href="#695" id="695">695</a>
-<a href="#696" id="696">696</a>
-<a href="#697" id="697">697</a>
-<a href="#698" id="698">698</a>
-<a href="#699" id="699">699</a>
-<a href="#700" id="700">700</a>
-<a href="#701" id="701">701</a>
-<a href="#702" id="702">702</a>
-<a href="#703" id="703">703</a>
-<a href="#704" id="704">704</a>
-<a href="#705" id="705">705</a>
-<a href="#706" id="706">706</a>
-<a href="#707" id="707">707</a>
-<a href="#708" id="708">708</a>
-<a href="#709" id="709">709</a>
-<a href="#710" id="710">710</a>
-<a href="#711" id="711">711</a>
-<a href="#712" id="712">712</a>
-<a href="#713" id="713">713</a>
-<a href="#714" id="714">714</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::cmp;
-<span class="kw">use </span>std::fs::{<span class="self">self</span>, File};
 <span class="kw">use </span>std::io::{Read, Write};
 <span class="kw">use </span>std::path::Path;
 
 <span class="kw">use </span>anyhow::{ensure, Context, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>bincode::{deserialize, serialize};
 <span class="kw">use </span>ff::PrimeField;
 <span class="kw">use </span>filecoin_hashers::{Domain, Hasher};
 <span class="kw">use </span>fr32::bytes_into_fr;
 <span class="kw">use </span>generic_array::typenum::Unsigned;
-<span class="kw">use </span>log::{info, trace};
+<span class="kw">use </span>log::info;
 <span class="kw">use </span>merkletree::merkle::get_merkle_tree_len;
 <span class="kw">use </span>merkletree::store::StoreConfig;
 <span class="kw">use </span>storage_proofs_core::{
-    cache_key::CacheKey,
     compound_proof::{<span class="self">self</span>, CompoundProof},
     merkle::{get_base_tree_count, MerkleTreeTrait},
     multi_proof::MultiProof,
     proof::ProofScheme,
     util::NODE_SIZE,
 };
-<span class="kw">use </span>storage_proofs_porep::stacked::{PersistentAux, TemporaryAux};
+<span class="kw">use </span>storage_proofs_porep::stacked::TemporaryAux;
 <span class="kw">use </span>storage_proofs_update::{
     constants::{h_default, TreeDArity, TreeDDomain, TreeRDomain, TreeRHasher},
     phi,
@@ -754,66 +691,6 @@
         SectorUpdateConfig,
     },
 };
-
-<span class="comment">// Instantiates p_aux from the specified cache_dir for access to comm_c and comm_r_last
-</span><span class="kw">fn </span>get_p_aux&lt;Tree: <span class="lifetime">&#39;static </span>+ MerkleTreeTrait&lt;Hasher = TreeRHasher&gt;&gt;(
-    cache_path: <span class="kw-2">&amp;</span>Path,
-) -&gt; <span class="prelude-ty">Result</span>&lt;PersistentAux&lt;&lt;Tree::Hasher <span class="kw">as </span>Hasher&gt;::Domain&gt;&gt; {
-    <span class="kw">let </span>p_aux_path = cache_path.join(CacheKey::PAux.to_string());
-    <span class="kw">let </span>p_aux_bytes = fs::read(<span class="kw-2">&amp;</span>p_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span>p_aux = deserialize(<span class="kw-2">&amp;</span>p_aux_bytes)<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(p_aux)
-}
-
-<span class="kw">fn </span>persist_p_aux&lt;Tree: <span class="lifetime">&#39;static </span>+ MerkleTreeTrait&lt;Hasher = TreeRHasher&gt;&gt;(
-    p_aux: <span class="kw-2">&amp;</span>PersistentAux&lt;&lt;Tree::Hasher <span class="kw">as </span>Hasher&gt;::Domain&gt;,
-    cache_path: <span class="kw-2">&amp;</span>Path,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>p_aux_path = cache_path.join(CacheKey::PAux.to_string());
-    <span class="kw">let </span><span class="kw-2">mut </span>f_p_aux = File::create(<span class="kw-2">&amp;</span>p_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not create file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
-    <span class="kw">let </span>p_aux_bytes = serialize(<span class="kw-2">&amp;</span>p_aux)<span class="question-mark">?</span>;
-    f_p_aux
-        .write_all(<span class="kw-2">&amp;</span>p_aux_bytes)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not write to file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(())
-}
-
-<span class="comment">// Instantiates t_aux from the specified cache_dir for access to
-// labels and tree_d, tree_c, tree_r_last store configs
-</span><span class="kw">fn </span>get_t_aux&lt;Tree: <span class="lifetime">&#39;static </span>+ MerkleTreeTrait&lt;Hasher = TreeRHasher&gt;&gt;(
-    cache_path: <span class="kw-2">&amp;</span>Path,
-) -&gt; <span class="prelude-ty">Result</span>&lt;TemporaryAux&lt;Tree, DefaultPieceHasher&gt;&gt; {
-    <span class="kw">let </span>t_aux_path = cache_path.join(CacheKey::TAux.to_string());
-    <span class="macro">trace!</span>(<span class="string">&quot;Instantiating TemporaryAux from {:?}&quot;</span>, cache_path);
-    <span class="kw">let </span>t_aux_bytes = fs::read(<span class="kw-2">&amp;</span>t_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
-
-    <span class="kw">let </span><span class="kw-2">mut </span>res: TemporaryAux&lt;Tree, DefaultPieceHasher&gt; = deserialize(<span class="kw-2">&amp;</span>t_aux_bytes)<span class="question-mark">?</span>;
-    res.set_cache_path(cache_path);
-    <span class="macro">trace!</span>(<span class="string">&quot;Set TemporaryAux cache_path to {:?}&quot;</span>, cache_path);
-
-    <span class="prelude-val">Ok</span>(res)
-}
-
-<span class="kw">fn </span>persist_t_aux&lt;Tree: <span class="lifetime">&#39;static </span>+ MerkleTreeTrait&lt;Hasher = TreeRHasher&gt;&gt;(
-    t_aux: <span class="kw-2">&amp;</span>TemporaryAux&lt;Tree, DefaultPieceHasher&gt;,
-    cache_path: <span class="kw-2">&amp;</span>Path,
-) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-    <span class="kw">let </span>t_aux_path = cache_path.join(CacheKey::TAux.to_string());
-    <span class="kw">let </span><span class="kw-2">mut </span>f_t_aux = File::create(<span class="kw-2">&amp;</span>t_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not create file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
-    <span class="kw">let </span>t_aux_bytes = serialize(<span class="kw-2">&amp;</span>t_aux)<span class="question-mark">?</span>;
-    f_t_aux
-        .write_all(<span class="kw-2">&amp;</span>t_aux_bytes)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not write to file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
-
-    <span class="prelude-val">Ok</span>(())
-}
 
 <span class="comment">// Re-instantiate a t_aux with the new cache path, then use the tree_d
 // and tree_r_last configs from it.  This is done to preserve the
@@ -871,8 +748,9 @@
     <span class="macro">info!</span>(<span class="string">&quot;encode_into:start&quot;</span>);
     <span class="kw">let </span>config = SectorUpdateConfig::from_porep_config(porep_config);
 
-    <span class="kw">let </span>p_aux = get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
-    <span class="kw">let </span>t_aux = get_t_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>p_aux = util::get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>t_aux =
+        util::get_t_aux::&lt;Tree&gt;(sector_key_cache_path, u64::from(porep_config.sector_size))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(tree_d_new_config, tree_r_last_new_config) =
         get_new_configs_from_t_aux_old::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux, new_cache_path, config.nodes_count)<span class="question-mark">?</span>;
@@ -914,8 +792,9 @@
     <span class="comment">// Persist p_aux and t_aux into the new_cache_path here
     </span><span class="kw">let </span><span class="kw-2">mut </span>p_aux = p_aux;
     p_aux.comm_r_last = comm_r_last_domain;
-    persist_p_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>p_aux, new_cache_path)<span class="question-mark">?</span>;
-    persist_t_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux, new_cache_path)<span class="question-mark">?</span>;
+    util::persist_p_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>p_aux, new_cache_path)<span class="question-mark">?</span>;
+    <span class="attr">#[cfg(not(feature = <span class="string">&quot;fixed-rows-to-discard&quot;</span>))]
+    </span>util::persist_t_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux, new_cache_path)<span class="question-mark">?</span>;
 
     <span class="macro">info!</span>(<span class="string">&quot;encode_into:finish&quot;</span>);
 
@@ -1017,7 +896,7 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">info!</span>(<span class="string">&quot;decode_from:start&quot;</span>);
 
-    <span class="kw">let </span>p_aux = get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>p_aux = util::get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
 
     EmptySectorUpdate::&lt;Tree&gt;::decode_from(
         config.nodes_count,
@@ -1048,8 +927,8 @@
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">info!</span>(<span class="string">&quot;remove_data:start&quot;</span>);
 
-    <span class="kw">let </span>p_aux = get_p_aux::&lt;Tree&gt;(replica_cache_path)<span class="question-mark">?</span>;
-    <span class="kw">let </span>t_aux = get_t_aux::&lt;Tree&gt;(replica_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>p_aux = util::get_p_aux::&lt;Tree&gt;(replica_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>t_aux = util::get_t_aux::&lt;Tree&gt;(replica_cache_path, u64::from(config.sector_size))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(<span class="kw">_</span>, tree_r_last_new_config) =
         get_new_configs_from_t_aux_old::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux, sector_key_cache_path, config.nodes_count)<span class="question-mark">?</span>;
@@ -1071,8 +950,9 @@
     <span class="comment">// Persist p_aux and t_aux into the sector_key_cache_path here
     </span><span class="kw">let </span><span class="kw-2">mut </span>p_aux = p_aux;
     p_aux.comm_r_last = tree_r_last_new;
-    persist_p_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>p_aux, sector_key_cache_path)<span class="question-mark">?</span>;
-    persist_t_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux, sector_key_cache_path)<span class="question-mark">?</span>;
+    util::persist_p_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>p_aux, sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="attr">#[cfg(not(feature = <span class="string">&quot;fixed-rows-to-discard&quot;</span>))]
+    </span>util::persist_t_aux::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux, sector_key_cache_path)<span class="question-mark">?</span>;
 
     <span class="macro">info!</span>(<span class="string">&quot;remove_data:finish&quot;</span>);
     <span class="prelude-val">Ok</span>(())
@@ -1101,7 +981,7 @@
     <span class="kw">let </span>public_params: storage_proofs_update::PublicParams =
         PublicParams::from_sector_size(u64::from(config.sector_size));
 
-    <span class="kw">let </span>p_aux_old = get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>p_aux_old = util::get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>partitions = usize::from(config.update_partitions);
     <span class="macro">ensure!</span>(partition_index &lt; partitions, <span class="string">&quot;invalid partition index&quot;</span>);
@@ -1114,7 +994,7 @@
         h: config.h,
     };
 
-    <span class="kw">let </span>t_aux_old = get_t_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>t_aux_old = util::get_t_aux::&lt;Tree&gt;(sector_key_cache_path, u64::from(config.sector_size))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(tree_d_new_config, tree_r_last_new_config) =
         get_new_configs_from_t_aux_old::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux_old, replica_cache_path, config.nodes_count)<span class="question-mark">?</span>;
@@ -1196,7 +1076,7 @@
     <span class="kw">let </span>public_params: storage_proofs_update::PublicParams =
         PublicParams::from_sector_size(u64::from(config.sector_size));
 
-    <span class="kw">let </span>p_aux_old = get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>p_aux_old = util::get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>public_inputs: storage_proofs_update::PublicInputs = PublicInputs {
         k: usize::from(config.update_partitions),
@@ -1206,7 +1086,7 @@
         h: config.h,
     };
 
-    <span class="kw">let </span>t_aux_old = get_t_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>t_aux_old = util::get_t_aux::&lt;Tree&gt;(sector_key_cache_path, u64::from(config.sector_size))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(tree_d_new_config, tree_r_last_new_config) =
         get_new_configs_from_t_aux_old::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux_old, replica_cache_path, config.nodes_count)<span class="question-mark">?</span>;
@@ -1337,7 +1217,7 @@
 
     <span class="kw">let </span>config = SectorUpdateConfig::from_porep_config(porep_config);
 
-    <span class="kw">let </span>p_aux_old = get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>p_aux_old = util::get_p_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>partitions = usize::from(config.update_partitions);
     <span class="kw">let </span>public_inputs: storage_proofs_update::PublicInputs = PublicInputs {
@@ -1348,7 +1228,7 @@
         h: config.h,
     };
 
-    <span class="kw">let </span>t_aux_old = get_t_aux::&lt;Tree&gt;(sector_key_cache_path)<span class="question-mark">?</span>;
+    <span class="kw">let </span>t_aux_old = util::get_t_aux::&lt;Tree&gt;(sector_key_cache_path, u64::from(config.sector_size))<span class="question-mark">?</span>;
 
     <span class="kw">let </span>(tree_d_new_config, tree_r_last_new_config) =
         get_new_configs_from_t_aux_old::&lt;Tree&gt;(<span class="kw-2">&amp;</span>t_aux_old, replica_cache_path, config.nodes_count)<span class="question-mark">?</span>;

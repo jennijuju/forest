@@ -14,7 +14,7 @@
 }
 
 <span class="kw">fn </span>parser(input: (Stream&lt;<span class="lifetime">&#39;_</span>&gt;, usize), count: usize)-&gt; IResult&lt;(Stream&lt;<span class="lifetime">&#39;_</span>&gt;, usize), u8&gt; {
- take(count).parse_peek(input)
+  take(count).parse_peek(input)
 }
 
 <span class="comment">// Consumes 0 bits, returns 0

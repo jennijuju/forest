@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-mdns-0.44.0/src/behaviour/iface.rs`."><title>iface.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="libp2p_mdns" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../libp2p_mdns/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-mdns-0.45.0/src/behaviour/iface.rs`."><title>iface.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="libp2p_mdns" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../libp2p_mdns/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -291,6 +291,41 @@
 <a href="#291" id="291">291</a>
 <a href="#292" id="292">292</a>
 <a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -318,10 +353,14 @@
 <span class="kw">use </span><span class="self">self</span>::query::MdnsPacket;
 <span class="kw">use </span><span class="kw">crate</span>::behaviour::{socket::AsyncSocket, timer::Builder};
 <span class="kw">use </span><span class="kw">crate</span>::Config;
+<span class="kw">use </span>futures::channel::mpsc;
+<span class="kw">use </span>futures::{SinkExt, StreamExt};
 <span class="kw">use </span>libp2p_core::Multiaddr;
 <span class="kw">use </span>libp2p_identity::PeerId;
 <span class="kw">use </span>libp2p_swarm::ListenAddresses;
 <span class="kw">use </span>socket2::{Domain, Socket, Type};
+<span class="kw">use </span>std::future::Future;
+<span class="kw">use </span>std::sync::{Arc, RwLock};
 <span class="kw">use </span>std::{
     collections::VecDeque,
     io,
@@ -365,6 +404,11 @@
     </span>recv_socket: U,
     <span class="doccomment">/// Send socket.
     </span>send_socket: U,
+
+    listen_addresses: Arc&lt;RwLock&lt;ListenAddresses&gt;&gt;,
+
+    query_response_sender: mpsc::Sender&lt;(PeerId, Multiaddr, Instant)&gt;,
+
     <span class="doccomment">/// Buffer used for receiving data from the main socket.
     /// RFC6762 discourages packets larger than the interface MTU, but allows sizes of up to 9000
     /// bytes, if it can be ensured that all participating devices can handle such large packets.
@@ -394,8 +438,14 @@
     T: Builder + futures::Stream,
 {
     <span class="doccomment">/// Builds a new [`InterfaceState`].
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(addr: IpAddr, config: Config, local_peer_id: PeerId) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
-        <span class="macro">log::info!</span>(<span class="string">&quot;creating instance on iface {}&quot;</span>, addr);
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>new(
+        addr: IpAddr,
+        config: Config,
+        local_peer_id: PeerId,
+        listen_addresses: Arc&lt;RwLock&lt;ListenAddresses&gt;&gt;,
+        query_response_sender: mpsc::Sender&lt;(PeerId, Multiaddr, Instant)&gt;,
+    ) -&gt; io::Result&lt;<span class="self">Self</span>&gt; {
+        <span class="macro">tracing::info!</span>(address=%addr, <span class="string">&quot;creating instance on iface address&quot;</span>);
         <span class="kw">let </span>recv_socket = <span class="kw">match </span>addr {
             IpAddr::V4(addr) =&gt; {
                 <span class="kw">let </span>socket = Socket::new(Domain::IPV4, Type::DGRAM, <span class="prelude-val">Some</span>(socket2::Protocol::UDP))<span class="question-mark">?</span>;
@@ -447,6 +497,8 @@
             addr,
             recv_socket,
             send_socket,
+            listen_addresses,
+            query_response_sender,
             recv_buffer: [<span class="number">0</span>; <span class="number">4096</span>],
             send_buffer: Default::default(),
             discovered: Default::default(),
@@ -460,122 +512,140 @@
     }
 
     <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>reset_timer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="macro">log::trace!</span>(<span class="string">&quot;reset timer on {:#?} {:#?}&quot;</span>, <span class="self">self</span>.addr, <span class="self">self</span>.probe_state);
+        <span class="macro">tracing::trace!</span>(address=%<span class="self">self</span>.addr, probe_state=<span class="question-mark">?</span><span class="self">self</span>.probe_state, <span class="string">&quot;reset timer&quot;</span>);
         <span class="kw">let </span>interval = <span class="kw-2">*</span><span class="self">self</span>.probe_state.interval();
         <span class="self">self</span>.timeout = T::interval(interval);
     }
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>fire_timer(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="self">self</span>.timeout = T::interval_at(Instant::now(), INITIAL_TIMEOUT_INTERVAL);
+    <span class="kw">fn </span>mdns_socket(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SocketAddr {
+        SocketAddr::new(<span class="self">self</span>.multicast_addr, <span class="number">5353</span>)
     }
+}
 
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>poll(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        cx: <span class="kw-2">&amp;mut </span>Context,
-        listen_addresses: <span class="kw-2">&amp;</span>ListenAddresses,
-    ) -&gt; Poll&lt;(PeerId, Multiaddr, Instant)&gt; {
+<span class="kw">impl</span>&lt;U, T&gt; Future <span class="kw">for </span>InterfaceState&lt;U, T&gt;
+<span class="kw">where
+    </span>U: AsyncSocket,
+    T: Builder + futures::Stream,
+{
+    <span class="kw">type </span>Output = ();
+
+    <span class="kw">fn </span>poll(<span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;, cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;<span class="self">Self</span>::Output&gt; {
+        <span class="kw">let </span>this = <span class="self">self</span>.get_mut();
+
         <span class="kw">loop </span>{
             <span class="comment">// 1st priority: Low latency: Create packet ASAP after timeout.
-            </span><span class="kw">if </span>Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.timeout).poll_next(cx).is_ready() {
-                <span class="macro">log::trace!</span>(<span class="string">&quot;sending query on iface {}&quot;</span>, <span class="self">self</span>.addr);
-                <span class="self">self</span>.send_buffer.push_back(build_query());
-                <span class="macro">log::trace!</span>(<span class="string">&quot;tick on {:#?} {:#?}&quot;</span>, <span class="self">self</span>.addr, <span class="self">self</span>.probe_state);
+            </span><span class="kw">if </span>this.timeout.poll_next_unpin(cx).is_ready() {
+                <span class="macro">tracing::trace!</span>(address=%this.addr, <span class="string">&quot;sending query on iface&quot;</span>);
+                this.send_buffer.push_back(build_query());
+                <span class="macro">tracing::trace!</span>(address=%this.addr, probe_state=<span class="question-mark">?</span>this.probe_state, <span class="string">&quot;tick&quot;</span>);
 
                 <span class="comment">// Stop to probe when the initial interval reach the query interval
-                </span><span class="kw">if let </span>ProbeState::Probing(interval) = <span class="self">self</span>.probe_state {
+                </span><span class="kw">if let </span>ProbeState::Probing(interval) = this.probe_state {
                     <span class="kw">let </span>interval = interval * <span class="number">2</span>;
-                    <span class="self">self</span>.probe_state = <span class="kw">if </span>interval &gt;= <span class="self">self</span>.query_interval {
-                        ProbeState::Finished(<span class="self">self</span>.query_interval)
+                    this.probe_state = <span class="kw">if </span>interval &gt;= this.query_interval {
+                        ProbeState::Finished(this.query_interval)
                     } <span class="kw">else </span>{
                         ProbeState::Probing(interval)
                     };
                 }
 
-                <span class="self">self</span>.reset_timer();
+                this.reset_timer();
             }
 
             <span class="comment">// 2nd priority: Keep local buffers small: Send packets to remote.
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(packet) = <span class="self">self</span>.send_buffer.pop_front() {
-                <span class="kw">match </span>Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.send_socket).poll_write(
-                    cx,
-                    <span class="kw-2">&amp;</span>packet,
-                    SocketAddr::new(<span class="self">self</span>.multicast_addr, <span class="number">5353</span>),
-                ) {
+            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(packet) = this.send_buffer.pop_front() {
+                <span class="kw">match </span>this.send_socket.poll_write(cx, <span class="kw-2">&amp;</span>packet, this.mdns_socket()) {
                     Poll::Ready(<span class="prelude-val">Ok</span>(<span class="kw">_</span>)) =&gt; {
-                        <span class="macro">log::trace!</span>(<span class="string">&quot;sent packet on iface {}&quot;</span>, <span class="self">self</span>.addr);
+                        <span class="macro">tracing::trace!</span>(address=%this.addr, <span class="string">&quot;sent packet on iface address&quot;</span>);
                         <span class="kw">continue</span>;
                     }
                     Poll::Ready(<span class="prelude-val">Err</span>(err)) =&gt; {
-                        <span class="macro">log::error!</span>(<span class="string">&quot;error sending packet on iface {} {}&quot;</span>, <span class="self">self</span>.addr, err);
+                        <span class="macro">tracing::error!</span>(address=%this.addr, <span class="string">&quot;error sending packet on iface address {}&quot;</span>, err);
                         <span class="kw">continue</span>;
                     }
                     Poll::Pending =&gt; {
-                        <span class="self">self</span>.send_buffer.push_front(packet);
+                        this.send_buffer.push_front(packet);
                     }
                 }
             }
 
             <span class="comment">// 3rd priority: Keep local buffers small: Return discovered addresses.
-            </span><span class="kw">if let </span><span class="prelude-val">Some</span>(discovered) = <span class="self">self</span>.discovered.pop_front() {
-                <span class="kw">return </span>Poll::Ready(discovered);
+            </span><span class="kw">if </span>this.query_response_sender.poll_ready_unpin(cx).is_ready() {
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(discovered) = this.discovered.pop_front() {
+                    <span class="kw">match </span>this.query_response_sender.try_send(discovered) {
+                        <span class="prelude-val">Ok</span>(()) =&gt; {}
+                        <span class="prelude-val">Err</span>(e) <span class="kw">if </span>e.is_disconnected() =&gt; {
+                            <span class="kw">return </span>Poll::Ready(());
+                        }
+                        <span class="prelude-val">Err</span>(e) =&gt; {
+                            this.discovered.push_front(e.into_inner());
+                        }
+                    }
+
+                    <span class="kw">continue</span>;
+                }
             }
 
             <span class="comment">// 4th priority: Remote work: Answer incoming requests.
-            </span><span class="kw">match </span>Pin::new(<span class="kw-2">&amp;mut </span><span class="self">self</span>.recv_socket)
-                .poll_read(cx, <span class="kw-2">&amp;mut </span><span class="self">self</span>.recv_buffer)
-                .map_ok(|(len, from)| MdnsPacket::new_from_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>.recv_buffer[..len], from))
+            </span><span class="kw">match </span>this
+                .recv_socket
+                .poll_read(cx, <span class="kw-2">&amp;mut </span>this.recv_buffer)
+                .map_ok(|(len, from)| MdnsPacket::new_from_bytes(<span class="kw-2">&amp;</span>this.recv_buffer[..len], from))
             {
                 Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(MdnsPacket::Query(query))))) =&gt; {
-                    <span class="macro">log::trace!</span>(
-                        <span class="string">&quot;received query from {} on {}&quot;</span>,
-                        query.remote_addr(),
-                        <span class="self">self</span>.addr
-                    );
+                    <span class="macro">tracing::trace!</span>(
+                        address=%this.addr,
+                        remote_address=%query.remote_addr(),
+                        <span class="string">&quot;received query from remote address on address&quot;
+                    </span>);
 
-                    <span class="self">self</span>.send_buffer.extend(build_query_response(
+                    this.send_buffer.extend(build_query_response(
                         query.query_id(),
-                        <span class="self">self</span>.local_peer_id,
-                        listen_addresses.iter(),
-                        <span class="self">self</span>.ttl,
+                        this.local_peer_id,
+                        this.listen_addresses
+                            .read()
+                            .unwrap_or_else(|e| e.into_inner())
+                            .iter(),
+                        this.ttl,
                     ));
                     <span class="kw">continue</span>;
                 }
                 Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(MdnsPacket::Response(response))))) =&gt; {
-                    <span class="macro">log::trace!</span>(
-                        <span class="string">&quot;received response from {} on {}&quot;</span>,
-                        response.remote_addr(),
-                        <span class="self">self</span>.addr
-                    );
+                    <span class="macro">tracing::trace!</span>(
+                        address=%this.addr,
+                        remote_address=%response.remote_addr(),
+                        <span class="string">&quot;received response from remote address on address&quot;
+                    </span>);
 
-                    <span class="self">self</span>.discovered
-                        .extend(response.extract_discovered(Instant::now(), <span class="self">self</span>.local_peer_id));
+                    this.discovered
+                        .extend(response.extract_discovered(Instant::now(), this.local_peer_id));
 
                     <span class="comment">// Stop probing when we have a valid response
-                    </span><span class="kw">if </span>!<span class="self">self</span>.discovered.is_empty() {
-                        <span class="self">self</span>.probe_state = ProbeState::Finished(<span class="self">self</span>.query_interval);
-                        <span class="self">self</span>.reset_timer();
+                    </span><span class="kw">if </span>!this.discovered.is_empty() {
+                        this.probe_state = ProbeState::Finished(this.query_interval);
+                        this.reset_timer();
                     }
                     <span class="kw">continue</span>;
                 }
                 Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(MdnsPacket::ServiceDiscovery(disc))))) =&gt; {
-                    <span class="macro">log::trace!</span>(
-                        <span class="string">&quot;received service discovery from {} on {}&quot;</span>,
-                        disc.remote_addr(),
-                        <span class="self">self</span>.addr
-                    );
+                    <span class="macro">tracing::trace!</span>(
+                        address=%this.addr,
+                        remote_address=%disc.remote_addr(),
+                        <span class="string">&quot;received service discovery from remote address on address&quot;
+                    </span>);
 
-                    <span class="self">self</span>.send_buffer
-                        .push_back(build_service_discovery_response(disc.query_id(), <span class="self">self</span>.ttl));
+                    this.send_buffer
+                        .push_back(build_service_discovery_response(disc.query_id(), this.ttl));
                     <span class="kw">continue</span>;
                 }
                 Poll::Ready(<span class="prelude-val">Err</span>(err)) <span class="kw">if </span>err.kind() == std::io::ErrorKind::WouldBlock =&gt; {
                     <span class="comment">// No more bytes available on the socket to read
                 </span>}
                 Poll::Ready(<span class="prelude-val">Err</span>(err)) =&gt; {
-                    <span class="macro">log::error!</span>(<span class="string">&quot;failed reading datagram: {}&quot;</span>, err);
+                    <span class="macro">tracing::error!</span>(<span class="string">&quot;failed reading datagram: {}&quot;</span>, err);
                 }
                 Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Err</span>(err))) =&gt; {
-                    <span class="macro">log::debug!</span>(<span class="string">&quot;Parsing mdns packet failed: {:?}&quot;</span>, err);
+                    <span class="macro">tracing::debug!</span>(<span class="string">&quot;Parsing mdns packet failed: {:?}&quot;</span>, err);
                 }
                 Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>))) | Poll::Pending =&gt; {}
             }

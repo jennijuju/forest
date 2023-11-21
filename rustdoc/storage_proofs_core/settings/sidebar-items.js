@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["SETTINGS","Settings"]};
+window.SIDEBAR_ITEMS = {"constant":["DEFAULT_ROWS_TO_DISCARD"],"struct":["SETTINGS","Settings"]};

@@ -195,13 +195,16 @@
 <a href="#195" id="195">195</a>
 <a href="#196" id="196">196</a>
 <a href="#197" id="197">197</a>
+<a href="#198" id="198">198</a>
+<a href="#199" id="199">199</a>
+<a href="#200" id="200">200</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>std::sync::Arc;
 
 <span class="kw">use </span>libp2p::{
-    request_response::{<span class="self">self</span>, ProtocolSupport, RequestId},
+    request_response::{<span class="self">self</span>, OutboundRequestId, ProtocolSupport},
     swarm::{derive_prelude::<span class="kw-2">*</span>, NetworkBehaviour, THandlerOutEvent},
     PeerId,
 };
@@ -239,7 +242,7 @@
     }
 
     <span class="doccomment">/// Sends a [`BitswapRequest`] to a peer
-    </span><span class="kw">pub fn </span>send_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request: BitswapRequest) -&gt; RequestId {
+    </span><span class="kw">pub fn </span>send_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request: BitswapRequest) -&gt; OutboundRequestId {
         <span class="kw">if </span>request.cancel {
             metrics::message_counter_outbound_request_cancel().inc();
         } <span class="kw">else </span>{
@@ -253,7 +256,11 @@
     }
 
     <span class="doccomment">/// Sends a [`BitswapResponse`] to a peer
-    </span><span class="kw">pub fn </span>send_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, response: (Cid, BitswapResponse)) -&gt; RequestId {
+    </span><span class="kw">pub fn </span>send_response(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        peer: <span class="kw-2">&amp;</span>PeerId,
+        response: (Cid, BitswapResponse),
+    ) -&gt; OutboundRequestId {
         <span class="kw">match </span>response.<span class="number">1 </span>{
             BitswapResponse::Have(..) =&gt; metrics::message_counter_outbound_response_have().inc(),
             BitswapResponse::Block(..) =&gt; metrics::message_counter_outbound_response_block().inc(),
@@ -370,7 +377,7 @@
             .on_connection_handler_event(peer_id, connection_id, event)
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="kw">match </span><span class="kw-2">&amp;</span>event {
             FromSwarm::ConnectionEstablished(e) =&gt; {
                 <span class="self">self</span>.request_manager.on_peer_connected(e.peer_id);
@@ -387,9 +394,8 @@
     <span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>std::task::Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
     ) -&gt; std::task::Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
-        <span class="self">self</span>.inner_mut().poll(cx, params)
+        <span class="self">self</span>.inner_mut().poll(cx)
     }
 }
 </code></pre></div></section></main></body></html>

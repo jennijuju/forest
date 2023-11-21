@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-tcp-0.40.1/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_tcp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_tcp/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-tcp-0.41.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_tcp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_tcp/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1367,6 +1367,25 @@
 <a href="#1367" id="1367">1367</a>
 <a href="#1368" id="1368">1368</a>
 <a href="#1369" id="1369">1369</a>
+<a href="#1370" id="1370">1370</a>
+<a href="#1371" id="1371">1371</a>
+<a href="#1372" id="1372">1372</a>
+<a href="#1373" id="1373">1373</a>
+<a href="#1374" id="1374">1374</a>
+<a href="#1375" id="1375">1375</a>
+<a href="#1376" id="1376">1376</a>
+<a href="#1377" id="1377">1377</a>
+<a href="#1378" id="1378">1378</a>
+<a href="#1379" id="1379">1379</a>
+<a href="#1380" id="1380">1380</a>
+<a href="#1381" id="1381">1381</a>
+<a href="#1382" id="1382">1382</a>
+<a href="#1383" id="1383">1383</a>
+<a href="#1384" id="1384">1384</a>
+<a href="#1385" id="1385">1385</a>
+<a href="#1386" id="1386">1386</a>
+<a href="#1387" id="1387">1387</a>
+<a href="#1388" id="1388">1388</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2017 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1467,7 +1486,7 @@
     /// Has no effect if port reuse is disabled.
     </span><span class="kw">fn </span>register(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ip: IpAddr, port: Port) {
         <span class="kw">if let </span>PortReuse::Enabled { listen_addrs } = <span class="self">self </span>{
-            <span class="macro">log::trace!</span>(<span class="string">&quot;Registering for port reuse: {}:{}&quot;</span>, ip, port);
+            <span class="macro">tracing::trace!</span>(%ip, %port, <span class="string">&quot;Registering for port reuse&quot;</span>);
             listen_addrs
                 .write()
                 .expect(<span class="string">&quot;`register()` and `unregister()` never panic while holding the lock&quot;</span>)
@@ -1480,7 +1499,7 @@
     /// Has no effect if port reuse is disabled.
     </span><span class="kw">fn </span>unregister(<span class="kw-2">&amp;mut </span><span class="self">self</span>, ip: IpAddr, port: Port) {
         <span class="kw">if let </span>PortReuse::Enabled { listen_addrs } = <span class="self">self </span>{
-            <span class="macro">log::trace!</span>(<span class="string">&quot;Unregistering for port reuse: {}:{}&quot;</span>, ip, port);
+            <span class="macro">tracing::trace!</span>(%ip, %port, <span class="string">&quot;Unregistering for port reuse&quot;</span>);
             listen_addrs
                 .write()
                 .expect(<span class="string">&quot;`register()` and `unregister()` never panic while holding the lock&quot;</span>)
@@ -1815,7 +1834,7 @@
         } <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(TransportError::MultiaddrNotSupported(addr));
         };
-        <span class="macro">log::debug!</span>(<span class="string">&quot;listening on {}&quot;</span>, socket_addr);
+        <span class="macro">tracing::debug!</span>(address=%socket_addr, <span class="string">&quot;listening on address&quot;</span>);
         <span class="kw">let </span>listener = <span class="self">self
             </span>.do_listen(id, socket_addr)
             .map_err(TransportError::Other)<span class="question-mark">?</span>;
@@ -1841,14 +1860,14 @@
         } <span class="kw">else </span>{
             <span class="kw">return </span><span class="prelude-val">Err</span>(TransportError::MultiaddrNotSupported(addr));
         };
-        <span class="macro">log::debug!</span>(<span class="string">&quot;dialing {}&quot;</span>, socket_addr);
+        <span class="macro">tracing::debug!</span>(address=%socket_addr, <span class="string">&quot;dialing address&quot;</span>);
 
         <span class="kw">let </span>socket = <span class="self">self
             </span>.create_socket(socket_addr)
             .map_err(TransportError::Other)<span class="question-mark">?</span>;
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(addr) = <span class="self">self</span>.port_reuse.local_dial_addr(<span class="kw-2">&amp;</span>socket_addr.ip()) {
-            <span class="macro">log::trace!</span>(<span class="string">&quot;Binding dial socket to listen socket {}&quot;</span>, addr);
+            <span class="macro">tracing::trace!</span>(address=%addr, <span class="string">&quot;Binding dial socket to listen socket address&quot;</span>);
             socket.bind(<span class="kw-2">&amp;</span>addr.into()).map_err(TransportError::Other)<span class="question-mark">?</span>;
         }
 
@@ -1907,6 +1926,7 @@
     }
 
     <span class="doccomment">/// Poll all listeners.
+    </span><span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, name = <span class="string">&quot;Transport::poll&quot;</span>, skip(<span class="self">self</span>, cx))]
     </span><span class="kw">fn </span>poll(
         <span class="kw-2">mut </span><span class="self">self</span>: Pin&lt;<span class="kw-2">&amp;mut </span><span class="self">Self</span>&gt;,
         cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
@@ -2046,7 +2066,7 @@
                     <span class="kw">let </span>ip = inet.addr();
                     <span class="kw">if </span><span class="self">self</span>.listen_addr.is_ipv4() == ip.is_ipv4() {
                         <span class="kw">let </span>ma = ip_to_multiaddr(ip, my_listen_addr_port);
-                        <span class="macro">log::debug!</span>(<span class="string">&quot;New listen address: {}&quot;</span>, ma);
+                        <span class="macro">tracing::debug!</span>(address=%ma, <span class="string">&quot;New listen address&quot;</span>);
                         <span class="self">self</span>.port_reuse.register(ip, my_listen_addr_port);
                         <span class="kw">return </span>Poll::Ready(TransportEvent::NewAddress {
                             listener_id: <span class="self">self</span>.listener_id,
@@ -2058,7 +2078,7 @@
                     <span class="kw">let </span>ip = inet.addr();
                     <span class="kw">if </span><span class="self">self</span>.listen_addr.is_ipv4() == ip.is_ipv4() {
                         <span class="kw">let </span>ma = ip_to_multiaddr(ip, my_listen_addr_port);
-                        <span class="macro">log::debug!</span>(<span class="string">&quot;Expired listen address: {}&quot;</span>, ma);
+                        <span class="macro">tracing::debug!</span>(address=%ma, <span class="string">&quot;Expired listen address&quot;</span>);
                         <span class="self">self</span>.port_reuse.unregister(ip, my_listen_addr_port);
                         <span class="kw">return </span>Poll::Ready(TransportEvent::AddressExpired {
                             listener_id: <span class="self">self</span>.listener_id,
@@ -2131,7 +2151,11 @@
                 <span class="kw">let </span>local_addr = ip_to_multiaddr(local_addr.ip(), local_addr.port());
                 <span class="kw">let </span>remote_addr = ip_to_multiaddr(remote_addr.ip(), remote_addr.port());
 
-                <span class="macro">log::debug!</span>(<span class="string">&quot;Incoming connection from {} at {}&quot;</span>, remote_addr, local_addr);
+                <span class="macro">tracing::debug!</span>(
+                    remote_address=%remote_addr,
+                    local_address=%local_addr,
+                    <span class="string">&quot;Incoming connection from remote at local&quot;
+                </span>);
 
                 <span class="kw">return </span>Poll::Ready(<span class="prelude-val">Some</span>(TransportEvent::Incoming {
                     listener_id: <span class="self">self</span>.listener_id,
@@ -2269,7 +2293,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>communicating_between_dialer_and_listener() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">async fn </span>listener&lt;T: Provider&gt;(addr: Multiaddr, <span class="kw-2">mut </span>ready_tx: mpsc::Sender&lt;Multiaddr&gt;) {
             <span class="kw">let </span><span class="kw-2">mut </span>tcp = Transport::&lt;T&gt;::default().boxed();
@@ -2338,7 +2364,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>wildcard_expansion() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">async fn </span>listener&lt;T: Provider&gt;(addr: Multiaddr, <span class="kw-2">mut </span>ready_tx: mpsc::Sender&lt;Multiaddr&gt;) {
             <span class="kw">let </span><span class="kw-2">mut </span>tcp = Transport::&lt;T&gt;::default().boxed();
@@ -2407,7 +2435,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>port_reuse_dialing() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">async fn </span>listener&lt;T: Provider&gt;(
             addr: Multiaddr,
@@ -2514,7 +2544,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>port_reuse_listening() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">async fn </span>listen_twice&lt;T: Provider&gt;(addr: Multiaddr) {
             <span class="kw">let </span><span class="kw-2">mut </span>tcp = Transport::&lt;T&gt;::new(Config::new().port_reuse(<span class="bool-val">true</span>));
@@ -2568,7 +2600,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>listen_port_0() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">async fn </span>listen&lt;T: Provider&gt;(addr: Multiaddr) -&gt; Multiaddr {
             <span class="kw">let </span><span class="kw-2">mut </span>tcp = Transport::&lt;T&gt;::default().boxed();
@@ -2603,7 +2637,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>listen_invalid_addr() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">fn </span>test(addr: Multiaddr) {
             <span class="attr">#[cfg(feature = <span class="string">&quot;async-io&quot;</span>)]
@@ -2673,7 +2709,9 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_remove_listener() {
-        env_logger::try_init().ok();
+        <span class="kw">let _ </span>= tracing_subscriber::fmt()
+            .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+            .try_init();
 
         <span class="kw">async fn </span>cycle_listeners&lt;T: Provider&gt;() -&gt; bool {
             <span class="kw">let </span><span class="kw-2">mut </span>tcp = Transport::&lt;T&gt;::default().boxed();

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MdnsQueryType"],"static":["MDNS_IPV4","MDNS_IPV6"],"struct":["MdnsClientConnect","MdnsClientStream","MdnsStream"]};

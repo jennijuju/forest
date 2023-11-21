@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.115.0/src/validator.rs`."><title>validator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wasmparser/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmparser-0.118.0/src/validator.rs`."><title>validator.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wasmparser" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wasmparser/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1596,6 +1596,14 @@
 <a href="#1596" id="1596">1596</a>
 <a href="#1597" id="1597">1597</a>
 <a href="#1598" id="1598">1598</a>
+<a href="#1599" id="1599">1599</a>
+<a href="#1600" id="1600">1600</a>
+<a href="#1601" id="1601">1601</a>
+<a href="#1602" id="1602">1602</a>
+<a href="#1603" id="1603">1603</a>
+<a href="#1604" id="1604">1604</a>
+<a href="#1605" id="1605">1605</a>
+<a href="#1606" id="1606">1606</a>
 </pre></div><pre class="rust"><code><span class="comment">/* Copyright 2018 Mozilla Foundation
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -1613,7 +1621,7 @@
 
 </span><span class="kw">use crate</span>::{
     limits::<span class="kw-2">*</span>, BinaryReaderError, Encoding, FromReader, FunctionBody, HeapType, Parser, Payload,
-    <span class="prelude-ty">Result</span>, SectionLimited, ValType, WASM_COMPONENT_VERSION, WASM_MODULE_VERSION,
+    RefType, <span class="prelude-ty">Result</span>, SectionLimited, ValType, WASM_COMPONENT_VERSION, WASM_MODULE_VERSION,
 };
 <span class="kw">use </span>std::mem;
 <span class="kw">use </span>std::ops::Range;
@@ -1890,58 +1898,61 @@
                     <span class="prelude-val">Err</span>(<span class="string">&quot;floating-point support is disabled&quot;</span>)
                 }
             }
-            ValType::Ref(r) =&gt; {
-                <span class="kw">if </span>!<span class="self">self</span>.reference_types {
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;reference types support is not enabled&quot;</span>);
-                }
-                <span class="kw">match </span>(r.heap_type(), r.is_nullable()) {
-                    <span class="comment">// funcref/externref only require `reference-types`
-                    </span>(HeapType::Func, <span class="bool-val">true</span>) | (HeapType::Extern, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Ok</span>(()),
-
-                    <span class="comment">// non-nullable func/extern references requires the
-                    // `function-references` proposal
-                    </span>(HeapType::Func | HeapType::Extern, <span class="bool-val">false</span>) =&gt; {
-                        <span class="kw">if </span><span class="self">self</span>.function_references {
-                            <span class="prelude-val">Ok</span>(())
-                        } <span class="kw">else </span>{
-                            <span class="prelude-val">Err</span>(<span class="string">&quot;function references required for non-nullable types&quot;</span>)
-                        }
-                    }
-                    <span class="comment">// indexed types require at least the function-references
-                    // proposal
-                    </span>(HeapType::Indexed(<span class="kw">_</span>), <span class="kw">_</span>) =&gt; {
-                        <span class="kw">if </span><span class="self">self</span>.function_references {
-                            <span class="prelude-val">Ok</span>(())
-                        } <span class="kw">else </span>{
-                            <span class="prelude-val">Err</span>(<span class="string">&quot;function references required for index reference types&quot;</span>)
-                        }
-                    }
-
-                    <span class="comment">// types added in the gc proposal
-                    </span>(
-                        HeapType::Any
-                        | HeapType::None
-                        | HeapType::Eq
-                        | HeapType::Struct
-                        | HeapType::Array
-                        | HeapType::I31
-                        | HeapType::NoExtern
-                        | HeapType::NoFunc,
-                        <span class="kw">_</span>,
-                    ) =&gt; {
-                        <span class="kw">if </span><span class="self">self</span>.gc {
-                            <span class="prelude-val">Ok</span>(())
-                        } <span class="kw">else </span>{
-                            <span class="prelude-val">Err</span>(<span class="string">&quot;heap types not supported without the gc feature&quot;</span>)
-                        }
-                    }
-                }
-            }
+            ValType::Ref(r) =&gt; <span class="self">self</span>.check_ref_type(r),
             ValType::V128 =&gt; {
                 <span class="kw">if </span><span class="self">self</span>.simd {
                     <span class="prelude-val">Ok</span>(())
                 } <span class="kw">else </span>{
                     <span class="prelude-val">Err</span>(<span class="string">&quot;SIMD support is not enabled&quot;</span>)
+                }
+            }
+        }
+    }
+
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>check_ref_type(<span class="kw-2">&amp;</span><span class="self">self</span>, r: RefType) -&gt; <span class="prelude-ty">Result</span>&lt;(), <span class="kw-2">&amp;</span><span class="lifetime">&#39;static </span>str&gt; {
+        <span class="kw">if </span>!<span class="self">self</span>.reference_types {
+            <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;reference types support is not enabled&quot;</span>);
+        }
+        <span class="kw">match </span>(r.heap_type(), r.is_nullable()) {
+            <span class="comment">// funcref/externref only require `reference-types`.
+            </span>(HeapType::Func, <span class="bool-val">true</span>) | (HeapType::Extern, <span class="bool-val">true</span>) =&gt; <span class="prelude-val">Ok</span>(()),
+
+            <span class="comment">// Non-nullable func/extern references requires the
+            // `function-references` proposal.
+            </span>(HeapType::Func | HeapType::Extern, <span class="bool-val">false</span>) =&gt; {
+                <span class="kw">if </span><span class="self">self</span>.function_references {
+                    <span class="prelude-val">Ok</span>(())
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Err</span>(<span class="string">&quot;function references required for non-nullable types&quot;</span>)
+                }
+            }
+
+            <span class="comment">// Indexed types require either the function-references or gc
+            // proposal as gc implies function references here.
+            </span>(HeapType::Concrete(<span class="kw">_</span>), <span class="kw">_</span>) =&gt; {
+                <span class="kw">if </span><span class="self">self</span>.function_references || <span class="self">self</span>.gc {
+                    <span class="prelude-val">Ok</span>(())
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Err</span>(<span class="string">&quot;function references required for index reference types&quot;</span>)
+                }
+            }
+
+            <span class="comment">// These types were added in the gc proposal.
+            </span>(
+                HeapType::Any
+                | HeapType::None
+                | HeapType::Eq
+                | HeapType::Struct
+                | HeapType::Array
+                | HeapType::I31
+                | HeapType::NoExtern
+                | HeapType::NoFunc,
+                <span class="kw">_</span>,
+            ) =&gt; {
+                <span class="kw">if </span><span class="self">self</span>.gc {
+                    <span class="prelude-val">Ok</span>(())
+                } <span class="kw">else </span>{
+                    <span class="prelude-val">Err</span>(<span class="string">&quot;heap types not supported without the gc feature&quot;</span>)
                 }
             }
         }
@@ -2219,7 +2230,7 @@
             Order::Type,
             section,
             <span class="string">&quot;type&quot;</span>,
-            |state, <span class="kw">_</span>, types, count, offset| {
+            |state, <span class="kw">_</span>, _types, count, offset| {
                 check_max(
                     state.module.types.len(),
                     count,
@@ -2227,15 +2238,14 @@
                     <span class="string">&quot;types&quot;</span>,
                     offset,
                 )<span class="question-mark">?</span>;
-                types.reserve(count <span class="kw">as </span>usize);
                 state.module.assert_mut().types.reserve(count <span class="kw">as </span>usize);
                 <span class="prelude-val">Ok</span>(())
             },
-            |state, features, types, def, offset| {
+            |state, features, types, rec_group, offset| {
                 state
                     .module
                     .assert_mut()
-                    .add_types(<span class="kw-2">&amp;</span>def, features, types, offset, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
+                    .add_types(rec_group, features, types, offset, <span class="bool-val">true</span>)<span class="question-mark">?</span>;
                 <span class="prelude-val">Ok</span>(())
             },
         )
@@ -2633,10 +2643,9 @@
         <span class="self">self</span>.process_component_section(
             section,
             <span class="string">&quot;core type&quot;</span>,
-            |components, types, count, offset| {
+            |components, _types, count, offset| {
                 <span class="kw">let </span>current = components.last_mut().unwrap();
                 check_max(current.type_count(), count, MAX_WASM_TYPES, <span class="string">&quot;types&quot;</span>, offset)<span class="question-mark">?</span>;
-                types.reserve(count <span class="kw">as </span>usize);
                 current.core_types.reserve(count <span class="kw">as </span>usize);
                 <span class="prelude-val">Ok</span>(())
             },
@@ -2729,10 +2738,9 @@
         <span class="self">self</span>.process_component_section(
             section,
             <span class="string">&quot;type&quot;</span>,
-            |components, types, count, offset| {
+            |components, _types, count, offset| {
                 <span class="kw">let </span>current = components.last_mut().unwrap();
                 check_max(current.type_count(), count, MAX_WASM_TYPES, <span class="string">&quot;types&quot;</span>, offset)<span class="question-mark">?</span>;
-                types.reserve(count <span class="kw">as </span>usize);
                 current.types.reserve(count <span class="kw">as </span>usize);
                 <span class="prelude-val">Ok</span>(())
             },
@@ -2813,7 +2821,7 @@
             <span class="kw-2">&amp;</span>f.arguments,
             f.results,
             <span class="kw-2">&amp;</span><span class="self">self</span>.features,
-            <span class="kw-2">&amp;</span><span class="self">self</span>.types,
+            <span class="kw-2">&amp;mut </span><span class="self">self</span>.types,
             range.start,
         )
     }
@@ -3066,19 +3074,27 @@
         <span class="macro">assert_eq!</span>(types.memory_count(), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(types.table_count(), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(types.global_count(), <span class="number">1</span>);
-        <span class="macro">assert_eq!</span>(types.function_count(), <span class="number">1</span>);
+        <span class="macro">assert_eq!</span>(types.core_function_count(), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(types.tag_count(), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(types.element_count(), <span class="number">1</span>);
         <span class="macro">assert_eq!</span>(types.module_count(), <span class="number">0</span>);
         <span class="macro">assert_eq!</span>(types.component_count(), <span class="number">0</span>);
-        <span class="macro">assert_eq!</span>(types.instance_count(), <span class="number">0</span>);
+        <span class="macro">assert_eq!</span>(types.core_instance_count(), <span class="number">0</span>);
         <span class="macro">assert_eq!</span>(types.value_count(), <span class="number">0</span>);
 
-        <span class="kw">let </span>ty = types[types.core_type_at(<span class="number">0</span>)].unwrap_func();
+        <span class="kw">let </span>id = <span class="kw">match </span>types.core_type_at(<span class="number">0</span>) {
+            <span class="kw">crate</span>::types::ComponentCoreTypeId::Sub(s) =&gt; s,
+            <span class="kw">crate</span>::types::ComponentCoreTypeId::Module(<span class="kw">_</span>) =&gt; <span class="macro">panic!</span>(),
+        };
+        <span class="kw">let </span>ty = types[id].unwrap_func();
         <span class="macro">assert_eq!</span>(ty.params(), [ValType::I32, ValType::I64]);
         <span class="macro">assert_eq!</span>(ty.results(), [ValType::I32]);
 
-        <span class="kw">let </span>ty = types[types.core_type_at(<span class="number">1</span>)].unwrap_func();
+        <span class="kw">let </span>id = <span class="kw">match </span>types.core_type_at(<span class="number">1</span>) {
+            <span class="kw">crate</span>::types::ComponentCoreTypeId::Sub(s) =&gt; s,
+            <span class="kw">crate</span>::types::ComponentCoreTypeId::Module(<span class="kw">_</span>) =&gt; <span class="macro">panic!</span>(),
+        };
+        <span class="kw">let </span>ty = types[id].unwrap_func();
         <span class="macro">assert_eq!</span>(ty.params(), [ValType::I64, ValType::I32]);
         <span class="macro">assert_eq!</span>(ty.results(), []);
 
@@ -3109,7 +3125,7 @@
             </span>}
         );
 
-        <span class="kw">let </span>id = types.function_at(<span class="number">0</span>);
+        <span class="kw">let </span>id = types.core_function_at(<span class="number">0</span>);
         <span class="kw">let </span>ty = types[id].unwrap_func();
         <span class="macro">assert_eq!</span>(ty.params(), [ValType::I32, ValType::I64]);
         <span class="macro">assert_eq!</span>(ty.results(), [ValType::I32]);
@@ -3143,9 +3159,9 @@
 
         <span class="kw">let </span>types = validator.validate_all(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>t_id = types.component_type_at(<span class="number">0</span>);
-        <span class="kw">let </span>a1_id = types.component_type_at(<span class="number">1</span>);
-        <span class="kw">let </span>a2_id = types.component_type_at(<span class="number">2</span>);
+        <span class="kw">let </span>t_id = types.component_defined_type_at(<span class="number">0</span>);
+        <span class="kw">let </span>a1_id = types.component_defined_type_at(<span class="number">1</span>);
+        <span class="kw">let </span>a2_id = types.component_defined_type_at(<span class="number">2</span>);
 
         <span class="comment">// The ids should all be the same
         </span><span class="macro">assert!</span>(t_id == a1_id);
@@ -3178,9 +3194,9 @@
 
         <span class="kw">let </span>types = validator.validate_all(<span class="kw-2">&amp;</span>bytes)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>t_id = types.component_type_at(<span class="number">0</span>);
-        <span class="kw">let </span>a1_id = types.component_type_at(<span class="number">1</span>);
-        <span class="kw">let </span>a2_id = types.component_type_at(<span class="number">2</span>);
+        <span class="kw">let </span>t_id = types.component_defined_type_at(<span class="number">0</span>);
+        <span class="kw">let </span>a1_id = types.component_defined_type_at(<span class="number">1</span>);
+        <span class="kw">let </span>a2_id = types.component_defined_type_at(<span class="number">2</span>);
 
         <span class="comment">// The ids should all be the same
         </span><span class="macro">assert!</span>(t_id != a1_id);

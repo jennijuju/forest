@@ -870,7 +870,7 @@
                     }
                     <span class="comment">// Ignore dropping peer on timeout for now. Can&#39;t be confident yet that the
                     // specified timeout is adequate time.
-                    </span>RequestResponseError::Timeout =&gt; {
+                    </span>RequestResponseError::Timeout | RequestResponseError::Io(<span class="kw">_</span>) =&gt; {
                         peer_manager.log_failure(peer_id, res_duration).<span class="kw">await</span>;
                     }
                 }

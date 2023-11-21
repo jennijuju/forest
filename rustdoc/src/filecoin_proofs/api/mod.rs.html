@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/filecoin-proofs-16.0.0/src/api/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="filecoin_proofs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../filecoin_proofs/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/filecoin-proofs-16.1.0/src/api/mod.rs`."><title>mod.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="filecoin_proofs" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../../src-files.js"></script><script defer src="../../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../filecoin_proofs/index.html"><img class="rust-logo" src="../../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -762,57 +762,13 @@
 <a href="#762" id="762">762</a>
 <a href="#763" id="763">763</a>
 <a href="#764" id="764">764</a>
-<a href="#765" id="765">765</a>
-<a href="#766" id="766">766</a>
-<a href="#767" id="767">767</a>
-<a href="#768" id="768">768</a>
-<a href="#769" id="769">769</a>
-<a href="#770" id="770">770</a>
-<a href="#771" id="771">771</a>
-<a href="#772" id="772">772</a>
-<a href="#773" id="773">773</a>
-<a href="#774" id="774">774</a>
-<a href="#775" id="775">775</a>
-<a href="#776" id="776">776</a>
-<a href="#777" id="777">777</a>
-<a href="#778" id="778">778</a>
-<a href="#779" id="779">779</a>
-<a href="#780" id="780">780</a>
-<a href="#781" id="781">781</a>
-<a href="#782" id="782">782</a>
-<a href="#783" id="783">783</a>
-<a href="#784" id="784">784</a>
-<a href="#785" id="785">785</a>
-<a href="#786" id="786">786</a>
-<a href="#787" id="787">787</a>
-<a href="#788" id="788">788</a>
-<a href="#789" id="789">789</a>
-<a href="#790" id="790">790</a>
-<a href="#791" id="791">791</a>
-<a href="#792" id="792">792</a>
-<a href="#793" id="793">793</a>
-<a href="#794" id="794">794</a>
-<a href="#795" id="795">795</a>
-<a href="#796" id="796">796</a>
-<a href="#797" id="797">797</a>
-<a href="#798" id="798">798</a>
-<a href="#799" id="799">799</a>
-<a href="#800" id="800">800</a>
-<a href="#801" id="801">801</a>
-<a href="#802" id="802">802</a>
-<a href="#803" id="803">803</a>
-<a href="#804" id="804">804</a>
-<a href="#805" id="805">805</a>
-<a href="#806" id="806">806</a>
-<a href="#807" id="807">807</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::BTreeMap;
-<span class="kw">use </span>std::fs::{<span class="self">self</span>, File, OpenOptions};
+<span class="kw">use </span>std::fs::{File, OpenOptions};
 <span class="kw">use </span>std::io::{<span class="self">self</span>, BufReader, BufWriter, Read, Write};
 <span class="kw">use </span>std::path::{Path, PathBuf};
 
 <span class="kw">use </span>anyhow::{ensure, Context, <span class="prelude-ty">Result</span>};
-<span class="kw">use </span>bincode::deserialize;
-<span class="kw">use </span>filecoin_hashers::{sha256::Sha256Hasher, Hasher};
+<span class="kw">use </span>filecoin_hashers::Hasher;
 <span class="kw">use </span>fr32::{write_unpadded, Fr32Reader};
 <span class="kw">use </span>log::{info, trace};
 <span class="kw">use </span>memmap2::MmapOptions;
@@ -823,12 +779,8 @@
     merkle::get_base_tree_count,
     pieces::generate_piece_commitment_bytes_from_source,
     sector::SectorId,
-    util::default_rows_to_discard,
 };
-<span class="kw">use </span>storage_proofs_porep::{
-    stacked::{generate_replica_id, PersistentAux, StackedDrg, TemporaryAux},
-    PoRep,
-};
+<span class="kw">use </span>storage_proofs_porep::stacked::{<span class="self">self</span>, generate_replica_id, PublicParams, StackedDrg};
 <span class="kw">pub use </span>storage_proofs_update::constants::TreeRHasher;
 <span class="kw">use </span>typenum::Unsigned;
 
@@ -864,27 +816,22 @@
 
 <span class="kw">pub use </span>storage_proofs_update::constants::partition_count;
 
-<span class="comment">// Ensure that any associated cached data persisted is discarded.
-</span><span class="kw">pub fn </span>clear_cache&lt;Tree: MerkleTreeTrait&gt;(cache_dir: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+<span class="comment">// TODO vmx 2023-09-26: The `Tree` generic is not needed, it&#39;s only there in order to not breaking
+// the public API. Once we break the API, remove that generic.
+// Ensure that any associated cached data persisted is discarded.
+</span><span class="kw">pub fn </span>clear_cache&lt;Tree&gt;(cache_dir: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">info!</span>(<span class="string">&quot;clear_cache:start&quot;</span>);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>t_aux: TemporaryAux&lt;Tree, Sha256Hasher&gt; = {
-        <span class="kw">let </span>f_aux_path = cache_dir.to_path_buf().join(CacheKey::TAux.to_string());
-        <span class="kw">let </span>aux_bytes = fs::read(<span class="kw-2">&amp;</span>f_aux_path)
-            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read from path={:?}&quot;</span>, f_aux_path))<span class="question-mark">?</span>;
-
-        deserialize(<span class="kw-2">&amp;</span>aux_bytes)
-    }<span class="question-mark">?</span>;
-
-    t_aux.set_cache_path(cache_dir);
-    <span class="kw">let </span>result = TemporaryAux::&lt;Tree, DefaultPieceHasher&gt;::clear_temp(t_aux);
+    <span class="kw">let </span>result = stacked::clear_cache_dir(cache_dir);
 
     <span class="macro">info!</span>(<span class="string">&quot;clear_cache:finish&quot;</span>);
 
     result
 }
 
-<span class="comment">// Ensure that any associated cached data persisted is discarded.
+<span class="comment">// TODO vmx 2023-09-26: The `Tree` generic is not needed, it&#39;s only there in order to not breaking
+// the public API. Once we break the API, remove that generic.
+// Ensure that any associated cached data persisted is discarded.
 </span><span class="kw">pub fn </span>clear_caches&lt;Tree: MerkleTreeTrait&gt;(
     replicas: <span class="kw-2">&amp;</span>BTreeMap&lt;SectorId, PrivateReplicaInfo&lt;Tree&gt;&gt;,
 ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
@@ -899,40 +846,26 @@
     <span class="prelude-val">Ok</span>(())
 }
 
-<span class="comment">// Ensure that any persisted layer data generated from porep are discarded.
-</span><span class="kw">pub fn </span>clear_layer_data&lt;Tree: MerkleTreeTrait&gt;(cache_dir: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+<span class="comment">// TODO vmx 2023-09-26: The `Tree` generic is not needed, it&#39;s only there in order to not breaking
+// the public API. Once we break the API, remove that generic.
+// Ensure that any persisted layer data generated from porep are discarded.
+</span><span class="kw">pub fn </span>clear_layer_data&lt;Tree&gt;(cache_dir: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">info!</span>(<span class="string">&quot;clear_layer_data:start&quot;</span>);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>t_aux: TemporaryAux&lt;Tree, Sha256Hasher&gt; = {
-        <span class="kw">let </span>f_aux_path = cache_dir.to_path_buf().join(CacheKey::TAux.to_string());
-        <span class="kw">let </span>aux_bytes = fs::read(<span class="kw-2">&amp;</span>f_aux_path)
-            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read from path={:?}&quot;</span>, f_aux_path))<span class="question-mark">?</span>;
-
-        deserialize(<span class="kw-2">&amp;</span>aux_bytes)
-    }<span class="question-mark">?</span>;
-
-    t_aux.set_cache_path(cache_dir);
-    <span class="kw">let </span>result = TemporaryAux::&lt;Tree, DefaultPieceHasher&gt;::clear_layer_data(<span class="kw-2">&amp;</span>t_aux);
+    <span class="kw">let </span>result = stacked::clear_cache_dir(cache_dir);
 
     <span class="macro">info!</span>(<span class="string">&quot;clear_layer_data:finish&quot;</span>);
 
     result
 }
 
-<span class="comment">// Ensure that any persisted vanilla proofs generated from synthetic porep are discarded.
-</span><span class="kw">pub fn </span>clear_synthetic_proofs&lt;Tree: MerkleTreeTrait&gt;(cache_dir: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+<span class="comment">// TODO vmx 2023-09-26: The `Tree` generic is not needed, it&#39;s only there in order to not breaking
+// the public API. Once we break the API, remove that generic.
+// Ensure that any persisted vanilla proofs generated from synthetic porep are discarded.
+</span><span class="kw">pub fn </span>clear_synthetic_proofs&lt;Tree&gt;(cache_dir: <span class="kw-2">&amp;</span>Path) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
     <span class="macro">info!</span>(<span class="string">&quot;clear_synthetic_proofs:start&quot;</span>);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>t_aux: TemporaryAux&lt;Tree, Sha256Hasher&gt; = {
-        <span class="kw">let </span>f_aux_path = cache_dir.to_path_buf().join(CacheKey::TAux.to_string());
-        <span class="kw">let </span>aux_bytes = fs::read(<span class="kw-2">&amp;</span>f_aux_path)
-            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read from path={:?}&quot;</span>, f_aux_path))<span class="question-mark">?</span>;
-
-        deserialize(<span class="kw-2">&amp;</span>aux_bytes)
-    }<span class="question-mark">?</span>;
-
-    t_aux.set_cache_path(cache_dir);
-    <span class="kw">let </span>result = TemporaryAux::&lt;Tree, DefaultPieceHasher&gt;::clear_synthetic_proofs(<span class="kw-2">&amp;</span>t_aux);
+    <span class="kw">let </span>result = stacked::clear_synthetic_proofs(cache_dir);
 
     <span class="macro">info!</span>(<span class="string">&quot;clear_synthetic_proofs:finish&quot;</span>);
 
@@ -1164,22 +1097,19 @@
 {
     <span class="macro">trace!</span>(<span class="string">&quot;unseal_range_inner:start&quot;</span>);
 
-    <span class="kw">let </span>base_tree_size = get_base_tree_size::&lt;DefaultBinaryTree&gt;(porep_config.sector_size)<span class="question-mark">?</span>;
-    <span class="kw">let </span>base_tree_leafs = get_base_tree_leafs::&lt;DefaultBinaryTree&gt;(base_tree_size)<span class="question-mark">?</span>;
-    <span class="kw">let </span>config = StoreConfig::new(
-        cache_path.as_ref(),
-        CacheKey::CommDTree.to_string(),
-        default_rows_to_discard(
-            base_tree_leafs,
-            &lt;DefaultBinaryTree <span class="kw">as </span>MerkleTreeTrait&gt;::Arity::to_usize(),
-        ),
-    );
-    <span class="kw">let </span>pp = public_params(porep_config)<span class="question-mark">?</span>;
+    <span class="kw">let </span>config = StoreConfig::new(cache_path.as_ref(), CacheKey::CommDTree.to_string(), <span class="number">0</span>);
+    <span class="kw">let </span>pp: PublicParams&lt;Tree&gt; = public_params(porep_config)<span class="question-mark">?</span>;
 
     <span class="kw">let </span>offset_padded: PaddedBytesAmount = UnpaddedBytesAmount::from(offset).into();
     <span class="kw">let </span>num_bytes_padded: PaddedBytesAmount = num_bytes.into();
 
-    StackedDrg::&lt;Tree, DefaultPieceHasher&gt;::extract_all(<span class="kw-2">&amp;</span>pp, <span class="kw-2">&amp;</span>replica_id, data, <span class="prelude-val">Some</span>(config))<span class="question-mark">?</span>;
+    StackedDrg::&lt;Tree, DefaultPieceHasher&gt;::extract_and_invert_transform_layers(
+        <span class="kw-2">&amp;</span>pp.graph,
+        <span class="kw-2">&amp;</span>pp.layer_challenges,
+        <span class="kw-2">&amp;</span>replica_id,
+        data,
+        config,
+    )<span class="question-mark">?</span>;
     <span class="kw">let </span>start: usize = offset_padded.into();
     <span class="kw">let </span>end = start + usize::from(num_bytes_padded);
     <span class="kw">let </span>unsealed = <span class="kw-2">&amp;</span>data[start..end];
@@ -1571,25 +1501,9 @@
     <span class="kw">let </span>cache = <span class="kw-2">&amp;</span>cache_path.as_ref();
 
     <span class="comment">// Make sure p_aux exists and is valid.
-    </span><span class="kw">let </span>p_aux_path = cache.join(CacheKey::PAux.to_string());
-    <span class="kw">let </span>p_aux_bytes = fs::read(<span class="kw-2">&amp;</span>p_aux_path)
-        .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read file p_aux={:?}&quot;</span>, p_aux_path))<span class="question-mark">?</span>;
+    </span><span class="kw">let _ </span>= util::get_p_aux::&lt;Tree&gt;(cache)<span class="question-mark">?</span>;
 
-    <span class="kw">let _</span>: PersistentAux&lt;&lt;Tree::Hasher <span class="kw">as </span>Hasher&gt;::Domain&gt; = deserialize(<span class="kw-2">&amp;</span>p_aux_bytes)<span class="question-mark">?</span>;
-    drop(p_aux_bytes);
-
-    <span class="comment">// Make sure t_aux exists and is valid.
-    </span><span class="kw">let </span>t_aux = {
-        <span class="kw">let </span>t_aux_path = cache.join(CacheKey::TAux.to_string());
-        <span class="kw">let </span>t_aux_bytes = fs::read(<span class="kw-2">&amp;</span>t_aux_path)
-            .with_context(|| <span class="macro">format!</span>(<span class="string">&quot;could not read file t_aux={:?}&quot;</span>, t_aux_path))<span class="question-mark">?</span>;
-
-        <span class="kw">let </span><span class="kw-2">mut </span>res: TemporaryAux&lt;Tree, DefaultPieceHasher&gt; = deserialize(<span class="kw-2">&amp;</span>t_aux_bytes)<span class="question-mark">?</span>;
-
-        <span class="comment">// Switch t_aux to the passed in cache_path
-        </span>res.set_cache_path(<span class="kw-2">&amp;</span>cache_path);
-        res
-    };
+    <span class="kw">let </span>t_aux = util::get_t_aux::&lt;Tree&gt;(cache, metadata.len())<span class="question-mark">?</span>;
 
     <span class="comment">// Verify all stores/labels within the Labels object.
     </span><span class="kw">let </span>cache = cache_path.as_ref().to_path_buf();

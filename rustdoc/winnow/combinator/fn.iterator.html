@@ -4,7 +4,7 @@
     E: <a class="trait" href="../error/trait.ParserError.html" title="trait winnow::error::ParserError">ParserError</a>&lt;I&gt;,</span></code></pre><details class="toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Repeats the embedded parser, lazily returning the results</p>
 <p>Call the iterator’s <a href="struct.ParserIterator.html#method.finish" title="method winnow::combinator::ParserIterator::finish"><code>ParserIterator::finish</code></a> method to get the remaining input if successful,
 or the error value if we encountered an error.</p>
-<p>On <a href="../error/enum.ErrMode.html#variant.Backtrack" title="variant winnow::error::ErrMode::Backtrack"><code>ErrMode::Backtrack</code></a>, iteration will stop.  To instead chain an error up, see <a href="fn.cut_err.html" title="fn winnow::combinator::cut_err"><code>cut_err</code></a>.</p>
+<p>On <a href="../error/enum.ErrMode.html#variant.Backtrack" title="variant winnow::error::ErrMode::Backtrack"><code>ErrMode::Backtrack</code></a>, iteration will stop. To instead chain an error up, see <a href="fn.cut_err.html" title="fn winnow::combinator::cut_err"><code>cut_err</code></a>.</p>
 <h2 id="example"><a href="#example">Example</a></h2>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use </span>winnow::{combinator::iterator, IResult, token::tag, ascii::alpha1, combinator::terminated};
 <span class="kw">use </span>std::collections::HashMap;

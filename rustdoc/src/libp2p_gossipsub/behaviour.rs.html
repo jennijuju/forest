@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-gossipsub-0.45.2/src/behaviour.rs`."><title>behaviour.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_gossipsub" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_gossipsub/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-gossipsub-0.46.0/src/behaviour.rs`."><title>behaviour.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_gossipsub" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_gossipsub/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3818,48 +3818,6 @@
 <a href="#3818" id="3818">3818</a>
 <a href="#3819" id="3819">3819</a>
 <a href="#3820" id="3820">3820</a>
-<a href="#3821" id="3821">3821</a>
-<a href="#3822" id="3822">3822</a>
-<a href="#3823" id="3823">3823</a>
-<a href="#3824" id="3824">3824</a>
-<a href="#3825" id="3825">3825</a>
-<a href="#3826" id="3826">3826</a>
-<a href="#3827" id="3827">3827</a>
-<a href="#3828" id="3828">3828</a>
-<a href="#3829" id="3829">3829</a>
-<a href="#3830" id="3830">3830</a>
-<a href="#3831" id="3831">3831</a>
-<a href="#3832" id="3832">3832</a>
-<a href="#3833" id="3833">3833</a>
-<a href="#3834" id="3834">3834</a>
-<a href="#3835" id="3835">3835</a>
-<a href="#3836" id="3836">3836</a>
-<a href="#3837" id="3837">3837</a>
-<a href="#3838" id="3838">3838</a>
-<a href="#3839" id="3839">3839</a>
-<a href="#3840" id="3840">3840</a>
-<a href="#3841" id="3841">3841</a>
-<a href="#3842" id="3842">3842</a>
-<a href="#3843" id="3843">3843</a>
-<a href="#3844" id="3844">3844</a>
-<a href="#3845" id="3845">3845</a>
-<a href="#3846" id="3846">3846</a>
-<a href="#3847" id="3847">3847</a>
-<a href="#3848" id="3848">3848</a>
-<a href="#3849" id="3849">3849</a>
-<a href="#3850" id="3850">3850</a>
-<a href="#3851" id="3851">3851</a>
-<a href="#3852" id="3852">3852</a>
-<a href="#3853" id="3853">3853</a>
-<a href="#3854" id="3854">3854</a>
-<a href="#3855" id="3855">3855</a>
-<a href="#3856" id="3856">3856</a>
-<a href="#3857" id="3857">3857</a>
-<a href="#3858" id="3858">3858</a>
-<a href="#3859" id="3859">3859</a>
-<a href="#3860" id="3860">3860</a>
-<a href="#3861" id="3861">3861</a>
-<a href="#3862" id="3862">3862</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2020 Sigma Prime Pty Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -3893,7 +3851,6 @@
 
 <span class="kw">use </span>futures::StreamExt;
 <span class="kw">use </span>futures_ticker::Ticker;
-<span class="kw">use </span>log::{debug, error, trace, warn};
 <span class="kw">use </span>prometheus_client::registry::Registry;
 <span class="kw">use </span>rand::{seq::SliceRandom, thread_rng};
 
@@ -3904,8 +3861,8 @@
 <span class="kw">use </span>libp2p_swarm::{
     behaviour::{AddressChange, ConnectionClosed, ConnectionEstablished, FromSwarm},
     dial_opts::DialOpts,
-    ConnectionDenied, ConnectionId, NetworkBehaviour, NotifyHandler, PollParameters, THandler,
-    THandlerInEvent, THandlerOutEvent, ToSwarm,
+    ConnectionDenied, ConnectionId, NetworkBehaviour, NotifyHandler, THandler, THandlerInEvent,
+    THandlerOutEvent, ToSwarm,
 };
 
 <span class="kw">use </span><span class="kw">crate</span>::backoff::BackoffStorage;
@@ -3917,12 +3874,12 @@
 <span class="kw">use </span><span class="kw">crate</span>::peer_score::{PeerScore, PeerScoreParams, PeerScoreThresholds, RejectReason};
 <span class="kw">use </span><span class="kw">crate</span>::protocol::SIGNING_PREFIX;
 <span class="kw">use </span><span class="kw">crate</span>::subscription_filter::{AllowAllSubscriptionFilter, TopicSubscriptionFilter};
-<span class="kw">use </span><span class="kw">crate</span>::time_cache::{DuplicateCache, TimeCache};
+<span class="kw">use </span><span class="kw">crate</span>::time_cache::DuplicateCache;
 <span class="kw">use </span><span class="kw">crate</span>::topic::{Hasher, Topic, TopicHash};
 <span class="kw">use </span><span class="kw">crate</span>::transform::{DataTransform, IdentityTransform};
 <span class="kw">use </span><span class="kw">crate</span>::types::{
-    ControlAction, FastMessageId, Message, MessageAcceptance, MessageId, PeerInfo, RawMessage,
-    Subscription, SubscriptionAction,
+    ControlAction, Message, MessageAcceptance, MessageId, PeerInfo, RawMessage, Subscription,
+    SubscriptionAction,
 };
 <span class="kw">use </span><span class="kw">crate</span>::types::{PeerConnections, PeerKind, Rpc};
 <span class="kw">use crate</span>::{rpc_proto::proto, TopicScoreParams};
@@ -4185,9 +4142,6 @@
     /// our own messages back if the messages are anonymous or use a random author.
     </span>published_message_ids: DuplicateCache&lt;MessageId&gt;,
 
-    <span class="doccomment">/// Short term cache for fast message ids mapping them to the real message ids
-    </span>fast_message_id_cache: TimeCache&lt;FastMessageId, MessageId&gt;,
-
     <span class="doccomment">/// The filter used to handle message subscriptions.
     </span>subscription_filter: F,
 
@@ -4308,7 +4262,6 @@
             control_pool: HashMap::new(),
             publish_config: privacy.into(),
             duplicate_cache: DuplicateCache::new(config.duplicate_cache_time()),
-            fast_message_id_cache: TimeCache::new(config.duplicate_cache_time()),
             topic_peers: HashMap::new(),
             peer_topics: HashMap::new(),
             explicit_peers: HashSet::new(),
@@ -4389,14 +4342,14 @@
     /// Returns [`Ok(true)`] if the subscription worked. Returns [`Ok(false)`] if we were already
     /// subscribed.
     </span><span class="kw">pub fn </span>subscribe&lt;H: Hasher&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, topic: <span class="kw-2">&amp;</span>Topic&lt;H&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, SubscriptionError&gt; {
-        <span class="macro">debug!</span>(<span class="string">&quot;Subscribing to topic: {}&quot;</span>, topic);
+        <span class="macro">tracing::debug!</span>(%topic, <span class="string">&quot;Subscribing to topic&quot;</span>);
         <span class="kw">let </span>topic_hash = topic.hash();
         <span class="kw">if </span>!<span class="self">self</span>.subscription_filter.can_subscribe(<span class="kw-2">&amp;</span>topic_hash) {
             <span class="kw">return </span><span class="prelude-val">Err</span>(SubscriptionError::NotAllowed);
         }
 
         <span class="kw">if </span><span class="self">self</span>.mesh.get(<span class="kw-2">&amp;</span>topic_hash).is_some() {
-            <span class="macro">debug!</span>(<span class="string">&quot;Topic: {} is already in the mesh.&quot;</span>, topic);
+            <span class="macro">tracing::debug!</span>(%topic, <span class="string">&quot;Topic is already in the mesh&quot;</span>);
             <span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
 
@@ -4414,7 +4367,7 @@
             .into_protobuf();
 
             <span class="kw">for </span>peer <span class="kw">in </span>peer_list {
-                <span class="macro">debug!</span>(<span class="string">&quot;Sending SUBSCRIBE to peer: {:?}&quot;</span>, peer);
+                <span class="macro">tracing::debug!</span>(%peer, <span class="string">&quot;Sending SUBSCRIBE to peer&quot;</span>);
                 <span class="self">self</span>.send_message(peer, event.clone())
                     .map_err(SubscriptionError::PublishError)<span class="question-mark">?</span>;
             }
@@ -4423,7 +4376,7 @@
         <span class="comment">// call JOIN(topic)
         // this will add new peers to the mesh for the topic
         </span><span class="self">self</span>.join(<span class="kw-2">&amp;</span>topic_hash);
-        <span class="macro">debug!</span>(<span class="string">&quot;Subscribed to topic: {}&quot;</span>, topic);
+        <span class="macro">tracing::debug!</span>(%topic, <span class="string">&quot;Subscribed to topic&quot;</span>);
         <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
     }
 
@@ -4431,11 +4384,11 @@
     ///
     /// Returns [`Ok(true)`] if we were subscribed to this topic.
     </span><span class="kw">pub fn </span>unsubscribe&lt;H: Hasher&gt;(<span class="kw-2">&amp;mut </span><span class="self">self</span>, topic: <span class="kw-2">&amp;</span>Topic&lt;H&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, PublishError&gt; {
-        <span class="macro">debug!</span>(<span class="string">&quot;Unsubscribing from topic: {}&quot;</span>, topic);
+        <span class="macro">tracing::debug!</span>(%topic, <span class="string">&quot;Unsubscribing from topic&quot;</span>);
         <span class="kw">let </span>topic_hash = topic.hash();
 
         <span class="kw">if </span><span class="self">self</span>.mesh.get(<span class="kw-2">&amp;</span>topic_hash).is_none() {
-            <span class="macro">debug!</span>(<span class="string">&quot;Already unsubscribed from topic: {:?}&quot;</span>, topic_hash);
+            <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Already unsubscribed from topic&quot;</span>);
             <span class="comment">// we are not subscribed
             </span><span class="kw">return </span><span class="prelude-val">Ok</span>(<span class="bool-val">false</span>);
         }
@@ -4454,7 +4407,7 @@
             .into_protobuf();
 
             <span class="kw">for </span>peer <span class="kw">in </span>peer_list {
-                <span class="macro">debug!</span>(<span class="string">&quot;Sending UNSUBSCRIBE to peer: {}&quot;</span>, peer.to_string());
+                <span class="macro">tracing::debug!</span>(%peer, <span class="string">&quot;Sending UNSUBSCRIBE to peer&quot;</span>);
                 <span class="self">self</span>.send_message(peer, event.clone())<span class="question-mark">?</span>;
             }
         }
@@ -4463,7 +4416,7 @@
         // this will remove the topic from the mesh
         </span><span class="self">self</span>.leave(<span class="kw-2">&amp;</span>topic_hash);
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Unsubscribed from topic: {:?}&quot;</span>, topic_hash);
+        <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Unsubscribed from topic&quot;</span>);
         <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
     }
 
@@ -4507,14 +4460,14 @@
         </span><span class="kw">if </span><span class="self">self</span>.duplicate_cache.contains(<span class="kw-2">&amp;</span>msg_id) {
             <span class="comment">// This message has already been seen. We don&#39;t re-publish messages that have already
             // been published on the network.
-            </span><span class="macro">warn!</span>(
-                <span class="string">&quot;Not publishing a message that has already been published. Msg-id {}&quot;</span>,
-                msg_id
-            );
+            </span><span class="macro">tracing::warn!</span>(
+                message=%msg_id,
+                <span class="string">&quot;Not publishing a message that has already been published&quot;
+            </span>);
             <span class="kw">return </span><span class="prelude-val">Err</span>(PublishError::Duplicate);
         }
 
-        <span class="macro">trace!</span>(<span class="string">&quot;Publishing message: {:?}&quot;</span>, msg_id);
+        <span class="macro">tracing::trace!</span>(message=%msg_id, <span class="string">&quot;Publishing message&quot;</span>);
 
         <span class="kw">let </span>topic_hash = raw_message.topic.clone();
 
@@ -4555,7 +4508,7 @@
 
                 <span class="comment">// Gossipsub peers
                 </span><span class="kw">if </span><span class="self">self</span>.mesh.get(<span class="kw-2">&amp;</span>topic_hash).is_none() {
-                    <span class="macro">debug!</span>(<span class="string">&quot;Topic: {:?} not in the mesh&quot;</span>, topic_hash);
+                    <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Topic not in the mesh&quot;</span>);
                     <span class="comment">// If we have fanout peers add them to the map.
                     </span><span class="kw">if </span><span class="self">self</span>.fanout.contains_key(<span class="kw-2">&amp;</span>topic_hash) {
                         <span class="kw">for </span>peer <span class="kw">in </span><span class="self">self</span>.fanout.get(<span class="kw-2">&amp;</span>topic_hash).expect(<span class="string">&quot;Topic must exist&quot;</span>) {
@@ -4581,7 +4534,7 @@
                         <span class="comment">// Add the new peers to the fanout and recipient peers
                         </span><span class="self">self</span>.fanout.insert(topic_hash.clone(), new_peers.clone());
                         <span class="kw">for </span>peer <span class="kw">in </span>new_peers {
-                            <span class="macro">debug!</span>(<span class="string">&quot;Peer added to fanout: {:?}&quot;</span>, peer);
+                            <span class="macro">tracing::debug!</span>(%peer, <span class="string">&quot;Peer added to fanout&quot;</span>);
                             recipient_peers.insert(peer);
                         }
                     }
@@ -4612,7 +4565,7 @@
         <span class="comment">// Send to peers we know are subscribed to the topic.
         </span><span class="kw">let </span>msg_bytes = event.get_size();
         <span class="kw">for </span>peer_id <span class="kw">in </span>recipient_peers.iter() {
-            <span class="macro">trace!</span>(<span class="string">&quot;Sending message to peer: {:?}&quot;</span>, peer_id);
+            <span class="macro">tracing::trace!</span>(peer=%peer_id, <span class="string">&quot;Sending message to peer&quot;</span>);
             <span class="self">self</span>.send_message(<span class="kw-2">*</span>peer_id, event.clone())<span class="question-mark">?</span>;
 
             <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
@@ -4620,7 +4573,7 @@
             }
         }
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Published message: {:?}&quot;</span>, <span class="kw-2">&amp;</span>msg_id);
+        <span class="macro">tracing::debug!</span>(message=%msg_id, <span class="string">&quot;Published message&quot;</span>);
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics) = <span class="self">self</span>.metrics.as_mut() {
             metrics.register_published_message(<span class="kw-2">&amp;</span>topic_hash);
@@ -4661,10 +4614,10 @@
                         (raw_message.clone(), originating_peers)
                     }
                     <span class="prelude-val">None </span>=&gt; {
-                        <span class="macro">warn!</span>(
-                            <span class="string">&quot;Message not in cache. Ignoring forwarding. Message Id: {}&quot;</span>,
-                            msg_id
-                        );
+                        <span class="macro">tracing::warn!</span>(
+                            message=%msg_id,
+                            <span class="string">&quot;Message not in cache. Ignoring forwarding&quot;
+                        </span>);
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics) = <span class="self">self</span>.metrics.as_mut() {
                             metrics.memcache_miss();
                         }
@@ -4708,14 +4661,14 @@
             }
             <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
         } <span class="kw">else </span>{
-            <span class="macro">warn!</span>(<span class="string">&quot;Rejected message not in cache. Message Id: {}&quot;</span>, msg_id);
+            <span class="macro">tracing::warn!</span>(message=%msg_id, <span class="string">&quot;Rejected message not in cache&quot;</span>);
             <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
         }
     }
 
     <span class="doccomment">/// Adds a new peer to the list of explicitly connected peers.
     </span><span class="kw">pub fn </span>add_explicit_peer(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Adding explicit peer {}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Adding explicit peer&quot;</span>);
 
         <span class="self">self</span>.explicit_peers.insert(<span class="kw-2">*</span>peer_id);
 
@@ -4725,7 +4678,7 @@
     <span class="doccomment">/// This removes the peer from explicitly connected peers, note that this does not disconnect
     /// the peer.
     </span><span class="kw">pub fn </span>remove_explicit_peer(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Removing explicit peer {}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Removing explicit peer&quot;</span>);
         <span class="self">self</span>.explicit_peers.remove(peer_id);
     }
 
@@ -4733,14 +4686,14 @@
     /// created by this peer will be rejected.
     </span><span class="kw">pub fn </span>blacklist_peer(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId) {
         <span class="kw">if </span><span class="self">self</span>.blacklisted_peers.insert(<span class="kw-2">*</span>peer_id) {
-            <span class="macro">debug!</span>(<span class="string">&quot;Peer has been blacklisted: {}&quot;</span>, peer_id);
+            <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Peer has been blacklisted&quot;</span>);
         }
     }
 
     <span class="doccomment">/// Removes a peer from the blacklist if it has previously been blacklisted.
     </span><span class="kw">pub fn </span>remove_blacklisted_peer(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId) {
         <span class="kw">if </span><span class="self">self</span>.blacklisted_peers.remove(peer_id) {
-            <span class="macro">debug!</span>(<span class="string">&quot;Peer has been removed from the blacklist: {}&quot;</span>, peer_id);
+            <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Peer has been removed from the blacklist&quot;</span>);
         }
     }
 
@@ -4809,11 +4762,11 @@
 
     <span class="doccomment">/// Gossipsub JOIN(topic) - adds topic peers to mesh and sends them GRAFT messages.
     </span><span class="kw">fn </span>join(<span class="kw-2">&amp;mut </span><span class="self">self</span>, topic_hash: <span class="kw-2">&amp;</span>TopicHash) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Running JOIN for topic: {:?}&quot;</span>, topic_hash);
+        <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Running JOIN for topic&quot;</span>);
 
         <span class="comment">// if we are already in the mesh, return
         </span><span class="kw">if </span><span class="self">self</span>.mesh.contains_key(topic_hash) {
-            <span class="macro">debug!</span>(<span class="string">&quot;JOIN: The topic is already in the mesh, ignoring JOIN&quot;</span>);
+            <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;JOIN: The topic is already in the mesh, ignoring JOIN&quot;</span>);
             <span class="kw">return</span>;
         }
 
@@ -4826,10 +4779,10 @@
         <span class="comment">// check if we have mesh_n peers in fanout[topic] and add them to the mesh if we do,
         // removing the fanout entry.
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="kw-2">mut </span>peers)) = <span class="self">self</span>.fanout.remove_entry(topic_hash) {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;JOIN: Removing peers from the fanout for topic: {:?}&quot;</span>,
-                topic_hash
-            );
+            <span class="macro">tracing::debug!</span>(
+                topic=%topic_hash,
+                <span class="string">&quot;JOIN: Removing peers from the fanout for topic&quot;
+            </span>);
 
             <span class="comment">// remove explicit peers, peers with negative scores, and backoffed peers
             </span>peers.retain(|p| {
@@ -4841,9 +4794,10 @@
             <span class="comment">// Add up to mesh_n of them them to the mesh
             // NOTE: These aren&#39;t randomly added, currently FIFO
             </span><span class="kw">let </span>add_peers = std::cmp::min(peers.len(), <span class="self">self</span>.config.mesh_n());
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;JOIN: Adding {:?} peers from the fanout for topic: {:?}&quot;</span>,
-                add_peers, topic_hash
+            <span class="macro">tracing::debug!</span>(
+                topic=%topic_hash,
+                <span class="string">&quot;JOIN: Adding {:?} peers from the fanout for topic&quot;</span>,
+                add_peers
             );
             added_peers.extend(peers.iter().cloned().take(add_peers));
 
@@ -4878,7 +4832,7 @@
             );
             added_peers.extend(new_peers.clone());
             <span class="comment">// add them to the mesh
-            </span><span class="macro">debug!</span>(
+            </span><span class="macro">tracing::debug!</span>(
                 <span class="string">&quot;JOIN: Inserting {:?} random peers into the mesh&quot;</span>,
                 new_peers.len()
             );
@@ -4893,7 +4847,7 @@
 
         <span class="kw">for </span>peer_id <span class="kw">in </span>added_peers {
             <span class="comment">// Send a GRAFT control message
-            </span><span class="macro">debug!</span>(<span class="string">&quot;JOIN: Sending Graft message to peer: {:?}&quot;</span>, peer_id);
+            </span><span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;JOIN: Sending Graft message to peer&quot;</span>);
             <span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, ..)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
                 peer_score.graft(<span class="kw-2">&amp;</span>peer_id, topic_hash.clone());
             }
@@ -4921,7 +4875,7 @@
             m.set_mesh_peers(topic_hash, mesh_peers)
         }
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Completed JOIN for topic: {:?}&quot;</span>, topic_hash);
+        <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Completed JOIN for topic&quot;</span>);
     }
 
     <span class="doccomment">/// Creates a PRUNE gossipsub action.
@@ -4938,7 +4892,7 @@
 
         <span class="kw">match </span><span class="self">self</span>.connected_peers.get(peer).map(|v| <span class="kw-2">&amp;</span>v.kind) {
             <span class="prelude-val">Some</span>(PeerKind::Floodsub) =&gt; {
-                <span class="macro">error!</span>(<span class="string">&quot;Attempted to prune a Floodsub peer&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Attempted to prune a Floodsub peer&quot;</span>);
             }
             <span class="prelude-val">Some</span>(PeerKind::Gossipsub) =&gt; {
                 <span class="comment">// GossipSub v1.0 -- no peer exchange, the peer won&#39;t be able to parse it anyway
@@ -4949,7 +4903,7 @@
                 };
             }
             <span class="prelude-val">None </span>=&gt; {
-                <span class="macro">error!</span>(<span class="string">&quot;Attempted to Prune an unknown peer&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Attempted to Prune an unknown peer&quot;</span>);
             }
             <span class="kw">_ </span>=&gt; {} <span class="comment">// Gossipsub 1.1 peer perform the `Prune`
         </span>}
@@ -4988,7 +4942,7 @@
 
     <span class="doccomment">/// Gossipsub LEAVE(topic) - Notifies mesh\[topic\] peers with PRUNE messages.
     </span><span class="kw">fn </span>leave(<span class="kw-2">&amp;mut </span><span class="self">self</span>, topic_hash: <span class="kw-2">&amp;</span>TopicHash) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Running LEAVE for topic {:?}&quot;</span>, topic_hash);
+        <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Running LEAVE for topic&quot;</span>);
 
         <span class="comment">// If our mesh contains the topic, send prune to peers and delete it from the mesh
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>((<span class="kw">_</span>, peers)) = <span class="self">self</span>.mesh.remove_entry(topic_hash) {
@@ -4997,7 +4951,7 @@
             }
             <span class="kw">for </span>peer <span class="kw">in </span>peers {
                 <span class="comment">// Send a PRUNE control message
-                </span><span class="macro">debug!</span>(<span class="string">&quot;LEAVE: Sending PRUNE to peer: {:?}&quot;</span>, peer);
+                </span><span class="macro">tracing::debug!</span>(%peer, <span class="string">&quot;LEAVE: Sending PRUNE to peer&quot;</span>);
                 <span class="kw">let </span>on_unsubscribe = <span class="bool-val">true</span>;
                 <span class="kw">let </span>control =
                     <span class="self">self</span>.make_prune(topic_hash, <span class="kw-2">&amp;</span>peer, <span class="self">self</span>.config.do_px(), on_unsubscribe);
@@ -5014,14 +4968,14 @@
                 );
             }
         }
-        <span class="macro">debug!</span>(<span class="string">&quot;Completed LEAVE for topic: {:?}&quot;</span>, topic_hash);
+        <span class="macro">tracing::debug!</span>(topic=%topic_hash, <span class="string">&quot;Completed LEAVE for topic&quot;</span>);
     }
 
     <span class="doccomment">/// Checks if the given peer is still connected and if not dials the peer again.
     </span><span class="kw">fn </span>check_explicit_peer_connection(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId) {
         <span class="kw">if </span>!<span class="self">self</span>.peer_topics.contains_key(peer_id) {
             <span class="comment">// Connect to peer
-            </span><span class="macro">debug!</span>(<span class="string">&quot;Connecting to explicit peer {:?}&quot;</span>, peer_id);
+            </span><span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Connecting to explicit peer&quot;</span>);
             <span class="self">self</span>.events.push_back(ToSwarm::Dial {
                 opts: DialOpts::peer_id(<span class="kw-2">*</span>peer_id).build(),
             });
@@ -5059,10 +5013,11 @@
     </span><span class="kw">fn </span>handle_ihave(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId, ihave_msgs: Vec&lt;(TopicHash, Vec&lt;MessageId&gt;)&gt;) {
         <span class="comment">// We ignore IHAVE gossip from any peer whose score is below the gossip threshold
         </span><span class="kw">if let </span>(<span class="bool-val">true</span>, score) = <span class="self">self</span>.score_below_threshold(peer_id, |pst| pst.gossip_threshold) {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;IHAVE: ignoring peer {:?} with score below threshold [score = {}]&quot;</span>,
-                peer_id, score
-            );
+            <span class="macro">tracing::debug!</span>(
+                peer=%peer_id,
+                %score,
+                <span class="string">&quot;IHAVE: ignoring peer with score below threshold&quot;
+            </span>);
             <span class="kw">return</span>;
         }
 
@@ -5070,25 +5025,27 @@
         </span><span class="kw">let </span>peer_have = <span class="self">self</span>.count_received_ihave.entry(<span class="kw-2">*</span>peer_id).or_insert(<span class="number">0</span>);
         <span class="kw-2">*</span>peer_have += <span class="number">1</span>;
         <span class="kw">if </span><span class="kw-2">*</span>peer_have &gt; <span class="self">self</span>.config.max_ihave_messages() {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;IHAVE: peer {} has advertised too many times ({}) within this heartbeat \
+            <span class="macro">tracing::debug!</span>(
+                peer=%peer_id,
+                <span class="string">&quot;IHAVE: peer has advertised too many times ({}) within this heartbeat \
             interval; ignoring&quot;</span>,
-                peer_id, <span class="kw-2">*</span>peer_have
+                <span class="kw-2">*</span>peer_have
             );
             <span class="kw">return</span>;
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(iasked) = <span class="self">self</span>.count_sent_iwant.get(peer_id) {
             <span class="kw">if </span><span class="kw-2">*</span>iasked &gt;= <span class="self">self</span>.config.max_ihave_length() {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;IHAVE: peer {} has already advertised too many messages ({}); ignoring&quot;</span>,
-                    peer_id, <span class="kw-2">*</span>iasked
+                <span class="macro">tracing::debug!</span>(
+                    peer=%peer_id,
+                    <span class="string">&quot;IHAVE: peer has already advertised too many messages ({}); ignoring&quot;</span>,
+                    <span class="kw-2">*</span>iasked
                 );
                 <span class="kw">return</span>;
             }
         }
 
-        <span class="macro">trace!</span>(<span class="string">&quot;Handling IHAVE for peer: {:?}&quot;</span>, peer_id);
+        <span class="macro">tracing::trace!</span>(peer=%peer_id, <span class="string">&quot;Handling IHAVE for peer&quot;</span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>iwant_ids = HashSet::new();
 
@@ -5110,10 +5067,10 @@
         <span class="kw">for </span>(topic, ids) <span class="kw">in </span>ihave_msgs {
             <span class="comment">// only process the message if we are subscribed
             </span><span class="kw">if </span>!<span class="self">self</span>.mesh.contains_key(<span class="kw-2">&amp;</span>topic) {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;IHAVE: Ignoring IHAVE - Not subscribed to topic: {:?}&quot;</span>,
-                    topic
-                );
+                <span class="macro">tracing::debug!</span>(
+                    %topic,
+                    <span class="string">&quot;IHAVE: Ignoring IHAVE - Not subscribed to topic&quot;
+                </span>);
                 <span class="kw">continue</span>;
             }
 
@@ -5136,11 +5093,11 @@
             }
 
             <span class="comment">// Send the list of IWANT control messages
-            </span><span class="macro">debug!</span>(
-                <span class="string">&quot;IHAVE: Asking for {} out of {} messages from {}&quot;</span>,
+            </span><span class="macro">tracing::debug!</span>(
+                peer=%peer_id,
+                <span class="string">&quot;IHAVE: Asking for {} out of {} messages from peer&quot;</span>,
                 iask,
-                iwant_ids.len(),
-                peer_id
+                iwant_ids.len()
             );
 
             <span class="comment">// Ask in random order
@@ -5163,9 +5120,9 @@
                     Instant::now() + <span class="self">self</span>.config.iwant_followup_time(),
                 );
             }
-            <span class="macro">trace!</span>(
-                <span class="string">&quot;IHAVE: Asking for the following messages from {}: {:?}&quot;</span>,
-                peer_id,
+            <span class="macro">tracing::trace!</span>(
+                peer=%peer_id,
+                <span class="string">&quot;IHAVE: Asking for the following messages from peer: {:?}&quot;</span>,
                 iwant_ids_vec
             );
 
@@ -5177,7 +5134,7 @@
                 },
             );
         }
-        <span class="macro">trace!</span>(<span class="string">&quot;Completed IHAVE handling for peer: {:?}&quot;</span>, peer_id);
+        <span class="macro">tracing::trace!</span>(peer=%peer_id, <span class="string">&quot;Completed IHAVE handling for peer&quot;</span>);
     }
 
     <span class="doccomment">/// Handles an IWANT control message. Checks our cache of messages. If the message exists it is
@@ -5185,14 +5142,15 @@
     </span><span class="kw">fn </span>handle_iwant(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId, iwant_msgs: Vec&lt;MessageId&gt;) {
         <span class="comment">// We ignore IWANT gossip from any peer whose score is below the gossip threshold
         </span><span class="kw">if let </span>(<span class="bool-val">true</span>, score) = <span class="self">self</span>.score_below_threshold(peer_id, |pst| pst.gossip_threshold) {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;IWANT: ignoring peer {:?} with score below threshold [score = {}]&quot;</span>,
-                peer_id, score
+            <span class="macro">tracing::debug!</span>(
+                peer=%peer_id,
+                <span class="string">&quot;IWANT: ignoring peer with score below threshold [score = {}]&quot;</span>,
+                score
             );
             <span class="kw">return</span>;
         }
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Handling IWANT for peer: {:?}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Handling IWANT for peer&quot;</span>);
         <span class="comment">// build a hashmap of available messages
         </span><span class="kw">let </span><span class="kw-2">mut </span>cached_messages = HashMap::new();
 
@@ -5201,11 +5159,11 @@
             // cached_messages mapping
             </span><span class="kw">if let </span><span class="prelude-val">Some</span>((msg, count)) = <span class="self">self</span>.mcache.get_with_iwant_counts(<span class="kw-2">&amp;</span>id, peer_id) {
                 <span class="kw">if </span>count &gt; <span class="self">self</span>.config.gossip_retransimission() {
-                    <span class="macro">debug!</span>(
-                        <span class="string">&quot;IWANT: Peer {} has asked for message {} too many times; ignoring \
-                    request&quot;</span>,
-                        peer_id, <span class="kw-2">&amp;</span>id
-                    );
+                    <span class="macro">tracing::debug!</span>(
+                        peer=%peer_id,
+                        message=%id,
+                        <span class="string">&quot;IWANT: Peer has asked for message too many times; ignoring request&quot;
+                    </span>);
                 } <span class="kw">else </span>{
                     cached_messages.insert(id.clone(), msg.clone());
                 }
@@ -5213,7 +5171,7 @@
         }
 
         <span class="kw">if </span>!cached_messages.is_empty() {
-            <span class="macro">debug!</span>(<span class="string">&quot;IWANT: Sending cached messages to peer: {:?}&quot;</span>, peer_id);
+            <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;IWANT: Sending cached messages to peer&quot;</span>);
             <span class="comment">// Send the messages to the peer
             </span><span class="kw">let </span>message_list: Vec&lt;<span class="kw">_</span>&gt; = cached_messages.into_iter().map(|entry| entry.<span class="number">1</span>).collect();
 
@@ -5232,7 +5190,7 @@
             <span class="kw">let </span>msg_bytes = message.get_size();
 
             <span class="kw">if </span><span class="self">self</span>.send_message(<span class="kw-2">*</span>peer_id, message).is_err() {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to send cached messages. Messages too large&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to send cached messages. Messages too large&quot;</span>);
             } <span class="kw">else if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                 <span class="comment">// Sending of messages succeeded, register them on the internal metrics.
                 </span><span class="kw">for </span>topic <span class="kw">in </span>topics.iter() {
@@ -5240,13 +5198,13 @@
                 }
             }
         }
-        <span class="macro">debug!</span>(<span class="string">&quot;Completed IWANT handling for peer: {}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Completed IWANT handling for peer&quot;</span>);
     }
 
     <span class="doccomment">/// Handles GRAFT control messages. If subscribed to the topic, adds the peer to mesh, if not,
     /// responds with PRUNE messages.
     </span><span class="kw">fn </span>handle_graft(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer_id: <span class="kw-2">&amp;</span>PeerId, topics: Vec&lt;TopicHash&gt;) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Handling GRAFT message for peer: {}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Handling GRAFT message for peer&quot;</span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>to_prune_topics = HashSet::new();
 
@@ -5267,7 +5225,7 @@
 
         <span class="comment">// we don&#39;t GRAFT to/from explicit peers; complain loudly if this happens
         </span><span class="kw">if </span><span class="self">self</span>.explicit_peers.contains(peer_id) {
-            <span class="macro">warn!</span>(<span class="string">&quot;GRAFT: ignoring request from direct peer {}&quot;</span>, peer_id);
+            <span class="macro">tracing::warn!</span>(peer=%peer_id, <span class="string">&quot;GRAFT: ignoring request from direct peer&quot;</span>);
             <span class="comment">// this is possibly a bug from non-reciprocal configuration; send a PRUNE for all topics
             </span>to_prune_topics = topics.into_iter().collect();
             <span class="comment">// but don&#39;t PX
@@ -5279,10 +5237,11 @@
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(peers) = <span class="self">self</span>.mesh.get_mut(<span class="kw-2">&amp;</span>topic_hash) {
                     <span class="comment">// if the peer is already in the mesh ignore the graft
                     </span><span class="kw">if </span>peers.contains(peer_id) {
-                        <span class="macro">debug!</span>(
-                            <span class="string">&quot;GRAFT: Received graft for peer {:?} that is already in topic {:?}&quot;</span>,
-                            peer_id, <span class="kw-2">&amp;</span>topic_hash
-                        );
+                        <span class="macro">tracing::debug!</span>(
+                            peer=%peer_id,
+                            topic=%<span class="kw-2">&amp;</span>topic_hash,
+                            <span class="string">&quot;GRAFT: Received graft for peer that is already in topic&quot;
+                        </span>);
                         <span class="kw">continue</span>;
                     }
 
@@ -5290,10 +5249,10 @@
                     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(backoff_time) = <span class="self">self</span>.backoffs.get_backoff_time(<span class="kw-2">&amp;</span>topic_hash, peer_id)
                     {
                         <span class="kw">if </span>backoff_time &gt; now {
-                            <span class="macro">warn!</span>(
-                                <span class="string">&quot;[Penalty] Peer attempted graft within backoff time, penalizing {}&quot;</span>,
-                                peer_id
-                            );
+                            <span class="macro">tracing::warn!</span>(
+                                peer=%peer_id,
+                                <span class="string">&quot;[Penalty] Peer attempted graft within backoff time, penalizing&quot;
+                            </span>);
                             <span class="comment">// add behavioural penalty
                             </span><span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, ..)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics) = <span class="self">self</span>.metrics.as_mut() {
@@ -5323,11 +5282,12 @@
                     <span class="comment">// check the score
                     </span><span class="kw">if </span>below_zero {
                         <span class="comment">// we don&#39;t GRAFT peers with negative score
-                        </span><span class="macro">debug!</span>(
-                            <span class="string">&quot;GRAFT: ignoring peer {:?} with negative score [score = {}, \
-                        topic = {}]&quot;</span>,
-                            peer_id, score, topic_hash
-                        );
+                        </span><span class="macro">tracing::debug!</span>(
+                            peer=%peer_id,
+                            %score,
+                            topic=%topic_hash,
+                            <span class="string">&quot;GRAFT: ignoring peer with negative score&quot;
+                        </span>);
                         <span class="comment">// we do send them PRUNE however, because it&#39;s a matter of protocol correctness
                         </span>to_prune_topics.insert(topic_hash.clone());
                         <span class="comment">// but we won&#39;t PX to them
@@ -5345,10 +5305,11 @@
                     }
 
                     <span class="comment">// add peer to the mesh
-                    </span><span class="macro">debug!</span>(
-                        <span class="string">&quot;GRAFT: Mesh link added for peer: {:?} in topic: {:?}&quot;</span>,
-                        peer_id, <span class="kw-2">&amp;</span>topic_hash
-                    );
+                    </span><span class="macro">tracing::debug!</span>(
+                        peer=%peer_id,
+                        topic=%topic_hash,
+                        <span class="string">&quot;GRAFT: Mesh link added for peer in topic&quot;
+                    </span>);
 
                     <span class="kw">if </span>peers.insert(<span class="kw-2">*</span>peer_id) {
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
@@ -5372,10 +5333,11 @@
                 } <span class="kw">else </span>{
                     <span class="comment">// don&#39;t do PX when there is an unknown topic to avoid leaking our peers
                     </span>do_px = <span class="bool-val">false</span>;
-                    <span class="macro">debug!</span>(
-                        <span class="string">&quot;GRAFT: Received graft for unknown topic {:?} from peer {:?}&quot;</span>,
-                        <span class="kw-2">&amp;</span>topic_hash, peer_id
-                    );
+                    <span class="macro">tracing::debug!</span>(
+                        peer=%peer_id,
+                        topic=%topic_hash,
+                        <span class="string">&quot;GRAFT: Received graft for unknown topic from peer&quot;
+                    </span>);
                     <span class="comment">// spam hardening: ignore GRAFTs for unknown topics
                     </span><span class="kw">continue</span>;
                 }
@@ -5390,10 +5352,10 @@
                 .map(|t| <span class="self">self</span>.make_prune(t, peer_id, do_px, on_unsubscribe))
                 .collect();
             <span class="comment">// Send the prune messages to the peer
-            </span><span class="macro">debug!</span>(
-                <span class="string">&quot;GRAFT: Not subscribed to topics -  Sending PRUNE to peer: {}&quot;</span>,
-                peer_id
-            );
+            </span><span class="macro">tracing::debug!</span>(
+                peer=%peer_id,
+                <span class="string">&quot;GRAFT: Not subscribed to topics -  Sending PRUNE to peer&quot;
+            </span>);
 
             <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = <span class="self">self</span>.send_message(
                 <span class="kw-2">*</span>peer_id,
@@ -5404,10 +5366,10 @@
                 }
                 .into_protobuf(),
             ) {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to send PRUNE: {:?}&quot;</span>, e);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to send PRUNE: {:?}&quot;</span>, e);
             }
         }
-        <span class="macro">debug!</span>(<span class="string">&quot;Completed GRAFT handling for peer: {}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Completed GRAFT handling for peer&quot;</span>);
     }
 
     <span class="kw">fn </span>remove_peer_from_mesh(
@@ -5422,11 +5384,11 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(peers) = <span class="self">self</span>.mesh.get_mut(topic_hash) {
             <span class="comment">// remove the peer if it exists in the mesh
             </span><span class="kw">if </span>peers.remove(peer_id) {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;PRUNE: Removing peer: {} from the mesh for topic: {}&quot;</span>,
-                    peer_id.to_string(),
-                    topic_hash
-                );
+                <span class="macro">tracing::debug!</span>(
+                    peer=%peer_id,
+                    topic=%topic_hash,
+                    <span class="string">&quot;PRUNE: Removing peer from the mesh for topic&quot;
+                </span>);
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                     m.peers_removed(topic_hash, reason, <span class="number">1</span>)
                 }
@@ -5465,7 +5427,7 @@
         peer_id: <span class="kw-2">&amp;</span>PeerId,
         prune_data: Vec&lt;(TopicHash, Vec&lt;PeerInfo&gt;, <span class="prelude-ty">Option</span>&lt;u64&gt;)&gt;,
     ) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Handling PRUNE message for peer: {}&quot;</span>, peer_id);
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Handling PRUNE message for peer&quot;</span>);
         <span class="kw">let </span>(below_threshold, score) =
             <span class="self">self</span>.score_below_threshold(peer_id, |pst| pst.accept_px_threshold);
         <span class="kw">for </span>(topic_hash, px, backoff) <span class="kw">in </span>prune_data {
@@ -5476,11 +5438,12 @@
                 </span><span class="kw">if </span>!px.is_empty() {
                     <span class="comment">// we ignore PX from peers with insufficient score
                     </span><span class="kw">if </span>below_threshold {
-                        <span class="macro">debug!</span>(
-                            <span class="string">&quot;PRUNE: ignoring PX from peer {:?} with insufficient score \
-                             [score ={} topic = {}]&quot;</span>,
-                            peer_id, score, topic_hash
-                        );
+                        <span class="macro">tracing::debug!</span>(
+                            peer=%peer_id,
+                            %score,
+                            topic=%topic_hash,
+                            <span class="string">&quot;PRUNE: ignoring PX from peer with insufficient score&quot;
+                        </span>);
                         <span class="kw">continue</span>;
                     }
 
@@ -5496,7 +5459,7 @@
                 }
             }
         }
-        <span class="macro">debug!</span>(<span class="string">&quot;Completed PRUNE handling for peer: {}&quot;</span>, peer_id.to_string());
+        <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Completed PRUNE handling for peer&quot;</span>);
     }
 
     <span class="kw">fn </span>px_connect(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw-2">mut </span>px: Vec&lt;PeerInfo&gt;) {
@@ -5536,18 +5499,18 @@
         raw_message: <span class="kw-2">&amp;mut </span>RawMessage,
         propagation_source: <span class="kw-2">&amp;</span>PeerId,
     ) -&gt; bool {
-        <span class="macro">debug!</span>(
-            <span class="string">&quot;Handling message: {:?} from peer: {}&quot;</span>,
-            msg_id,
-            propagation_source.to_string()
-        );
+        <span class="macro">tracing::debug!</span>(
+            peer=%propagation_source,
+            message=%msg_id,
+            <span class="string">&quot;Handling message from peer&quot;
+        </span>);
 
         <span class="comment">// Reject any message from a blacklisted peer
         </span><span class="kw">if </span><span class="self">self</span>.blacklisted_peers.contains(propagation_source) {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;Rejecting message from blacklisted peer: {}&quot;</span>,
-                propagation_source
-            );
+            <span class="macro">tracing::debug!</span>(
+                peer=%propagation_source,
+                <span class="string">&quot;Rejecting message from blacklisted peer&quot;
+            </span>);
             <span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, .., gossip_promises)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
                 peer_score.reject_message(
                     propagation_source,
@@ -5563,10 +5526,11 @@
         <span class="comment">// Also reject any message that originated from a blacklisted peer
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(source) = raw_message.source.as_ref() {
             <span class="kw">if </span><span class="self">self</span>.blacklisted_peers.contains(source) {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;Rejecting message from peer {} because of blacklisted source: {}&quot;</span>,
-                    propagation_source, source
-                );
+                <span class="macro">tracing::debug!</span>(
+                    peer=%propagation_source,
+                    %source,
+                    <span class="string">&quot;Rejecting message from peer because of blacklisted source&quot;
+                </span>);
                 <span class="self">self</span>.handle_invalid_message(
                     propagation_source,
                     raw_message,
@@ -5593,10 +5557,11 @@
             };
 
         <span class="kw">if </span>self_published {
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;Dropping message {} claiming to be from self but forwarded from {}&quot;</span>,
-                msg_id, propagation_source
-            );
+            <span class="macro">tracing::debug!</span>(
+                message=%msg_id,
+                source=%propagation_source,
+                <span class="string">&quot;Dropping message claiming to be from self but forwarded from source&quot;
+            </span>);
             <span class="self">self</span>.handle_invalid_message(propagation_source, raw_message, RejectReason::SelfOrigin);
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
@@ -5617,36 +5582,11 @@
             metrics.msg_recvd_unfiltered(<span class="kw-2">&amp;</span>raw_message.topic, raw_message.raw_protobuf_len());
         }
 
-        <span class="kw">let </span>fast_message_id = <span class="self">self</span>.config.fast_message_id(<span class="kw-2">&amp;</span>raw_message);
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(fast_message_id) = fast_message_id.as_ref() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(msg_id) = <span class="self">self</span>.fast_message_id_cache.get(fast_message_id) {
-                <span class="kw">let </span>msg_id = msg_id.clone();
-                <span class="comment">// Report the duplicate
-                </span><span class="kw">if </span><span class="self">self</span>.message_is_valid(<span class="kw-2">&amp;</span>msg_id, <span class="kw-2">&amp;mut </span>raw_message, propagation_source) {
-                    <span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, ..)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
-                        peer_score.duplicated_message(
-                            propagation_source,
-                            <span class="kw-2">&amp;</span>msg_id,
-                            <span class="kw-2">&amp;</span>raw_message.topic,
-                        );
-                    }
-                    <span class="comment">// Update the cache, informing that we have received a duplicate from another peer.
-                    // The peers in this cache are used to prevent us forwarding redundant messages onto
-                    // these peers.
-                    </span><span class="self">self</span>.mcache.observe_duplicate(<span class="kw-2">&amp;</span>msg_id, propagation_source);
-                }
-
-                <span class="comment">// This message has been seen previously. Ignore it
-                </span><span class="kw">return</span>;
-            }
-        }
-
         <span class="comment">// Try and perform the data transform to the message. If it fails, consider it invalid.
         </span><span class="kw">let </span>message = <span class="kw">match </span><span class="self">self</span>.data_transform.inbound_transform(raw_message.clone()) {
             <span class="prelude-val">Ok</span>(message) =&gt; message,
             <span class="prelude-val">Err</span>(e) =&gt; {
-                <span class="macro">debug!</span>(<span class="string">&quot;Invalid message. Transform error: {:?}&quot;</span>, e);
+                <span class="macro">tracing::debug!</span>(<span class="string">&quot;Invalid message. Transform error: {:?}&quot;</span>, e);
                 <span class="comment">// Reject the message and return
                 </span><span class="self">self</span>.handle_invalid_message(
                     propagation_source,
@@ -5667,26 +5607,18 @@
             <span class="kw">return</span>;
         }
 
-        <span class="comment">// Add the message to the duplicate caches
-        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(fast_message_id) = fast_message_id {
-            <span class="comment">// add id to cache
-            </span><span class="self">self</span>.fast_message_id_cache
-                .entry(fast_message_id)
-                .or_insert_with(|| msg_id.clone());
-        }
-
         <span class="kw">if </span>!<span class="self">self</span>.duplicate_cache.insert(msg_id.clone()) {
-            <span class="macro">debug!</span>(<span class="string">&quot;Message already received, ignoring. Message: {}&quot;</span>, msg_id);
+            <span class="macro">tracing::debug!</span>(message=%msg_id, <span class="string">&quot;Message already received, ignoring&quot;</span>);
             <span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, ..)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
                 peer_score.duplicated_message(propagation_source, <span class="kw-2">&amp;</span>msg_id, <span class="kw-2">&amp;</span>message.topic);
             }
             <span class="self">self</span>.mcache.observe_duplicate(<span class="kw-2">&amp;</span>msg_id, propagation_source);
             <span class="kw">return</span>;
         }
-        <span class="macro">debug!</span>(
-            <span class="string">&quot;Put message {:?} in duplicate_cache and resolve promises&quot;</span>,
-            msg_id
-        );
+        <span class="macro">tracing::debug!</span>(
+            message=%msg_id,
+            <span class="string">&quot;Put message in duplicate_cache and resolve promises&quot;
+        </span>);
 
         <span class="comment">// Record the received message with the metrics
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(metrics) = <span class="self">self</span>.metrics.as_mut() {
@@ -5705,7 +5637,7 @@
 
         <span class="comment">// Dispatch the message to the user if we are subscribed to any of the topics
         </span><span class="kw">if </span><span class="self">self</span>.mesh.contains_key(<span class="kw-2">&amp;</span>message.topic) {
-            <span class="macro">debug!</span>(<span class="string">&quot;Sending received message to user&quot;</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Sending received message to user&quot;</span>);
             <span class="self">self</span>.events
                 .push_back(ToSwarm::GenerateEvent(Event::Message {
                     propagation_source: <span class="kw-2">*</span>propagation_source,
@@ -5713,10 +5645,10 @@
                     message,
                 }));
         } <span class="kw">else </span>{
-            <span class="macro">debug!</span>(
-                <span class="string">&quot;Received message on a topic we are not subscribed to: {:?}&quot;</span>,
-                message.topic
-            );
+            <span class="macro">tracing::debug!</span>(
+                topic=%message.topic,
+                <span class="string">&quot;Received message on a topic we are not subscribed to&quot;
+            </span>);
             <span class="kw">return</span>;
         }
 
@@ -5731,9 +5663,9 @@
                 )
                 .is_err()
             {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to forward message. Too large&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to forward message. Too large&quot;</span>);
             }
-            <span class="macro">debug!</span>(<span class="string">&quot;Completed message handling for message: {:?}&quot;</span>, msg_id);
+            <span class="macro">tracing::debug!</span>(message=%msg_id, <span class="string">&quot;Completed message handling for message&quot;</span>);
         }
     }
 
@@ -5749,20 +5681,17 @@
                 metrics.register_invalid_message(<span class="kw-2">&amp;</span>raw_message.topic);
             }
 
-            <span class="kw">let </span>fast_message_id_cache = <span class="kw-2">&amp;</span><span class="self">self</span>.fast_message_id_cache;
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(message) = <span class="self">self</span>.data_transform.inbound_transform(raw_message.clone()) {
+                <span class="kw">let </span>message_id = <span class="self">self</span>.config.message_id(<span class="kw-2">&amp;</span>message);
 
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(msg_id) = <span class="self">self
-                </span>.config
-                .fast_message_id(raw_message)
-                .and_then(|id| fast_message_id_cache.get(<span class="kw-2">&amp;</span>id))
-            {
                 peer_score.reject_message(
                     propagation_source,
-                    msg_id,
-                    <span class="kw-2">&amp;</span>raw_message.topic,
+                    <span class="kw-2">&amp;</span>message_id,
+                    <span class="kw-2">&amp;</span>message.topic,
                     reject_reason,
                 );
-                gossip_promises.reject_message(msg_id, <span class="kw-2">&amp;</span>reject_reason);
+
+                gossip_promises.reject_message(<span class="kw-2">&amp;</span>message_id, <span class="kw-2">&amp;</span>reject_reason);
             } <span class="kw">else </span>{
                 <span class="comment">// The message is invalid, we reject it ignoring any gossip promises. If a peer is
                 // advertising this message via an IHAVE and it&#39;s invalid it will be double
@@ -5778,10 +5707,10 @@
         subscriptions: <span class="kw-2">&amp;</span>[Subscription],
         propagation_source: <span class="kw-2">&amp;</span>PeerId,
     ) {
-        <span class="macro">debug!</span>(
-            <span class="string">&quot;Handling subscriptions: {:?}, from source: {}&quot;</span>,
+        <span class="macro">tracing::debug!</span>(
+            source=%propagation_source,
+            <span class="string">&quot;Handling subscriptions: {:?}&quot;</span>,
             subscriptions,
-            propagation_source.to_string()
         );
 
         <span class="kw">let </span><span class="kw-2">mut </span>unsubscribed_peers = Vec::new();
@@ -5789,10 +5718,10 @@
         <span class="kw">let </span>subscribed_topics = <span class="kw">match </span><span class="self">self</span>.peer_topics.get_mut(propagation_source) {
             <span class="prelude-val">Some</span>(topics) =&gt; topics,
             <span class="prelude-val">None </span>=&gt; {
-                <span class="macro">error!</span>(
-                    <span class="string">&quot;Subscription by unknown peer: {}&quot;</span>,
-                    propagation_source.to_string()
-                );
+                <span class="macro">tracing::error!</span>(
+                    peer=%propagation_source,
+                    <span class="string">&quot;Subscription by unknown peer&quot;
+                </span>);
                 <span class="kw">return</span>;
             }
         };
@@ -5809,10 +5738,10 @@
         {
             <span class="prelude-val">Ok</span>(topics) =&gt; topics,
             <span class="prelude-val">Err</span>(s) =&gt; {
-                <span class="macro">error!</span>(
-                    <span class="string">&quot;Subscription filter error: {}; ignoring RPC from peer {}&quot;</span>,
-                    s,
-                    propagation_source.to_string()
+                <span class="macro">tracing::error!</span>(
+                    peer=%propagation_source,
+                    <span class="string">&quot;Subscription filter error: {}; ignoring RPC from peer&quot;</span>,
+                    s
                 );
                 <span class="kw">return</span>;
             }
@@ -5826,11 +5755,11 @@
             <span class="kw">match </span>subscription.action {
                 SubscriptionAction::Subscribe =&gt; {
                     <span class="kw">if </span>peer_list.insert(<span class="kw-2">*</span>propagation_source) {
-                        <span class="macro">debug!</span>(
-                            <span class="string">&quot;SUBSCRIPTION: Adding gossip peer: {} to topic: {:?}&quot;</span>,
-                            propagation_source.to_string(),
-                            topic_hash
-                        );
+                        <span class="macro">tracing::debug!</span>(
+                            peer=%propagation_source,
+                            topic=%topic_hash,
+                            <span class="string">&quot;SUBSCRIPTION: Adding gossip peer to topic&quot;
+                        </span>);
                     }
 
                     <span class="comment">// add to the peer_topics mapping
@@ -5858,20 +5787,20 @@
                             <span class="kw">if </span>peers.len() &lt; <span class="self">self</span>.config.mesh_n_low()
                                 &amp;&amp; peers.insert(<span class="kw-2">*</span>propagation_source)
                             {
-                                <span class="macro">debug!</span>(
-                                    <span class="string">&quot;SUBSCRIPTION: Adding peer {} to the mesh for topic {:?}&quot;</span>,
-                                    propagation_source.to_string(),
-                                    topic_hash
-                                );
+                                <span class="macro">tracing::debug!</span>(
+                                    peer=%propagation_source,
+                                    topic=%topic_hash,
+                                    <span class="string">&quot;SUBSCRIPTION: Adding peer to the mesh for topic&quot;
+                                </span>);
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                                     m.peers_included(topic_hash, Inclusion::Subscribed, <span class="number">1</span>)
                                 }
                                 <span class="comment">// send graft to the peer
-                                </span><span class="macro">debug!</span>(
-                                    <span class="string">&quot;Sending GRAFT to peer {} for topic {:?}&quot;</span>,
-                                    propagation_source.to_string(),
-                                    topic_hash
-                                );
+                                </span><span class="macro">tracing::debug!</span>(
+                                    peer=%propagation_source,
+                                    topic=%topic_hash,
+                                    <span class="string">&quot;Sending GRAFT to peer for topic&quot;
+                                </span>);
                                 <span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, ..)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
                                     peer_score.graft(propagation_source, topic_hash.clone());
                                 }
@@ -5887,11 +5816,11 @@
                 }
                 SubscriptionAction::Unsubscribe =&gt; {
                     <span class="kw">if </span>peer_list.remove(propagation_source) {
-                        <span class="macro">debug!</span>(
-                            <span class="string">&quot;SUBSCRIPTION: Removing gossip peer: {} from topic: {:?}&quot;</span>,
-                            propagation_source.to_string(),
-                            topic_hash
-                        );
+                        <span class="macro">tracing::debug!</span>(
+                            peer=%propagation_source,
+                            topic=%topic_hash,
+                            <span class="string">&quot;SUBSCRIPTION: Removing gossip peer from topic&quot;
+                        </span>);
                     }
 
                     <span class="comment">// remove topic from the peer_topics mapping
@@ -5946,7 +5875,7 @@
                 )
                 .is_err()
         {
-            <span class="macro">error!</span>(<span class="string">&quot;Failed sending grafts. Message too large&quot;</span>);
+            <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed sending grafts. Message too large&quot;</span>);
         }
 
         <span class="comment">// Notify the application of the subscriptions
@@ -5954,10 +5883,10 @@
             <span class="self">self</span>.events.push_back(event);
         }
 
-        <span class="macro">trace!</span>(
-            <span class="string">&quot;Completed handling subscriptions from source: {:?}&quot;</span>,
-            propagation_source
-        );
+        <span class="macro">tracing::trace!</span>(
+            source=%propagation_source,
+            <span class="string">&quot;Completed handling subscriptions from source&quot;
+        </span>);
     }
 
     <span class="doccomment">/// Applies penalties to peers that did not respond to our IWANT requests.
@@ -5974,7 +5903,7 @@
 
     <span class="doccomment">/// Heartbeat function which shifts the memcache and updates the mesh.
     </span><span class="kw">fn </span>heartbeat(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="macro">debug!</span>(<span class="string">&quot;Starting heartbeat&quot;</span>);
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Starting heartbeat&quot;</span>);
         <span class="kw">let </span>start = Instant::now();
 
         <span class="self">self</span>.heartbeat_ticks += <span class="number">1</span>;
@@ -6030,11 +5959,12 @@
                 }
 
                 <span class="kw">if </span>peer_score &lt; <span class="number">0.0 </span>{
-                    <span class="macro">debug!</span>(
-                        <span class="string">&quot;HEARTBEAT: Prune peer {:?} with negative score [score = {}, topic = \
-                             {}]&quot;</span>,
-                        peer_id, peer_score, topic_hash
-                    );
+                    <span class="macro">tracing::debug!</span>(
+                        peer=%peer_id,
+                        score=%peer_score,
+                        topic=%topic_hash,
+                        <span class="string">&quot;HEARTBEAT: Prune peer with negative score&quot;
+                    </span>);
 
                     <span class="kw">let </span>current_topic = to_prune.entry(<span class="kw-2">*</span>peer_id).or_insert_with(Vec::new);
                     current_topic.push(topic_hash.clone());
@@ -6053,9 +5983,9 @@
 
             <span class="comment">// too little peers - add some
             </span><span class="kw">if </span>peers.len() &lt; <span class="self">self</span>.config.mesh_n_low() {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;HEARTBEAT: Mesh low. Topic: {} Contains: {} needs: {}&quot;</span>,
-                    topic_hash,
+                <span class="macro">tracing::debug!</span>(
+                    topic=%topic_hash,
+                    <span class="string">&quot;HEARTBEAT: Mesh low. Topic contains: {} needs: {}&quot;</span>,
                     peers.len(),
                     <span class="self">self</span>.config.mesh_n_low()
                 );
@@ -6078,7 +6008,7 @@
                     current_topic.push(topic_hash.clone());
                 }
                 <span class="comment">// update the mesh
-                </span><span class="macro">debug!</span>(<span class="string">&quot;Updating mesh, new mesh: {:?}&quot;</span>, peer_list);
+                </span><span class="macro">tracing::debug!</span>(<span class="string">&quot;Updating mesh, new mesh: {:?}&quot;</span>, peer_list);
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                     m.peers_included(topic_hash, Inclusion::Random, peer_list.len())
                 }
@@ -6087,9 +6017,9 @@
 
             <span class="comment">// too many peers - remove some
             </span><span class="kw">if </span>peers.len() &gt; <span class="self">self</span>.config.mesh_n_high() {
-                <span class="macro">debug!</span>(
-                    <span class="string">&quot;HEARTBEAT: Mesh high. Topic: {} Contains: {} needs: {}&quot;</span>,
-                    topic_hash,
+                <span class="macro">tracing::debug!</span>(
+                    topic=%topic_hash,
+                    <span class="string">&quot;HEARTBEAT: Mesh high. Topic contains: {} needs: {}&quot;</span>,
                     peers.len(),
                     <span class="self">self</span>.config.mesh_n_high()
                 );
@@ -6172,7 +6102,7 @@
                         current_topic.push(topic_hash.clone());
                     }
                     <span class="comment">// update the mesh
-                    </span><span class="macro">debug!</span>(<span class="string">&quot;Updating mesh, new mesh: {:?}&quot;</span>, peer_list);
+                    </span><span class="macro">tracing::debug!</span>(<span class="string">&quot;Updating mesh, new mesh: {:?}&quot;</span>, peer_list);
                     <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                         m.peers_included(topic_hash, Inclusion::Outbound, peer_list.len())
                     }
@@ -6239,9 +6169,10 @@
                             current_topic.push(topic_hash.clone());
                         }
                         <span class="comment">// update the mesh
-                        </span><span class="macro">debug!</span>(
-                            <span class="string">&quot;Opportunistically graft in topic {} with peers {:?}&quot;</span>,
-                            topic_hash, peer_list
+                        </span><span class="macro">tracing::debug!</span>(
+                            topic=%topic_hash,
+                            <span class="string">&quot;Opportunistically graft in topic with peers {:?}&quot;</span>,
+                            peer_list
                         );
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                             m.peers_included(topic_hash, Inclusion::Random, peer_list.len())
@@ -6262,10 +6193,10 @@
             </span><span class="kw">let </span>fanout_ttl = <span class="self">self</span>.config.fanout_ttl();
             <span class="self">self</span>.fanout_last_pub.retain(|topic_hash, last_pub_time| {
                 <span class="kw">if </span><span class="kw-2">*</span>last_pub_time + fanout_ttl &lt; Instant::now() {
-                    <span class="macro">debug!</span>(
-                        <span class="string">&quot;HEARTBEAT: Fanout topic removed due to timeout. Topic: {:?}&quot;</span>,
-                        topic_hash
-                    );
+                    <span class="macro">tracing::debug!</span>(
+                        topic=%topic_hash,
+                        <span class="string">&quot;HEARTBEAT: Fanout topic removed due to timeout&quot;
+                    </span>);
                     fanout.remove(topic_hash);
                     <span class="kw">return </span><span class="bool-val">false</span>;
                 }
@@ -6287,10 +6218,10 @@
                 <span class="kw">match </span><span class="self">self</span>.peer_topics.get(peer) {
                     <span class="prelude-val">Some</span>(topics) =&gt; {
                         <span class="kw">if </span>!topics.contains(topic_hash) || peer_score &lt; publish_threshold {
-                            <span class="macro">debug!</span>(
-                                <span class="string">&quot;HEARTBEAT: Peer removed from fanout for topic: {:?}&quot;</span>,
-                                topic_hash
-                            );
+                            <span class="macro">tracing::debug!</span>(
+                                topic=%topic_hash,
+                                <span class="string">&quot;HEARTBEAT: Peer removed from fanout for topic&quot;
+                            </span>);
                             to_remove_peers.push(<span class="kw-2">*</span>peer);
                         }
                     }
@@ -6306,7 +6237,7 @@
 
             <span class="comment">// not enough peers
             </span><span class="kw">if </span>peers.len() &lt; <span class="self">self</span>.config.mesh_n() {
-                <span class="macro">debug!</span>(
+                <span class="macro">tracing::debug!</span>(
                     <span class="string">&quot;HEARTBEAT: Fanout low. Contains: {:?} needs: {:?}&quot;</span>,
                     peers.len(),
                     <span class="self">self</span>.config.mesh_n()
@@ -6329,7 +6260,7 @@
         }
 
         <span class="kw">if </span><span class="self">self</span>.peer_score.is_some() {
-            <span class="macro">trace!</span>(<span class="string">&quot;Mesh message deliveries: {:?}&quot;</span>, {
+            <span class="macro">tracing::trace!</span>(<span class="string">&quot;Mesh message deliveries: {:?}&quot;</span>, {
                 <span class="self">self</span>.mesh
                     .iter()
                     .map(|(t, peers)| {
@@ -6368,7 +6299,7 @@
         <span class="comment">// shift the memcache
         </span><span class="self">self</span>.mcache.shift();
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Completed Heartbeat&quot;</span>);
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;Completed Heartbeat&quot;</span>);
         <span class="kw">if let </span><span class="prelude-val">Some</span>(metrics) = <span class="self">self</span>.metrics.as_mut() {
             <span class="kw">let </span>duration = u64::try_from(start.elapsed().as_millis()).unwrap_or(u64::MAX);
             metrics.observe_heartbeat_duration(duration);
@@ -6388,7 +6319,7 @@
             <span class="comment">// if we are emitting more than GossipSubMaxIHaveLength message_ids, truncate the list
             </span><span class="kw">if </span>message_ids.len() &gt; <span class="self">self</span>.config.max_ihave_length() {
                 <span class="comment">// we do the truncation (with shuffling) per peer below
-                </span><span class="macro">debug!</span>(
+                </span><span class="macro">tracing::debug!</span>(
                     <span class="string">&quot;too many messages for gossip; will truncate IHAVE list ({} messages)&quot;</span>,
                     message_ids.len()
                 );
@@ -6417,7 +6348,7 @@
                 </span>},
             );
 
-            <span class="macro">debug!</span>(<span class="string">&quot;Gossiping IHAVE to {} peers.&quot;</span>, to_msg_peers.len());
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Gossiping IHAVE to {} peers&quot;</span>, to_msg_peers.len());
 
             <span class="kw">for </span>peer <span class="kw">in </span>to_msg_peers {
                 <span class="kw">let </span><span class="kw-2">mut </span>peer_message_ids = message_ids.clone();
@@ -6512,7 +6443,7 @@
                 )
                 .is_err()
             {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to send control messages. Message too large&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to send control messages. Message too large&quot;</span>);
             }
         }
 
@@ -6552,7 +6483,7 @@
                 )
                 .is_err()
             {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to send prune messages. Message too large&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to send prune messages. Message too large&quot;</span>);
             }
         }
     }
@@ -6574,7 +6505,7 @@
             }
         }
 
-        <span class="macro">debug!</span>(<span class="string">&quot;Forwarding message: {:?}&quot;</span>, msg_id);
+        <span class="macro">tracing::debug!</span>(message=%msg_id, <span class="string">&quot;Forwarding message&quot;</span>);
         <span class="kw">let </span><span class="kw-2">mut </span>recipient_peers = HashSet::new();
 
         {
@@ -6619,13 +6550,13 @@
 
             <span class="kw">let </span>msg_bytes = event.get_size();
             <span class="kw">for </span>peer <span class="kw">in </span>recipient_peers.iter() {
-                <span class="macro">debug!</span>(<span class="string">&quot;Sending message: {:?} to peer {:?}&quot;</span>, msg_id, peer);
+                <span class="macro">tracing::debug!</span>(%peer, message=%msg_id, <span class="string">&quot;Sending message to peer&quot;</span>);
                 <span class="self">self</span>.send_message(<span class="kw-2">*</span>peer, event.clone())<span class="question-mark">?</span>;
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                     m.msg_sent(<span class="kw-2">&amp;</span>message.topic, msg_bytes);
                 }
             }
-            <span class="macro">debug!</span>(<span class="string">&quot;Completed forwarding message&quot;</span>);
+            <span class="macro">tracing::debug!</span>(<span class="string">&quot;Completed forwarding message&quot;</span>);
             <span class="prelude-val">Ok</span>(<span class="bool-val">true</span>)
         } <span class="kw">else </span>{
             <span class="prelude-val">Ok</span>(<span class="bool-val">false</span>)
@@ -6748,7 +6679,7 @@
                 )
                 .is_err()
             {
-                <span class="macro">error!</span>(<span class="string">&quot;Failed to flush control pool. Message too large&quot;</span>);
+                <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to flush control pool. Message too large&quot;</span>);
             }
         }
 
@@ -6815,7 +6746,7 @@
                 <span class="kw">if </span>object_size + <span class="number">2 </span>&gt; <span class="self">self</span>.config.max_transmit_size() {
                     <span class="comment">// This should not be possible. All received and published messages have already
                     // been vetted to fit within the size.
-                    </span><span class="macro">error!</span>(<span class="string">&quot;Individual message too large to fragment&quot;</span>);
+                    </span><span class="macro">tracing::error!</span>(<span class="string">&quot;Individual message too large to fragment&quot;</span>);
                     <span class="kw">return </span><span class="prelude-val">Err</span>(PublishError::MessageTooLarge);
                 }
 
@@ -6920,9 +6851,9 @@
             <span class="kw">if let </span><span class="prelude-val">Some</span>(ip) = get_ip_addr(endpoint.get_remote_address()) {
                 peer_score.add_ip(<span class="kw-2">&amp;</span>peer_id, ip);
             } <span class="kw">else </span>{
-                <span class="macro">trace!</span>(
-                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer {} with endpoint {:?}&quot;</span>,
-                    peer_id,
+                <span class="macro">tracing::trace!</span>(
+                    peer=%peer_id,
+                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer with endpoint {:?}&quot;</span>,
                     endpoint
                 )
             }
@@ -6945,9 +6876,9 @@
         <span class="kw">if </span>other_established == <span class="number">0 </span>{
             <span class="comment">// Ignore connections from blacklisted peers.
             </span><span class="kw">if </span><span class="self">self</span>.blacklisted_peers.contains(<span class="kw-2">&amp;</span>peer_id) {
-                <span class="macro">debug!</span>(<span class="string">&quot;Ignoring connection from blacklisted peer: {}&quot;</span>, peer_id);
+                <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Ignoring connection from blacklisted peer&quot;</span>);
             } <span class="kw">else </span>{
-                <span class="macro">debug!</span>(<span class="string">&quot;New peer connected: {}&quot;</span>, peer_id);
+                <span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;New peer connected&quot;</span>);
                 <span class="comment">// We need to send our subscriptions to the newly-connected node.
                 </span><span class="kw">let </span><span class="kw-2">mut </span>subscriptions = <span class="macro">vec!</span>[];
                 <span class="kw">for </span>topic_hash <span class="kw">in </span><span class="self">self</span>.mesh.keys() {
@@ -6971,7 +6902,7 @@
                         )
                         .is_err()
                     {
-                        <span class="macro">error!</span>(<span class="string">&quot;Failed to send subscriptions, message too large&quot;</span>);
+                        <span class="macro">tracing::error!</span>(<span class="string">&quot;Failed to send subscriptions, message too large&quot;</span>);
                     }
                 }
             }
@@ -6993,16 +6924,16 @@
             endpoint,
             remaining_established,
             ..
-        }: ConnectionClosed&lt;&lt;<span class="self">Self </span><span class="kw">as </span>NetworkBehaviour&gt;::ConnectionHandler&gt;,
+        }: ConnectionClosed,
     ) {
         <span class="comment">// Remove IP from peer scoring system
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>((peer_score, ..)) = <span class="kw-2">&amp;mut </span><span class="self">self</span>.peer_score {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(ip) = get_ip_addr(endpoint.get_remote_address()) {
                 peer_score.remove_ip(<span class="kw-2">&amp;</span>peer_id, <span class="kw-2">&amp;</span>ip);
             } <span class="kw">else </span>{
-                <span class="macro">trace!</span>(
-                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer {} with endpoint {:?}&quot;</span>,
-                    peer_id,
+                <span class="macro">tracing::trace!</span>(
+                    peer=%peer_id,
+                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer with endpoint {:?}&quot;</span>,
                     endpoint
                 )
             }
@@ -7039,7 +6970,7 @@
             }
         } <span class="kw">else </span>{
             <span class="comment">// remove from mesh, topic_peers, peer_topic and the fanout
-            </span><span class="macro">debug!</span>(<span class="string">&quot;Peer disconnected: {}&quot;</span>, peer_id);
+            </span><span class="macro">tracing::debug!</span>(peer=%peer_id, <span class="string">&quot;Peer disconnected&quot;</span>);
             {
                 <span class="kw">let </span>topics = <span class="kw">match </span><span class="self">self</span>.peer_topics.get(<span class="kw-2">&amp;</span>peer_id) {
                     <span class="prelude-val">Some</span>(topics) =&gt; topics,
@@ -7069,19 +7000,20 @@
                     </span><span class="kw">if let </span><span class="prelude-val">Some</span>(peer_list) = <span class="self">self</span>.topic_peers.get_mut(topic) {
                         <span class="kw">if </span>!peer_list.remove(<span class="kw-2">&amp;</span>peer_id) {
                             <span class="comment">// debugging purposes
-                            </span><span class="macro">warn!</span>(
-                                <span class="string">&quot;Disconnected node: {} not in topic_peers peer list&quot;</span>,
-                                peer_id
-                            );
+                            </span><span class="macro">tracing::warn!</span>(
+                                peer=%peer_id,
+                                <span class="string">&quot;Disconnected node: peer not in topic_peers&quot;
+                            </span>);
                         }
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(m) = <span class="self">self</span>.metrics.as_mut() {
                             m.set_topic_peers(topic, peer_list.len())
                         }
                     } <span class="kw">else </span>{
-                        <span class="macro">warn!</span>(
-                            <span class="string">&quot;Disconnected node: {} with topic: {:?} not in topic_peers&quot;</span>,
-                            <span class="kw-2">&amp;</span>peer_id, <span class="kw-2">&amp;</span>topic
-                        );
+                        <span class="macro">tracing::warn!</span>(
+                            peer=%peer_id,
+                            topic=%topic,
+                            <span class="string">&quot;Disconnected node: peer with topic not in topic_peers&quot;
+                        </span>);
                     }
 
                     <span class="comment">// remove from fanout
@@ -7132,18 +7064,18 @@
             <span class="kw">if let </span><span class="prelude-val">Some</span>(ip) = get_ip_addr(endpoint_old.get_remote_address()) {
                 peer_score.remove_ip(<span class="kw-2">&amp;</span>peer_id, <span class="kw-2">&amp;</span>ip);
             } <span class="kw">else </span>{
-                <span class="macro">trace!</span>(
-                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer {} with endpoint {:?}&quot;</span>,
-                    <span class="kw-2">&amp;</span>peer_id,
+                <span class="macro">tracing::trace!</span>(
+                    peer=%<span class="kw-2">&amp;</span>peer_id,
+                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer with endpoint {:?}&quot;</span>,
                     endpoint_old
                 )
             }
             <span class="kw">if let </span><span class="prelude-val">Some</span>(ip) = get_ip_addr(endpoint_new.get_remote_address()) {
                 peer_score.add_ip(<span class="kw-2">&amp;</span>peer_id, ip);
             } <span class="kw">else </span>{
-                <span class="macro">trace!</span>(
-                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer {} with endpoint {:?}&quot;</span>,
-                    peer_id,
+                <span class="macro">tracing::trace!</span>(
+                    peer=%peer_id,
+                    <span class="string">&quot;Couldn&#39;t extract ip from endpoint of peer with endpoint {:?}&quot;</span>,
                     endpoint_new
                 )
             }
@@ -7167,32 +7099,24 @@
     <span class="kw">type </span>ConnectionHandler = Handler;
     <span class="kw">type </span>ToSwarm = Event;
 
-    <span class="attr">#[allow(deprecated)]
-    </span><span class="kw">fn </span>handle_established_inbound_connection(
+    <span class="kw">fn </span>handle_established_inbound_connection(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         <span class="kw">_</span>: ConnectionId,
         <span class="kw">_</span>: PeerId,
         <span class="kw">_</span>: <span class="kw-2">&amp;</span>Multiaddr,
         <span class="kw">_</span>: <span class="kw-2">&amp;</span>Multiaddr,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;THandler&lt;<span class="self">Self</span>&gt;, ConnectionDenied&gt; {
-        <span class="prelude-val">Ok</span>(Handler::new(
-            <span class="self">self</span>.config.protocol_config(),
-            <span class="self">self</span>.config.idle_timeout(),
-        ))
+        <span class="prelude-val">Ok</span>(Handler::new(<span class="self">self</span>.config.protocol_config()))
     }
 
-    <span class="attr">#[allow(deprecated)]
-    </span><span class="kw">fn </span>handle_established_outbound_connection(
+    <span class="kw">fn </span>handle_established_outbound_connection(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         <span class="kw">_</span>: ConnectionId,
         <span class="kw">_</span>: PeerId,
         <span class="kw">_</span>: <span class="kw-2">&amp;</span>Multiaddr,
         <span class="kw">_</span>: Endpoint,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;THandler&lt;<span class="self">Self</span>&gt;, ConnectionDenied&gt; {
-        <span class="prelude-val">Ok</span>(Handler::new(
-            <span class="self">self</span>.config.protocol_config(),
-            <span class="self">self</span>.config.idle_timeout(),
-        ))
+        <span class="prelude-val">Ok</span>(Handler::new(<span class="self">self</span>.config.protocol_config()))
     }
 
     <span class="kw">fn </span>on_connection_handler_event(
@@ -7210,10 +7134,10 @@
                 }
 
                 <span class="kw">if let </span>PeerKind::NotSupported = kind {
-                    <span class="macro">debug!</span>(
-                        <span class="string">&quot;Peer does not support gossipsub protocols. {}&quot;</span>,
-                        propagation_source
-                    );
+                    <span class="macro">tracing::debug!</span>(
+                        peer=%propagation_source,
+                        <span class="string">&quot;Peer does not support gossipsub protocols&quot;
+                    </span>);
                     <span class="self">self</span>.events
                         .push_back(ToSwarm::GenerateEvent(Event::GossipsubNotSupported {
                             peer_id: propagation_source,
@@ -7222,10 +7146,11 @@
                     <span class="comment">// Only change the value if the old value is Floodsub (the default set in
                     // `NetworkBehaviour::on_event` with FromSwarm::ConnectionEstablished).
                     // All other PeerKind changes are ignored.
-                    </span><span class="macro">debug!</span>(
-                        <span class="string">&quot;New peer type found: {} for peer: {}&quot;</span>,
-                        kind, propagation_source
-                    );
+                    </span><span class="macro">tracing::debug!</span>(
+                        peer=%propagation_source,
+                        peer_type=%kind,
+                        <span class="string">&quot;New peer type found for peer&quot;
+                    </span>);
                     <span class="kw">if let </span>PeerKind::Floodsub = conn.kind {
                         conn.kind = kind;
                     }
@@ -7247,7 +7172,7 @@
                 </span><span class="kw">if let </span>(<span class="bool-val">true</span>, <span class="kw">_</span>) =
                     <span class="self">self</span>.score_below_threshold(<span class="kw-2">&amp;</span>propagation_source, |pst| pst.graylist_threshold)
                 {
-                    <span class="macro">debug!</span>(<span class="string">&quot;RPC Dropped from greylisted peer {}&quot;</span>, propagation_source);
+                    <span class="macro">tracing::debug!</span>(peer=%propagation_source, <span class="string">&quot;RPC Dropped from greylisted peer&quot;</span>);
                     <span class="kw">return</span>;
                 }
 
@@ -7263,11 +7188,11 @@
                 } <span class="kw">else </span>{
                     <span class="comment">// log the invalid messages
                     </span><span class="kw">for </span>(message, validation_error) <span class="kw">in </span>invalid_messages {
-                        <span class="macro">warn!</span>(
-                            <span class="string">&quot;Invalid message. Reason: {:?} propagation_peer {} source {:?}&quot;</span>,
+                        <span class="macro">tracing::warn!</span>(
+                            peer=%propagation_source,
+                            source=<span class="question-mark">?</span>message.source,
+                            <span class="string">&quot;Invalid message from peer. Reason: {:?}&quot;</span>,
                             validation_error,
-                            propagation_source.to_string(),
-                            message.source
                         );
                     }
                 }
@@ -7278,7 +7203,7 @@
                     </span><span class="kw">if </span><span class="self">self</span>.config.max_messages_per_rpc().is_some()
                         &amp;&amp; <span class="prelude-val">Some</span>(count) &gt;= <span class="self">self</span>.config.max_messages_per_rpc()
                     {
-                        <span class="macro">warn!</span>(<span class="string">&quot;Received more messages than permitted. Ignoring further messages. Processed: {}&quot;</span>, count);
+                        <span class="macro">tracing::warn!</span>(<span class="string">&quot;Received more messages than permitted. Ignoring further messages. Processed: {}&quot;</span>, count);
                         <span class="kw">break</span>;
                     }
                     <span class="self">self</span>.handle_received_message(raw_message, <span class="kw-2">&amp;</span>propagation_source);
@@ -7321,10 +7246,10 @@
         }
     }
 
-    <span class="kw">fn </span>poll(
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, name = <span class="string">&quot;ConnectionHandler::poll&quot;</span>, skip(<span class="self">self</span>, cx))]
+    </span><span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        <span class="kw">_</span>: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
     ) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = <span class="self">self</span>.events.pop_front() {
             <span class="kw">return </span>Poll::Ready(event);
@@ -7344,7 +7269,7 @@
         Poll::Pending
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="kw">match </span>event {
             FromSwarm::ConnectionEstablished(connection_established) =&gt; {
                 <span class="self">self</span>.on_connection_established(connection_established)
@@ -7353,16 +7278,7 @@
                 <span class="self">self</span>.on_connection_closed(connection_closed)
             }
             FromSwarm::AddressChange(address_change) =&gt; <span class="self">self</span>.on_address_change(address_change),
-            FromSwarm::DialFailure(<span class="kw">_</span>)
-            | FromSwarm::ListenFailure(<span class="kw">_</span>)
-            | FromSwarm::NewListener(<span class="kw">_</span>)
-            | FromSwarm::NewListenAddr(<span class="kw">_</span>)
-            | FromSwarm::ExpiredListenAddr(<span class="kw">_</span>)
-            | FromSwarm::ListenerError(<span class="kw">_</span>)
-            | FromSwarm::ListenerClosed(<span class="kw">_</span>)
-            | FromSwarm::NewExternalAddrCandidate(<span class="kw">_</span>)
-            | FromSwarm::ExternalAddrExpired(<span class="kw">_</span>)
-            | FromSwarm::ExternalAddrConfirmed(<span class="kw">_</span>) =&gt; {}
+            <span class="kw">_ </span>=&gt; {}
         }
     }
 }
@@ -7424,7 +7340,7 @@
         .get(<span class="kw-2">&amp;</span>peer_id)
         .expect(<span class="string">&quot;To be connected to peer.&quot;</span>)
         .connections
-        .get(<span class="number">0</span>)
+        .first()
         .expect(<span class="string">&quot;There should be at least one connection to a peer.&quot;</span>);
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(topics) = known_topics {
@@ -7477,7 +7393,7 @@
     <span class="comment">// if we have less than needed, return them
     </span><span class="kw">let </span>n = n_map(gossip_peers.len());
     <span class="kw">if </span>gossip_peers.len() &lt;= n {
-        <span class="macro">debug!</span>(<span class="string">&quot;RANDOM PEERS: Got {:?} peers&quot;</span>, gossip_peers.len());
+        <span class="macro">tracing::debug!</span>(<span class="string">&quot;RANDOM PEERS: Got {:?} peers&quot;</span>, gossip_peers.len());
         <span class="kw">return </span>gossip_peers.into_iter().collect();
     }
 
@@ -7485,7 +7401,7 @@
     </span><span class="kw">let </span><span class="kw-2">mut </span>rng = thread_rng();
     gossip_peers.partial_shuffle(<span class="kw-2">&amp;mut </span>rng, n);
 
-    <span class="macro">debug!</span>(<span class="string">&quot;RANDOM PEERS: Got {:?} peers&quot;</span>, n);
+    <span class="macro">tracing::debug!</span>(<span class="string">&quot;RANDOM PEERS: Got {:?} peers&quot;</span>, n);
 
     gossip_peers.into_iter().take(n).collect()
 }

@@ -545,6 +545,11 @@
 <a href="#545" id="545">545</a>
 <a href="#546" id="546">546</a>
 <a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -561,14 +566,14 @@
     core::Multiaddr,
     identify,
     identity::{PeerId, PublicKey},
-    kad::{<span class="self">self</span>, record::store::MemoryStore},
+    kad::{<span class="self">self</span>, store::MemoryStore},
     mdns::{tokio::Behaviour <span class="kw">as </span>Mdns, Event <span class="kw">as </span>MdnsEvent},
     multiaddr::Protocol,
     swarm::{
         behaviour::toggle::Toggle,
         derive_prelude::<span class="kw-2">*</span>,
         dial_opts::{DialOpts, PeerCondition},
-        NetworkBehaviour, PollParameters, ToSwarm,
+        NetworkBehaviour, ToSwarm,
     },
     StreamProtocol,
 };
@@ -863,7 +868,7 @@
         )
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="kw">match </span><span class="kw-2">&amp;</span>event {
             FromSwarm::ConnectionEstablished(e) =&gt; {
                 <span class="kw">if </span>e.other_established == <span class="number">0 </span>{
@@ -901,7 +906,6 @@
     </span><span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>Context,
-        params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
     ) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, libp2p::swarm::THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
         <span class="comment">// Immediately process the content of `discovered`.
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(ev) = <span class="self">self</span>.pending_events.pop_front() {
@@ -938,7 +942,7 @@
         }
 
         <span class="comment">// Poll discovery events.
-        </span><span class="kw">while let </span>Poll::Ready(ev) = <span class="self">self</span>.discovery.poll(cx, params) {
+        </span><span class="kw">while let </span>Poll::Ready(ev) = <span class="self">self</span>.discovery.poll(cx) {
             <span class="kw">match </span>ev {
                 ToSwarm::GenerateEvent(ev) =&gt; {
                     <span class="kw">match </span><span class="kw-2">&amp;</span>ev {
@@ -1022,6 +1026,7 @@
                 ToSwarm::ExternalAddrExpired(addr) =&gt; {
                     <span class="kw">return </span>Poll::Ready(ToSwarm::ExternalAddrExpired(addr))
                 }
+                <span class="kw">_ </span>=&gt; {}
             }
         }
 
@@ -1053,7 +1058,7 @@
         }
 
         <span class="kw">let </span><span class="kw-2">mut </span>b = Swarm::new_ephemeral(|k| new_discovery(k, <span class="macro">vec!</span>[]));
-        b.listen().<span class="kw">await</span>;
+        b.listen().with_memory_addr_external().<span class="kw">await</span>;
         <span class="kw">let </span>b_peer_id = <span class="kw-2">*</span>b.local_peer_id();
         <span class="kw">let </span>b_addresses: Vec&lt;<span class="kw">_</span>&gt; = b
             .external_addresses()
@@ -1064,11 +1069,16 @@
             })
             .collect();
 
-        <span class="kw">let </span><span class="kw-2">mut </span>c = Swarm::new_ephemeral(|k| new_discovery(k, b_addresses.clone()));
-        c.listen().<span class="kw">await</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>c = Swarm::new_ephemeral(|k| new_discovery(k, <span class="macro">vec!</span>[]));
+        c.listen().with_memory_addr_external().<span class="kw">await</span>;
         <span class="kw">let </span>c_peer_id = <span class="kw-2">*</span>c.local_peer_id();
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(c_kad) = c.behaviour_mut().discovery.kademlia.as_mut() {
+            <span class="kw">for </span>addr <span class="kw">in </span>b.external_addresses() {
+                c_kad.add_address(<span class="kw-2">&amp;</span>b_peer_id, addr.clone());
+            }
+        }
 
-        <span class="kw">let </span><span class="kw-2">mut </span>a = Swarm::new_ephemeral(|k| new_discovery(k, b_addresses.clone()));
+        <span class="kw">let </span><span class="kw-2">mut </span>a = Swarm::new_ephemeral(|k| new_discovery(k, b_addresses));
 
         <span class="comment">// Bootstrap `a` and `c`
         </span>a.behaviour_mut().bootstrap().unwrap();

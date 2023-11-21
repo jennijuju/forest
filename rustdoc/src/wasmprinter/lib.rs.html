@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmprinter-0.2.70/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wasmprinter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wasmprinter/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/wasmprinter-0.2.74/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="wasmprinter" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../wasmprinter/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2963,6 +2963,10 @@
 <a href="#2963" id="2963">2963</a>
 <a href="#2964" id="2964">2964</a>
 <a href="#2965" id="2965">2965</a>
+<a href="#2966" id="2966">2966</a>
+<a href="#2967" id="2967">2967</a>
+<a href="#2968" id="2968">2968</a>
+<a href="#2969" id="2969">2969</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! A crate to convert a WebAssembly binary to its textual representation in the
 //! WebAssembly Text Format (WAT).
 //!
@@ -3605,7 +3609,13 @@
             states.last().unwrap().core.types.len() <span class="kw">as </span>u32,
         )<span class="question-mark">?</span>;
         <span class="kw">let </span>ty = <span class="kw">match </span>ty {
-            CoreType::Func(ty) =&gt; {
+            CoreType::Sub(ty) =&gt; {
+                <span class="kw">let </span>ty = <span class="kw">match </span><span class="kw-2">&amp;</span>ty.composite_type {
+                    CompositeType::Func(f) =&gt; f,
+                    CompositeType::Array(<span class="kw">_</span>) | CompositeType::Struct(<span class="kw">_</span>) =&gt; {
+                        <span class="macro">unreachable!</span>(<span class="string">&quot;Wasm GC types cannot appear in components yet&quot;</span>)
+                    }
+                };
                 <span class="self">self</span>.result.push(<span class="string">&#39; &#39;</span>);
                 <span class="self">self</span>.start_group(<span class="string">&quot;func&quot;</span>);
                 <span class="self">self</span>.print_func_type(states.last().unwrap(), <span class="kw-2">&amp;</span>ty, <span class="prelude-val">None</span>)<span class="question-mark">?</span>;
@@ -3613,7 +3623,7 @@
                 <span class="prelude-val">Some</span>(SubType {
                     is_final: <span class="bool-val">true</span>,
                     supertype_idx: <span class="prelude-val">None</span>,
-                    structural_type: StructuralType::Func(ty),
+                    composite_type: CompositeType::Func(ty.clone()),
                 })
             }
             CoreType::Module(decls) =&gt; {
@@ -3627,7 +3637,12 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="kw">fn </span>print_rec(<span class="kw-2">&amp;mut </span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>State, offset: usize, types: Vec&lt;SubType&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
+    <span class="kw">fn </span>print_rec(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        state: <span class="kw-2">&amp;mut </span>State,
+        offset: usize,
+        types: <span class="kw">impl </span>Iterator&lt;Item = SubType&gt;,
+    ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.start_group(<span class="string">&quot;rec&quot;</span>);
         <span class="kw">for </span>ty <span class="kw">in </span>types {
             <span class="self">self</span>.newline(offset + <span class="number">2</span>);
@@ -3651,35 +3666,35 @@
         <span class="kw">let </span>r = <span class="kw">if </span>!ty.is_final || !ty.supertype_idx.is_none() {
             <span class="self">self</span>.start_group(<span class="string">&quot;sub&quot;</span>);
             <span class="self">self</span>.print_sub_type(state, ty)<span class="question-mark">?</span>;
-            <span class="kw">let </span>r = <span class="self">self</span>.print_structural(state, <span class="kw-2">&amp;</span>ty.structural_type, names_for)<span class="question-mark">?</span>;
+            <span class="kw">let </span>r = <span class="self">self</span>.print_composite(state, <span class="kw-2">&amp;</span>ty.composite_type, names_for)<span class="question-mark">?</span>;
             <span class="self">self</span>.end_group(); <span class="comment">// `sub`
             </span>r
         } <span class="kw">else </span>{
-            <span class="self">self</span>.print_structural(state, <span class="kw-2">&amp;</span>ty.structural_type, names_for)<span class="question-mark">?
+            <span class="self">self</span>.print_composite(state, <span class="kw-2">&amp;</span>ty.composite_type, names_for)<span class="question-mark">?
         </span>};
         <span class="prelude-val">Ok</span>(r)
     }
 
-    <span class="kw">fn </span>print_structural(
+    <span class="kw">fn </span>print_composite(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         state: <span class="kw-2">&amp;</span>State,
-        ty: <span class="kw-2">&amp;</span>StructuralType,
+        ty: <span class="kw-2">&amp;</span>CompositeType,
         names_for: <span class="prelude-ty">Option</span>&lt;u32&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;u32&gt; {
         <span class="kw">let </span>r = <span class="kw">match </span><span class="kw-2">&amp;</span>ty {
-            StructuralType::Func(ty) =&gt; {
+            CompositeType::Func(ty) =&gt; {
                 <span class="self">self</span>.start_group(<span class="string">&quot;func&quot;</span>);
                 <span class="kw">let </span>r = <span class="self">self</span>.print_func_type(state, ty, names_for)<span class="question-mark">?</span>;
                 <span class="self">self</span>.end_group(); <span class="comment">// `func`
                 </span>r
             }
-            StructuralType::Array(ty) =&gt; {
+            CompositeType::Array(ty) =&gt; {
                 <span class="self">self</span>.start_group(<span class="string">&quot;array&quot;</span>);
                 <span class="kw">let </span>r = <span class="self">self</span>.print_array_type(ty)<span class="question-mark">?</span>;
                 <span class="self">self</span>.end_group(); <span class="comment">// `array`
                 </span>r
             }
-            StructuralType::Struct(ty) =&gt; {
+            CompositeType::Struct(ty) =&gt; {
                 <span class="self">self</span>.start_group(<span class="string">&quot;struct&quot;</span>);
                 <span class="kw">let </span>r = <span class="self">self</span>.print_struct_type(ty)<span class="question-mark">?</span>;
                 <span class="self">self</span>.end_group(); <span class="comment">// `struct`
@@ -3707,9 +3722,12 @@
         <span class="kw">for </span>ty <span class="kw">in </span>parser.into_iter_with_offsets() {
             <span class="kw">let </span>(offset, rec_group) = ty<span class="question-mark">?</span>;
             <span class="self">self</span>.newline(offset);
-            <span class="kw">match </span>rec_group {
-                RecGroup::Many(items) =&gt; <span class="self">self</span>.print_rec(state, offset, items)<span class="question-mark">?</span>,
-                RecGroup::Single(ty) =&gt; <span class="self">self</span>.print_type(state, ty)<span class="question-mark">?</span>,
+            <span class="kw">if </span>rec_group.is_explicit_rec_group() {
+                <span class="self">self</span>.print_rec(state, offset, rec_group.into_types())<span class="question-mark">?
+            </span>} <span class="kw">else </span>{
+                <span class="macro">assert_eq!</span>(rec_group.types().len(), <span class="number">1</span>);
+                <span class="kw">let </span>ty = rec_group.into_types().next().unwrap();
+                <span class="self">self</span>.print_type(state, ty)<span class="question-mark">?</span>;
             }
         }
 
@@ -3726,7 +3744,7 @@
 
         <span class="kw">match </span>state.core.types.get(idx <span class="kw">as </span>usize) {
             <span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(SubType {
-                structural_type: StructuralType::Func(ty),
+                composite_type: CompositeType::Func(ty),
                 ..
             })) =&gt; <span class="self">self</span>.print_func_type(state, ty, names_for).map(<span class="prelude-val">Some</span>),
             <span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(<span class="kw">_</span>)) | <span class="prelude-val">Some</span>(<span class="prelude-val">None</span>) | <span class="prelude-val">None </span>=&gt; <span class="prelude-val">Ok</span>(<span class="prelude-val">None</span>),
@@ -3798,7 +3816,7 @@
             <span class="self">self</span>.result.push_str(<span class="string">&quot;final &quot;</span>);
         }
         <span class="kw">for </span>idx <span class="kw">in </span><span class="kw-2">&amp;</span>ty.supertype_idx {
-            <span class="self">self</span>.print_name(<span class="kw-2">&amp;</span>state.core.type_names, <span class="kw-2">*</span>idx)<span class="question-mark">?</span>;
+            <span class="self">self</span>.print_name(<span class="kw-2">&amp;</span>state.core.type_names, idx.as_module_index().unwrap())<span class="question-mark">?</span>;
             <span class="self">self</span>.result.push(<span class="string">&#39; &#39;</span>);
         }
         <span class="prelude-val">Ok</span>(<span class="number">0</span>)
@@ -3864,7 +3882,9 @@
             HeapType::Struct =&gt; <span class="self">self</span>.result.push_str(<span class="string">&quot;struct&quot;</span>),
             HeapType::Array =&gt; <span class="self">self</span>.result.push_str(<span class="string">&quot;array&quot;</span>),
             HeapType::I31 =&gt; <span class="self">self</span>.result.push_str(<span class="string">&quot;i31&quot;</span>),
-            HeapType::Indexed(i) =&gt; <span class="self">self</span>.result.push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, u32::from(i))),
+            HeapType::Concrete(i) =&gt; <span class="self">self
+                </span>.result
+                .push_str(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, i.as_module_index().unwrap())),
         }
         <span class="prelude-val">Ok</span>(())
     }
@@ -4644,7 +4664,7 @@
                 ComponentTypeDeclaration::Export { name, ty } =&gt; {
                     <span class="self">self</span>.start_group(<span class="string">&quot;export &quot;</span>);
                     <span class="self">self</span>.print_component_kind_name(states.last_mut().unwrap(), ty.kind())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.print_component_import_name(name.into())<span class="question-mark">?</span>;
+                    <span class="self">self</span>.print_str(name.<span class="number">0</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.result.push(<span class="string">&#39; &#39;</span>);
                     <span class="self">self</span>.print_component_import_ty(states.last_mut().unwrap(), <span class="kw-2">&amp;</span>ty, <span class="bool-val">false</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.end_group();
@@ -4678,7 +4698,7 @@
                 InstanceTypeDeclaration::Export { name, ty } =&gt; {
                     <span class="self">self</span>.start_group(<span class="string">&quot;export &quot;</span>);
                     <span class="self">self</span>.print_component_kind_name(states.last_mut().unwrap(), ty.kind())<span class="question-mark">?</span>;
-                    <span class="self">self</span>.print_component_import_name(name.into())<span class="question-mark">?</span>;
+                    <span class="self">self</span>.print_str(name.<span class="number">0</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.result.push(<span class="string">&#39; &#39;</span>);
                     <span class="self">self</span>.print_component_import_ty(states.last_mut().unwrap(), <span class="kw-2">&amp;</span>ty, <span class="bool-val">false</span>)<span class="question-mark">?</span>;
                     <span class="self">self</span>.end_group();
@@ -4842,23 +4862,11 @@
         index: bool,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
         <span class="self">self</span>.start_group(<span class="string">&quot;import &quot;</span>);
-        <span class="self">self</span>.print_component_import_name(import.name)<span class="question-mark">?</span>;
+        <span class="self">self</span>.print_str(import.name.<span class="number">0</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.result.push(<span class="string">&#39; &#39;</span>);
         <span class="self">self</span>.print_component_import_ty(state, <span class="kw-2">&amp;</span>import.ty, index)<span class="question-mark">?</span>;
         <span class="self">self</span>.end_group();
         <span class="prelude-val">Ok</span>(())
-    }
-
-    <span class="kw">fn </span>print_component_import_name(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: ComponentExternName&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;()&gt; {
-        <span class="kw">match </span>name {
-            ComponentExternName::Kebab(s) =&gt; <span class="self">self</span>.print_str(s),
-            ComponentExternName::Interface(s) =&gt; {
-                <span class="self">self</span>.start_group(<span class="string">&quot;interface &quot;</span>);
-                <span class="self">self</span>.print_str(s)<span class="question-mark">?</span>;
-                <span class="self">self</span>.end_group();
-                <span class="prelude-val">Ok</span>(())
-            }
-        }
     }
 
     <span class="kw">fn </span>print_component_import_ty(
@@ -4969,7 +4977,7 @@
         <span class="kw">if </span>named {
             <span class="self">self</span>.print_component_kind_name(state, export.kind)<span class="question-mark">?</span>;
         }
-        <span class="self">self</span>.print_component_import_name(export.name.into())<span class="question-mark">?</span>;
+        <span class="self">self</span>.print_str(export.name.<span class="number">0</span>)<span class="question-mark">?</span>;
         <span class="self">self</span>.result.push(<span class="string">&#39; &#39;</span>);
         <span class="self">self</span>.print_component_external_kind(state, export.kind, export.index)<span class="question-mark">?</span>;
         <span class="kw">if let </span><span class="prelude-val">Some</span>(ty) = <span class="kw-2">&amp;</span>export.ty {

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-dalek-2.0.0/src/signing.rs`."><title>signing.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="ed25519_dalek" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ed25519_dalek/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/ed25519-dalek-2.1.0/src/signing.rs`."><title>signing.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="ed25519_dalek" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../ed25519_dalek/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -843,6 +843,72 @@
 <a href="#843" id="843">843</a>
 <a href="#844" id="844">844</a>
 <a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
+<a href="#853" id="853">853</a>
+<a href="#854" id="854">854</a>
+<a href="#855" id="855">855</a>
+<a href="#856" id="856">856</a>
+<a href="#857" id="857">857</a>
+<a href="#858" id="858">858</a>
+<a href="#859" id="859">859</a>
+<a href="#860" id="860">860</a>
+<a href="#861" id="861">861</a>
+<a href="#862" id="862">862</a>
+<a href="#863" id="863">863</a>
+<a href="#864" id="864">864</a>
+<a href="#865" id="865">865</a>
+<a href="#866" id="866">866</a>
+<a href="#867" id="867">867</a>
+<a href="#868" id="868">868</a>
+<a href="#869" id="869">869</a>
+<a href="#870" id="870">870</a>
+<a href="#871" id="871">871</a>
+<a href="#872" id="872">872</a>
+<a href="#873" id="873">873</a>
+<a href="#874" id="874">874</a>
+<a href="#875" id="875">875</a>
+<a href="#876" id="876">876</a>
+<a href="#877" id="877">877</a>
+<a href="#878" id="878">878</a>
+<a href="#879" id="879">879</a>
+<a href="#880" id="880">880</a>
+<a href="#881" id="881">881</a>
+<a href="#882" id="882">882</a>
+<a href="#883" id="883">883</a>
+<a href="#884" id="884">884</a>
+<a href="#885" id="885">885</a>
+<a href="#886" id="886">886</a>
+<a href="#887" id="887">887</a>
+<a href="#888" id="888">888</a>
+<a href="#889" id="889">889</a>
+<a href="#890" id="890">890</a>
+<a href="#891" id="891">891</a>
+<a href="#892" id="892">892</a>
+<a href="#893" id="893">893</a>
+<a href="#894" id="894">894</a>
+<a href="#895" id="895">895</a>
+<a href="#896" id="896">896</a>
+<a href="#897" id="897">897</a>
+<a href="#898" id="898">898</a>
+<a href="#899" id="899">899</a>
+<a href="#900" id="900">900</a>
+<a href="#901" id="901">901</a>
+<a href="#902" id="902">902</a>
+<a href="#903" id="903">903</a>
+<a href="#904" id="904">904</a>
+<a href="#905" id="905">905</a>
+<a href="#906" id="906">906</a>
+<a href="#907" id="907">907</a>
+<a href="#908" id="908">908</a>
+<a href="#909" id="909">909</a>
+<a href="#910" id="910">910</a>
+<a href="#911" id="911">911</a>
 </pre></div><pre class="rust"><code><span class="comment">// -*- mode: rust; -*-
 //
 // This file is part of ed25519-dalek.
@@ -854,7 +920,9 @@
 
 </span><span class="doccomment">//! ed25519 signing keys.
 
-</span><span class="attr">#[cfg(feature = <span class="string">&quot;pkcs8&quot;</span>)]
+</span><span class="kw">use </span>core::fmt::Debug;
+
+<span class="attr">#[cfg(feature = <span class="string">&quot;pkcs8&quot;</span>)]
 </span><span class="kw">use </span>ed25519::pkcs8;
 
 <span class="attr">#[cfg(any(test, feature = <span class="string">&quot;rand_core&quot;</span>))]
@@ -864,6 +932,7 @@
 </span><span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 <span class="kw">use </span>sha2::Sha512;
+<span class="kw">use </span>subtle::{Choice, ConstantTimeEq};
 
 <span class="kw">use </span>curve25519_dalek::{
     digest::{generic_array::typenum::U64, Digest},
@@ -899,9 +968,10 @@
 </span><span class="kw">pub type </span>SecretKey = [u8; SECRET_KEY_LENGTH];
 
 <span class="doccomment">/// ed25519 signing key which can be used to produce signatures.
-</span><span class="comment">// Invariant: `public` is always the public key of `secret`. This prevents the signing function
-// oracle attack described in https://github.com/MystenLabs/ed25519-unsafe-libs
-</span><span class="attr">#[derive(Clone, Debug)]
+</span><span class="comment">// Invariant: `verifying_key` is always the public key of
+// `secret_key`. This prevents the signing function oracle attack
+// described in https://github.com/MystenLabs/ed25519-unsafe-libs
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>SigningKey {
     <span class="doccomment">/// The secret half of this signing key.
     </span><span class="kw">pub</span>(<span class="kw">crate</span>) secret_key: SecretKey,
@@ -952,6 +1022,12 @@
     </span><span class="attr">#[inline]
     </span><span class="kw">pub fn </span>to_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SecretKey {
         <span class="self">self</span>.secret_key
+    }
+
+    <span class="doccomment">/// Convert this [`SigningKey`] into a [`SecretKey`] reference
+    </span><span class="attr">#[inline]
+    </span><span class="kw">pub fn </span>as_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>SecretKey {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.secret_key
     }
 
     <span class="doccomment">/// Construct a [`SigningKey`] from the bytes of a `VerifyingKey` and `SecretKey`.
@@ -1318,15 +1394,43 @@
         <span class="self">self</span>.verifying_key.verify_strict(message, signature)
     }
 
-    <span class="doccomment">/// Convert this signing key into a byte representation of a(n) (unreduced) Curve25519 scalar.
+    <span class="doccomment">/// Convert this signing key into a byte representation of an unreduced, unclamped Curve25519
+    /// scalar. This is NOT the same thing as `self.to_scalar().to_bytes()`, since `to_scalar()`
+    /// performs a clamping step, which changes the value of the resulting scalar.
     ///
     /// This can be used for performing X25519 Diffie-Hellman using Ed25519 keys. The bytes output
-    /// by this function are a valid secret key for the X25519 public key given by
-    /// `self.verifying_key().to_montgomery()`.
+    /// by this function are a valid corresponding [`StaticSecret`](https://docs.rs/x25519-dalek/2.0.0/x25519_dalek/struct.StaticSecret.html#impl-From%3C%5Bu8;+32%5D%3E-for-StaticSecret)
+    /// for the X25519 public key given by `self.verifying_key().to_montgomery()`.
     ///
     /// # Note
     ///
-    /// We do NOT recommend this usage of a signing/verifying key. Signing keys are usually
+    /// We do NOT recommend using a signing/verifying key for encryption. Signing keys are usually
+    /// long-term keys, while keys used for key exchange should rather be ephemeral. If you can
+    /// help it, use a separate key for encryption.
+    ///
+    /// For more information on the security of systems which use the same keys for both signing
+    /// and Diffie-Hellman, see the paper
+    /// [On using the same key pair for Ed25519 and an X25519 based KEM](https://eprint.iacr.org/2021/509).
+    </span><span class="kw">pub fn </span>to_scalar_bytes(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; [u8; <span class="number">32</span>] {
+        <span class="comment">// Per the spec, the ed25519 secret key sk is expanded to
+        //     (scalar_bytes, hash_prefix) = SHA-512(sk)
+        // where the two outputs are both 32 bytes. scalar_bytes is what we return. Its clamped and
+        // reduced form is what we use for signing (see impl ExpandedSecretKey)
+        </span><span class="kw">let </span><span class="kw-2">mut </span>buf = [<span class="number">0u8</span>; <span class="number">32</span>];
+        <span class="kw">let </span>scalar_and_hash_prefix = Sha512::default().chain_update(<span class="self">self</span>.secret_key).finalize();
+        buf.copy_from_slice(<span class="kw-2">&amp;</span>scalar_and_hash_prefix[..<span class="number">32</span>]);
+        buf
+    }
+
+    <span class="doccomment">/// Convert this signing key into a Curve25519 scalar. This is computed by clamping and
+    /// reducing the output of [`Self::to_scalar_bytes`].
+    ///
+    /// This can be used anywhere where a Curve25519 scalar is used as a private key, e.g., in
+    /// [`crypto_box`](https://docs.rs/crypto_box/0.9.1/crypto_box/struct.SecretKey.html#impl-From%3CScalar%3E-for-SecretKey).
+    ///
+    /// # Note
+    ///
+    /// We do NOT recommend using a signing/verifying key for encryption. Signing keys are usually
     /// long-term keys, while keys used for key exchange should rather be ephemeral. If you can
     /// help it, use a separate key for encryption.
     ///
@@ -1334,7 +1438,12 @@
     /// and Diffie-Hellman, see the paper
     /// [On using the same key pair for Ed25519 and an X25519 based KEM](https://eprint.iacr.org/2021/509).
     </span><span class="kw">pub fn </span>to_scalar(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Scalar {
-        ExpandedSecretKey::from(<span class="kw-2">&amp;</span><span class="self">self</span>.secret_key).scalar
+        <span class="comment">// Per the spec, the ed25519 secret key sk is expanded to
+        //     (scalar_bytes, hash_prefix) = SHA-512(sk)
+        // where the two outputs are both 32 bytes. To use for signing, scalar_bytes must be
+        // clamped and reduced (see ExpandedSecretKey::from_bytes). We return the clamped and
+        // reduced form.
+        </span>ExpandedSecretKey::from(<span class="kw-2">&amp;</span><span class="self">self</span>.secret_key).scalar
     }
 }
 
@@ -1342,6 +1451,14 @@
     <span class="kw">fn </span>as_ref(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>VerifyingKey {
         <span class="kw-2">&amp;</span><span class="self">self</span>.verifying_key
     }
+}
+
+<span class="kw">impl </span>Debug <span class="kw">for </span>SigningKey {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>::core::fmt::Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; ::core::fmt::Result {
+        f.debug_struct(<span class="string">&quot;SigningKey&quot;</span>)
+            .field(<span class="string">&quot;verifying_key&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.verifying_key)
+            .finish_non_exhaustive() <span class="comment">// avoids printing `secret_key`
+    </span>}
 }
 
 <span class="kw">impl </span>KeypairRef <span class="kw">for </span>SigningKey {
@@ -1427,6 +1544,20 @@
             })
     }
 }
+
+<span class="kw">impl </span>ConstantTimeEq <span class="kw">for </span>SigningKey {
+    <span class="kw">fn </span>ct_eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Choice {
+        <span class="self">self</span>.secret_key.ct_eq(<span class="kw-2">&amp;</span>other.secret_key)
+    }
+}
+
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>SigningKey {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        <span class="self">self</span>.ct_eq(other).into()
+    }
+}
+
+<span class="kw">impl </span>Eq <span class="kw">for </span>SigningKey {}
 
 <span class="attr">#[cfg(feature = <span class="string">&quot;zeroize&quot;</span>)]
 </span><span class="kw">impl </span>Drop <span class="kw">for </span>SigningKey {
@@ -1530,7 +1661,7 @@
                 <span class="self">self</span>,
                 bytes: <span class="kw-2">&amp;</span><span class="lifetime">&#39;de </span>[u8],
             ) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, E&gt; {
-                SigningKey::try_from(bytes.as_ref()).map_err(E::custom)
+                SigningKey::try_from(bytes).map_err(E::custom)
             }
 
             <span class="kw">fn </span>visit_seq&lt;A&gt;(<span class="self">self</span>, <span class="kw-2">mut </span>seq: A) -&gt; <span class="prelude-ty">Result</span>&lt;<span class="self">Self</span>::Value, A::Error&gt;
@@ -1538,7 +1669,8 @@
                 </span>A: serde::de::SeqAccess&lt;<span class="lifetime">&#39;de</span>&gt;,
             {
                 <span class="kw">let </span><span class="kw-2">mut </span>bytes = [<span class="number">0u8</span>; <span class="number">32</span>];
-                <span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">32 </span>{
+                <span class="attr">#[allow(clippy::needless_range_loop)]
+                </span><span class="kw">for </span>i <span class="kw">in </span><span class="number">0</span>..<span class="number">32 </span>{
                     bytes[i] = seq
                         .next_element()<span class="question-mark">?
                         </span>.ok_or_else(|| serde::de::Error::invalid_length(i, <span class="kw-2">&amp;</span><span class="string">&quot;expected 32 bytes&quot;</span>))<span class="question-mark">?</span>;
@@ -1627,11 +1759,11 @@
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;digest&quot;</span>)]
     #[allow(non_snake_case)]
     #[inline(always)]
-    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>raw_sign_prehashed&lt;<span class="lifetime">&#39;a</span>, CtxDigest, MsgDigest&gt;(
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>raw_sign_prehashed&lt;CtxDigest, MsgDigest&gt;(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         prehashed_message: MsgDigest,
         verifying_key: <span class="kw-2">&amp;</span>VerifyingKey,
-        context: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>[u8]&gt;,
+        context: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>[u8]&gt;,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;Signature, SignatureError&gt;
     <span class="kw">where
         </span>CtxDigest: Digest&lt;OutputSize = U64&gt;,

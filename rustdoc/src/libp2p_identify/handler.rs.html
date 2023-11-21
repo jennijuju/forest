@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-identify-0.43.1/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_identify" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_identify/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-identify-0.44.0/src/handler.rs`."><title>handler.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_identify" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_identify/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -440,15 +440,6 @@
 <a href="#440" id="440">440</a>
 <a href="#441" id="441">441</a>
 <a href="#442" id="442">442</a>
-<a href="#443" id="443">443</a>
-<a href="#444" id="444">444</a>
-<a href="#445" id="445">445</a>
-<a href="#446" id="446">446</a>
-<a href="#447" id="447">447</a>
-<a href="#448" id="448">448</a>
-<a href="#449" id="449">449</a>
-<a href="#450" id="450">450</a>
-<a href="#451" id="451">451</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2018 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -484,13 +475,13 @@
     ProtocolSupport,
 };
 <span class="kw">use </span>libp2p_swarm::{
-    ConnectionHandler, ConnectionHandlerEvent, KeepAlive, StreamProtocol, StreamUpgradeError,
+    ConnectionHandler, ConnectionHandlerEvent, StreamProtocol, StreamUpgradeError,
     SubstreamProtocol, SupportedProtocols,
 };
-<span class="kw">use </span>log::{warn, Level};
 <span class="kw">use </span>smallvec::SmallVec;
 <span class="kw">use </span>std::collections::HashSet;
-<span class="kw">use </span>std::{io, task::Context, task::Poll, time::Duration};
+<span class="kw">use </span>std::{task::Context, task::Poll, time::Duration};
+<span class="kw">use </span>tracing::Level;
 
 <span class="kw">const </span>STREAM_TIMEOUT: Duration = Duration::from_secs(<span class="number">60</span>);
 <span class="kw">const </span>MAX_CONCURRENT_STREAMS_PER_CONNECTION: usize = <span class="number">10</span>;
@@ -508,7 +499,6 @@
             Either&lt;ReadyUpgrade&lt;StreamProtocol&gt;, ReadyUpgrade&lt;StreamProtocol&gt;&gt;,
             (),
             Event,
-            io::Error,
         &gt;; <span class="number">4</span>],
     &gt;,
 
@@ -561,16 +551,14 @@
     <span class="doccomment">/// We replied to an identification request from the remote.
     </span>Identification,
     <span class="doccomment">/// We actively pushed our identification information to the remote.
-    </span>IdentificationPushed,
+    </span>IdentificationPushed(Info),
     <span class="doccomment">/// Failed to identify the remote, or to reply to an identification request.
     </span>IdentificationError(StreamUpgradeError&lt;UpgradeError&gt;),
 }
 
 <span class="kw">impl </span>Handler {
     <span class="doccomment">/// Creates a new `Handler`.
-    </span><span class="attr">#[allow(clippy::too_many_arguments)]
     </span><span class="kw">pub fn </span>new(
-        initial_delay: Duration,
         interval: Duration,
         remote_peer_id: PeerId,
         public_key: PublicKey,
@@ -586,7 +574,7 @@
                 STREAM_TIMEOUT,
                 MAX_CONCURRENT_STREAMS_PER_CONNECTION,
             ),
-            trigger_next_identify: Delay::new(initial_delay),
+            trigger_next_identify: Delay::new(Duration::ZERO),
             exchanged_one_periodic_identify: <span class="bool-val">false</span>,
             interval,
             public_key,
@@ -620,7 +608,7 @@
                     )
                     .is_err()
                 {
-                    <span class="macro">warn!</span>(<span class="string">&quot;Dropping inbound stream because we are at capacity&quot;</span>);
+                    <span class="macro">tracing::warn!</span>(<span class="string">&quot;Dropping inbound stream because we are at capacity&quot;</span>);
                 } <span class="kw">else </span>{
                     <span class="self">self</span>.exchanged_one_periodic_identify = <span class="bool-val">true</span>;
                 }
@@ -631,7 +619,9 @@
                     .try_push(protocol::recv_push(stream).map_ok(Success::ReceivedIdentifyPush))
                     .is_err()
                 {
-                    <span class="macro">warn!</span>(<span class="string">&quot;Dropping inbound identify push stream because we are at capacity&quot;</span>);
+                    <span class="macro">tracing::warn!</span>(
+                        <span class="string">&quot;Dropping inbound identify push stream because we are at capacity&quot;
+                    </span>);
                 }
             }
         }
@@ -653,7 +643,7 @@
                     .try_push(protocol::recv_identify(stream).map_ok(Success::ReceivedIdentify))
                     .is_err()
                 {
-                    <span class="macro">warn!</span>(<span class="string">&quot;Dropping outbound identify stream because we are at capacity&quot;</span>);
+                    <span class="macro">tracing::warn!</span>(<span class="string">&quot;Dropping outbound identify stream because we are at capacity&quot;</span>);
                 }
             }
             future::Either::Right(stream) =&gt; {
@@ -662,11 +652,13 @@
                 <span class="kw">if </span><span class="self">self
                     </span>.active_streams
                     .try_push(
-                        protocol::send_identify(stream, info).map_ok(|<span class="kw">_</span>| Success::SentIdentifyPush),
+                        protocol::send_identify(stream, info).map_ok(Success::SentIdentifyPush),
                     )
                     .is_err()
                 {
-                    <span class="macro">warn!</span>(<span class="string">&quot;Dropping outbound identify push stream because we are at capacity&quot;</span>);
+                    <span class="macro">tracing::warn!</span>(
+                        <span class="string">&quot;Dropping outbound identify push stream because we are at capacity&quot;
+                    </span>);
                 }
             }
         }
@@ -731,7 +723,6 @@
 <span class="kw">impl </span>ConnectionHandler <span class="kw">for </span>Handler {
     <span class="kw">type </span>FromBehaviour = InEvent;
     <span class="kw">type </span>ToBehaviour = Event;
-    <span class="kw">type </span>Error = io::Error;
     <span class="kw">type </span>InboundProtocol =
         SelectUpgrade&lt;ReadyUpgrade&lt;StreamProtocol&gt;, ReadyUpgrade&lt;StreamProtocol&gt;&gt;;
     <span class="kw">type </span>OutboundProtocol = Either&lt;ReadyUpgrade&lt;StreamProtocol&gt;, ReadyUpgrade&lt;StreamProtocol&gt;&gt;;
@@ -765,20 +756,11 @@
         }
     }
 
-    <span class="kw">fn </span>connection_keep_alive(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; KeepAlive {
-        <span class="kw">if </span>!<span class="self">self</span>.active_streams.is_empty() {
-            <span class="kw">return </span>KeepAlive::Yes;
-        }
-
-        KeepAlive::No
-    }
-
-    <span class="kw">fn </span>poll(
+    <span class="attr">#[tracing::instrument(level = <span class="string">&quot;trace&quot;</span>, name = <span class="string">&quot;ConnectionHandler::poll&quot;</span>, skip(<span class="self">self</span>, cx))]
+    </span><span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-    ) -&gt; Poll&lt;
-        ConnectionHandlerEvent&lt;<span class="self">Self</span>::OutboundProtocol, <span class="self">Self</span>::OutboundOpenInfo, Event, <span class="self">Self</span>::Error&gt;,
-    &gt; {
+    ) -&gt; Poll&lt;ConnectionHandlerEvent&lt;<span class="self">Self</span>::OutboundProtocol, <span class="self">Self</span>::OutboundOpenInfo, Event&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = <span class="self">self</span>.events.pop() {
             <span class="kw">return </span>Poll::Ready(event);
         }
@@ -803,9 +785,9 @@
                     remote_info,
                 )));
             }
-            Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(Success::SentIdentifyPush))) =&gt; {
+            Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(Success::SentIdentifyPush(info)))) =&gt; {
                 <span class="kw">return </span>Poll::Ready(ConnectionHandlerEvent::NotifyBehaviour(
-                    Event::IdentificationPushed,
+                    Event::IdentificationPushed(info),
                 ));
             }
             Poll::Ready(<span class="prelude-val">Ok</span>(<span class="prelude-val">Ok</span>(Success::SentIdentify))) =&gt; {
@@ -863,23 +845,22 @@
                 ));
                 <span class="self">self</span>.trigger_next_identify.reset(<span class="self">self</span>.interval);
             }
-            ConnectionEvent::AddressChange(<span class="kw">_</span>)
-            | ConnectionEvent::ListenUpgradeError(<span class="kw">_</span>)
-            | ConnectionEvent::RemoteProtocolsChange(<span class="kw">_</span>) =&gt; {}
             ConnectionEvent::LocalProtocolsChange(change) =&gt; {
-                <span class="kw">let </span>before = <span class="macro">log::log_enabled!</span>(Level::Debug)
+                <span class="kw">let </span>before = <span class="macro">tracing::enabled!</span>(Level::DEBUG)
                     .then(|| <span class="self">self</span>.local_protocols_to_string())
                     .unwrap_or_default();
                 <span class="kw">let </span>protocols_changed = <span class="self">self</span>.local_supported_protocols.on_protocols_change(change);
-                <span class="kw">let </span>after = <span class="macro">log::log_enabled!</span>(Level::Debug)
+                <span class="kw">let </span>after = <span class="macro">tracing::enabled!</span>(Level::DEBUG)
                     .then(|| <span class="self">self</span>.local_protocols_to_string())
                     .unwrap_or_default();
 
                 <span class="kw">if </span>protocols_changed &amp;&amp; <span class="self">self</span>.exchanged_one_periodic_identify {
-                    <span class="macro">log::debug!</span>(
-                        <span class="string">&quot;Supported listen protocols changed from [{before}] to [{after}], pushing to {}&quot;</span>,
-                        <span class="self">self</span>.remote_peer_id
-                    );
+                    <span class="macro">tracing::debug!</span>(
+                        peer=%<span class="self">self</span>.remote_peer_id,
+                        %before,
+                        %after,
+                        <span class="string">&quot;Supported listen protocols changed, pushing to peer&quot;
+                    </span>);
 
                     <span class="self">self</span>.events
                         .push(ConnectionHandlerEvent::OutboundSubstreamRequest {
@@ -890,6 +871,7 @@
                         });
                 }
             }
+            <span class="kw">_ </span>=&gt; {}
         }
     }
 }
@@ -897,7 +879,7 @@
 <span class="kw">enum </span>Success {
     SentIdentify,
     ReceivedIdentify(Info),
-    SentIdentifyPush,
+    SentIdentifyPush(Info),
     ReceivedIdentifyPush(PushInfo),
 }
 </code></pre></div></section></main></body></html>

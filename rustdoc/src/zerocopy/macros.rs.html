@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerocopy-0.7.11/src/macros.rs`."><title>macros.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="zerocopy" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../zerocopy/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/zerocopy-0.7.26/src/macros.rs`."><title>macros.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="zerocopy" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../zerocopy/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -248,9 +248,105 @@
 <a href="#248" id="248">248</a>
 <a href="#249" id="249">249</a>
 <a href="#250" id="250">250</a>
-</pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 The Fuchsia Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+<a href="#251" id="251">251</a>
+<a href="#252" id="252">252</a>
+<a href="#253" id="253">253</a>
+<a href="#254" id="254">254</a>
+<a href="#255" id="255">255</a>
+<a href="#256" id="256">256</a>
+<a href="#257" id="257">257</a>
+<a href="#258" id="258">258</a>
+<a href="#259" id="259">259</a>
+<a href="#260" id="260">260</a>
+<a href="#261" id="261">261</a>
+<a href="#262" id="262">262</a>
+<a href="#263" id="263">263</a>
+<a href="#264" id="264">264</a>
+<a href="#265" id="265">265</a>
+<a href="#266" id="266">266</a>
+<a href="#267" id="267">267</a>
+<a href="#268" id="268">268</a>
+<a href="#269" id="269">269</a>
+<a href="#270" id="270">270</a>
+<a href="#271" id="271">271</a>
+<a href="#272" id="272">272</a>
+<a href="#273" id="273">273</a>
+<a href="#274" id="274">274</a>
+<a href="#275" id="275">275</a>
+<a href="#276" id="276">276</a>
+<a href="#277" id="277">277</a>
+<a href="#278" id="278">278</a>
+<a href="#279" id="279">279</a>
+<a href="#280" id="280">280</a>
+<a href="#281" id="281">281</a>
+<a href="#282" id="282">282</a>
+<a href="#283" id="283">283</a>
+<a href="#284" id="284">284</a>
+<a href="#285" id="285">285</a>
+<a href="#286" id="286">286</a>
+<a href="#287" id="287">287</a>
+<a href="#288" id="288">288</a>
+<a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
+<a href="#301" id="301">301</a>
+<a href="#302" id="302">302</a>
+<a href="#303" id="303">303</a>
+<a href="#304" id="304">304</a>
+<a href="#305" id="305">305</a>
+<a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
+<a href="#312" id="312">312</a>
+<a href="#313" id="313">313</a>
+<a href="#314" id="314">314</a>
+<a href="#315" id="315">315</a>
+<a href="#316" id="316">316</a>
+<a href="#317" id="317">317</a>
+<a href="#318" id="318">318</a>
+<a href="#319" id="319">319</a>
+<a href="#320" id="320">320</a>
+<a href="#321" id="321">321</a>
+<a href="#322" id="322">322</a>
+<a href="#323" id="323">323</a>
+<a href="#324" id="324">324</a>
+<a href="#325" id="325">325</a>
+<a href="#326" id="326">326</a>
+<a href="#327" id="327">327</a>
+<a href="#328" id="328">328</a>
+<a href="#329" id="329">329</a>
+<a href="#330" id="330">330</a>
+<a href="#331" id="331">331</a>
+<a href="#332" id="332">332</a>
+<a href="#333" id="333">333</a>
+<a href="#334" id="334">334</a>
+<a href="#335" id="335">335</a>
+<a href="#336" id="336">336</a>
+<a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
+<a href="#339" id="339">339</a>
+<a href="#340" id="340">340</a>
+<a href="#341" id="341">341</a>
+<a href="#342" id="342">342</a>
+</pre></div><pre class="rust"><code><span class="comment">// Copyright 2023 The Fuchsia Authors
+//
+// Licensed under a BSD-style license &lt;LICENSE-BSD&gt;, Apache License, Version 2.0
+// &lt;LICENSE-APACHE or https://www.apache.org/licenses/LICENSE-2.0&gt;, or the MIT
+// license &lt;LICENSE-MIT or https://opensource.org/licenses/MIT&gt;, at your option.
+// This file may not be copied, modified, or distributed except according to
+// those terms.
 
 </span><span class="doccomment">/// Documents multiple unsafe blocks with a single safety comment.
 ///
@@ -272,16 +368,17 @@
 /// The macro invocations are emitted, each decorated with the following
 /// attribute: `#[allow(clippy::undocumented_unsafe_blocks)]`.
 </span><span class="macro">macro_rules! </span>safety_comment {
-    (<span class="attr">#[doc = <span class="string">r&quot; SAFETY:&quot;</span>] </span>$($(<span class="attr">#[doc = <span class="macro-nonterminal">$_doc</span>:literal]</span>)* <span class="macro-nonterminal">$</span><span class="kw">macro</span>:<span class="macro">ident!</span><span class="macro-nonterminal">$args</span>:tt;)<span class="kw-2">*</span>) =&gt; {
-        <span class="attr">#[allow(clippy::undocumented_unsafe_blocks)]
-        </span><span class="kw">const _</span>: () = { $(<span class="macro-nonterminal">$</span><span class="macro">macro!</span><span class="macro-nonterminal">$args</span>;)* };
+    (<span class="attr">#[doc = <span class="string">r&quot; SAFETY:&quot;</span>] </span>$($(<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta]</span>)* <span class="macro-nonterminal">$</span><span class="kw">macro</span>:<span class="macro">ident!</span><span class="macro-nonterminal">$args</span>:tt;)<span class="kw-2">*</span>) =&gt; {
+        <span class="attr">#[allow(clippy::undocumented_unsafe_blocks, unused_attributes)]
+        </span><span class="kw">const _</span>: () = { $($(<span class="attr">#[<span class="macro-nonterminal">$attr</span>]</span>)* <span class="macro-nonterminal">$</span><span class="macro">macro!</span><span class="macro-nonterminal">$args</span>;)* };
     }
 }
 
 <span class="doccomment">/// Unsafely implements trait(s) for a type.
 </span><span class="macro">macro_rules! </span>unsafe_impl {
     <span class="comment">// Implement `$trait` for `$ty` with no bounds.
-    </span>(<span class="macro-nonterminal">$ty</span>:ty: <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
+    </span>($(<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta]</span>)* <span class="macro-nonterminal">$ty</span>:ty: <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ty</span>) =&gt; {
+        $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>]</span>)*
         <span class="kw">unsafe impl </span><span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$ty </span>{ <span class="attr">#[allow(clippy::missing_inline_in_public_items)] </span><span class="kw">fn </span>only_derive_is_allowed_to_implement_this_trait() {} }
     };
     <span class="comment">// Implement all `$traits` for `$ty` with no bounds.
@@ -314,38 +411,90 @@
     // The following arm has the same behavior with the exception of the lack of
     // support for a leading `const` parameter.
     </span>(
+        $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta]</span>)*
         <span class="kw">const </span><span class="macro-nonterminal">$constname</span>:ident : <span class="macro-nonterminal">$constty</span>:ident $(,)<span class="question-mark">?
         </span>$(<span class="macro-nonterminal">$tyvar</span>:ident $(: $(<span class="question-mark">? </span><span class="macro-nonterminal">$optbound</span>:ident $(+)<span class="question-mark">?</span>)* $(<span class="macro-nonterminal">$bound</span>:ident $(+)<span class="question-mark">?</span>)* )<span class="question-mark">?</span>),*
         =&gt; <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident </span><span class="kw">for </span><span class="macro-nonterminal">$ty</span>:ty
     ) =&gt; {
         <span class="macro">unsafe_impl!</span>(
             @inner
+            $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>]</span>)*
             @<span class="kw">const </span><span class="macro-nonterminal">$constname</span>: <span class="macro-nonterminal">$constty</span>,
             $(<span class="macro-nonterminal">$tyvar </span>$(: $(<span class="question-mark">? </span><span class="macro-nonterminal">$optbound </span>+)* + $(<span class="macro-nonterminal">$bound </span>+)<span class="kw-2">*</span>)<span class="question-mark">?</span>,)*
             =&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$ty
         </span>);
     };
     (
+        $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta]</span>)*
         $(<span class="macro-nonterminal">$tyvar</span>:ident $(: $(<span class="question-mark">? </span><span class="macro-nonterminal">$optbound</span>:ident $(+)<span class="question-mark">?</span>)* $(<span class="macro-nonterminal">$bound</span>:ident $(+)<span class="question-mark">?</span>)* )<span class="question-mark">?</span>),*
         =&gt; <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident </span><span class="kw">for </span><span class="macro-nonterminal">$ty</span>:ty
     ) =&gt; {
         <span class="macro">unsafe_impl!</span>(
             @inner
+            $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>]</span>)*
             $(<span class="macro-nonterminal">$tyvar </span>$(: $(<span class="question-mark">? </span><span class="macro-nonterminal">$optbound </span>+)* + $(<span class="macro-nonterminal">$bound </span>+)<span class="kw-2">*</span>)<span class="question-mark">?</span>,)*
             =&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$ty
         </span>);
     };
     (
         @inner
+        $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>:meta]</span>)*
         $(@<span class="kw">const </span><span class="macro-nonterminal">$constname</span>:ident : <span class="macro-nonterminal">$constty</span>:ident,)*
         $(<span class="macro-nonterminal">$tyvar</span>:ident $(: $(<span class="question-mark">? </span><span class="macro-nonterminal">$optbound</span>:ident +)* + $(<span class="macro-nonterminal">$bound</span>:ident +)* )<span class="question-mark">?</span>,)*
         =&gt; <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident </span><span class="kw">for </span><span class="macro-nonterminal">$ty</span>:ty
     ) =&gt; {
+        $(<span class="attr">#[<span class="macro-nonterminal">$attr</span>]</span>)*
         <span class="kw">unsafe impl</span>&lt;$(<span class="kw">const </span><span class="macro-nonterminal">$constname</span>: <span class="macro-nonterminal">$constty</span>,)* $(<span class="macro-nonterminal">$tyvar </span>$(: $(<span class="question-mark">? </span><span class="macro-nonterminal">$optbound </span>+)* $(<span class="macro-nonterminal">$bound </span>+)<span class="kw-2">*</span>)<span class="question-mark">?</span>),<span class="kw-2">*</span>&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$ty </span>{
             <span class="attr">#[allow(clippy::missing_inline_in_public_items)]
             </span><span class="kw">fn </span>only_derive_is_allowed_to_implement_this_trait() {}
         }
     };
+}
+
+<span class="doccomment">/// Implements a trait for a type, bounding on each memeber of the power set of
+/// a set of type variables. This is useful for implementing traits for tuples
+/// or `fn` types.
+///
+/// The last argument is the name of a macro which will be called in every
+/// `impl` block, and is expected to expand to the name of the type for which to
+/// implement the trait.
+///
+/// For example, the invocation:
+/// ```ignore
+/// unsafe_impl_for_power_set!(A, B =&gt; Foo for type!(...))
+/// ```
+/// ...expands to:
+/// ```ignore
+/// unsafe impl       Foo for type!()     { ... }
+/// unsafe impl&lt;B&gt;    Foo for type!(B)    { ... }
+/// unsafe impl&lt;A, B&gt; Foo for type!(A, B) { ... }
+/// ```
+</span><span class="macro">macro_rules! </span>unsafe_impl_for_power_set {
+    (<span class="macro-nonterminal">$first</span>:ident $(, <span class="macro-nonterminal">$rest</span>:ident)* $(-&gt; <span class="macro-nonterminal">$ret</span>:ident)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident </span><span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">macro</span>:<span class="macro">ident!</span>(...)) =&gt; {
+        <span class="macro">unsafe_impl_for_power_set!</span>($(<span class="macro-nonterminal">$rest</span>),* $(-&gt; <span class="macro-nonterminal">$ret</span>)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$</span><span class="macro">macro!</span>(...));
+        <span class="macro">unsafe_impl_for_power_set!</span>(@<span class="kw">impl </span><span class="macro-nonterminal">$first </span>$(, <span class="macro-nonterminal">$rest</span>)* $(-&gt; <span class="macro-nonterminal">$ret</span>)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$</span><span class="macro">macro!</span>(...));
+    };
+    ($(-&gt; <span class="macro-nonterminal">$ret</span>:ident)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident </span><span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">macro</span>:<span class="macro">ident!</span>(...)) =&gt; {
+        <span class="macro">unsafe_impl_for_power_set!</span>(@<span class="kw">impl </span>$(-&gt; <span class="macro-nonterminal">$ret</span>)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$</span><span class="macro">macro!</span>(...));
+    };
+    (@<span class="kw">impl </span>$(<span class="macro-nonterminal">$vars</span>:ident),* $(-&gt; <span class="macro-nonterminal">$ret</span>:ident)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$</span><span class="kw">trait</span>:<span class="macro-nonterminal">ident </span><span class="kw">for </span><span class="macro-nonterminal">$</span><span class="kw">macro</span>:<span class="macro">ident!</span>(...)) =&gt; {
+        <span class="kw">unsafe impl</span>&lt;$(<span class="macro-nonterminal">$vars</span>,)* $(<span class="macro-nonterminal">$ret</span>)<span class="question-mark">?</span>&gt; <span class="macro-nonterminal">$</span><span class="kw">trait for </span><span class="macro-nonterminal">$</span><span class="macro">macro!</span>($(<span class="macro-nonterminal">$vars</span>),* $(-&gt; <span class="macro-nonterminal">$ret</span>)<span class="question-mark">?</span>) {
+            <span class="attr">#[allow(clippy::missing_inline_in_public_items)]
+            </span><span class="kw">fn </span>only_derive_is_allowed_to_implement_this_trait() {}
+        }
+    };
+}
+
+<span class="doccomment">/// Expands to an `Option&lt;extern &quot;C&quot; fn&gt;` type with the given argument types and
+/// return type. Designed for use with `unsafe_impl_for_power_set`.
+</span><span class="macro">macro_rules! </span>opt_extern_c_fn {
+    ($(<span class="macro-nonterminal">$args</span>:ident),* -&gt; <span class="macro-nonterminal">$ret</span>:ident) =&gt; { <span class="prelude-ty">Option</span>&lt;<span class="kw">extern </span><span class="string">&quot;C&quot; </span><span class="kw">fn</span>($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret</span>&gt; };
+}
+
+<span class="doccomment">/// Expands to a `Option&lt;fn&gt;` type with the given argument types and return
+/// type. Designed for use with `unsafe_impl_for_power_set`.
+</span><span class="macro">macro_rules! </span>opt_fn {
+    ($(<span class="macro-nonterminal">$args</span>:ident),* -&gt; <span class="macro-nonterminal">$ret</span>:ident) =&gt; { <span class="prelude-ty">Option</span>&lt;<span class="kw">fn</span>($(<span class="macro-nonterminal">$args</span>),<span class="kw-2">*</span>) -&gt; <span class="macro-nonterminal">$ret</span>&gt; };
 }
 
 <span class="doccomment">/// Implements trait(s) for a type or verifies the given implementation by
@@ -454,11 +603,26 @@
     };
     ($(<span class="macro-nonterminal">$ty</span>:ty),<span class="kw-2">*</span>) =&gt; { $(<span class="macro">impl_known_layout!</span>(@inner , =&gt; <span class="macro-nonterminal">$ty</span>);)* };
     (@inner $(<span class="kw">const </span><span class="macro-nonterminal">$constvar</span>:ident : <span class="macro-nonterminal">$constty</span>:ty)<span class="question-mark">? </span>, $(<span class="macro-nonterminal">$tyvar</span>:ident $(: <span class="question-mark">?</span><span class="macro-nonterminal">$optbound</span>:ident)<span class="question-mark">?</span>)<span class="question-mark">? </span>=&gt; <span class="macro-nonterminal">$ty</span>:ty) =&gt; {
-        <span class="kw">impl</span>&lt;$(<span class="kw">const </span><span class="macro-nonterminal">$constvar </span>: <span class="macro-nonterminal">$constty</span>,)<span class="question-mark">? </span>$(<span class="macro-nonterminal">$tyvar </span>$(: <span class="question-mark">?</span><span class="macro-nonterminal">$optbound</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span>&gt; sealed::KnownLayoutSealed <span class="kw">for </span><span class="macro-nonterminal">$ty </span>{}
-        <span class="comment">// SAFETY: Delegates safety to `DstLayout::for_type`.
-        </span><span class="kw">unsafe impl</span>&lt;$(<span class="kw">const </span><span class="macro-nonterminal">$constvar </span>: <span class="macro-nonterminal">$constty</span>,)<span class="question-mark">? </span>$(<span class="macro-nonterminal">$tyvar </span>$(: <span class="question-mark">?</span><span class="macro-nonterminal">$optbound</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span>&gt; KnownLayout <span class="kw">for </span><span class="macro-nonterminal">$ty </span>{
-            <span class="kw">const </span>LAYOUT: DstLayout = DstLayout::for_type::&lt;<span class="macro-nonterminal">$ty</span>&gt;();
-        }
+        <span class="kw">const _</span>: () = {
+            <span class="kw">use </span>core::ptr::NonNull;
+
+            <span class="comment">// SAFETY: Delegates safety to `DstLayout::for_type`.
+            </span><span class="kw">unsafe impl</span>&lt;$(<span class="kw">const </span><span class="macro-nonterminal">$constvar </span>: <span class="macro-nonterminal">$constty</span>,)<span class="question-mark">? </span>$(<span class="macro-nonterminal">$tyvar </span>$(: <span class="question-mark">?</span><span class="macro-nonterminal">$optbound</span>)<span class="question-mark">?</span>)<span class="question-mark">?</span>&gt; KnownLayout <span class="kw">for </span><span class="macro-nonterminal">$ty </span>{
+                <span class="attr">#[allow(clippy::missing_inline_in_public_items)]
+                </span><span class="kw">fn </span>only_derive_is_allowed_to_implement_this_trait() <span class="kw">where </span><span class="self">Self</span>: Sized {}
+
+                <span class="kw">const </span>LAYOUT: DstLayout = DstLayout::for_type::&lt;<span class="macro-nonterminal">$ty</span>&gt;();
+
+                <span class="comment">// SAFETY: `.cast` preserves address and provenance.
+                //
+                // TODO(#429): Add documentation to `.cast` that promises that
+                // it preserves provenance.
+                </span><span class="attr">#[inline(always)]
+                </span><span class="kw">fn </span>raw_from_ptr_len(bytes: NonNull&lt;u8&gt;, _elems: usize) -&gt; NonNull&lt;<span class="self">Self</span>&gt; {
+                    bytes.cast::&lt;<span class="self">Self</span>&gt;()
+                }
+            }
+        };
     };
 }
 
@@ -475,10 +639,30 @@
 ///   and this operation must preserve referent size (ie, `size_of_val_raw`).
 </span><span class="macro">macro_rules! </span>unsafe_impl_known_layout {
     ($(<span class="macro-nonterminal">$tyvar</span>:ident: <span class="question-mark">?</span>Sized + KnownLayout =&gt;)<span class="question-mark">? </span><span class="attr">#[repr(<span class="macro-nonterminal">$repr</span>:ty)] </span><span class="macro-nonterminal">$ty</span>:ty) =&gt; {
-        <span class="kw">impl</span>&lt;$(<span class="macro-nonterminal">$tyvar</span>: <span class="question-mark">?</span>Sized + KnownLayout)<span class="question-mark">?</span>&gt; sealed::KnownLayoutSealed <span class="kw">for </span><span class="macro-nonterminal">$ty </span>{}
-        <span class="kw">unsafe impl</span>&lt;$(<span class="macro-nonterminal">$tyvar</span>: <span class="question-mark">?</span>Sized + KnownLayout)<span class="question-mark">?</span>&gt; KnownLayout <span class="kw">for </span><span class="macro-nonterminal">$ty </span>{
-            <span class="kw">const </span>LAYOUT: DstLayout = &lt;<span class="macro-nonterminal">$repr </span><span class="kw">as </span>KnownLayout&gt;::LAYOUT;
-        }
+        <span class="kw">const _</span>: () = {
+            <span class="kw">use </span>core::ptr::NonNull;
+
+            <span class="kw">unsafe impl</span>&lt;$(<span class="macro-nonterminal">$tyvar</span>: <span class="question-mark">?</span>Sized + KnownLayout)<span class="question-mark">?</span>&gt; KnownLayout <span class="kw">for </span><span class="macro-nonterminal">$ty </span>{
+                <span class="attr">#[allow(clippy::missing_inline_in_public_items)]
+                </span><span class="kw">fn </span>only_derive_is_allowed_to_implement_this_trait() {}
+
+                <span class="kw">const </span>LAYOUT: DstLayout = &lt;<span class="macro-nonterminal">$repr </span><span class="kw">as </span>KnownLayout&gt;::LAYOUT;
+
+                <span class="comment">// SAFETY: All operations preserve address and provenance.
+                // Caller has promised that the `as` cast preserves size.
+                //
+                // TODO(#429): Add documentation to `NonNull::new_unchecked`
+                // that it preserves provenance.
+                </span><span class="attr">#[inline(always)]
+                #[allow(unused_qualifications)] </span><span class="comment">// for `core::ptr::NonNull`
+                </span><span class="kw">fn </span>raw_from_ptr_len(bytes: NonNull&lt;u8&gt;, elems: usize) -&gt; NonNull&lt;<span class="self">Self</span>&gt; {
+                    <span class="attr">#[allow(clippy::as_conversions)]
+                    </span><span class="kw">let </span>ptr = &lt;<span class="macro-nonterminal">$repr</span>&gt;::raw_from_ptr_len(bytes, elems).as_ptr() <span class="kw">as </span><span class="kw-2">*mut </span><span class="self">Self</span>;
+                    <span class="comment">// SAFETY: `ptr` was converted from `bytes`, which is non-null.
+                    </span><span class="kw">unsafe </span>{ NonNull::new_unchecked(ptr) }
+                }
+            }
+        };
     };
 }
 

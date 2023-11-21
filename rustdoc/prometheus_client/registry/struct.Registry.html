@@ -27,7 +27,7 @@ registry.register(
   gauge.clone(),
 );
 </code></pre></div>
-</div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Registry" class="impl"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#69-316">source</a><a href="#impl-Registry" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.Registry.html" title="struct prometheus_client::registry::Registry">Registry</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.with_prefix" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#71-76">source</a><h4 class="code-header">pub fn <a href="#method.with_prefix" class="fn">with_prefix</a>(prefix: impl <a class="trait" href="https://doc.rust-lang.org/1.74.0/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.74.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock"><p>Creates a new default <a href="struct.Registry.html" title="struct prometheus_client::registry::Registry"><code>Registry</code></a> with the given prefix.</p>
+</div></details><h2 id="implementations" class="small-section-header">Implementations<a href="#implementations" class="anchor">§</a></h2><div id="implementations-list"><details class="toggle implementors-toggle" open><summary><section id="impl-Registry" class="impl"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#69-314">source</a><a href="#impl-Registry" class="anchor">§</a><h3 class="code-header">impl <a class="struct" href="struct.Registry.html" title="struct prometheus_client::registry::Registry">Registry</a></h3></section></summary><div class="impl-items"><details class="toggle method-toggle" open><summary><section id="method.with_prefix" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#71-76">source</a><h4 class="code-header">pub fn <a href="#method.with_prefix" class="fn">with_prefix</a>(prefix: impl <a class="trait" href="https://doc.rust-lang.org/1.74.0/core/convert/trait.Into.html" title="trait core::convert::Into">Into</a>&lt;<a class="struct" href="https://doc.rust-lang.org/1.74.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a>&gt;) -&gt; Self</h4></section></summary><div class="docblock"><p>Creates a new default <a href="struct.Registry.html" title="struct prometheus_client::registry::Registry"><code>Registry</code></a> with the given prefix.</p>
 </div></details><details class="toggle method-toggle" open><summary><section id="method.with_labels" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#79-86">source</a><h4 class="code-header">pub fn <a href="#method.with_labels" class="fn">with_labels</a>(
     labels: impl <a class="trait" href="https://doc.rust-lang.org/1.74.0/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator">Iterator</a>&lt;Item = (<a class="enum" href="https://doc.rust-lang.org/1.74.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow">Cow</a>&lt;'static, <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;, <a class="enum" href="https://doc.rust-lang.org/1.74.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow">Cow</a>&lt;'static, <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;)&gt;
 ) -&gt; Self</h4></section></summary><div class="docblock"><p>Creates a new default <a href="struct.Registry.html" title="struct prometheus_client::registry::Registry"><code>Registry</code></a> with the given labels.</p>
@@ -76,23 +76,23 @@ registry.register_with_unit(
   Unit::Seconds,
   counter.clone(),
 );</code></pre></div>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.register_collector" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#209-211">source</a><h4 class="code-header">pub fn <a href="#method.register_collector" class="fn">register_collector</a>(&amp;mut self, collector: <a class="struct" href="https://doc.rust-lang.org/1.74.0/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="../collector/trait.Collector.html" title="trait prometheus_client::collector::Collector">Collector</a>&gt;)</h4></section></summary><div class="docblock"><p>Register a <a href="../collector/trait.Collector.html" title="trait prometheus_client::collector::Collector"><code>Collector</code></a>.</p>
+</div></details><details class="toggle method-toggle" open><summary><section id="method.register_collector" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#206-208">source</a><h4 class="code-header">pub fn <a href="#method.register_collector" class="fn">register_collector</a>(&amp;mut self, collector: <a class="struct" href="https://doc.rust-lang.org/1.74.0/alloc/boxed/struct.Box.html" title="struct alloc::boxed::Box">Box</a>&lt;dyn <a class="trait" href="../collector/trait.Collector.html" title="trait prometheus_client::collector::Collector">Collector</a>&gt;)</h4></section></summary><div class="docblock"><p>Register a <a href="../collector/trait.Collector.html" title="trait prometheus_client::collector::Collector"><code>Collector</code></a>.</p>
 
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="attr">#[derive(Debug)]
 </span><span class="kw">struct </span>MyCollector {}
 
 <span class="kw">impl </span>Collector <span class="kw">for </span>MyCollector {
-  <span class="kw">fn </span>collect&lt;<span class="lifetime">&#39;a</span>&gt;(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span><span class="self">self</span>) -&gt; Box&lt;<span class="kw">dyn </span>Iterator&lt;Item = (Cow&lt;<span class="lifetime">&#39;a</span>, Descriptor&gt;, MaybeOwned&lt;<span class="lifetime">&#39;a</span>, Box&lt;<span class="kw">dyn </span>LocalMetric&gt;&gt;)&gt; + <span class="lifetime">&#39;a</span>&gt; {
-    <span class="kw">let </span>c: Box&lt;<span class="kw">dyn </span>LocalMetric&gt; = Box::new(ConstCounter::new(<span class="number">42</span>));
-    <span class="kw">let </span>descriptor = Descriptor::new(
-      <span class="string">&quot;my_counter&quot;</span>,
-      <span class="string">&quot;This is my counter&quot;</span>,
-      <span class="prelude-val">None</span>,
-      <span class="prelude-val">None</span>,
-      <span class="macro">vec!</span>[],
-    );
-    Box::new(std::iter::once((Cow::Owned(descriptor), MaybeOwned::Owned(c))))
-  }
+    <span class="kw">fn </span>encode(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="kw-2">mut </span>encoder: DescriptorEncoder) -&gt; <span class="prelude-ty">Result</span>&lt;(), std::fmt::Error&gt; {
+        <span class="kw">let </span>counter = ConstCounter::new(<span class="number">42</span>);
+        <span class="kw">let </span>metric_encoder = encoder.encode_descriptor(
+            <span class="string">&quot;my_counter&quot;</span>,
+            <span class="string">&quot;some help&quot;</span>,
+            <span class="prelude-val">None</span>,
+            counter.metric_type(),
+        )<span class="question-mark">?</span>;
+        counter.encode(metric_encoder)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(())
+    }
 }
 
 <span class="kw">let </span>my_collector = Box::new(MyCollector{});
@@ -100,7 +100,7 @@ registry.register_with_unit(
 <span class="kw">let </span><span class="kw-2">mut </span>registry = Registry::default();
 
 registry.register_collector(my_collector);</code></pre></div>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.sub_registry_with_prefix" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#247-257">source</a><h4 class="code-header">pub fn <a href="#method.sub_registry_with_prefix" class="fn">sub_registry_with_prefix</a>&lt;P: <a class="trait" href="https://doc.rust-lang.org/1.74.0/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;&gt;(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.sub_registry_with_prefix" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#244-254">source</a><h4 class="code-header">pub fn <a href="#method.sub_registry_with_prefix" class="fn">sub_registry_with_prefix</a>&lt;P: <a class="trait" href="https://doc.rust-lang.org/1.74.0/core/convert/trait.AsRef.html" title="trait core::convert::AsRef">AsRef</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;&gt;(
     &amp;mut self,
     prefix: P
 ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Create a sub-registry to register metrics with a common prefix.</p>
@@ -129,11 +129,11 @@ registry.register(<span class="string">&quot;counter_1&quot;</span>, <span class
 registry.register(<span class="string">&quot;counter_2&quot;</span>, <span class="string">&quot;&quot;</span>, subsystem_b_counter_2.clone());</code></pre></div>
 <p>See <a href="struct.Registry.html#method.sub_registry_with_label" title="method prometheus_client::registry::Registry::sub_registry_with_label"><code>Registry::sub_registry_with_label</code></a> for the same functionality,
 but namespacing with a label instead of a metric name prefix.</p>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.sub_registry_with_label" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#260-265">source</a><h4 class="code-header">pub fn <a href="#method.sub_registry_with_label" class="fn">sub_registry_with_label</a>(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.sub_registry_with_label" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#257-262">source</a><h4 class="code-header">pub fn <a href="#method.sub_registry_with_label" class="fn">sub_registry_with_label</a>(
     &amp;mut self,
     label: (<a class="enum" href="https://doc.rust-lang.org/1.74.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow">Cow</a>&lt;'static, <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;, <a class="enum" href="https://doc.rust-lang.org/1.74.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow">Cow</a>&lt;'static, <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;)
 ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Like <a href="struct.Registry.html#method.sub_registry_with_prefix" title="method prometheus_client::registry::Registry::sub_registry_with_prefix"><code>Registry::sub_registry_with_prefix</code></a> but with a label instead.</p>
-</div></details><details class="toggle method-toggle" open><summary><section id="method.sub_registry_with_labels" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#268-282">source</a><h4 class="code-header">pub fn <a href="#method.sub_registry_with_labels" class="fn">sub_registry_with_labels</a>(
+</div></details><details class="toggle method-toggle" open><summary><section id="method.sub_registry_with_labels" class="method"><a class="src rightside" href="../../src/prometheus_client/registry.rs.html#265-279">source</a><h4 class="code-header">pub fn <a href="#method.sub_registry_with_labels" class="fn">sub_registry_with_labels</a>(
     &amp;mut self,
     labels: impl <a class="trait" href="https://doc.rust-lang.org/1.74.0/core/iter/traits/iterator/trait.Iterator.html" title="trait core::iter::traits::iterator::Iterator">Iterator</a>&lt;Item = (<a class="enum" href="https://doc.rust-lang.org/1.74.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow">Cow</a>&lt;'static, <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;, <a class="enum" href="https://doc.rust-lang.org/1.74.0/alloc/borrow/enum.Cow.html" title="enum alloc::borrow::Cow">Cow</a>&lt;'static, <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.str.html">str</a>&gt;)&gt;
 ) -&gt; <a class="primitive" href="https://doc.rust-lang.org/1.74.0/std/primitive.reference.html">&amp;mut Self</a></h4></section></summary><div class="docblock"><p>Like <a href="struct.Registry.html#method.sub_registry_with_prefix" title="method prometheus_client::registry::Registry::sub_registry_with_prefix"><code>Registry::sub_registry_with_prefix</code></a> but with multiple labels instead.</p>

@@ -152,12 +152,15 @@
 <a href="#152" id="152">152</a>
 <a href="#153" id="153">153</a>
 <a href="#154" id="154">154</a>
+<a href="#155" id="155">155</a>
+<a href="#156" id="156">156</a>
+<a href="#157" id="157">157</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 </span><span class="kw">use </span>ahash::HashMap;
 <span class="kw">use </span>libp2p::{
-    request_response::{<span class="self">self</span>, ProtocolSupport, RequestId, ResponseChannel},
+    request_response::{<span class="self">self</span>, OutboundRequestId, ProtocolSupport, ResponseChannel},
     swarm::{derive_prelude::<span class="kw-2">*</span>, NetworkBehaviour, THandlerOutEvent},
     PeerId,
 };
@@ -170,7 +173,7 @@
 
 <span class="kw">pub struct </span>HelloBehaviour {
     inner: InnerBehaviour,
-    response_channels: HashMap&lt;RequestId, flume::Sender&lt;HelloResponse&gt;&gt;,
+    response_channels: HashMap&lt;OutboundRequestId, flume::Sender&lt;HelloResponse&gt;&gt;,
 }
 
 <span class="kw">impl </span>HelloBehaviour {
@@ -179,7 +182,7 @@
         peer: <span class="kw-2">&amp;</span>PeerId,
         request: HelloRequest,
         response_channel: flume::Sender&lt;HelloResponse&gt;,
-    ) -&gt; RequestId {
+    ) -&gt; OutboundRequestId {
         <span class="kw">let </span>request_id = <span class="self">self</span>.inner.send_request(peer, request);
         <span class="self">self</span>.response_channels.insert(request_id, response_channel);
         <span class="self">self</span>.track_metrics();
@@ -194,7 +197,11 @@
         <span class="self">self</span>.inner.send_response(channel, response)
     }
 
-    <span class="kw">pub async fn </span>handle_response(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: <span class="kw-2">&amp;</span>RequestId, response: HelloResponse) {
+    <span class="kw">pub async fn </span>handle_response(
+        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
+        request_id: <span class="kw-2">&amp;</span>OutboundRequestId,
+        response: HelloResponse,
+    ) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(channel) = <span class="self">self</span>.response_channels.remove(request_id) {
             <span class="self">self</span>.track_metrics();
             <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = channel.send_async(response).<span class="kw">await </span>{
@@ -203,7 +210,7 @@
         }
     }
 
-    <span class="kw">pub fn </span>on_error(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: <span class="kw-2">&amp;</span>RequestId) {
+    <span class="kw">pub fn </span>on_outbound_failure(<span class="kw-2">&amp;mut </span><span class="self">self</span>, request_id: <span class="kw-2">&amp;</span>OutboundRequestId) {
         <span class="kw">if </span><span class="self">self</span>.response_channels.remove(request_id).is_some() {
             <span class="self">self</span>.track_metrics();
         }
@@ -294,16 +301,15 @@
             .on_connection_handler_event(peer_id, connection_id, event)
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="self">self</span>.inner.on_swarm_event(event)
     }
 
     <span class="kw">fn </span>poll(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         cx: <span class="kw-2">&amp;mut </span>std::task::Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        params: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
     ) -&gt; std::task::Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
-        <span class="self">self</span>.inner.poll(cx, params)
+        <span class="self">self</span>.inner.poll(cx)
     }
 }
 </code></pre></div></section></main></body></html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-request-response-0.25.2/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_request_response" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_request_response/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `/home/runner/.cargo/registry/src/index.crates.io-6f17d22bba15001f/libp2p-request-response-0.26.0/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-fa3bb1812debf86c.css"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="libp2p_request_response" data-themes="" data-resource-suffix="" data-rustdoc-version="1.74.0 (79e9716c9 2023-11-13)" data-channel="1.74.0" data-search-js="search-8be46b629f5f14a8.js" data-settings-js="settings-74424d7eec62a23e.js" ><script src="../../static.files/storage-fec3eaa3851e447d.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-c5bd66d33317d69f.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-5d8b3c7633ad77ba.css"></noscript><link rel="alternate icon" type="image/png" href="../../static.files/favicon-16x16-8b506e7a72182f1c.png"><link rel="alternate icon" type="image/png" href="../../static.files/favicon-32x32-422f7d1d52889060.png"><link rel="icon" type="image/svg+xml" href="../../static.files/favicon-2c020d218678b618.svg"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../libp2p_request_response/index.html"><img class="rust-logo" src="../../static.files/rust-logo-151179464ae7ed46.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -951,6 +951,50 @@
 <a href="#951" id="951">951</a>
 <a href="#952" id="952">952</a>
 <a href="#953" id="953">953</a>
+<a href="#954" id="954">954</a>
+<a href="#955" id="955">955</a>
+<a href="#956" id="956">956</a>
+<a href="#957" id="957">957</a>
+<a href="#958" id="958">958</a>
+<a href="#959" id="959">959</a>
+<a href="#960" id="960">960</a>
+<a href="#961" id="961">961</a>
+<a href="#962" id="962">962</a>
+<a href="#963" id="963">963</a>
+<a href="#964" id="964">964</a>
+<a href="#965" id="965">965</a>
+<a href="#966" id="966">966</a>
+<a href="#967" id="967">967</a>
+<a href="#968" id="968">968</a>
+<a href="#969" id="969">969</a>
+<a href="#970" id="970">970</a>
+<a href="#971" id="971">971</a>
+<a href="#972" id="972">972</a>
+<a href="#973" id="973">973</a>
+<a href="#974" id="974">974</a>
+<a href="#975" id="975">975</a>
+<a href="#976" id="976">976</a>
+<a href="#977" id="977">977</a>
+<a href="#978" id="978">978</a>
+<a href="#979" id="979">979</a>
+<a href="#980" id="980">980</a>
+<a href="#981" id="981">981</a>
+<a href="#982" id="982">982</a>
+<a href="#983" id="983">983</a>
+<a href="#984" id="984">984</a>
+<a href="#985" id="985">985</a>
+<a href="#986" id="986">986</a>
+<a href="#987" id="987">987</a>
+<a href="#988" id="988">988</a>
+<a href="#989" id="989">989</a>
+<a href="#990" id="990">990</a>
+<a href="#991" id="991">991</a>
+<a href="#992" id="992">992</a>
+<a href="#993" id="993">993</a>
+<a href="#994" id="994">994</a>
+<a href="#995" id="995">995</a>
+<a href="#996" id="996">996</a>
+<a href="#997" id="997">997</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2020 Parity Technologies (UK) Ltd.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -1029,7 +1073,7 @@
 <span class="kw">pub use </span>codec::Codec;
 <span class="kw">pub use </span>handler::ProtocolSupport;
 
-<span class="kw">use </span><span class="kw">crate</span>::handler::protocol::RequestProtocol;
+<span class="kw">use </span><span class="kw">crate</span>::handler::OutboundMessage;
 <span class="kw">use </span>futures::channel::oneshot;
 <span class="kw">use </span>handler::Handler;
 <span class="kw">use </span>libp2p_core::{ConnectedPoint, Endpoint, Multiaddr};
@@ -1037,13 +1081,13 @@
 <span class="kw">use </span>libp2p_swarm::{
     behaviour::{AddressChange, ConnectionClosed, DialFailure, FromSwarm},
     dial_opts::DialOpts,
-    ConnectionDenied, ConnectionHandler, ConnectionId, NetworkBehaviour, NotifyHandler,
-    PollParameters, THandler, THandlerInEvent, THandlerOutEvent, ToSwarm,
+    ConnectionDenied, ConnectionHandler, ConnectionId, NetworkBehaviour, NotifyHandler, THandler,
+    THandlerInEvent, THandlerOutEvent, ToSwarm,
 };
 <span class="kw">use </span>smallvec::SmallVec;
 <span class="kw">use </span>std::{
     collections::{HashMap, HashSet, VecDeque},
-    fmt,
+    fmt, io,
     sync::{atomic::AtomicU64, Arc},
     task::{Context, Poll},
     time::Duration,
@@ -1055,7 +1099,7 @@
     <span class="doccomment">/// A request message.
     </span>Request {
         <span class="doccomment">/// The ID of this request.
-        </span>request_id: RequestId,
+        </span>request_id: InboundRequestId,
         <span class="doccomment">/// The request message.
         </span>request: TRequest,
         <span class="doccomment">/// The channel waiting for the response.
@@ -1070,7 +1114,7 @@
         <span class="doccomment">/// The ID of the request that produced this response.
         ///
         /// See [`Behaviour::send_request`].
-        </span>request_id: RequestId,
+        </span>request_id: OutboundRequestId,
         <span class="doccomment">/// The response message.
         </span>response: TResponse,
     },
@@ -1091,7 +1135,7 @@
         <span class="doccomment">/// The peer to whom the request was sent.
         </span>peer: PeerId,
         <span class="doccomment">/// The (local) ID of the failed request.
-        </span>request_id: RequestId,
+        </span>request_id: OutboundRequestId,
         <span class="doccomment">/// The error that occurred.
         </span>error: OutboundFailure,
     },
@@ -1100,7 +1144,7 @@
         <span class="doccomment">/// The peer from whom the request was received.
         </span>peer: PeerId,
         <span class="doccomment">/// The ID of the failed inbound request.
-        </span>request_id: RequestId,
+        </span>request_id: InboundRequestId,
         <span class="doccomment">/// The error that occurred.
         </span>error: InboundFailure,
     },
@@ -1112,13 +1156,13 @@
         <span class="doccomment">/// The peer to whom the response was sent.
         </span>peer: PeerId,
         <span class="doccomment">/// The ID of the inbound request whose response was sent.
-        </span>request_id: RequestId,
+        </span>request_id: InboundRequestId,
     },
 }
 
 <span class="doccomment">/// Possible failures occurring in the context of sending
 /// an outbound request and receiving the response.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>OutboundFailure {
     <span class="doccomment">/// The request could not be sent because a dialing attempt failed.
     </span>DialFailure,
@@ -1134,6 +1178,8 @@
     </span>ConnectionClosed,
     <span class="doccomment">/// The remote supports none of the requested protocols.
     </span>UnsupportedProtocols,
+    <span class="doccomment">/// An IO failure happened on an outbound stream.
+    </span>Io(io::Error),
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>OutboundFailure {
@@ -1147,6 +1193,7 @@
             OutboundFailure::UnsupportedProtocols =&gt; {
                 <span class="macro">write!</span>(f, <span class="string">&quot;The remote supports none of the requested protocols&quot;</span>)
             }
+            OutboundFailure::Io(e) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;IO error on outbound stream: {e}&quot;</span>),
         }
     }
 }
@@ -1155,7 +1202,7 @@
 
 <span class="doccomment">/// Possible failures occurring in the context of receiving an
 /// inbound request and sending a response.
-</span><span class="attr">#[derive(Debug, Clone, PartialEq, Eq)]
+</span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub enum </span>InboundFailure {
     <span class="doccomment">/// The inbound request timed out, either while reading the
     /// incoming request or before a response is sent, e.g. if
@@ -1171,6 +1218,8 @@
     /// due to the [`ResponseChannel`] being dropped instead of
     /// being passed to [`Behaviour::send_response`].
     </span>ResponseOmission,
+    <span class="doccomment">/// An IO failure happened on an inbound stream.
+    </span>Io(io::Error),
 }
 
 <span class="kw">impl </span>fmt::Display <span class="kw">for </span>InboundFailure {
@@ -1190,6 +1239,7 @@
                 f,
                 <span class="string">&quot;The response channel was dropped without sending a response to the remote&quot;
             </span>),
+            InboundFailure::Io(e) =&gt; <span class="macro">write!</span>(f, <span class="string">&quot;IO error on inbound stream: {e}&quot;</span>),
         }
     }
 }
@@ -1217,17 +1267,27 @@
     }
 }
 
-<span class="doccomment">/// The ID of an inbound or outbound request.
+<span class="doccomment">/// The ID of an inbound request.
 ///
-/// Note: [`RequestId`]&#39;s uniqueness is only guaranteed between two
-/// inbound and likewise between two outbound requests. There is no
-/// uniqueness guarantee in a set of both inbound and outbound
-/// [`RequestId`]s nor in a set of inbound or outbound requests
-/// originating from different [`Behaviour`]&#39;s.
+/// Note: [`InboundRequestId`]&#39;s uniqueness is only guaranteed between
+/// inbound requests of the same originating [`Behaviour`].
 </span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
-</span><span class="kw">pub struct </span>RequestId(u64);
+</span><span class="kw">pub struct </span>InboundRequestId(u64);
 
-<span class="kw">impl </span>fmt::Display <span class="kw">for </span>RequestId {
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>InboundRequestId {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
+    }
+}
+
+<span class="doccomment">/// The ID of an outbound request.
+///
+/// Note: [`OutboundRequestId`]&#39;s uniqueness is only guaranteed between
+/// outbound requests of the same originating [`Behaviour`].
+</span><span class="attr">#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+</span><span class="kw">pub struct </span>OutboundRequestId(u64);
+
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>OutboundRequestId {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
         <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
@@ -1237,31 +1297,35 @@
 </span><span class="attr">#[derive(Debug, Clone)]
 </span><span class="kw">pub struct </span>Config {
     request_timeout: Duration,
-    connection_keep_alive: Duration,
+    max_concurrent_streams: usize,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>Config {
     <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            connection_keep_alive: Duration::from_secs(<span class="number">10</span>),
             request_timeout: Duration::from_secs(<span class="number">10</span>),
+            max_concurrent_streams: <span class="number">100</span>,
         }
     }
 }
 
 <span class="kw">impl </span>Config {
-    <span class="doccomment">/// Sets the keep-alive timeout of idle connections.
-    </span><span class="attr">#[deprecated(
-        note = <span class="string">&quot;Set a global idle connection timeout via `SwarmBuilder::idle_connection_timeout` instead.&quot;
-    </span>)]
-    </span><span class="kw">pub fn </span>set_connection_keep_alive(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: Duration) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
-        <span class="self">self</span>.connection_keep_alive = v;
+    <span class="doccomment">/// Sets the timeout for inbound and outbound requests.
+    </span><span class="attr">#[deprecated(note = <span class="string">&quot;Use `Config::with_request_timeout` for one-liner constructions.&quot;</span>)]
+    </span><span class="kw">pub fn </span>set_request_timeout(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: Duration) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+        <span class="self">self</span>.request_timeout = v;
         <span class="self">self
     </span>}
 
     <span class="doccomment">/// Sets the timeout for inbound and outbound requests.
-    </span><span class="kw">pub fn </span>set_request_timeout(<span class="kw-2">&amp;mut </span><span class="self">self</span>, v: Duration) -&gt; <span class="kw-2">&amp;mut </span><span class="self">Self </span>{
+    </span><span class="kw">pub fn </span>with_request_timeout(<span class="kw-2">mut </span><span class="self">self</span>, v: Duration) -&gt; <span class="self">Self </span>{
         <span class="self">self</span>.request_timeout = v;
+        <span class="self">self
+    </span>}
+
+    <span class="doccomment">/// Sets the upper bound for the number of concurrent inbound + outbound streams.
+    </span><span class="kw">pub fn </span>with_max_concurrent_streams(<span class="kw-2">mut </span><span class="self">self</span>, num_streams: usize) -&gt; <span class="self">Self </span>{
+        <span class="self">self</span>.max_concurrent_streams = num_streams;
         <span class="self">self
     </span>}
 }
@@ -1276,24 +1340,24 @@
     <span class="doccomment">/// The supported outbound protocols.
     </span>outbound_protocols: SmallVec&lt;[TCodec::Protocol; <span class="number">2</span>]&gt;,
     <span class="doccomment">/// The next (local) request ID.
-    </span>next_request_id: RequestId,
+    </span>next_outbound_request_id: OutboundRequestId,
     <span class="doccomment">/// The next (inbound) request ID.
-    </span>next_inbound_id: Arc&lt;AtomicU64&gt;,
+    </span>next_inbound_request_id: Arc&lt;AtomicU64&gt;,
     <span class="doccomment">/// The protocol configuration.
     </span>config: Config,
     <span class="doccomment">/// The protocol codec for reading and writing requests and responses.
     </span>codec: TCodec,
     <span class="doccomment">/// Pending events to return from `poll`.
     </span>pending_events:
-        VecDeque&lt;ToSwarm&lt;Event&lt;TCodec::Request, TCodec::Response&gt;, RequestProtocol&lt;TCodec&gt;&gt;&gt;,
+        VecDeque&lt;ToSwarm&lt;Event&lt;TCodec::Request, TCodec::Response&gt;, OutboundMessage&lt;TCodec&gt;&gt;&gt;,
     <span class="doccomment">/// The currently connected peers, their pending outbound and inbound responses and their known,
     /// reachable addresses, if any.
     </span>connected: HashMap&lt;PeerId, SmallVec&lt;[Connection; <span class="number">2</span>]&gt;&gt;,
     <span class="doccomment">/// Externally managed addresses via `add_address` and `remove_address`.
-    </span>addresses: HashMap&lt;PeerId, SmallVec&lt;[Multiaddr; <span class="number">6</span>]&gt;&gt;,
+    </span>addresses: HashMap&lt;PeerId, HashSet&lt;Multiaddr&gt;&gt;,
     <span class="doccomment">/// Requests that have not yet been sent and are waiting for a connection
     /// to be established.
-    </span>pending_outbound_requests: HashMap&lt;PeerId, SmallVec&lt;[RequestProtocol&lt;TCodec&gt;; <span class="number">10</span>]&gt;&gt;,
+    </span>pending_outbound_requests: HashMap&lt;PeerId, SmallVec&lt;[OutboundMessage&lt;TCodec&gt;; <span class="number">10</span>]&gt;&gt;,
 }
 
 <span class="kw">impl</span>&lt;TCodec&gt; Behaviour&lt;TCodec&gt;
@@ -1332,8 +1396,8 @@
         Behaviour {
             inbound_protocols,
             outbound_protocols,
-            next_request_id: RequestId(<span class="number">1</span>),
-            next_inbound_id: Arc::new(AtomicU64::new(<span class="number">1</span>)),
+            next_outbound_request_id: OutboundRequestId(<span class="number">1</span>),
+            next_inbound_request_id: Arc::new(AtomicU64::new(<span class="number">1</span>)),
             config: cfg,
             codec,
             pending_events: VecDeque::new(),
@@ -1355,13 +1419,12 @@
     /// &gt; address discovery, or known addresses of peers must be
     /// &gt; managed via [`Behaviour::add_address`] and
     /// &gt; [`Behaviour::remove_address`].
-    </span><span class="kw">pub fn </span>send_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request: TCodec::Request) -&gt; RequestId {
-        <span class="kw">let </span>request_id = <span class="self">self</span>.next_request_id();
-        <span class="kw">let </span>request = RequestProtocol {
+    </span><span class="kw">pub fn </span>send_request(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request: TCodec::Request) -&gt; OutboundRequestId {
+        <span class="kw">let </span>request_id = <span class="self">self</span>.next_outbound_request_id();
+        <span class="kw">let </span>request = OutboundMessage {
             request_id,
-            codec: <span class="self">self</span>.codec.clone(),
-            protocols: <span class="self">self</span>.outbound_protocols.clone(),
             request,
+            protocols: <span class="self">self</span>.outbound_protocols.clone(),
         };
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(request) = <span class="self">self</span>.try_send_request(peer, request) {
@@ -1401,8 +1464,11 @@
     /// by [`NetworkBehaviour::handle_pending_outbound_connection`].
     ///
     /// Addresses added in this way are only removed by `remove_address`.
-    </span><span class="kw">pub fn </span>add_address(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, address: Multiaddr) {
-        <span class="self">self</span>.addresses.entry(<span class="kw-2">*</span>peer).or_default().push(address);
+    ///
+    /// Returns true if the address was added, false otherwise (i.e. if the
+    /// address is already in the list).
+    </span><span class="kw">pub fn </span>add_address(<span class="kw-2">&amp;mut </span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, address: Multiaddr) -&gt; bool {
+        <span class="self">self</span>.addresses.entry(<span class="kw-2">*</span>peer).or_default().insert(address)
     }
 
     <span class="doccomment">/// Removes an address of a peer previously added via `add_address`.
@@ -1429,14 +1495,14 @@
     <span class="doccomment">/// Checks whether an outbound request to the peer with the provided
     /// [`PeerId`] initiated by [`Behaviour::send_request`] is still
     /// pending, i.e. waiting for a response.
-    </span><span class="kw">pub fn </span>is_pending_outbound(<span class="kw-2">&amp;</span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request_id: <span class="kw-2">&amp;</span>RequestId) -&gt; bool {
+    </span><span class="kw">pub fn </span>is_pending_outbound(<span class="kw-2">&amp;</span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request_id: <span class="kw-2">&amp;</span>OutboundRequestId) -&gt; bool {
         <span class="comment">// Check if request is already sent on established connection.
         </span><span class="kw">let </span>est_conn = <span class="self">self
             </span>.connected
             .get(peer)
             .map(|cs| {
                 cs.iter()
-                    .any(|c| c.pending_inbound_responses.contains(request_id))
+                    .any(|c| c.pending_outbound_responses.contains(request_id))
             })
             .unwrap_or(<span class="bool-val">false</span>);
         <span class="comment">// Check if request is still pending to be sent.
@@ -1452,20 +1518,20 @@
     <span class="doccomment">/// Checks whether an inbound request from the peer with the provided
     /// [`PeerId`] is still pending, i.e. waiting for a response by the local
     /// node through [`Behaviour::send_response`].
-    </span><span class="kw">pub fn </span>is_pending_inbound(<span class="kw-2">&amp;</span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request_id: <span class="kw-2">&amp;</span>RequestId) -&gt; bool {
+    </span><span class="kw">pub fn </span>is_pending_inbound(<span class="kw-2">&amp;</span><span class="self">self</span>, peer: <span class="kw-2">&amp;</span>PeerId, request_id: <span class="kw-2">&amp;</span>InboundRequestId) -&gt; bool {
         <span class="self">self</span>.connected
             .get(peer)
             .map(|cs| {
                 cs.iter()
-                    .any(|c| c.pending_outbound_responses.contains(request_id))
+                    .any(|c| c.pending_inbound_responses.contains(request_id))
             })
             .unwrap_or(<span class="bool-val">false</span>)
     }
 
-    <span class="doccomment">/// Returns the next request ID.
-    </span><span class="kw">fn </span>next_request_id(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; RequestId {
-        <span class="kw">let </span>request_id = <span class="self">self</span>.next_request_id;
-        <span class="self">self</span>.next_request_id.<span class="number">0 </span>+= <span class="number">1</span>;
+    <span class="doccomment">/// Returns the next outbound request ID.
+    </span><span class="kw">fn </span>next_outbound_request_id(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; OutboundRequestId {
+        <span class="kw">let </span>request_id = <span class="self">self</span>.next_outbound_request_id;
+        <span class="self">self</span>.next_outbound_request_id.<span class="number">0 </span>+= <span class="number">1</span>;
         request_id
     }
 
@@ -1475,15 +1541,15 @@
     </span><span class="kw">fn </span>try_send_request(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         peer: <span class="kw-2">&amp;</span>PeerId,
-        request: RequestProtocol&lt;TCodec&gt;,
-    ) -&gt; <span class="prelude-ty">Option</span>&lt;RequestProtocol&lt;TCodec&gt;&gt; {
+        request: OutboundMessage&lt;TCodec&gt;,
+    ) -&gt; <span class="prelude-ty">Option</span>&lt;OutboundMessage&lt;TCodec&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(connections) = <span class="self">self</span>.connected.get_mut(peer) {
             <span class="kw">if </span>connections.is_empty() {
                 <span class="kw">return </span><span class="prelude-val">Some</span>(request);
             }
             <span class="kw">let </span>ix = (request.request_id.<span class="number">0 </span><span class="kw">as </span>usize) % connections.len();
             <span class="kw">let </span>conn = <span class="kw-2">&amp;mut </span>connections[ix];
-            conn.pending_inbound_responses.insert(request.request_id);
+            conn.pending_outbound_responses.insert(request.request_id);
             <span class="self">self</span>.pending_events.push_back(ToSwarm::NotifyHandler {
                 peer_id: <span class="kw-2">*</span>peer,
                 handler: NotifyHandler::One(conn.id),
@@ -1498,13 +1564,13 @@
     <span class="doccomment">/// Remove pending outbound response for the given peer and connection.
     ///
     /// Returns `true` if the provided connection to the given peer is still
-    /// alive and the [`RequestId`] was previously present and is now removed.
+    /// alive and the [`OutboundRequestId`] was previously present and is now removed.
     /// Returns `false` otherwise.
     </span><span class="kw">fn </span>remove_pending_outbound_response(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         peer: <span class="kw-2">&amp;</span>PeerId,
         connection: ConnectionId,
-        request: RequestId,
+        request: OutboundRequestId,
     ) -&gt; bool {
         <span class="self">self</span>.get_connection_mut(peer, connection)
             .map(|c| c.pending_outbound_responses.remove(<span class="kw-2">&amp;</span>request))
@@ -1514,16 +1580,16 @@
     <span class="doccomment">/// Remove pending inbound response for the given peer and connection.
     ///
     /// Returns `true` if the provided connection to the given peer is still
-    /// alive and the [`RequestId`] was previously present and is now removed.
+    /// alive and the [`InboundRequestId`] was previously present and is now removed.
     /// Returns `false` otherwise.
     </span><span class="kw">fn </span>remove_pending_inbound_response(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
         peer: <span class="kw-2">&amp;</span>PeerId,
         connection: ConnectionId,
-        request: <span class="kw-2">&amp;</span>RequestId,
+        request: InboundRequestId,
     ) -&gt; bool {
         <span class="self">self</span>.get_connection_mut(peer, connection)
-            .map(|c| c.pending_inbound_responses.remove(request))
+            .map(|c| c.pending_inbound_responses.remove(<span class="kw-2">&amp;</span>request))
             .unwrap_or(<span class="bool-val">false</span>)
     }
 
@@ -1571,7 +1637,7 @@
             connection_id,
             remaining_established,
             ..
-        }: ConnectionClosed&lt;&lt;<span class="self">Self </span><span class="kw">as </span>NetworkBehaviour&gt;::ConnectionHandler&gt;,
+        }: ConnectionClosed,
     ) {
         <span class="kw">let </span>connections = <span class="self">self
             </span>.connected
@@ -1589,7 +1655,7 @@
             <span class="self">self</span>.connected.remove(<span class="kw-2">&amp;</span>peer_id);
         }
 
-        <span class="kw">for </span>request_id <span class="kw">in </span>connection.pending_outbound_responses {
+        <span class="kw">for </span>request_id <span class="kw">in </span>connection.pending_inbound_responses {
             <span class="self">self</span>.pending_events
                 .push_back(ToSwarm::GenerateEvent(Event::InboundFailure {
                     peer: peer_id,
@@ -1598,7 +1664,7 @@
                 }));
         }
 
-        <span class="kw">for </span>request_id <span class="kw">in </span>connection.pending_inbound_responses {
+        <span class="kw">for </span>request_id <span class="kw">in </span>connection.pending_outbound_responses {
             <span class="self">self</span>.pending_events
                 .push_back(ToSwarm::GenerateEvent(Event::OutboundFailure {
                     peer: peer_id,
@@ -1642,7 +1708,7 @@
         <span class="kw">if let </span><span class="prelude-val">Some</span>(pending_requests) = <span class="self">self</span>.pending_outbound_requests.remove(<span class="kw-2">&amp;</span>peer) {
             <span class="kw">for </span>request <span class="kw">in </span>pending_requests {
                 connection
-                    .pending_inbound_responses
+                    .pending_outbound_responses
                     .insert(request.request_id);
                 handler.on_behaviour_event(request);
             }
@@ -1670,8 +1736,8 @@
             <span class="self">self</span>.inbound_protocols.clone(),
             <span class="self">self</span>.codec.clone(),
             <span class="self">self</span>.config.request_timeout,
-            <span class="self">self</span>.config.connection_keep_alive,
-            <span class="self">self</span>.next_inbound_id.clone(),
+            <span class="self">self</span>.next_inbound_request_id.clone(),
+            <span class="self">self</span>.config.max_concurrent_streams,
         );
 
         <span class="self">self</span>.preload_new_handler(<span class="kw-2">&amp;mut </span>handler, peer, connection_id, <span class="prelude-val">None</span>);
@@ -1696,7 +1762,7 @@
             addresses.extend(connections.iter().filter_map(|c| c.remote_address.clone()))
         }
         <span class="kw">if let </span><span class="prelude-val">Some</span>(more) = <span class="self">self</span>.addresses.get(<span class="kw-2">&amp;</span>peer) {
-            addresses.extend(more.into_iter().cloned());
+            addresses.extend(more.iter().cloned());
         }
 
         <span class="prelude-val">Ok</span>(addresses)
@@ -1713,8 +1779,8 @@
             <span class="self">self</span>.inbound_protocols.clone(),
             <span class="self">self</span>.codec.clone(),
             <span class="self">self</span>.config.request_timeout,
-            <span class="self">self</span>.config.connection_keep_alive,
-            <span class="self">self</span>.next_inbound_id.clone(),
+            <span class="self">self</span>.next_inbound_request_id.clone(),
+            <span class="self">self</span>.config.max_concurrent_streams,
         );
 
         <span class="self">self</span>.preload_new_handler(
@@ -1727,7 +1793,7 @@
         <span class="prelude-val">Ok</span>(handler)
     }
 
-    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm&lt;<span class="self">Self</span>::ConnectionHandler&gt;) {
+    <span class="kw">fn </span>on_swarm_event(<span class="kw-2">&amp;mut </span><span class="self">self</span>, event: FromSwarm) {
         <span class="kw">match </span>event {
             FromSwarm::ConnectionEstablished(<span class="kw">_</span>) =&gt; {}
             FromSwarm::ConnectionClosed(connection_closed) =&gt; {
@@ -1735,15 +1801,7 @@
             }
             FromSwarm::AddressChange(address_change) =&gt; <span class="self">self</span>.on_address_change(address_change),
             FromSwarm::DialFailure(dial_failure) =&gt; <span class="self">self</span>.on_dial_failure(dial_failure),
-            FromSwarm::ListenFailure(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::NewListener(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::NewListenAddr(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ExpiredListenAddr(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ListenerError(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ListenerClosed(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::NewExternalAddrCandidate(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ExternalAddrExpired(<span class="kw">_</span>) =&gt; {}
-            FromSwarm::ExternalAddrConfirmed(<span class="kw">_</span>) =&gt; {}
+            <span class="kw">_ </span>=&gt; {}
         }
     }
 
@@ -1758,7 +1816,7 @@
                 request_id,
                 response,
             } =&gt; {
-                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, <span class="kw-2">&amp;</span>request_id);
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_outbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
                 <span class="macro">debug_assert!</span>(
                     removed,
                     <span class="string">&quot;Expect request_id to be pending before receiving response.&quot;</span>,
@@ -1775,35 +1833,26 @@
                 request_id,
                 request,
                 sender,
-            } =&gt; {
-                <span class="kw">let </span>channel = ResponseChannel { sender };
-                <span class="kw">let </span>message = Message::Request {
-                    request_id,
-                    request,
-                    channel,
-                };
-                <span class="self">self</span>.pending_events
-                    .push_back(ToSwarm::GenerateEvent(Event::Message { peer, message }));
+            } =&gt; <span class="kw">match </span><span class="self">self</span>.get_connection_mut(<span class="kw-2">&amp;</span>peer, connection) {
+                <span class="prelude-val">Some</span>(connection) =&gt; {
+                    <span class="kw">let </span>inserted = connection.pending_inbound_responses.insert(request_id);
+                    <span class="macro">debug_assert!</span>(inserted, <span class="string">&quot;Expect id of new request to be unknown.&quot;</span>);
 
-                <span class="kw">match </span><span class="self">self</span>.get_connection_mut(<span class="kw-2">&amp;</span>peer, connection) {
-                    <span class="prelude-val">Some</span>(connection) =&gt; {
-                        <span class="kw">let </span>inserted = connection.pending_outbound_responses.insert(request_id);
-                        <span class="macro">debug_assert!</span>(inserted, <span class="string">&quot;Expect id of new request to be unknown.&quot;</span>);
-                    }
-                    <span class="comment">// Connection closed after `Event::Request` has been emitted.
-                    </span><span class="prelude-val">None </span>=&gt; {
-                        <span class="self">self</span>.pending_events.push_back(ToSwarm::GenerateEvent(
-                            Event::InboundFailure {
-                                peer,
-                                request_id,
-                                error: InboundFailure::ConnectionClosed,
-                            },
-                        ));
-                    }
+                    <span class="kw">let </span>channel = ResponseChannel { sender };
+                    <span class="kw">let </span>message = Message::Request {
+                        request_id,
+                        request,
+                        channel,
+                    };
+                    <span class="self">self</span>.pending_events
+                        .push_back(ToSwarm::GenerateEvent(Event::Message { peer, message }));
                 }
-            }
+                <span class="prelude-val">None </span>=&gt; {
+                    <span class="macro">tracing::debug!</span>(<span class="string">&quot;Connection ({connection}) closed after `Event::Request` ({request_id}) has been emitted.&quot;</span>);
+                }
+            },
             handler::Event::ResponseSent(request_id) =&gt; {
-                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_outbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
                 <span class="macro">debug_assert!</span>(
                     removed,
                     <span class="string">&quot;Expect request_id to be pending before response is sent.&quot;
@@ -1816,7 +1865,7 @@
                     }));
             }
             handler::Event::ResponseOmission(request_id) =&gt; {
-                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_outbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
                 <span class="macro">debug_assert!</span>(
                     removed,
                     <span class="string">&quot;Expect request_id to be pending before response is omitted.&quot;</span>,
@@ -1830,7 +1879,7 @@
                     }));
             }
             handler::Event::OutboundTimeout(request_id) =&gt; {
-                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, <span class="kw-2">&amp;</span>request_id);
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_outbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
                 <span class="macro">debug_assert!</span>(
                     removed,
                     <span class="string">&quot;Expect request_id to be pending before request times out.&quot;
@@ -1844,7 +1893,7 @@
                     }));
             }
             handler::Event::OutboundUnsupportedProtocols(request_id) =&gt; {
-                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, <span class="kw-2">&amp;</span>request_id);
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_outbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
                 <span class="macro">debug_assert!</span>(
                     removed,
                     <span class="string">&quot;Expect request_id to be pending before failing to connect.&quot;</span>,
@@ -1857,14 +1906,53 @@
                         error: OutboundFailure::UnsupportedProtocols,
                     }));
             }
+            handler::Event::OutboundStreamFailed { request_id, error } =&gt; {
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_outbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
+                <span class="macro">debug_assert!</span>(removed, <span class="string">&quot;Expect request_id to be pending upon failure&quot;</span>);
+
+                <span class="self">self</span>.pending_events
+                    .push_back(ToSwarm::GenerateEvent(Event::OutboundFailure {
+                        peer,
+                        request_id,
+                        error: OutboundFailure::Io(error),
+                    }))
+            }
+            handler::Event::InboundTimeout(request_id) =&gt; {
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
+
+                <span class="kw">if </span>removed {
+                    <span class="self">self</span>.pending_events
+                        .push_back(ToSwarm::GenerateEvent(Event::InboundFailure {
+                            peer,
+                            request_id,
+                            error: InboundFailure::Timeout,
+                        }));
+                } <span class="kw">else </span>{
+                    <span class="comment">// This happens when timeout is emitted before `read_request` finishes.
+                    </span><span class="macro">tracing::debug!</span>(
+                        <span class="string">&quot;Inbound request timeout for an unknown request_id ({request_id})&quot;
+                    </span>);
+                }
+            }
+            handler::Event::InboundStreamFailed { request_id, error } =&gt; {
+                <span class="kw">let </span>removed = <span class="self">self</span>.remove_pending_inbound_response(<span class="kw-2">&amp;</span>peer, connection, request_id);
+
+                <span class="kw">if </span>removed {
+                    <span class="self">self</span>.pending_events
+                        .push_back(ToSwarm::GenerateEvent(Event::InboundFailure {
+                            peer,
+                            request_id,
+                            error: InboundFailure::Io(error),
+                        }));
+                } <span class="kw">else </span>{
+                    <span class="comment">// This happens when `read_request` fails.
+                    </span><span class="macro">tracing::debug!</span>(<span class="string">&quot;Inbound failure is reported for an unknown request_id ({request_id}): {error}&quot;</span>);
+                }
+            }
         }
     }
 
-    <span class="kw">fn </span>poll(
-        <span class="kw-2">&amp;mut </span><span class="self">self</span>,
-        <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;,
-        <span class="kw">_</span>: <span class="kw-2">&amp;mut </span><span class="kw">impl </span>PollParameters,
-    ) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
+    <span class="kw">fn </span>poll(<span class="kw-2">&amp;mut </span><span class="self">self</span>, <span class="kw">_</span>: <span class="kw-2">&amp;mut </span>Context&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; Poll&lt;ToSwarm&lt;<span class="self">Self</span>::ToSwarm, THandlerInEvent&lt;<span class="self">Self</span>&gt;&gt;&gt; {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(ev) = <span class="self">self</span>.pending_events.pop_front() {
             <span class="kw">return </span>Poll::Ready(ev);
         } <span class="kw">else if </span><span class="self">self</span>.pending_events.capacity() &gt; EMPTY_QUEUE_SHRINK_THRESHOLD {
@@ -1888,10 +1976,10 @@
     <span class="doccomment">/// Pending outbound responses where corresponding inbound requests have
     /// been received on this connection and emitted via `poll` but have not yet
     /// been answered.
-    </span>pending_outbound_responses: HashSet&lt;RequestId&gt;,
+    </span>pending_outbound_responses: HashSet&lt;OutboundRequestId&gt;,
     <span class="doccomment">/// Pending inbound responses for previously sent requests on this
     /// connection.
-    </span>pending_inbound_responses: HashSet&lt;RequestId&gt;,
+    </span>pending_inbound_responses: HashSet&lt;InboundRequestId&gt;,
 }
 
 <span class="kw">impl </span>Connection {

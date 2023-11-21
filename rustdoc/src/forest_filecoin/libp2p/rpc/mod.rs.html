@@ -173,6 +173,9 @@
 <a href="#173" id="173">173</a>
 <a href="#174" id="174">174</a>
 <a href="#175" id="175">175</a>
+<a href="#176" id="176">176</a>
+<a href="#177" id="177">177</a>
+<a href="#178" id="178">178</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
@@ -227,6 +230,8 @@
     </span>ConnectionClosed,
     <span class="doccomment">/// The remote supports none of the requested protocols.
     </span>UnsupportedProtocols,
+    <span class="doccomment">/// An IO failure happened on an outbound stream.
+    </span>Io(io::Error),
 }
 
 <span class="kw">impl </span>From&lt;OutboundFailure&gt; <span class="kw">for </span>RequestResponseError {
@@ -236,6 +241,7 @@
             OutboundFailure::Timeout =&gt; <span class="self">Self</span>::Timeout,
             OutboundFailure::ConnectionClosed =&gt; <span class="self">Self</span>::ConnectionClosed,
             OutboundFailure::UnsupportedProtocols =&gt; <span class="self">Self</span>::UnsupportedProtocols,
+            OutboundFailure::Io(e) =&gt; <span class="self">Self</span>::Io(e),
         }
     }
 }
