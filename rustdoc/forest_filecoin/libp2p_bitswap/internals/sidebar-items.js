@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":["codec","event_handlers","prefix","utils"]};
+window.SIDEBAR_ITEMS = {"mod":["codec","event_handlers","prefix"]};
