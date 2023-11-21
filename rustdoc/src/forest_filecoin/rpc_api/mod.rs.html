@@ -335,6 +335,7 @@
 <a href="#335" id="335">335</a>
 <a href="#336" id="336">336</a>
 <a href="#337" id="337">337</a>
+<a href="#338" id="338">338</a>
 </pre></div><pre class="rust"><code><span class="comment">// Copyright 2019-2023 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 </span><span class="doccomment">//! In general, `forest` wants to support the same RPC messages as `lotus` (go
@@ -385,6 +386,7 @@
     access.insert(chain_api::CHAIN_SET_HEAD, Access::Admin);
     access.insert(chain_api::CHAIN_GET_MIN_BASE_FEE, Access::Admin);
     access.insert(chain_api::CHAIN_GET_MESSAGES_IN_TIPSET, Access::Read);
+    access.insert(chain_api::CHAIN_GET_PARENT_MESSAGES, Access::Read);
 
     <span class="comment">// Message Pool API
     </span>access.insert(mpool_api::MPOOL_PENDING, Access::Read);
